@@ -57,6 +57,10 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Content\Json\Items.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.csproj">
@@ -68,8 +72,16 @@
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerControls.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
+    <Compile Include="Items\Item.cs" />
+    <Compile Include="Items\ItemData.cs" />
+    <Compile Include="Items\Tunic.cs" />
     <Compile Include="MainGame.cs" />
     <Compile Include="Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

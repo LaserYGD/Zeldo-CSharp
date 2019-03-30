@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -60,9 +61,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Alignments.cs" />
+    <Compile Include="Core\Color.cs" />
+    <Compile Include="Core\ContentCache.cs" />
+    <Compile Include="Core\Sprite.cs" />
     <Compile Include="CSGL.cs" />
     <Compile Include="Entities\Entity3D.cs" />
+    <Compile Include="Entities\Scene.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="Graphics\SpriteBatch.cs" />
+    <Compile Include="Graphics\Texture.cs" />
     <Compile Include="Input\Data\FullInputData.cs" />
     <Compile Include="Input\Data\InputBind.cs" />
     <Compile Include="Input\Data\InputData.cs" />
@@ -71,9 +79,11 @@
     <Compile Include="Input\Data\MouseData.cs" />
     <Compile Include="Input\InputHelper.cs" />
     <Compile Include="Input\InputProcessor.cs" />
+    <Compile Include="Interfaces\2D\IRenderable2D.cs" />
     <Compile Include="Interfaces\2D\IRotatable.cs" />
     <Compile Include="Interfaces\2D\ISensitive.cs" />
     <Compile Include="Interfaces\3D\IOrientable.cs" />
+    <Compile Include="Interfaces\IColorable.cs" />
     <Compile Include="Interfaces\IDynamic.cs" />
     <Compile Include="Interfaces\2D\IPositionable2D.cs" />
     <Compile Include="Interfaces\3D\IPositionable3D.cs" />
@@ -87,6 +97,7 @@
     <Compile Include="Shapes\2D\Line.cs" />
     <Compile Include="Shapes\2D\Shape2D.cs" />
     <Compile Include="Shapes\2D\ShapeTypes2D.cs" />
+    <Compile Include="Utility\JsonUtilities.cs" />
     <Compile Include="Utility\Utilities.cs" />
     <Compile Include="Window.cs" />
   </ItemGroup>
@@ -94,7 +105,10 @@
     <Reference Include="GlmSharp, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GlmSharp.0.9.8\lib\Net45\GlmSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -10,5 +10,10 @@ namespace Zeldo.Entities
 	public class Player : Entity3D
 	{
 		private PlayerControls controls;
+
+		public Player()
+		{
+			controls = new PlayerControls();
+		}
 	}
 }

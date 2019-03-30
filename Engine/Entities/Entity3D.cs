@@ -12,6 +12,7 @@ namespace Engine.Entities
 	public class Entity3D : IPositionable3D, IDynamic
 	{
 		public vec3 Position { get; set; }
+		public Scene Scene { get; set; }
 
 		public virtual void Update(float dt)
 		{
