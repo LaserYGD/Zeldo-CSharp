@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using GlmSharp;
-using static CSGL.Glfw3;
 
 namespace Engine.Input
 {
@@ -19,7 +18,7 @@ namespace Engine.Input
 
 		public InputProcessor()
 		{
-			buttons = Enumerable.Repeat(InputStates.Released, GLFW_MOUSE_BUTTON_LAST).ToArray();
+			//buttons = Enumerable.Repeat(InputStates.Released, GLFW_MOUSE_BUTTON_LAST).ToArray();
 		}
 
 		public void OnMouseButtonPress(int button)

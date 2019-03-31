@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine;
+using static Engine.GL;
+using static Engine.GLFW;
 
 namespace Zeldo
 {
@@ -11,6 +13,7 @@ namespace Zeldo
 	{
 		public MainGame() : base("Zeldo")
 		{
+			glClearColor(0, 1, 0, 1);
 		}
 
 		protected override void Update(float dt)
@@ -19,6 +22,7 @@ namespace Zeldo
 
 		protected override void Draw()
 		{
+			glClear(0x00004000);
 		}
 	}
 }

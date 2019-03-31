@@ -12,8 +12,6 @@ namespace Zeldo
 	{
 		public static void Main(string[] args)
 		{
-			Item item = new Tunic();
-
 			MainGame game = new MainGame();
 			game.Run();
 		}

@@ -5,8 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Input;
-using static CSGL.CSGL;
-using static CSGL.Glfw3;
+using static Engine.GLFW;
 
 namespace Engine
 {
@@ -20,57 +19,68 @@ namespace Engine
 
 		protected Game(string title)
 		{
-			csglLoadGlfw();
-			csglLoadGL();
-
 			glfwInit();
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 5);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-			window = new Window(title, 800, 600);
+			IntPtr address = glfwCreateWindow(800, 600, title, IntPtr.Zero, IntPtr.Zero);
+
+			if (address == IntPtr.Zero)
+			{
+				glfwTerminate();
+
+				return;
+			}
+
+			window = new Window(title, 800, 600, address);
 			inputProcessor = new InputProcessor();
 
-			IntPtr windowAddress = window.Address;
-
-			glfwMakeContextCurrent(windowAddress);
-			glfwSetMouseButtonCallback(windowAddress, OnMouseButton);
+			glfwMakeContextCurrent(address);
+			//glfwSetMouseButtonCallback(address, OnMouseButton);
 		}
 
 		private void OnMouseButton(IntPtr windowAddress, int button, int action, int mods)
 		{
+			/*
 			switch (action)
 			{
 				case GLFW_PRESS: inputProcessor.OnMouseButtonPress(button); break;
 				case GLFW_RELEASE: inputProcessor.OnMouseButtonRelease(button); break;
 			}
+			*/
 		}
 
 		public void Run()
 		{
 			const float Target = 1.0f / 60;
 
-			float time = (float)glfwGetTime();
-
-			accumulator += time - previousTime;
-			previousTime = time;
-
-			bool shouldUpdate = accumulator >= Target;
-
-			if (!shouldUpdate)
+			while (glfwWindowShouldClose(window.Address) == 0)
 			{
-				return;
+				float time = (float)glfwGetTime();
+
+				accumulator += time - previousTime;
+				previousTime = time;
+
+				bool shouldUpdate = accumulator >= Target;
+
+				if (!shouldUpdate)
+				{
+					continue;
+				}
+
+				while (accumulator >= Target)
+				{
+					glfwPollEvents();
+					Update(Target);
+					accumulator -= Target;
+				}
+
+				Draw();
+
+				glfwSwapBuffers(window.Address);
 			}
 
-			while (accumulator >= Target)
-			{
-				glfwPollEvents();
-				Update(Target);
-				accumulator -= Target;
-			}
-
-			Draw();
-
-			glfwSwapBuffers(window.Address);
+			glfwTerminate();
 		}
 
 		protected abstract void Update(float dt);

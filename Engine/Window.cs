@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static CSGL.Glfw3;
+using static Engine.GLFW;
 
 namespace Engine
 {
 	public class Window
 	{
-		public Window(string title, int width, int height)
+		public Window(string title, int width, int height, IntPtr address)
 		{
 			Width = width;
 			Height = height;
-			Address = glfwCreateWindow(width, height, title, IntPtr.Zero, IntPtr.Zero);
+			Address = address;
 		}
 
 		public int Width { get; }

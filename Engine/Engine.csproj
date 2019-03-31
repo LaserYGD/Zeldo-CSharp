@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Engine</RootNamespace>
     <AssemblyName>Engine</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -46,6 +46,7 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -53,6 +54,25 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -65,10 +85,10 @@
     <Compile Include="Core\Color.cs" />
     <Compile Include="Core\ContentCache.cs" />
     <Compile Include="Core\Sprite.cs" />
-    <Compile Include="CSGL.cs" />
     <Compile Include="Entities\Entity3D.cs" />
     <Compile Include="Entities\Scene.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="GLFW.cs" />
     <Compile Include="Graphics\SpriteBatch.cs" />
     <Compile Include="Graphics\Texture.cs" />
     <Compile Include="Input\Data\FullInputData.cs" />
@@ -90,6 +110,7 @@
     <Compile Include="Interfaces\IReceiver.cs" />
     <Compile Include="Messaging\MessageHandle.cs" />
     <Compile Include="Messaging\MessageSystem.cs" />
+    <Compile Include="GL.cs" />
     <Compile Include="Sensors\Sensor.cs" />
     <Compile Include="Sensors\SensorTypes.cs" />
     <Compile Include="Sensors\Space.cs" />
@@ -111,4 +132,8 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>xcopy /Y "$(SolutionDir)Engine\x86\glfw3.dll" "$(SolutionDir)Zeldo\bin\x86\Debug\x86\"
+xcopy /Y "$(SolutionDir)Engine\x64\glfw3.dll" "$(SolutionDir)Zeldo\bin\x64\Debug\x64\"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

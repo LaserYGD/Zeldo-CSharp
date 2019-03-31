@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static CSGL.OpenGL;
 
 namespace Engine.Graphics
 {
@@ -27,6 +26,7 @@ namespace Engine.Graphics
 				}
 			}
 
+			/*
 			fixed (int* dataPointer = &data[0])
 			{
 				glGenTextures(1, ref id);
@@ -34,6 +34,7 @@ namespace Engine.Graphics
 				glTexImage2D(GL_TEXTURE_2D, 0, (int)GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
 					new IntPtr(dataPointer));
 			}
+			*/
 
 			return new Texture(id, width, height);
 		}
