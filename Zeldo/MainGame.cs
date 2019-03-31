@@ -13,7 +13,7 @@ namespace Zeldo
 	{
 		public MainGame() : base("Zeldo")
 		{
-			glClearColor(0, 1, 0, 1);
+			glClearColor(0, 0, 0, 1);
 		}
 
 		protected override void Update(float dt)
@@ -22,7 +22,7 @@ namespace Zeldo
 
 		protected override void Draw()
 		{
-			glClear(0x00004000);
+			glClear(GL_COLOR_BUFFER_BIT);
 		}
 	}
 }

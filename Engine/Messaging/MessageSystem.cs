@@ -7,30 +7,23 @@ using Engine.Interfaces;
 
 namespace Engine.Messaging
 {
-	using ReceiverFunction = Action<object, float>;
+	using ReceiverFunction = Action<int, object>;
 
 	public static class MessageSystem
 	{
-		private static List<List<ReceiverFunction>> receivers;
+		private static Dictionary<int, List<ReceiverFunction>> functionMap;
 
 		static MessageSystem()
 		{
-			receivers = new List<List<ReceiverFunction>>();
+			functionMap = new Dictionary<int, List<ReceiverFunction>>();
 		}
 
 		public static void Subscribe(IReceiver receiver, int messageType, ReceiverFunction function)
 		{
-			if (messageType >= receivers.Count)
-			{
-				receivers.Capacity = messageType + 1;
-			}
-			
-			var functions = receivers[messageType];
-
-			if (functions == null)
+			if (!functionMap.TryGetValue(messageType, out List<ReceiverFunction> functions))
 			{
 				functions = new List<ReceiverFunction>();
-				receivers[messageType] = functions;
+				functionMap.Add(messageType, functions);
 			}
 
 			int index = -1;
@@ -64,6 +57,24 @@ namespace Engine.Messaging
 
 		public static void Unsubscribe(IReceiver receiver, int messageType = -1)
 		{
+			// By default, the given receiver is unsubscribed from all message types. Passing a message type explicitly
+			// unsubscribes from only that type.
+			if (messageType != -1)
+			{
+
+			}
+		}
+
+		public static void ProcessChanges()
+		{
+		}
+
+		public static void Send(int messageType, object data)
+		{
+			foreach (var receiver in functionMap[messageType])
+			{
+				receiver?.Invoke(messageType, data);
+			}
 		}
 	}
 }

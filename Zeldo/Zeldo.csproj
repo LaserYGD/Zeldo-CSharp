@@ -91,14 +91,24 @@
   <ItemGroup>
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerControls.cs" />
+    <Compile Include="Entities\Projectiles\Arrow.cs" />
+    <Compile Include="Entities\Rope.cs" />
+    <Compile Include="Entities\Weapons\Bow.cs" />
+    <Compile Include="Entities\Weapons\BowRopeTypes.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
     <Compile Include="Items\Item.cs" />
     <Compile Include="Items\ItemData.cs" />
     <Compile Include="Items\Tunic.cs" />
     <Compile Include="MainGame.cs" />
+    <Compile Include="Physics\VerletPoint.cs" />
+    <Compile Include="Physics\VerletRope.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="UI\PlayerHealthDisplay.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="GlmSharp, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\GlmSharp.0.9.8\lib\Net45\GlmSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>

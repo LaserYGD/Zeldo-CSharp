@@ -85,6 +85,7 @@
     <Compile Include="Core\Color.cs" />
     <Compile Include="Core\ContentCache.cs" />
     <Compile Include="Core\Sprite.cs" />
+    <Compile Include="Entities\Attachment.cs" />
     <Compile Include="Entities\Entity3D.cs" />
     <Compile Include="Entities\Scene.cs" />
     <Compile Include="Game.cs" />
@@ -99,18 +100,23 @@
     <Compile Include="Input\Data\MouseData.cs" />
     <Compile Include="Input\InputHelper.cs" />
     <Compile Include="Input\InputProcessor.cs" />
+    <Compile Include="Interfaces\2D\ILocatable.cs" />
     <Compile Include="Interfaces\2D\IRenderable2D.cs" />
     <Compile Include="Interfaces\2D\IRotatable.cs" />
     <Compile Include="Interfaces\2D\ISensitive.cs" />
     <Compile Include="Interfaces\3D\IOrientable.cs" />
+    <Compile Include="Interfaces\3D\ITransformable3D.cs" />
     <Compile Include="Interfaces\IColorable.cs" />
     <Compile Include="Interfaces\IDynamic.cs" />
     <Compile Include="Interfaces\2D\IPositionable2D.cs" />
     <Compile Include="Interfaces\3D\IPositionable3D.cs" />
     <Compile Include="Interfaces\IReceiver.cs" />
+    <Compile Include="Messaging\CoreMessageTypes.cs" />
     <Compile Include="Messaging\MessageHandle.cs" />
     <Compile Include="Messaging\MessageSystem.cs" />
     <Compile Include="GL.cs" />
+    <Compile Include="Physics\RigidBody3D.cs" />
+    <Compile Include="Resolution.cs" />
     <Compile Include="Sensors\Sensor.cs" />
     <Compile Include="Sensors\SensorTypes.cs" />
     <Compile Include="Sensors\Space.cs" />
@@ -118,6 +124,8 @@
     <Compile Include="Shapes\2D\Line.cs" />
     <Compile Include="Shapes\2D\Shape2D.cs" />
     <Compile Include="Shapes\2D\ShapeTypes2D.cs" />
+    <Compile Include="UI\Canvas.cs" />
+    <Compile Include="UI\CanvasElement.cs" />
     <Compile Include="Utility\JsonUtilities.cs" />
     <Compile Include="Utility\Utilities.cs" />
     <Compile Include="Window.cs" />
@@ -130,6 +138,9 @@
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Shapes\3D\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
