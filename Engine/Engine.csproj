@@ -81,16 +81,25 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Alignments.cs" />
+    <Compile Include="Core\2D\Alignments.cs" />
+    <Compile Include="Core\2D\Bounds2D.cs" />
+    <Compile Include="Core\2D\Component2D.cs" />
+    <Compile Include="Core\2D\QuadSource.cs" />
+    <Compile Include="Core\2D\SpriteText.cs" />
     <Compile Include="Core\Color.cs" />
-    <Compile Include="Core\ContentCache.cs" />
-    <Compile Include="Core\Sprite.cs" />
+    <Compile Include="ContentCache.cs" />
+    <Compile Include="Core\3D\Model.cs" />
+    <Compile Include="Core\2D\Sprite.cs" />
     <Compile Include="Entities\Attachment.cs" />
     <Compile Include="Entities\Entity3D.cs" />
     <Compile Include="Entities\Scene.cs" />
+    <Compile Include="Exceptions\ShaderException.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GLFW.cs" />
+    <Compile Include="Graphics\GlyphData.cs" />
+    <Compile Include="Graphics\Mesh.cs" />
     <Compile Include="Graphics\SpriteBatch.cs" />
+    <Compile Include="Graphics\SpriteFont.cs" />
     <Compile Include="Graphics\Texture.cs" />
     <Compile Include="Input\Data\FullInputData.cs" />
     <Compile Include="Input\Data\InputBind.cs" />
@@ -120,6 +129,9 @@
     <Compile Include="Sensors\Sensor.cs" />
     <Compile Include="Sensors\SensorTypes.cs" />
     <Compile Include="Sensors\Space.cs" />
+    <Compile Include="Shaders\Shader.cs" />
+    <Compile Include="Shaders\ShaderStages.cs" />
+    <Compile Include="Shaders\ShaderTypes.cs" />
     <Compile Include="Shapes\2D\Circle.cs" />
     <Compile Include="Shapes\2D\Line.cs" />
     <Compile Include="Shapes\2D\Shape2D.cs" />

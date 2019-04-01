@@ -12,8 +12,35 @@ namespace Engine
 	{
 		static GL()
 		{
-			glClearColor = GetDelegate<Delegates.glClearColor>();
 			glClear = GetDelegate<Delegates.glClear>();
+			glClearColor = GetDelegate<Delegates.glClearColor>();
+
+			// Shaders
+			glAttachShader = GetDelegate<Delegates.glAttachShader>();
+			glBindBuffer = GetDelegate<Delegates.glBindBuffer>();
+			glBindVertexArray = GetDelegate<Delegates.glBindVertexArray>();
+			glCompileShader = GetDelegate<Delegates.glCompileShader>();
+			glCreateProgram = GetDelegate<Delegates.glCreateProgram>();
+			glCreateShader = GetDelegate<Delegates.glCreateShader>();
+			glDeleteProgram = GetDelegate<Delegates.glDeleteProgram>();
+			glDeleteShader = GetDelegate<Delegates.glDeleteShader>();
+			glDeleteVertexArrays = GetDelegate<Delegates.glDeleteVertexArrays>();
+			glGenVertexArrays = GetDelegate<Delegates.glGenVertexArrays>();
+			glGetActiveUniform = GetDelegate<Delegates.glGetActiveUniform>();
+			glGetProgramiv = GetDelegate<Delegates.glGetProgramiv>();
+			glGetProgramInfoLog = GetDelegate<Delegates.glGetProgramInfoLog>();
+			glGetShaderiv = GetDelegate<Delegates.glGetShaderiv>();
+			glGetShaderInfoLog = GetDelegate<Delegates.glGetShaderInfoLog>();
+			glGetUniformLocation = GetDelegate<Delegates.glGetUniformLocation>();
+			glLinkProgram = GetDelegate<Delegates.glLinkProgram>();
+			glShaderSource = GetDelegate<Delegates.glShaderSource>();
+			glUseProgram = GetDelegate<Delegates.glUseProgram>();
+
+			// Textures
+			glBindTexture = GetDelegate<Delegates.glBindTexture>();
+			glGenTextures = GetDelegate<Delegates.glGenTextures>();
+			glTexImage2D = GetDelegate<Delegates.glTexImage2D>();
+			glTexParameteri = GetDelegate<Delegates.glTexParameteri>();
 		}
 
 		#region Constants
@@ -37,6 +64,91 @@ namespace Engine
 		public const int GL_NOTEQUAL = 0x0205;
 		public const int GL_GEQUAL = 0x0206;
 		public const int GL_ALWAYS = 0x0207;
+		public const int GL_BLEND_EQUATION_RGB = 0x8009;
+		public const int GL_VERTEX_ATTRIB_ARRAY_ENABLED = 0x8622;
+		public const int GL_VERTEX_ATTRIB_ARRAY_SIZE = 0x8623;
+		public const int GL_VERTEX_ATTRIB_ARRAY_STRIDE = 0x8624;
+		public const int GL_VERTEX_ATTRIB_ARRAY_TYPE = 0x8625;
+		public const int GL_CURRENT_VERTEX_ATTRIB = 0x8626;
+		public const int GL_VERTEX_PROGRAM_POINT_SIZE = 0x8642;
+		public const int GL_VERTEX_ATTRIB_ARRAY_POINTER = 0x8645;
+		public const int GL_STENCIL_BACK_FUNC = 0x8800;
+		public const int GL_STENCIL_BACK_FAIL = 0x8801;
+		public const int GL_STENCIL_BACK_PASS_DEPTH_FAIL = 0x8802;
+		public const int GL_STENCIL_BACK_PASS_DEPTH_PASS = 0x8803;
+		public const int GL_MAX_DRAW_BUFFERS = 0x8824;
+		public const int GL_DRAW_BUFFER0 = 0x8825;
+		public const int GL_DRAW_BUFFER1 = 0x8826;
+		public const int GL_DRAW_BUFFER2 = 0x8827;
+		public const int GL_DRAW_BUFFER3 = 0x8828;
+		public const int GL_DRAW_BUFFER4 = 0x8829;
+		public const int GL_DRAW_BUFFER5 = 0x882A;
+		public const int GL_DRAW_BUFFER6 = 0x882B;
+		public const int GL_DRAW_BUFFER7 = 0x882C;
+		public const int GL_DRAW_BUFFER8 = 0x882D;
+		public const int GL_DRAW_BUFFER9 = 0x882E;
+		public const int GL_DRAW_BUFFER10 = 0x882F;
+		public const int GL_DRAW_BUFFER11 = 0x8830;
+		public const int GL_DRAW_BUFFER12 = 0x8831;
+		public const int GL_DRAW_BUFFER13 = 0x8832;
+		public const int GL_DRAW_BUFFER14 = 0x8833;
+		public const int GL_DRAW_BUFFER15 = 0x8834;
+		public const int GL_BLEND_EQUATION_ALPHA = 0x883D;
+		public const int GL_MAX_VERTEX_ATTRIBS = 0x8869;
+		public const int GL_VERTEX_ATTRIB_ARRAY_NORMALIZED = 0x886A;
+		public const int GL_MAX_TEXTURE_IMAGE_UNITS = 0x8872;
+		public const int GL_FRAGMENT_SHADER = 0x8B30;
+		public const int GL_GEOMETRY_SHADER = 0x8DD9;
+		public const int GL_VERTEX_SHADER = 0x8B31;
+		public const int GL_MAX_FRAGMENT_UNIFORM_COMPONENTS = 0x8B49;
+		public const int GL_MAX_VERTEX_UNIFORM_COMPONENTS = 0x8B4A;
+		public const int GL_MAX_VARYING_FLOATS = 0x8B4B;
+		public const int GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS = 0x8B4C;
+		public const int GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS = 0x8B4D;
+		public const int GL_SHADER_TYPE = 0x8B4F;
+		public const int GL_FLOAT_VEC2 = 0x8B50;
+		public const int GL_FLOAT_VEC3 = 0x8B51;
+		public const int GL_FLOAT_VEC4 = 0x8B52;
+		public const int GL_INT_VEC2 = 0x8B53;
+		public const int GL_INT_VEC3 = 0x8B54;
+		public const int GL_INT_VEC4 = 0x8B55;
+		public const int GL_BOOL = 0x8B56;
+		public const int GL_BOOL_VEC2 = 0x8B57;
+		public const int GL_BOOL_VEC3 = 0x8B58;
+		public const int GL_BOOL_VEC4 = 0x8B59;
+		public const int GL_FLOAT_MAT2 = 0x8B5A;
+		public const int GL_FLOAT_MAT3 = 0x8B5B;
+		public const int GL_FLOAT_MAT4 = 0x8B5C;
+		public const int GL_SAMPLER_1D = 0x8B5D;
+		public const int GL_SAMPLER_2D = 0x8B5E;
+		public const int GL_SAMPLER_3D = 0x8B5F;
+		public const int GL_SAMPLER_CUBE = 0x8B60;
+		public const int GL_SAMPLER_1D_SHADOW = 0x8B61;
+		public const int GL_SAMPLER_2D_SHADOW = 0x8B62;
+		public const int GL_DELETE_STATUS = 0x8B80;
+		public const int GL_COMPILE_STATUS = 0x8B81;
+		public const int GL_LINK_STATUS = 0x8B82;
+		public const int GL_VALIDATE_STATUS = 0x8B83;
+		public const int GL_INFO_LOG_LENGTH = 0x8B84;
+		public const int GL_ATTACHED_SHADERS = 0x8B85;
+		public const int GL_ACTIVE_UNIFORMS = 0x8B86;
+		public const int GL_ACTIVE_UNIFORM_MAX_LENGTH = 0x8B87;
+		public const int GL_SHADER_SOURCE_LENGTH = 0x8B88;
+		public const int GL_ACTIVE_ATTRIBUTES = 0x8B89;
+		public const int GL_ACTIVE_ATTRIBUTE_MAX_LENGTH = 0x8B8A;
+		public const int GL_FRAGMENT_SHADER_DERIVATIVE_HINT = 0x8B8B;
+		public const int GL_SHADING_LANGUAGE_VERSION = 0x8B8C;
+		public const int GL_CURRENT_PROGRAM = 0x8B8D;
+		public const int GL_POINT_SPRITE_COORD_ORIGIN = 0x8CA0;
+		public const int GL_LOWER_LEFT = 0x8CA1;
+		public const int GL_UPPER_LEFT = 0x8CA2;
+		public const int GL_STENCIL_BACK_REF = 0x8CA3;
+		public const int GL_STENCIL_BACK_VALUE_MASK = 0x8CA4;
+		public const int GL_STENCIL_BACK_WRITEMASK = 0x8CA5;
+		public const int GL_VERTEX_PROGRAM_TWO_SIDE = 0x8643;
+		public const int GL_POINT_SPRITE = 0x8861;
+		public const int GL_COORD_REPLACE = 0x8862;
+		public const int GL_MAX_TEXTURE_COORDS = 0x8871;
 		public const int GL_ZERO = 0;
 		public const int GL_ONE = 1;
 		public const int GL_SRC_COLOR = 0x0300;
@@ -257,6 +369,33 @@ namespace Engine
 		public static Delegates.glClear glClear;
 		public static Delegates.glClearColor glClearColor;
 
+		// Shaders
+		public static Delegates.glAttachShader glAttachShader;
+		public static Delegates.glBindBuffer glBindBuffer;
+		public static Delegates.glBindVertexArray glBindVertexArray;
+		public static Delegates.glCompileShader glCompileShader;
+		public static Delegates.glCreateProgram glCreateProgram;
+		public static Delegates.glCreateShader glCreateShader;
+		public static Delegates.glDeleteProgram glDeleteProgram;
+		public static Delegates.glDeleteShader glDeleteShader;
+		public static Delegates.glDeleteVertexArrays glDeleteVertexArrays;
+		public static Delegates.glGenVertexArrays glGenVertexArrays;
+		public static Delegates.glGetActiveUniform glGetActiveUniform;
+		public static Delegates.glGetProgramiv glGetProgramiv;
+		public static Delegates.glGetProgramInfoLog glGetProgramInfoLog;
+		public static Delegates.glGetShaderiv glGetShaderiv;
+		public static Delegates.glGetShaderInfoLog glGetShaderInfoLog;
+		public static Delegates.glGetUniformLocation glGetUniformLocation;
+		public static Delegates.glLinkProgram glLinkProgram;
+		public static Delegates.glShaderSource glShaderSource;
+		public static Delegates.glUseProgram glUseProgram;
+
+		// Textures
+		public static Delegates.glBindTexture glBindTexture;
+		public static Delegates.glGenTextures glGenTextures;
+		public static Delegates.glTexImage2D glTexImage2D;
+		public static Delegates.glTexParameteri glTexParameteri;
+
 		private static T GetDelegate<T>() where T : class
 		{
 			Type type = typeof(T);
@@ -265,10 +404,39 @@ namespace Engine
 			return Marshal.GetDelegateForFunctionPointer(glfwGetProcAddress(type.Name), type) as T;
 		}
 
-		public static class Delegates
+		public static unsafe class Delegates
 		{
 			public delegate void glClear(uint mask);
 			public delegate void glClearColor(float red, float green, float blue, float alpha);
+
+			// Shaders
+			public delegate void glAttachShader(uint program, uint shader);
+			public delegate void glBindBuffer(uint target, uint buffer);
+			public delegate void glBindVertexArray(uint array);
+			public delegate void glCompileShader(uint shader);
+			public delegate uint glCreateProgram();
+			public delegate uint glCreateShader(uint shaderType);
+			public delegate void glDeleteProgram(uint program);
+			public delegate void glDeleteShader(uint shader);
+			public delegate void glDeleteVertexArrays(uint n, uint* arrays);
+			public delegate void glGenVertexArrays(uint n, uint* arrays);
+			public delegate void glGetActiveUniform(uint program, uint index, uint bufSize, uint* length, int* size,
+				uint* type, char* name);
+			public delegate void glGetProgramiv(uint program, uint pname, int* @params);
+			public delegate void glGetProgramInfoLog(uint program, uint maxLength, uint* length, char* infoLog);
+			public delegate void glGetShaderiv(uint shader, uint pname, int* @params);
+			public delegate void glGetShaderInfoLog(uint shader, uint maxLength, uint* length, char* infoLog);
+			public delegate int glGetUniformLocation(uint program, char* name);
+			public delegate void glLinkProgram(uint program);
+			public delegate void glShaderSource(uint shader, uint count, char* @string, int* length);
+			public delegate void glUseProgram(uint program);
+
+			// Textures
+			public delegate void glBindTexture(uint target, uint texture);
+			public delegate void glGenTextures(uint n, uint* textures);
+			public delegate void glTexImage2D(uint target, int level, int internalformat, uint width, uint height,
+				int border, uint format, uint type, void* data);
+			public delegate void glTexParameteri(uint target, uint pname, int param);
 		}
 	}
 }

@@ -4,15 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Engine.Core
+namespace Engine.Graphics
 {
-	[Flags]
-	public enum Alignments
+	public class GlyphData
 	{
-		Center = 0,
-		Left = 1,
-		Right = 2,
-		Top = 4,
-		Bottom = 8
 	}
 }

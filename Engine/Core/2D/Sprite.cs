@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using Engine.Graphics;
 using Engine.Interfaces;
 using Engine.Interfaces._2D;
+using Engine.Utility;
 using GlmSharp;
 
-namespace Engine.Core
+namespace Engine.Core._2D
 {
 	public class Sprite : IPositionable2D, IRotatable, IColorable, IRenderable2D
 	{
@@ -32,6 +33,9 @@ namespace Engine.Core
 			this.texture = texture;
 
 			data = new float[VertexSize * 4];
+			origin = Utilities.ComputeOrigin(texture.Width, texture.Height, alignment);
+			Position = vec2.Zero;
+			Color = Color.White;
 		}
 
 		public vec2 Position
@@ -70,8 +74,8 @@ namespace Engine.Core
 
 		private void RecomputePositionData()
 		{
-			int width = texture.Width;
-			int height = texture.Height;
+			uint width = texture.Width;
+			uint height = texture.Height;
 
 			vec2[] corners =
 			{

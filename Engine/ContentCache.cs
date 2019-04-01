@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Engine.Graphics;
 
-namespace Engine.Core
+namespace Engine
 {
 	public static class ContentCache
 	{

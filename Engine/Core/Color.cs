@@ -8,6 +8,9 @@ namespace Engine.Core
 {
 	public class Color
 	{
+		public static readonly Color Black = new Color(0);
+		public static readonly Color White = new Color(255);
+
 		private byte r;
 		private byte g;
 		private byte b;
