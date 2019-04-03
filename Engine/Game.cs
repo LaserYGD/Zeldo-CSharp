@@ -21,7 +21,8 @@ namespace Engine
 		{
 			glfwInit();
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 			IntPtr address = glfwCreateWindow(800, 600, title, IntPtr.Zero, IntPtr.Zero);
 

@@ -7,7 +7,7 @@ using Engine.Interfaces;
 
 namespace Engine.Messaging
 {
-	using ReceiverFunction = Action<int, object>;
+	using ReceiverFunction = Action<int, object, float>;
 
 	public static class MessageSystem
 	{
@@ -69,11 +69,11 @@ namespace Engine.Messaging
 		{
 		}
 
-		public static void Send(int messageType, object data)
+		public static void Send(int messageType, object data, float dt = 0)
 		{
 			foreach (var receiver in functionMap[messageType])
 			{
-				receiver?.Invoke(messageType, data);
+				receiver?.Invoke(messageType, data, dt);
 			}
 		}
 	}

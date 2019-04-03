@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Exceptions;
+using GlmSharp;
 using static Engine.GL;
 
 namespace Engine.Shaders
 {
-	public class Shader
+	public class Shader : IDisposable
 	{
 		private uint program;
 		private uint vao;
@@ -17,20 +19,26 @@ namespace Engine.Shaders
 		private uint geometryShader;
 		private uint vertexShader;
 
+		private List<ShaderAttribute> attributes;
 		private Dictionary<string, int> uniforms;
 
 		public Shader()
 		{
+			attributes = new List<ShaderAttribute>();
 			uniforms = new Dictionary<string, int>();
 		}
+
+		public bool IsBindingComplete { get; private set; }
+
+		public uint Stride { get; private set; }
 
 		public void Attach(ShaderTypes shaderType, string filename)
 		{
 			switch (shaderType)
 			{
-				case ShaderTypes.Fragment: fragmentShader = Load(filename, GL_VERTEX_SHADER); break;
-				case ShaderTypes.Geometry: geometryShader = Load(filename, GL_GEOMETRY_SHADER); break;
 				case ShaderTypes.Vertex: vertexShader = Load(filename, GL_VERTEX_SHADER); break;
+				case ShaderTypes.Geometry: geometryShader = Load(filename, GL_GEOMETRY_SHADER); break;
+				case ShaderTypes.Fragment: fragmentShader = Load(filename, GL_FRAGMENT_SHADER); break;
 			}
 		}
 	
@@ -38,15 +46,14 @@ namespace Engine.Shaders
 		{
 			uint id = glCreateShader(shaderType);
 
-			char[] source = File.ReadAllText("Content/Shaders/" + filename).ToCharArray();
+			string source = File.ReadAllText("Content/Shaders/" + filename);
 
-			fixed (char* s = &source[0])
-			{
-				int length = source.Length;
+			// See https://stackoverflow.com/a/37733830/7281613.
+			byte* s = (byte*)Marshal.StringToCoTaskMemAuto(source);
 
-				glShaderSource(id, 1, s, &length);
-			}
+			int length = source.Length;
 
+			glShaderSource(id, 1, &s, &length);
 			glCompileShader(id);
 
 			int status;
@@ -57,19 +64,18 @@ namespace Engine.Shaders
 			{
 				int logSize;
 
-
 				glGetShaderiv(id, GL_INFO_LOG_LENGTH, &logSize);
 
-				char[] message = new char[logSize];
+				byte[] message = new byte[logSize];
 
-				fixed (char* messagePointer = &message[0])
+				fixed (byte* messagePointer = &message[0])
 				{
 					glGetShaderInfoLog(id, (uint)logSize, null, messagePointer);
 				}
 
 				glDeleteShader(id);
 
-				throw new ShaderException(ShaderStages.Compile, new string(message));
+				throw new ShaderException(ShaderStages.Compile, Encoding.Default.GetString(message));
 			}
 
 			return id;
@@ -99,9 +105,9 @@ namespace Engine.Shaders
 
 				glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logSize);
 
-				char[] message = new char[logSize];
+				byte[] message = new byte[logSize];
 
-				fixed (char* messagePointer = &message[0])
+				fixed (byte* messagePointer = &message[0])
 				{
 					glGetProgramInfoLog(program, (uint)logSize, null, messagePointer);
 				}
@@ -109,7 +115,8 @@ namespace Engine.Shaders
 				glDeleteProgram(program);
 				DeleteShaders();
 
-				throw new ShaderException(ShaderStages.Link, new string(message));
+				// See https://stackoverflow.com/a/11654597/7281613.
+				throw new ShaderException(ShaderStages.Link, Encoding.Default.GetString(message));
 			}
 
 			GetUniforms();
@@ -127,9 +134,9 @@ namespace Engine.Shaders
 
 			glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformCount);
 
-			char[] name = new char[32];
+			byte[] name = new byte[64];
 
-			fixed (char* namePointer = &name[0])
+			fixed (byte* address = &name[0])
 			{
 				for (int i = 0; i < uniformCount; i++)
 				{
@@ -137,12 +144,12 @@ namespace Engine.Shaders
 					uint type;
 					int size;
 
-					glGetActiveUniform(program, (uint)i, (uint)name.Length, &length, &size, &type, namePointer);
+					glGetActiveUniform(program, (uint)i, (uint)name.Length, &length, &size, &type, address);
 				}
 
-				int location = glGetUniformLocation(program, namePointer);
+				int location = glGetUniformLocation(program, address);
 
-				uniforms.Add(new string(name), location);
+				uniforms.Add(Encoding.Default.GetString(name), location);
 			}
 		}
 
@@ -153,9 +160,61 @@ namespace Engine.Shaders
 			glDeleteShader(vertexShader);
 		}
 
+		public void AddAttribute<T>(uint count, uint type, bool normalized = false, uint padding = 0)
+		{
+			attributes.Add(new ShaderAttribute(count, type, Stride, normalized));
+			Stride += (uint)Marshal.SizeOf<T>() * (count + padding);
+		}
+
+		public unsafe void CompleteBinding(uint bufferId, uint indexBufferId)
+		{
+			glBindVertexArray(vao);
+
+			// The index buffer ID can be zero when array rendering is being used.
+			if (indexBufferId != 0)
+			{
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
+
+			for (int i = 0; i < attributes.Count; i++)
+			{
+				ShaderAttribute attribute = attributes[i];
+
+				uint index = (uint)i;
+
+				glVertexAttribPointer(index, (int)attribute.Count, attribute.Type, attribute.Normalized, Stride,
+					(void*)attribute.Offset);
+				glEnableVertexAttribArray(index);
+			}
+
+			IsBindingComplete = true;
+		}
+
+		public unsafe void Dispose()
+		{
+			glDeleteProgram(program);
+
+			fixed (uint* address = &vao)
+			{
+				glDeleteVertexArrays(1, address);
+			}
+		}
+
 		public void Apply()
 		{
 			glUseProgram(program);
+		}
+
+		public unsafe void SetUniform(string name, mat4 value)
+		{
+			float[] values = value.Values1D;
+
+			fixed (float* address = &values[0])
+			{
+				glUniformMatrix4fv(uniforms[name], 1, false, address);
+			}
 		}
 	}
 }

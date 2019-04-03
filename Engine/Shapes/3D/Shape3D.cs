@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Engine.Interfaces._3D;
+using GlmSharp;
+
+namespace Engine.Shapes._3D
+{
+	public abstract class Shape3D : IPositionable3D, IOrientable
+	{
+		protected Shape3D(ShapeTypes3D shapeType)
+		{
+			ShapeType = shapeType;
+		}
+
+		public ShapeTypes3D ShapeType { get; }
+
+		public vec3 Position { get; set; }
+		public quat Orientation { get; set; }
+	}
+}

@@ -8,6 +8,7 @@ namespace Engine.Messaging
 {
 	public static class CoreMessageTypes
 	{
-		public const int Resize = 1000;
+		public const int Input = 1000;
+		public const int Resize = 1001;
 	}
 }

@@ -12,8 +12,10 @@ namespace Zeldo.Entities
 		public PlayerControls()
 		{
 			Attack = new List<InputBind>();
+			Interact = new List<InputBind>();
 		}
 
 		public List<InputBind> Attack { get; }
+		public List<InputBind> Interact { get; }
 	}
 }

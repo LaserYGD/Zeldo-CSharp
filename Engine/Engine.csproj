@@ -78,6 +78,12 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Content\Shaders\Sprite.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Shaders\Sprite.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +118,7 @@
     <Compile Include="Interfaces\2D\ILocatable.cs" />
     <Compile Include="Interfaces\2D\IRenderable2D.cs" />
     <Compile Include="Interfaces\2D\IRotatable.cs" />
+    <Compile Include="Interfaces\2D\IScalable2D.cs" />
     <Compile Include="Interfaces\2D\ISensitive.cs" />
     <Compile Include="Interfaces\3D\IOrientable.cs" />
     <Compile Include="Interfaces\3D\ITransformable3D.cs" />
@@ -119,6 +126,7 @@
     <Compile Include="Interfaces\IDynamic.cs" />
     <Compile Include="Interfaces\2D\IPositionable2D.cs" />
     <Compile Include="Interfaces\3D\IPositionable3D.cs" />
+    <Compile Include="Interfaces\IInteractive.cs" />
     <Compile Include="Interfaces\IReceiver.cs" />
     <Compile Include="Messaging\CoreMessageTypes.cs" />
     <Compile Include="Messaging\MessageHandle.cs" />
@@ -130,12 +138,17 @@
     <Compile Include="Sensors\SensorTypes.cs" />
     <Compile Include="Sensors\Space.cs" />
     <Compile Include="Shaders\Shader.cs" />
+    <Compile Include="Shaders\ShaderAttribute.cs" />
     <Compile Include="Shaders\ShaderStages.cs" />
     <Compile Include="Shaders\ShaderTypes.cs" />
     <Compile Include="Shapes\2D\Circle.cs" />
     <Compile Include="Shapes\2D\Line.cs" />
     <Compile Include="Shapes\2D\Shape2D.cs" />
     <Compile Include="Shapes\2D\ShapeTypes2D.cs" />
+    <Compile Include="Shapes\3D\Cube.cs" />
+    <Compile Include="Shapes\3D\Shape3D.cs" />
+    <Compile Include="Shapes\3D\ShapeTypes3D.cs" />
+    <Compile Include="Shapes\3D\Sphere.cs" />
     <Compile Include="UI\Canvas.cs" />
     <Compile Include="UI\CanvasElement.cs" />
     <Compile Include="Utility\JsonUtilities.cs" />
@@ -151,9 +164,7 @@
     </Reference>
     <Reference Include="System.Drawing" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Shapes\3D\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>xcopy /Y "$(SolutionDir)Engine\x86\glfw3.dll" "$(SolutionDir)Zeldo\bin\x86\Debug\x86\"

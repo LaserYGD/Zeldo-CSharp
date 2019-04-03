@@ -21,7 +21,7 @@ namespace Engine.UI
 		{
 			elements = new List<CanvasElement>();
 
-			MessageSystem.Subscribe(this, CoreMessageTypes.Resize, (messageType, data) =>
+			MessageSystem.Subscribe(this, CoreMessageTypes.Resize, (messageType, data, dt) =>
 			{
 				elements.ForEach(PlaceElement);
 			});
