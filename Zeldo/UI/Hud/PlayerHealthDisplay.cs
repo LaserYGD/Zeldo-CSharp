@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Engine.Graphics;
 using Engine.UI;
 
-namespace Zeldo.UI
+namespace Zeldo.UI.Hud
 {
 	public class PlayerHealthDisplay : CanvasElement
 	{

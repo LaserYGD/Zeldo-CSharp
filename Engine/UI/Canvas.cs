@@ -27,6 +27,8 @@ namespace Engine.UI
 			});
 		}
 
+		public List<MessageHandle> MessageHandles { get; set; }
+
 		public void Add(CanvasElement element)
 		{
 			elements.Add(element);
@@ -79,7 +81,5 @@ namespace Engine.UI
 				}
 			}
 		}
-
-		public List<MessageHandle> MessageHandles { get; set; }
 	}
 }

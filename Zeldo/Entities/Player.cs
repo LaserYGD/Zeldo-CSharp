@@ -7,17 +7,19 @@ using Engine.Entities;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
-using Zeldo.UI;
+using Zeldo.UI.Hud;
 
 namespace Zeldo.Entities
 {
 	public class Player : Entity3D, IReceiver
 	{
 		private PlayerControls controls;
+		private PlayerEquipment equipment;
 
 		public Player() : base(EntityTypes.Player)
 		{
 			controls = new PlayerControls();
+			equipment = new PlayerEquipment();
 			MessageHandles = new List<MessageHandle>();
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>

@@ -91,6 +91,8 @@
     <Compile Include="Core\2D\Bounds2D.cs" />
     <Compile Include="Core\2D\Component2D.cs" />
     <Compile Include="Core\2D\QuadSource.cs" />
+    <Compile Include="Core\2D\RenderTarget.cs" />
+    <Compile Include="Core\2D\RenderTargetFlags.cs" />
     <Compile Include="Core\2D\SpriteText.cs" />
     <Compile Include="Core\Color.cs" />
     <Compile Include="ContentCache.cs" />
@@ -99,8 +101,10 @@
     <Compile Include="Entities\Attachment.cs" />
     <Compile Include="Entities\Entity3D.cs" />
     <Compile Include="Entities\Scene.cs" />
+    <Compile Include="Exceptions\RenderTargetException.cs" />
     <Compile Include="Exceptions\ShaderException.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="GameLoop.cs" />
     <Compile Include="GLFW.cs" />
     <Compile Include="Graphics\GlyphData.cs" />
     <Compile Include="Graphics\Mesh.cs" />
@@ -128,6 +132,7 @@
     <Compile Include="Interfaces\3D\IPositionable3D.cs" />
     <Compile Include="Interfaces\IInteractive.cs" />
     <Compile Include="Interfaces\IReceiver.cs" />
+    <Compile Include="Interfaces\IRenderTargetUser.cs" />
     <Compile Include="Messaging\CoreMessageTypes.cs" />
     <Compile Include="Messaging\MessageHandle.cs" />
     <Compile Include="Messaging\MessageSystem.cs" />
