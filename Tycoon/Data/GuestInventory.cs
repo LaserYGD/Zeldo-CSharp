@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Zeldo.Entities;
 
-namespace Zeldo.UI.Screens
+namespace Tycoon.Data
 {
-	public class EquipmentScreen
+	public class GuestInventory
 	{
-		public PlayerEquipment Equipment { get; set; }
+		public Currency Currency { get; }
 	}
 }

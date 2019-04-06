@@ -1,0 +1,21 @@
+- RCT takes place roughly on a 2D plane (so you mostly only have to think about one dimension while building)
+- A space station game would almost certainly need 3D building, which is much harder to mentally track
+- Many sci-fi space stations look badass from a preset camera angle, but it's harder to render all of the interiors at the same time
+- In order to mentally track it all, feels like the best bet is to give options to highlight larger areas (like hotel rooms, entertainment areas, management rooms, utility systems, etc.), then drill down further towards individual floors or sections
+- For this to work, also seems like you'd want a full 3D camera (with free rotation) rather than fixed 45-degree angles like RCT
+- Another challenge is coming up with enough content as far as types of "buildings" to create (especially in a hotel setting)
+- Controls could be tricky, but should be doable
+- RCT has free modes, but also individual scenarios/challenges with defined goals (which seems like a smart idea in order to ease players into various building mechanics)
+- Feels like the appeal of this game would be the ability to craft really unique stations, but I also worry the game could feel dull if construction was the only objective
+- I think a more engaging focus is on the guests and the overall success and reputation of your station
+- Managing utility systems would add a lot of content, but might be more tedious than fun (it also risks taking focus away from guests and the overall state of the station unless properly contextualized)
+- I think I could actually build a bit of a hidden story by playing through preset scenarios (they could be grouped such that you have to complete, say, 3/5 missions before unlocking the next set)
+- Could use rare VIP guests with particular requests/demands who reward reputation, cash, or even hidden scenarios if they're satisfied
+- Cosmic events could be really cool (invasions, solar flares, asteroid impacts, etc.)
+- Building up a rival company could help motivate the player (and act as a hidden tutorial piece by providing creative examples of stations built by your competitor)
+- I'd want to start with the building and management controls, though, since that's the actual gameplay
+- Controls need to feel as intuitive as possible, while still providing variety as far as different kinds of structures
+- Some tools that immediately come to mind are plane-based (like building rectangular blocks of rooms and hallways) and radial (building circles or arcs)
+- It would also be useful to build utility tools early (especially artificial gravity generators
+- I'll have to spend some time planning out how to render all this (while staying as performant as possible)
+- Also important to add guests (with some amount of complexity), money, and reputation

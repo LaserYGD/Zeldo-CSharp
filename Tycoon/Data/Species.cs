@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.Entities
+namespace Tycoon.Data
 {
-	public class Rope
+	public enum Species
 	{
+		Human
 	}
 }

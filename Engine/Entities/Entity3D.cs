@@ -15,9 +15,8 @@ namespace Engine.Entities
 		private quat orientation;
 		private List<Attachment> attachments;
 
-		protected Entity3D(int entityType)
+		protected Entity3D()
 		{
-			EntityType = entityType;
 			attachments = new List<Attachment>();
 		}
 
@@ -40,8 +39,6 @@ namespace Engine.Entities
 				RecomputeAttachments();
 			}
 		}
-
-		public int EntityType { get; }
 
 		public Scene Scene { get; set; }
 

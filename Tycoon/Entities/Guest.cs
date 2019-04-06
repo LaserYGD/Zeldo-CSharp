@@ -3,19 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine.Entities;
+using Tycoon.Data;
 
-namespace Zeldo.Items
+namespace Tycoon.Entities
 {
-	public class ItemData
+	public class Guest : Entity3D
 	{
-		public ItemData(string name, int value)
-		{
-			Name = name;
-			Value = value;
-		}
-
 		public string Name { get; }
 
-		public int Value { get; }
+		public Species Species { get; }
 	}
 }

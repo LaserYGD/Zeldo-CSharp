@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Engine.Interfaces;
 
-namespace Zeldo.Physics
+namespace Tycoon.Physics
 {
 	public class VerletRope : IDynamic
 	{

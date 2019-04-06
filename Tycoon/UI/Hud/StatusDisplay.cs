@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Engine.Graphics;
 using Engine.UI;
 
-namespace Zeldo.UI.Hud
+namespace Tycoon.UI.Hud
 {
-	public class PlayerHealthDisplay : CanvasElement
+	public class StatusDisplay : CanvasElement
 	{
 		public override void Draw(SpriteBatch sb)
 		{

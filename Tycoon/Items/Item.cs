@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine.Utility;
+using Newtonsoft.Json.Linq;
 
-namespace Zeldo.Entities.Weapons
+namespace Tycoon.Items
 {
-	public class Bow
+	public class Item
 	{
-		public BowRopeTypes RopeType { get; set; }
-
-		public void Fire()
-		{
-		}
 	}
 }

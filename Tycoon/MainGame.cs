@@ -8,14 +8,14 @@ using Engine.Core._2D;
 using Engine.Graphics;
 using static Engine.GL;
 
-namespace Zeldo
+namespace Tycoon
 {
 	public class MainGame : Game
 	{
 		private Sprite sprite;
 		private SpriteBatch sb;
 
-		public MainGame() : base("Zeldo")
+		public MainGame() : base("Tycoon")
 		{
 			glClearColor(0, 0, 0, 1);
 

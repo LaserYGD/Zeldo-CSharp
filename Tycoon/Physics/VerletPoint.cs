@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Engine.Interfaces._3D;
 using GlmSharp;
 
-namespace Zeldo.Physics
+namespace Tycoon.Physics
 {
 	public class VerletPoint : IPositionable3D
 	{
