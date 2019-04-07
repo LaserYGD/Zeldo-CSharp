@@ -20,6 +20,13 @@ namespace Engine.Messaging
 
 		public static void Subscribe(IReceiver receiver, int messageType, ReceiverFunction function)
 		{
+			// Initializing the handle list here simplifies contructors for receiving classes (since they don't all
+			// need to individually create those lists).
+			if (receiver.MessageHandles == null)
+			{
+				receiver.MessageHandles = new List<MessageHandle>();
+			}
+
 			if (!functionMap.TryGetValue(messageType, out List<ReceiverFunction> functions))
 			{
 				functions = new List<ReceiverFunction>();

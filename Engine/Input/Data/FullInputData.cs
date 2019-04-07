@@ -16,6 +16,11 @@ namespace Engine.Input.Data
 			dataArray = new InputData[Utilities.EnumCount<InputTypes>()];
 		}
 
+		public InputData GetData(InputTypes inputType)
+		{
+			return dataArray[(int)inputType];
+		}
+
 		public void Add(InputTypes inputType, InputData data)
 		{
 			dataArray[(int)inputType] = data;

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Exceptions;
+using Engine.Graphics;
 using GlmSharp;
 using static Engine.GL;
 
@@ -171,7 +172,12 @@ namespace Engine.Shaders
 			Stride += (uint)Marshal.SizeOf<T>() * (count + padding);
 		}
 
-		public unsafe void CompleteBinding(uint bufferId, uint indexBufferId)
+		public void Bind(PrimitiveBuffer buffer)
+		{
+			Bind(buffer.BufferId, buffer.IndexBufferId);
+		}
+
+		public unsafe void Bind(uint bufferId, uint indexBufferId)
 		{
 			this.bufferId = bufferId;
 			this.indexBufferId = indexBufferId;

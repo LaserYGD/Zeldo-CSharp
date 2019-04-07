@@ -104,6 +104,8 @@
     <Compile Include="Tools\Tool.cs" />
     <Compile Include="Tools\Toolbox.cs" />
     <Compile Include="UI\Hud\StatusDisplay.cs" />
+    <Compile Include="UI\Menus\Menu.cs" />
+    <Compile Include="UI\Menus\TitleMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GlmSharp, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">

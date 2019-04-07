@@ -7,6 +7,8 @@ using Engine;
 using Engine.Core;
 using Engine.Core._2D;
 using Engine.Graphics;
+using Engine.Shapes._3D;
+using Engine.UI;
 using Engine.View;
 using GlmSharp;
 using static Engine.GL;
@@ -15,10 +17,13 @@ namespace Tycoon
 {
 	public class MainGame : Game
 	{
-		private Camera camera;
+		private Camera3D camera;
+		private Canvas canvas;
 		private Sprite sprite;
 		private SpriteText text;
 		private SpriteBatch sb;
+		private Box box;
+		private PrimitiveRenderer3D primitives3D;
 
 		public MainGame() : base("Tycoon")
 		{
@@ -27,12 +32,17 @@ namespace Tycoon
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glPrimitiveRestartIndex(65535);
 
-			camera = new Camera();
+			camera = new Camera3D();
+			//camera.IsOrthographic = true;
+			canvas = new Canvas();
 			sprite = new Sprite("Link.png");
 			sprite.Position = new vec2(0, 50);
 			text = new SpriteText("Default", "Good vs. Evil Minecraft :)");
 			text.Position = new vec2(220, 20);
 			sb = new SpriteBatch();
+			box = new Box(1, 2, 3);
+			box.Position = new vec3(0, 0, 4);
+			primitives3D = new PrimitiveRenderer3D();
 
 			// Setting window dimensions also sends out a Resize message.
 			Resolution.WindowDimensions = new ivec2(800, 600);
@@ -45,6 +55,10 @@ namespace Tycoon
 
 		protected override void Draw()
 		{
+			primitives3D.Draw(box, Color.White);
+			primitives3D.Flush(camera);
+
+			/*
 			ivec2 dimensions = Resolution.WindowDimensions;
 
 			glClear(GL_COLOR_BUFFER_BIT);
@@ -75,7 +89,9 @@ namespace Tycoon
 			text.Draw(sb);
 			text.Position += new vec2(0.1f, 0);
 
+			canvas.Draw(sb);
 			sb.Flush();
+			*/
 		}
 	}
 }

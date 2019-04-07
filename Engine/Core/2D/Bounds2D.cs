@@ -9,11 +9,6 @@ namespace Engine.Core._2D
 {
 	public class Bounds2D
 	{
-		private int x;
-		private int y;
-		private int width;
-		private int height;
-
 		public Bounds2D() : this(0, 0, 0, 0)
 		{
 		}
@@ -24,58 +19,39 @@ namespace Engine.Core._2D
 
 		public Bounds2D(int x, int y, int width, int height)
 		{
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
+			X = x;
+			Y = y;
+			Width = width;
+			Height = height;
 		}
 
-		public int X
-		{
-			get => x;
-			set => x = value;
-		}
-
-		public int Y
-		{
-			get => y;
-			set => y = value;
-		}
-
-		public int Width
-		{
-			get => width;
-			set => width = value;
-		}
-
-		public int Height
-		{
-			get => height;
-			set => height = value;
-		}
+		public int X { get; set; }
+		public int Y { get; set; }
+		public int Width { get; set; }
+		public int Height { get; set; }
 
 		public int Left
 		{
-			get => x;
-			set => x = value;
+			get => X;
+			set => X = value;
 		}
 
 		public int Right
 		{
-			get => x + width - 1;
-			set => x = value - width + 1;
+			get => X + Width - 1;
+			set => X = value - Width + 1;
 		}
 
 		public int Top
 		{
-			get => y;
-			set => y = value;
+			get => Y;
+			set => Y = value;
 		}
 
 		public int Bottom
 		{
-			get => y + height - 1;
-			set => y = value - height + 1;
+			get => Y + Height - 1;
+			set => Y = value - Height + 1;
 		}
 
 		public bool Contains(ivec2 point)
@@ -95,7 +71,7 @@ namespace Engine.Core._2D
 
 		public Bounds2D Expand(int value)
 		{
-			return new Bounds2D(x - value, y - value, width + value * 2, height + value * 2);
+			return new Bounds2D(X - value, Y - value, Width + value * 2, Height + value * 2);
 		}
 	}
 }

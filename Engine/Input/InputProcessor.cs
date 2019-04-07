@@ -5,20 +5,24 @@ using System.Text;
 using System.Threading.Tasks;
 using Engine.Input.Data;
 using Engine.Interfaces;
+using Engine.Messaging;
 using GlmSharp;
+using static Engine.GLFW;
 
 namespace Engine.Input
 {
 	public class InputProcessor : IDynamic
 	{
 		private InputStates[] buttons;
+		private InputStates[] keys;
 
 		private ivec2 mouseLocation;
 		private ivec2 previousMouseLocation;
 
 		public InputProcessor()
 		{
-			//buttons = Enumerable.Repeat(InputStates.Released, GLFW_MOUSE_BUTTON_LAST).ToArray();
+			buttons = Enumerable.Repeat(InputStates.Released, GLFW_MOUSE_BUTTON_LAST).ToArray();
+			keys = Enumerable.Repeat(InputStates.Released, GLFW_KEY_LAST).ToArray();
 		}
 
 		public void OnMouseButtonPress(int button)
@@ -37,6 +41,16 @@ namespace Engine.Input
 
 		public void Update(float dt)
 		{
+			var mouseData = GetMouseData();
+			var keyboardData = GetKeyboardData();
+
+			FullInputData fullData = new FullInputData();
+			fullData.Add(InputTypes.Mouse, mouseData);
+			fullData.Add(InputTypes.Keyboard, keyboardData);
+
+			MessageSystem.Send(CoreMessageTypes.Keyboard, keyboardData, dt);
+			MessageSystem.Send(CoreMessageTypes.Mouse, mouseData, dt);
+			MessageSystem.Send(CoreMessageTypes.Input, fullData, dt);
 		}
 
 		private MouseData GetMouseData()
@@ -46,6 +60,11 @@ namespace Engine.Input
 			previousMouseLocation = mouseLocation;
 
 			return data;
+		}
+
+		private KeyboardData GetKeyboardData()
+		{
+			return null;
 		}
 	}
 }

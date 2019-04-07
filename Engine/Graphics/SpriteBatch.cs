@@ -14,27 +14,21 @@ namespace Engine.Graphics
 {
 	public class SpriteBatch : IReceiver
 	{
-		private const ushort RestartIndex = 65535;
-
 		private Shader spriteShader;
 		private Shader primitiveShader;
 		private Shader activeShader;
+		private PrimitiveBuffer buffer;
 		private mat4 mvp;
 
-		private uint bufferId;
-		private uint bufferSize;
-		private uint indexBufferId;
-		private uint indexCount;
-		private ushort maxIndex;
 		private uint mode;
 		private uint activeTexture;
 
-		private byte[] buffer;
-		private ushort[] indexBuffer;
-		private bool primitiveRestartEnabled;
-
-		public unsafe SpriteBatch()
+		public SpriteBatch()
 		{
+			buffer = new PrimitiveBuffer(4096, 512);
+
+			// These two shaders (owned by the sprite batch) can be completed here (in terms of binding a buffer).
+			// External shaders are bound when first applied.
 			spriteShader = new Shader();
 			spriteShader.Attach(ShaderTypes.Vertex, "Sprite.vert");
 			spriteShader.Attach(ShaderTypes.Fragment, "Sprite.frag");
@@ -42,6 +36,7 @@ namespace Engine.Graphics
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
 			spriteShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
+			spriteShader.Bind(buffer);
 
 			primitiveShader = new Shader();
 			primitiveShader.Attach(ShaderTypes.Vertex, "Primitives2D.vert");
@@ -49,32 +44,7 @@ namespace Engine.Graphics
 			primitiveShader.CreateProgram();
 			primitiveShader.AddAttribute<float>(2, GL_FLOAT);
 			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
-
-			buffer = new byte[4096];
-			indexBuffer = new ushort[1024];
-
-			uint[] buffers = new uint[2];
-
-			fixed (uint* address = &buffers[0])
-			{
-				glGenBuffers(2, address);
-			}
-
-			bufferId = buffers[0];
-			indexBufferId = buffers[1];
-
-			// These two shaders (owned by the sprite batch) can be completed here. External shaders are completed when
-			// first applied.
-			spriteShader.CompleteBinding(bufferId, indexBufferId);
-			primitiveShader.CompleteBinding(bufferId, indexBufferId);
-
-			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-			glBufferData(GL_ARRAY_BUFFER, (uint)buffer.Length, null, GL_DYNAMIC_DRAW);
-
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, (uint)indexBuffer.Length, null, GL_DYNAMIC_DRAW);
-
-			MessageHandles = new List<MessageHandle>();
+			primitiveShader.Bind(buffer);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Resize, (messageType, data, dt) => { OnResize(); });
 		}
@@ -90,16 +60,7 @@ namespace Engine.Graphics
 				}
 
 				mode = value;
-
-				uint[] restartModes =
-				{
-					GL_LINE_LOOP,
-					GL_LINE_STRIP,
-					GL_TRIANGLE_FAN,
-					GL_TRIANGLE_STRIP
-				};
-
-				primitiveRestartEnabled = restartModes.Contains(mode);
+				buffer.Mode = value;
 			}
 		}
 
@@ -115,34 +76,12 @@ namespace Engine.Graphics
 
 		public void Buffer(float[] data, int start = 0, int length = -1)
 		{
-			uint sizeInBytes = (uint)(sizeof(float) * (length != -1 ? length : data.Length));
-
-			// See https://stackoverflow.com/a/4636735/7281613.
-			System.Buffer.BlockCopy(data, start * sizeof(float), buffer, (int)bufferSize, (int)sizeInBytes);
-
 			if (activeShader == null)
 			{
 				activeShader = spriteShader;
 			}
-
-			// Vertex count is implied through the data given (it's assumed that the data array will always be the
-			// correct length, based on the current shader).
-			uint vertexCount = sizeInBytes / activeShader.Stride;
-
-			for (int i = 0; i < vertexCount; i++)
-			{
-				indexBuffer[indexCount + i] = (ushort)(maxIndex + i);
-			}
-
-			bufferSize += sizeInBytes;
-			indexCount += vertexCount;
-			maxIndex += (ushort)vertexCount;
-
-			if (primitiveRestartEnabled)
-			{
-				indexBuffer[indexCount] = RestartIndex;
-				indexCount++;
-			}
+			
+			buffer.Buffer(data, activeShader.Stride, start, length);
 		}
 
 		public void Apply(Shader shader, uint mode)
@@ -159,7 +98,7 @@ namespace Engine.Graphics
 
 			if (!activeShader.IsBindingComplete)
 			{
-				activeShader.CompleteBinding(bufferId, indexBufferId);
+				activeShader.Bind(buffer);
 			}
 		}
 
@@ -194,7 +133,7 @@ namespace Engine.Graphics
 
 		public unsafe void Flush()
 		{
-			if (bufferSize == 0)
+			if (buffer.Size == 0)
 			{
 				return;
 			}
@@ -203,38 +142,16 @@ namespace Engine.Graphics
 			activeShader.Apply();
 			activeShader.SetUniform("mvp", mvp);
 
-			if (primitiveRestartEnabled)
-			{
-				glEnable(GL_PRIMITIVE_RESTART);
-			}
-			else
-			{
-				glDisable(GL_PRIMITIVE_RESTART);
-			}
-
 			if (activeTexture != 0)
 			{
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, activeTexture);
 			}
 
-			fixed (byte* address = &buffer[0])
-			{
-				glBufferSubData(GL_ARRAY_BUFFER, 0, bufferSize, address);
-			}
-
-			fixed (ushort* address = &indexBuffer[0])
-			{
-				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(ushort) * indexCount, address);
-			}
-
-			glDrawElements(mode, indexCount, GL_UNSIGNED_SHORT, null);
+			glDrawElements(mode, buffer.Flush(), GL_UNSIGNED_SHORT, null);
 
 			activeShader = null;
 			activeTexture = 0;
-			bufferSize = 0;
-			indexCount = 0;
-			maxIndex = 0;
 		}
 	}
 }

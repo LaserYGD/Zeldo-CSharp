@@ -24,7 +24,9 @@ namespace Engine.Input.Data
 
 		public override bool AnyPressed()
 		{
-			return false;
+			// Mouse movement, holding down buttons, or using the scroll wheel don't count as an "any press" (for the
+			// purposes of something like a "Press Start" screen).
+			return buttons.Any(b => b == InputStates.PressedThisFrame);
 		}
 
 		public override bool Query(int data, InputStates state)

@@ -84,6 +84,9 @@
     <None Include="Content\Shaders\Primitives2D.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Shaders\Primitives3D.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Shaders\Sprite.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -94,7 +97,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
-    <Compile Include="View\Camera.cs" />
+    <Compile Include="Graphics\PrimitiveBuffer.cs" />
+    <Compile Include="Graphics\PrimitiveRenderer3D.cs" />
+    <Compile Include="Input\ClickableSet.cs" />
+    <Compile Include="Input\Data\KeyboardData.cs" />
+    <Compile Include="Input\Data\KeyModifiers.cs" />
+    <Compile Include="Input\Data\KeyPress.cs" />
+    <Compile Include="Interfaces\2D\IClickable.cs" />
+    <Compile Include="Interfaces\3D\IRenderable3D.cs" />
+    <Compile Include="Networking\GamePeer.cs" />
+    <Compile Include="View\Camera3D.cs" />
     <Compile Include="Core\2D\Alignments.cs" />
     <Compile Include="Core\2D\Bounds2D.cs" />
     <Compile Include="Core\2D\Component2D.cs" />
@@ -158,7 +170,7 @@
     <Compile Include="Shapes\2D\Line.cs" />
     <Compile Include="Shapes\2D\Shape2D.cs" />
     <Compile Include="Shapes\2D\ShapeTypes2D.cs" />
-    <Compile Include="Shapes\3D\Cube.cs" />
+    <Compile Include="Shapes\3D\Box.cs" />
     <Compile Include="Shapes\3D\Shape3D.cs" />
     <Compile Include="Shapes\3D\ShapeTypes3D.cs" />
     <Compile Include="Shapes\3D\Sphere.cs" />
@@ -171,6 +183,9 @@
   <ItemGroup>
     <Reference Include="GlmSharp, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GlmSharp.0.9.8\lib\Net45\GlmSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Lidgren.Network, Version=2012.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lidgren.Network.1.0.2\lib\net451\Lidgren.Network.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
