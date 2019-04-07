@@ -78,6 +78,12 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Content\Shaders\Primitives.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Shaders\Primitives2D.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Shaders\Sprite.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -87,6 +93,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="View\Camera.cs" />
     <Compile Include="Core\2D\Alignments.cs" />
     <Compile Include="Core\2D\Bounds2D.cs" />
     <Compile Include="Core\2D\Component2D.cs" />

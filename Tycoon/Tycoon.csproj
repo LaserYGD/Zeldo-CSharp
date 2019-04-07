@@ -99,6 +99,10 @@
     <Compile Include="Physics\VerletPoint.cs" />
     <Compile Include="Physics\VerletRope.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Tools\PathModes.cs" />
+    <Compile Include="Tools\PathTool.cs" />
+    <Compile Include="Tools\Tool.cs" />
+    <Compile Include="Tools\Toolbox.cs" />
     <Compile Include="UI\Hud\StatusDisplay.cs" />
   </ItemGroup>
   <ItemGroup>
