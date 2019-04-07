@@ -77,6 +77,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Content\Fonts\Default.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -113,6 +116,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Json\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Fonts\Default_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

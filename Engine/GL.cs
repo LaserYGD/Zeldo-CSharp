@@ -916,7 +916,7 @@ namespace Engine
 			public delegate void glGetShaderInfoLog(uint shader, uint maxLength, uint* length, byte* infoLog);
 			public delegate int glGetUniformLocation(uint program, byte* name);
 			public delegate void glLinkProgram(uint program);
-			public delegate void glShaderSource(uint shader, uint count, byte** @string, int* length);
+			public delegate void glShaderSource(uint shader, uint count, string[] @string, int* length);
 			public delegate void glUniformMatrix4fv(int location, uint count, bool transpose, float* value);
 			public delegate void glUseProgram(uint program);
 			public delegate void glVertexAttribPointer(uint index, int size, uint type, bool normalized, uint stride,

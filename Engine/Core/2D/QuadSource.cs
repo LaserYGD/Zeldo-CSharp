@@ -8,11 +8,11 @@ namespace Engine.Core._2D
 {
 	public abstract class QuadSource
 	{
-		protected QuadSource(uint width, uint height) : this(0, width, height)
+		protected QuadSource(int width, int height) : this(0, width, height)
 		{
 		}
 
-		protected QuadSource(uint id, uint width, uint height)
+		protected QuadSource(uint id, int width, int height)
 		{
 			Id = id;
 			Width = width;
@@ -20,7 +20,7 @@ namespace Engine.Core._2D
 		}
 
 		public uint Id { get; protected set; }
-		public uint Width { get; }
-		public uint Height { get; }
+		public int Width { get; }
+		public int Height { get; }
 	}
 }

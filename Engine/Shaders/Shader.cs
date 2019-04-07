@@ -15,6 +15,8 @@ namespace Engine.Shaders
 	{
 		private uint program;
 		private uint vao;
+		private uint bufferId;
+		private uint indexBufferId;
 		private uint fragmentShader;
 		private uint geometryShader;
 		private uint vertexShader;
@@ -49,11 +51,12 @@ namespace Engine.Shaders
 			string source = File.ReadAllText("Content/Shaders/" + filename);
 
 			// See https://stackoverflow.com/a/37733830/7281613.
-			byte* s = (byte*)Marshal.StringToCoTaskMemAuto(source);
+			//byte* s = (byte*)Marshal.StringToCoTaskMemAuto(source);
+			//byte[] bytes = source.Select(c => (byte)c).ToArray();
 
 			int length = source.Length;
 
-			glShaderSource(id, 1, &s, &length);
+			glShaderSource(id, 1, new [] { source }, &length);
 			glCompileShader(id);
 
 			int status;
@@ -134,9 +137,9 @@ namespace Engine.Shaders
 
 			glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &uniformCount);
 
-			byte[] name = new byte[64];
+			byte[] bytes = new byte[64];
 
-			fixed (byte* address = &name[0])
+			fixed (byte* address = &bytes[0])
 			{
 				for (int i = 0; i < uniformCount; i++)
 				{
@@ -144,12 +147,14 @@ namespace Engine.Shaders
 					uint type;
 					int size;
 
-					glGetActiveUniform(program, (uint)i, (uint)name.Length, &length, &size, &type, address);
+					glGetActiveUniform(program, (uint)i, (uint)bytes.Length, &length, &size, &type, address);
+
+					int location = glGetUniformLocation(program, address);
+
+					string name = Encoding.Default.GetString(bytes).Substring(0, (int)length);
+
+					uniforms.Add(name, location);
 				}
-
-				int location = glGetUniformLocation(program, address);
-
-				uniforms.Add(Encoding.Default.GetString(name), location);
 			}
 		}
 
@@ -168,6 +173,9 @@ namespace Engine.Shaders
 
 		public unsafe void CompleteBinding(uint bufferId, uint indexBufferId)
 		{
+			this.bufferId = bufferId;
+			this.indexBufferId = indexBufferId;
+
 			glBindVertexArray(vao);
 
 			// The index buffer ID can be zero when array rendering is being used.
@@ -205,6 +213,9 @@ namespace Engine.Shaders
 		public void Apply()
 		{
 			glUseProgram(program);
+			glBindVertexArray(vao);
+			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
 		}
 
 		public unsafe void SetUniform(string name, mat4 value)

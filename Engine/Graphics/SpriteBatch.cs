@@ -101,21 +101,26 @@ namespace Engine.Graphics
 
 		public void Buffer(float[] data)
 		{
-			int sizeInBytes = sizeof(float) * data.Length;
+			uint sizeInBytes = (uint)(sizeof(float) * data.Length);
 
 			// See https://stackoverflow.com/a/4636735/7281613.
-			System.Buffer.BlockCopy(data, 0, buffer, (int)bufferSize, sizeInBytes);
+			System.Buffer.BlockCopy(data, 0, buffer, (int)bufferSize, (int)sizeInBytes);
+
+			if (activeShader == null)
+			{
+				activeShader = spriteShader;
+			}
 
 			// Vertex count is implied through the data given (it's assumed that the data array will always be the
 			// correct length, based on the current shader).
-			uint vertexCount = (uint)sizeInBytes / activeShader.Stride;
+			uint vertexCount = sizeInBytes / activeShader.Stride;
 
 			for (int i = 0; i < vertexCount; i++)
 			{
 				indexBuffer[indexCount + i] = (ushort)(maxIndex + i);
 			}
 
-			bufferSize += (uint)data.Length;
+			bufferSize += sizeInBytes;
 			indexCount += vertexCount;
 			maxIndex += (ushort)vertexCount;
 
@@ -156,13 +161,10 @@ namespace Engine.Graphics
 
 		public unsafe void Flush()
 		{
-			if (buffer.Length == 0)
+			if (bufferSize == 0)
 			{
 				return;
 			}
-
-			// If no shader
-			activeShader = activeShader ?? spriteShader;
 
 			// This assumes that all 2D shaders will contain a uniform matrix called "mvp".
 			activeShader.Apply();
@@ -179,7 +181,7 @@ namespace Engine.Graphics
 
 			if (activeTexture != 0)
 			{
-				glActiveTexture(activeTexture);
+				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, activeTexture);
 			}
 

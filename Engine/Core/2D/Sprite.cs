@@ -102,8 +102,8 @@ namespace Engine.Core._2D
 
 		private void RecomputePositionData()
 		{
-			uint width = source.Width;
-			uint height = source.Height;
+			int width = source.Width;
+			int height = source.Height;
 
 			vec2[] points =
 			{

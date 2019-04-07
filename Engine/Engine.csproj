@@ -106,7 +106,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameLoop.cs" />
     <Compile Include="GLFW.cs" />
-    <Compile Include="Graphics\GlyphData.cs" />
+    <Compile Include="Graphics\Glyph.cs" />
     <Compile Include="Graphics\Mesh.cs" />
     <Compile Include="Graphics\SpriteBatch.cs" />
     <Compile Include="Graphics\SpriteFont.cs" />
@@ -172,7 +172,7 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /Y "$(SolutionDir)Engine\x86\glfw3.dll" "$(SolutionDir)Zeldo\bin\x86\Debug\x86\"
-xcopy /Y "$(SolutionDir)Engine\x64\glfw3.dll" "$(SolutionDir)Zeldo\bin\x64\Debug\x64\"</PreBuildEvent>
+    <PreBuildEvent>xcopy /Y "$(SolutionDir)Engine\x86\glfw3.dll" "$(SolutionDir)Tycoon\bin\x86\Debug\x86\"
+xcopy /Y "$(SolutionDir)Engine\x64\glfw3.dll" "$(SolutionDir)Tycoon\bin\x64\Debug\x64\"</PreBuildEvent>
   </PropertyGroup>
 </Project>

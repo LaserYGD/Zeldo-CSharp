@@ -9,22 +9,33 @@ namespace Engine
 {
 	public static class ContentCache
 	{
+		private static Dictionary<string, SpriteFont> fonts;
 		private static Dictionary<string, Texture> textures;
 
 		static ContentCache()
 		{
+			fonts = new Dictionary<string, SpriteFont>();
 			textures = new Dictionary<string, Texture>();
 		}
 
-		public static Texture GetTexture(string filename)
+		public static SpriteFont GetFont(string filename)
 		{
-			if (textures.TryGetValue(filename, out Texture texture))
+			if (!fonts.TryGetValue(filename, out SpriteFont font))
 			{
-				return texture;
+				font = SpriteFont.Load(filename);
+				fonts.Add(filename, font);
 			}
 
-			texture = Texture.Load(filename);
-			textures.Add(filename, texture);
+			return font;
+		}
+
+		public static Texture GetTexture(string name)
+		{
+			if (!textures.TryGetValue(name, out Texture texture))
+			{
+				texture = Texture.Load(name);
+				textures.Add(name, texture);
+			}
 
 			return texture;
 		}

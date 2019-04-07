@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Engine;
 using Engine.Core._2D;
 using Engine.Graphics;
+using GlmSharp;
 using static Engine.GL;
 
 namespace Tycoon
@@ -21,6 +22,9 @@ namespace Tycoon
 
 			sprite = new Sprite("Link.png");
 			sb = new SpriteBatch();
+
+			// Setting window dimensions also sends out a Resize message.
+			Resolution.WindowDimensions = new ivec2(800, 600);
 		}
 
 		protected override void Update(float dt)

@@ -16,8 +16,8 @@ namespace Engine.Graphics
 			Bitmap image = new Bitmap("Content/Textures/" + filename);
 
 			uint id = 0;
-			uint width = (uint)image.Width;
-			uint height = (uint)image.Height;
+			int width = image.Width;
+			int height = image.Height;
 			int[] data = new int[width * height];
 
 			for (int i = 0; i < height; i++)
@@ -33,7 +33,7 @@ namespace Engine.Graphics
 
 			fixed (int* dataPointer = &data[0])
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (uint)width, (uint)height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
 					dataPointer);
 			}
 
@@ -45,7 +45,7 @@ namespace Engine.Graphics
 			return new Texture(id, width, height);
 		}
 
-		private Texture(uint id, uint width, uint height) : base(id, width, height)
+		private Texture(uint id, int width, int height) : base(id, width, height)
 		{
 		}
 	}

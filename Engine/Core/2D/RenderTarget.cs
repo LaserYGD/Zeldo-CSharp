@@ -18,7 +18,7 @@ namespace Engine.Core._2D
 		private bool depthEnabled;
 		private bool stencilEnabled;
 
-		public unsafe RenderTarget(uint width, uint height, RenderTargetFlags flags) : base(width, height)
+		public unsafe RenderTarget(int width, int height, RenderTargetFlags flags) : base(width, height)
 		{
 			fixed (uint* address = &framebufferId)
 			{
@@ -55,7 +55,7 @@ namespace Engine.Core._2D
 				texAttachment = GL_DEPTH_ATTACHMENT;
 			}
 
-			glTexImage2D(GL_TEXTURE_2D, 0, (int)texFormat, width, height, 0, texFormat, texType, null);
+			glTexImage2D(GL_TEXTURE_2D, 0, (int)texFormat, (uint)width, (uint)height, 0, texFormat, texType, null);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -78,7 +78,7 @@ namespace Engine.Core._2D
 				}
 
 				glBindRenderbuffer(GL_RENDERBUFFER, renderbufferId);
-				glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
+				glRenderbufferStorage(GL_RENDERBUFFER, format, (uint)width, (uint)height);
 				glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, renderbufferId);
 				glBindRenderbuffer(GL_RENDERBUFFER, 0);
 			}
