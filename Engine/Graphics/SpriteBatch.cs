@@ -50,7 +50,7 @@ namespace Engine.Graphics
 			primitiveShader.AddAttribute<float>(2, GL_FLOAT);
 			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
 
-			buffer = new byte[2048];
+			buffer = new byte[4096];
 			indexBuffer = new ushort[1024];
 
 			uint[] buffers = new uint[2];
@@ -113,12 +113,12 @@ namespace Engine.Graphics
 			mvp *= mat4.Translate(-halfDimensions.x, -halfDimensions.y, 0);
 		}
 
-		public void Buffer(float[] data)
+		public void Buffer(float[] data, int start = 0, int length = -1)
 		{
-			uint sizeInBytes = (uint)(sizeof(float) * data.Length);
+			uint sizeInBytes = (uint)(sizeof(float) * (length != -1 ? length : data.Length));
 
 			// See https://stackoverflow.com/a/4636735/7281613.
-			System.Buffer.BlockCopy(data, 0, buffer, (int)bufferSize, (int)sizeInBytes);
+			System.Buffer.BlockCopy(data, start * sizeof(float), buffer, (int)bufferSize, (int)sizeInBytes);
 
 			if (activeShader == null)
 			{

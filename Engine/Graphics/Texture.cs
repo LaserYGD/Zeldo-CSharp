@@ -11,9 +11,9 @@ namespace Engine.Graphics
 {
 	public class Texture : QuadSource
 	{
-		public static unsafe Texture Load(string filename)
+		public static unsafe Texture Load(string filename, string folder)
 		{
-			Bitmap image = new Bitmap("Content/Textures/" + filename);
+			Bitmap image = new Bitmap("Content/" + folder + filename);
 
 			uint id = 0;
 			int width = image.Width;
@@ -37,8 +37,8 @@ namespace Engine.Graphics
 					dataPointer);
 			}
 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 			glBindTexture(GL_TEXTURE_2D, 0);

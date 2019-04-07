@@ -18,23 +18,23 @@ namespace Engine
 			textures = new Dictionary<string, Texture>();
 		}
 
-		public static SpriteFont GetFont(string filename)
+		public static SpriteFont GetFont(string name)
 		{
-			if (!fonts.TryGetValue(filename, out SpriteFont font))
+			if (!fonts.TryGetValue(name, out SpriteFont font))
 			{
-				font = SpriteFont.Load(filename);
-				fonts.Add(filename, font);
+				font = SpriteFont.Load(name);
+				fonts.Add(name, font);
 			}
 
 			return font;
 		}
 
-		public static Texture GetTexture(string name)
+		public static Texture GetTexture(string filename, string folder = "Textures/")
 		{
-			if (!textures.TryGetValue(name, out Texture texture))
+			if (!textures.TryGetValue(filename, out Texture texture))
 			{
-				texture = Texture.Load(name);
-				textures.Add(name, texture);
+				texture = Texture.Load(filename, folder);
+				textures.Add(filename, texture);
 			}
 
 			return texture;

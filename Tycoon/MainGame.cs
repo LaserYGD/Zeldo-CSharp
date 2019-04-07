@@ -17,6 +17,7 @@ namespace Tycoon
 	{
 		private Camera camera;
 		private Sprite sprite;
+		private SpriteText text;
 		private SpriteBatch sb;
 
 		public MainGame() : base("Tycoon")
@@ -29,6 +30,8 @@ namespace Tycoon
 			camera = new Camera();
 			sprite = new Sprite("Link.png");
 			sprite.Position = new vec2(0, 50);
+			text = new SpriteText("Default", "Good vs. Evil Minecraft :)");
+			text.Position = new vec2(220, 20);
 			sb = new SpriteBatch();
 
 			// Setting window dimensions also sends out a Resize message.
@@ -68,6 +71,9 @@ namespace Tycoon
 			{
 				sb.DrawLine(new ivec2(100, 100 + i * 25), new ivec2(300, 200 + i * 25), colors[i]);
 			}
+
+			text.Draw(sb);
+			text.Position += new vec2(0.1f, 0);
 
 			sb.Flush();
 		}

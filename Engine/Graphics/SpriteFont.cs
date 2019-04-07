@@ -17,7 +17,7 @@ namespace Engine.Graphics
 		{
 			const string Path = "Content/Fonts/";
 
-			Texture texture = ContentCache.GetTexture(Path + name + "_0.png");
+			Texture texture = ContentCache.GetTexture(name + "_0.png", "Fonts/");
 
 			string[] lines = File.ReadAllLines(Path + name + ".fnt");
 			string first = lines[0];
@@ -59,9 +59,9 @@ namespace Engine.Graphics
 				vec2[] source =
 				{
 					new vec2(x, y),
-					new vec2(x, y + h),
-					new vec2(x + w, y),
-					new vec2(x + w, y + h) 
+					new vec2(x, y + height),
+					new vec2(x + width, y),
+					new vec2(x + width, y + height) 
 				};
 
 				for (int j = 0; j < 4; j++)
@@ -69,20 +69,22 @@ namespace Engine.Graphics
 					source[j] /= new vec2(w, h);
 				}
 
-				glyphs[i] = new Glyph(width, height, advance, new ivec2(offsetX, offsetY), source);
+				glyphs[id] = new Glyph(width, height, advance, new ivec2(offsetX, offsetY), source);
 			}
 
-			return new SpriteFont(glyphs, texture.Id);
+			return new SpriteFont(glyphs, size, texture.Id);
 		}
 
-		private SpriteFont(Glyph[] glyphs, uint textureId)
+		private SpriteFont(Glyph[] glyphs, int size, uint textureId)
 		{
 			Glyphs = glyphs;
+			Size = size;
 			TextureId = textureId;
 		}
 
 		public Glyph[] Glyphs { get; }
 
+		public int Size { get; }
 		public uint TextureId { get; }
 
 		public ivec2 Measure(string value)
