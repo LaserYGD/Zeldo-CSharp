@@ -12,11 +12,6 @@ namespace Engine
 	{
 		static GL()
 		{
-			glClear = GetDelegate<Delegates.glClear>();
-			glClearColor = GetDelegate<Delegates.glClearColor>();
-			glDisable = GetDelegate<Delegates.glDisable>();
-			glEnable = GetDelegate<Delegates.glEnable>();
-
 			// Buffers
 			glBindBuffer = GetDelegate<Delegates.glBindBuffer>();
 			glBufferData = GetDelegate<Delegates.glBufferData>();
@@ -35,6 +30,18 @@ namespace Engine
 			glGenRenderbuffers = GetDelegate<Delegates.glGenRenderbuffers>();
 			glReadBuffer = GetDelegate<Delegates.glReadBuffer>();
 			glRenderbufferStorage = GetDelegate<Delegates.glRenderbufferStorage>();
+
+			// Other
+			glDisable = GetDelegate<Delegates.glDisable>();
+			glEnable = GetDelegate<Delegates.glEnable>();
+
+			// Rendering
+			glBlendFunc = GetDelegate<Delegates.glBlendFunc>();
+			glClear = GetDelegate<Delegates.glClear>();
+			glClearColor = GetDelegate<Delegates.glClearColor>();
+			glDepthFunc = GetDelegate<Delegates.glDepthFunc>();
+			glPrimitiveRestartIndex = GetDelegate<Delegates.glPrimitiveRestartIndex>();
+			glViewport = GetDelegate<Delegates.glViewport>();
 
 			// Shaders
 			glAttachShader = GetDelegate<Delegates.glAttachShader>();
@@ -62,6 +69,7 @@ namespace Engine
 			// Textures
 			glActiveTexture = GetDelegate<Delegates.glActiveTexture>();
 			glBindTexture = GetDelegate<Delegates.glBindTexture>();
+			glGenerateMipmap = GetDelegate<Delegates.glGenerateMipmap>();
 			glGenTextures = GetDelegate<Delegates.glGenTextures>();
 			glTexImage2D = GetDelegate<Delegates.glTexImage2D>();
 			glTexParameteri = GetDelegate<Delegates.glTexParameteri>();
@@ -807,11 +815,6 @@ namespace Engine
 
 		#endregion
 
-		public static Delegates.glClear glClear;
-		public static Delegates.glClearColor glClearColor;
-		public static Delegates.glDisable glDisable;
-		public static Delegates.glEnable glEnable;
-
 		// Buffers
 		public static Delegates.glBindBuffer glBindBuffer;
 		public static Delegates.glBufferData glBufferData;
@@ -830,6 +833,18 @@ namespace Engine
 		public static Delegates.glGenRenderbuffers glGenRenderbuffers;
 		public static Delegates.glReadBuffer glReadBuffer;
 		public static Delegates.glRenderbufferStorage glRenderbufferStorage;
+
+		// Other
+		public static Delegates.glDisable glDisable;
+		public static Delegates.glEnable glEnable;
+
+		// Rendering
+		public static Delegates.glBlendFunc glBlendFunc;
+		public static Delegates.glClear glClear;
+		public static Delegates.glClearColor glClearColor;
+		public static Delegates.glDepthFunc glDepthFunc;
+		public static Delegates.glPrimitiveRestartIndex glPrimitiveRestartIndex;
+		public static Delegates.glViewport glViewport;
 
 		// Shaders
 		public static Delegates.glAttachShader glAttachShader;
@@ -857,6 +872,7 @@ namespace Engine
 		// Textures
 		public static Delegates.glActiveTexture glActiveTexture;
 		public static Delegates.glBindTexture glBindTexture;
+		public static Delegates.glGenerateMipmap glGenerateMipmap;
 		public static Delegates.glGenTextures glGenTextures;
 		public static Delegates.glTexImage2D glTexImage2D;
 		public static Delegates.glTexParameteri glTexParameteri;
@@ -871,11 +887,6 @@ namespace Engine
 
 		public static unsafe class Delegates
 		{
-			public delegate void glClear(uint mask);
-			public delegate void glClearColor(float red, float green, float blue, float alpha);
-			public delegate void glDisable(uint cap);
-			public delegate void glEnable(uint cap);
-
 			// Buffers
 			public delegate void glBindBuffer(uint target, uint buffer);
 			public delegate void glBufferData(uint target, uint size, void* data, uint usage);
@@ -896,6 +907,18 @@ namespace Engine
 			public delegate void glGenRenderbuffers(uint n, uint* renderbuffers);
 			public delegate void glReadBuffer(uint mode);
 			public delegate void glRenderbufferStorage(uint target, uint internalformat, uint width, uint height);
+
+			// Other
+			public delegate void glDisable(uint cap);
+			public delegate void glEnable(uint cap);
+
+			// Rendering
+			public delegate void glBlendFunc(uint sfactor, uint dfactor);
+			public delegate void glClear(uint mask);
+			public delegate void glClearColor(float red, float green, float blue, float alpha);
+			public delegate void glDepthFunc(uint func);
+			public delegate void glPrimitiveRestartIndex(uint index);
+			public delegate void glViewport(int x, int y, uint width, uint height);
 
 			// Shaders
 			public delegate void glAttachShader(uint program, uint shader);
@@ -925,6 +948,7 @@ namespace Engine
 			// Textures
 			public delegate void glActiveTexture(uint texture);
 			public delegate void glBindTexture(uint target, uint texture);
+			public delegate void glGenerateMipmap(uint target);
 			public delegate void glGenTextures(uint n, uint* textures);
 			public delegate void glTexImage2D(uint target, int level, int internalformat, uint width, uint height,
 				int border, uint format, uint type, void* data);

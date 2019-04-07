@@ -12,7 +12,7 @@ using static Engine.GL;
 
 namespace Engine.Core._2D
 {
-	public class Sprite : IPositionable2D, IRotatable, IColorable, IRenderable2D
+	public class Sprite : Component2D
 	{
 		// Each vertex contains position, texture coordinates, and color.
 		private const int VertexSize = 5;
@@ -20,11 +20,11 @@ namespace Engine.Core._2D
 		private QuadSource source;
 		private Bounds2D sourceRect;
 		private vec2 position;
+		private vec2 scale;
 		private ivec2 origin;
 		private Color color;
 
 		private float rotation;
-		private float scale;
 		private float[] data;
 
 		private bool positionChanged;
@@ -42,7 +42,7 @@ namespace Engine.Core._2D
 
 			data = new float[VertexSize * 4];
 			origin = Utilities.ComputeOrigin(source.Width, source.Height, alignment);
-			scale = 1;
+			scale = vec2.Ones;
 
 			// Calling the properties here (rather than assigning variables directly) sets the various changed booleans
 			// to true.
@@ -51,7 +51,7 @@ namespace Engine.Core._2D
 			SourceRect = null;
 		}
 
-		public vec2 Position
+		public override vec2 Position
 		{
 			get => position;
 			set
@@ -61,7 +61,17 @@ namespace Engine.Core._2D
 			}
 		}
 
-		public float Rotation
+		public override vec2 Scale
+		{
+			get => scale;
+			set
+			{
+				scale = value;
+				positionChanged = true;
+			}
+		}
+
+		public override float Rotation
 		{
 			get => rotation;
 			set
@@ -71,7 +81,7 @@ namespace Engine.Core._2D
 			}
 		}
 
-		public Color Color
+		public override Color Color
 		{
 			get => color;
 			set
@@ -108,9 +118,9 @@ namespace Engine.Core._2D
 			vec2[] points =
 			{
 				new vec2(0, 0),
+				new vec2(0, height),
 				new vec2(width, 0),
-				new vec2(width, height),
-				new vec2(0, height)
+				new vec2(width, height)
 			};
 
 			for (int i = 0; i < 4; i++)
@@ -146,7 +156,7 @@ namespace Engine.Core._2D
 			positionChanged = false;
 		}
 
-		public void Draw(SpriteBatch sb)
+		public override void Draw(SpriteBatch sb)
 		{
 			if (positionChanged)
 			{
@@ -155,8 +165,6 @@ namespace Engine.Core._2D
 
 			if (sourceChanged)
 			{
-				sourceChanged = false;
-
 				vec2[] coords = new vec2[4];
 
 				if (sourceRect != null)
@@ -190,6 +198,8 @@ namespace Engine.Core._2D
 					data[start] = value.x;
 					data[start + 1] = value.y;
 				}
+
+				sourceChanged = false;
 			}
 
 			if (colorChanged)
@@ -203,7 +213,7 @@ namespace Engine.Core._2D
 
 				colorChanged = false;
 			}
-
+			
 			sb.Mode = GL_TRIANGLE_STRIP;
 			sb.BindTexture(source.Id);
 			sb.Buffer(data);

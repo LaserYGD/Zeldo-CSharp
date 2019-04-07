@@ -22,9 +22,13 @@ namespace Tycoon
 		public MainGame() : base("Tycoon")
 		{
 			glClearColor(0, 0, 0, 1);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glPrimitiveRestartIndex(65535);
 
 			camera = new Camera();
-			//sprite = new Sprite("Link.png");
+			sprite = new Sprite("Link.png");
+			sprite.Position = new vec2(0, 50);
 			sb = new SpriteBatch();
 
 			// Setting window dimensions also sends out a Resize message.
@@ -38,7 +42,11 @@ namespace Tycoon
 
 		protected override void Draw()
 		{
+			ivec2 dimensions = Resolution.WindowDimensions;
+
 			glClear(GL_COLOR_BUFFER_BIT);
+			glViewport(0, 0,(uint)dimensions.x, (uint)dimensions.y);
+			glDepthFunc(GL_NEVER);
 
 			Color[] colors =
 			{
@@ -51,7 +59,10 @@ namespace Tycoon
 				Color.Magenta
 			};
 
-			//sprite.Draw(sb);
+			sprite.Draw(sb);
+			sprite.Position += new vec2(1, 0.5f);
+			sprite.Rotation -= 0.02f;
+			sprite.Scale -= new vec2(0.001f);
 
 			for (int i = 0; i < colors.Length; i++)
 			{

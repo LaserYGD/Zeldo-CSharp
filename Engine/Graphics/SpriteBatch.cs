@@ -63,6 +63,11 @@ namespace Engine.Graphics
 			bufferId = buffers[0];
 			indexBufferId = buffers[1];
 
+			// These two shaders (owned by the sprite batch) can be completed here. External shaders are completed when
+			// first applied.
+			spriteShader.CompleteBinding(bufferId, indexBufferId);
+			primitiveShader.CompleteBinding(bufferId, indexBufferId);
+
 			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
 			glBufferData(GL_ARRAY_BUFFER, (uint)buffer.Length, null, GL_DYNAMIC_DRAW);
 

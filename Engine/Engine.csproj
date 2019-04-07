@@ -93,6 +93,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
     <Compile Include="View\Camera.cs" />
     <Compile Include="Core\2D\Alignments.cs" />
     <Compile Include="Core\2D\Bounds2D.cs" />

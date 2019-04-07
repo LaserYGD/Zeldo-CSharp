@@ -160,9 +160,9 @@ namespace Engine.Shaders
 
 		private void DeleteShaders()
 		{
-			glDeleteShader(fragmentShader);
-			glDeleteShader(geometryShader);
 			glDeleteShader(vertexShader);
+			glDeleteShader(geometryShader);
+			glDeleteShader(fragmentShader);
 		}
 
 		public void AddAttribute<T>(uint count, uint type, bool normalized = false, uint padding = 0)
