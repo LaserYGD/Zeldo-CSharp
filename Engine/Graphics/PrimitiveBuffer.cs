@@ -27,26 +27,11 @@ namespace Engine.Graphics
 		private ushort[] indexBuffer;
 		private bool primitiveRestartEnabled;
 
-		public unsafe PrimitiveBuffer(int bufferCapacity, int indexCapacity)
+		public PrimitiveBuffer(int bufferCapacity, int indexCapacity)
 		{
 			buffer = new byte[bufferCapacity];
 			indexBuffer = new ushort[indexCapacity];
-
-			uint[] buffers = new uint[2];
-
-			fixed (uint* address = &buffers[0])
-			{
-				glGenBuffers(2, address);
-			}
-
-			BufferId = buffers[0];
-			IndexBufferId = buffers[1];
-
-			glBindBuffer(GL_ARRAY_BUFFER, BufferId);
-			glBufferData(GL_ARRAY_BUFFER, (uint)buffer.Length, null, GL_DYNAMIC_DRAW);
-
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBufferId);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, (uint)indexBuffer.Length, null, GL_DYNAMIC_DRAW);
+			maxIndex = -1;
 		}
 
 		public int Size => bufferSize;
@@ -57,10 +42,7 @@ namespace Engine.Graphics
 			set => primitiveRestartEnabled = restartModes.Contains(value);
 		}
 
-		public uint BufferId { get; }
-		public uint IndexBufferId { get; }
-
-		public void Buffer<T>(T[] data, uint stride, int start = 0, int length = -1) where T : struct
+		public void Buffer<T>(T[] data, ushort[] indices, int start = 0, int length = -1) where T : struct
 		{
 			int size = Marshal.SizeOf(typeof(T));
 			int sizeInBytes = size * (length != -1 ? length : data.Length);
@@ -68,18 +50,19 @@ namespace Engine.Graphics
 			// See https://stackoverflow.com/a/4636735/7281613.
 			System.Buffer.BlockCopy(data, start * size, buffer, bufferSize, sizeInBytes);
 
-			// Vertex count is implied through the data given (it's assumed that the data array will always be the
-			// correct length based on the current shader from the calling code).
-			int vertexCount = sizeInBytes / (int)stride;
+			int max = -1;
 
-			for (int i = 0; i < vertexCount; i++)
+			for (int i = 0; i < indices.Length; i++)
 			{
-				indexBuffer[IndexCount + i] = (ushort)(maxIndex + i);
+				int index = indices[i];
+
+				indexBuffer[IndexCount + i] = (ushort)(maxIndex + index + 1);
+				max = Math.Max(max, index);
 			}
 
 			bufferSize += sizeInBytes;
-			IndexCount += vertexCount;
-			maxIndex += (ushort)vertexCount;
+			IndexCount += indices.Length;
+			maxIndex += max + 1;
 
 			if (primitiveRestartEnabled)
 			{
@@ -99,6 +82,8 @@ namespace Engine.Graphics
 				glDisable(GL_PRIMITIVE_RESTART);
 			}
 
+			// It's assumed that a relevant shader will be applied before calling this function (such that the correct
+			// buffers are already bound).
 			fixed (byte* address = &buffer[0])
 			{
 				glBufferSubData(GL_ARRAY_BUFFER, 0, (uint)bufferSize, address);
@@ -113,7 +98,7 @@ namespace Engine.Graphics
 
 			bufferSize = 0;
 			IndexCount = 0;
-			maxIndex = 0;
+			maxIndex = -1;
 
 			return count;
 		}

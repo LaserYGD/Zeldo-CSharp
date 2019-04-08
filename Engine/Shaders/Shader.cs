@@ -172,11 +172,6 @@ namespace Engine.Shaders
 			Stride += (uint)Marshal.SizeOf<T>() * (count + padding);
 		}
 
-		public void Bind(PrimitiveBuffer buffer)
-		{
-			Bind(buffer.BufferId, buffer.IndexBufferId);
-		}
-
 		public unsafe void Bind(uint bufferId, uint indexBufferId)
 		{
 			this.bufferId = bufferId;

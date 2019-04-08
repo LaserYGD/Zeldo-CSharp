@@ -33,15 +33,15 @@ namespace Tycoon
 			glPrimitiveRestartIndex(65535);
 
 			camera = new Camera3D();
-			//camera.IsOrthographic = true;
+			camera.IsOrthographic = true;
+			camera.Position = new vec3(0, 0, -3);
 			canvas = new Canvas();
 			sprite = new Sprite("Link.png");
 			sprite.Position = new vec2(0, 50);
 			text = new SpriteText("Default", "Good vs. Evil Minecraft :)");
 			text.Position = new vec2(220, 20);
 			sb = new SpriteBatch();
-			box = new Box(1, 2, 3);
-			box.Position = new vec3(0, 0, 4);
+			box = new Box(2);
 			primitives3D = new PrimitiveRenderer3D();
 
 			// Setting window dimensions also sends out a Resize message.
@@ -55,14 +55,24 @@ namespace Tycoon
 
 		protected override void Draw()
 		{
-			primitives3D.Draw(box, Color.White);
-			primitives3D.Flush(camera);
+			vec3[] points =
+			{
+				new vec3(0, 0.5f, 0), 
+				new vec3(-0.5f, -0.5f, 0), 
+				new vec3(0.5f, -0.5f, 0) 
+			};
 
-			/*
 			ivec2 dimensions = Resolution.WindowDimensions;
 
 			glClear(GL_COLOR_BUFFER_BIT);
 			glViewport(0, 0,(uint)dimensions.x, (uint)dimensions.y);
+			
+			primitives3D.Draw(box, Color.White);
+			//primitives3D.DrawTriangle(points, Color.White);
+			primitives3D.Flush(camera);
+
+			return;
+
 			glDepthFunc(GL_NEVER);
 
 			Color[] colors =
@@ -91,7 +101,6 @@ namespace Tycoon
 
 			canvas.Draw(sb);
 			sb.Flush();
-			*/
 		}
 	}
 }

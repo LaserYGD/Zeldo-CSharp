@@ -18,9 +18,17 @@ namespace Engine.Graphics
 		private Shader primitiveShader;
 		private PrimitiveBuffer buffer;
 
+		private uint bufferId;
+		private uint indexBufferId;
+
 		public PrimitiveRenderer3D()
 		{
-			buffer = new PrimitiveBuffer(4096, 512);
+			const int BufferCapacity = 2048;
+			const int IndexCapacity = 256;
+
+			buffer = new PrimitiveBuffer(BufferCapacity, IndexCapacity);
+
+			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexBufferId);
 
 			primitiveShader = new Shader();
 			primitiveShader.Attach(ShaderTypes.Vertex, "Primitives3D.vert");
@@ -28,7 +36,7 @@ namespace Engine.Graphics
 			primitiveShader.CreateProgram();
 			primitiveShader.AddAttribute<float>(3, GL_FLOAT);
 			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
-			primitiveShader.Bind(buffer);
+			primitiveShader.Bind(bufferId, indexBufferId);
 		}
 
 		public void Draw(Box box, Color color)
@@ -49,27 +57,44 @@ namespace Engine.Graphics
 				new vec3(max.x, min.y, max.z) 
 			};
 
-			int[] indexes =
+			float[] data = GetData(points, color);
+
+			ushort[] indices =
 			{
 				0, 1, 1, 2, 2, 3, 3, 0,
 				4, 5, 5, 6, 6, 7, 7, 4,
-				0, 4, 1, 5, 2, 6, 3, 7
+				0, 6, 1, 7, 2, 4, 3, 5
 			};
-			
-			float[] data = new float[indexes.Length * 3];
 
-			for (int i = 0; i < indexes.Length; i++)
+			buffer.Buffer(data, indices);
+		}
+
+		public void DrawTriangle(vec3[] points, Color color)
+		{
+			float[] data = GetData(points, color);
+			ushort[] indices = { 0, 1, 2, 0 };
+
+			buffer.Buffer(data, indices);
+		}
+
+		private float[] GetData(vec3[] points, Color color)
+		{
+			float f = color.ToFloat();
+			float[] data = new float[points.Length * 4];
+
+			for (int i = 0; i < points.Length; i++)
 			{
-				int start = i * 3;
+				int start = i * 4;
 
-				vec3 p = points[indexes[i]];
+				vec3 p = points[i];
 
 				data[start] = p.x;
 				data[start + 1] = p.y;
 				data[start + 2] = p.z;
+				data[start + 3] = f;
 			}
 
-			buffer.Buffer(data, primitiveShader.Stride);
+			return data;
 		}
 
 		public unsafe void Flush(Camera3D camera)
@@ -83,6 +108,7 @@ namespace Engine.Graphics
 			primitiveShader.SetUniform("mvp", camera.ViewProjection);
 
 			glDrawElements(GL_LINES, buffer.Flush(), GL_UNSIGNED_SHORT, null);
+			//glDrawElements(GL_LINE_LOOP, buffer.Flush(), GL_UNSIGNED_SHORT, null);
 		}
 	}
 }

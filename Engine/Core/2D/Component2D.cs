@@ -127,9 +127,14 @@ namespace Engine.Core._2D
 			// time.
 			int quads = data.Length / QuadSize;
 
+			ushort[] indices =
+			{
+				0, 1, 2, 3
+			};
+
 			for (int i = 0; i < quads; i++)
 			{
-				sb.Buffer(data, i * QuadSize, QuadSize);
+				sb.Buffer(data, indices, i * QuadSize, QuadSize);
 			}
 		}
 	}

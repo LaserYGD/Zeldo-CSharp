@@ -20,12 +20,19 @@ namespace Engine.Graphics
 		private PrimitiveBuffer buffer;
 		private mat4 mvp;
 
+		private uint bufferId;
+		private uint indexBufferId;
 		private uint mode;
 		private uint activeTexture;
 
 		public SpriteBatch()
 		{
-			buffer = new PrimitiveBuffer(4096, 512);
+			const int BufferCapacity = 4096;
+			const int IndexCapacity = 512;
+
+			buffer = new PrimitiveBuffer(BufferCapacity, IndexCapacity);
+
+			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexBufferId);
 
 			// These two shaders (owned by the sprite batch) can be completed here (in terms of binding a buffer).
 			// External shaders are bound when first applied.
@@ -36,7 +43,7 @@ namespace Engine.Graphics
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
 			spriteShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
-			spriteShader.Bind(buffer);
+			spriteShader.Bind(bufferId, indexBufferId);
 
 			primitiveShader = new Shader();
 			primitiveShader.Attach(ShaderTypes.Vertex, "Primitives2D.vert");
@@ -44,7 +51,7 @@ namespace Engine.Graphics
 			primitiveShader.CreateProgram();
 			primitiveShader.AddAttribute<float>(2, GL_FLOAT);
 			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
-			primitiveShader.Bind(buffer);
+			primitiveShader.Bind(bufferId, indexBufferId);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Resize, (messageType, data, dt) => { OnResize(); });
 		}
@@ -74,14 +81,14 @@ namespace Engine.Graphics
 			mvp *= mat4.Translate(-halfDimensions.x, -halfDimensions.y, 0);
 		}
 
-		public void Buffer(float[] data, int start = 0, int length = -1)
+		public void Buffer(float[] data, ushort[] indices, int start = 0, int length = -1)
 		{
 			if (activeShader == null)
 			{
 				activeShader = spriteShader;
 			}
 			
-			buffer.Buffer(data, activeShader.Stride, start, length);
+			buffer.Buffer(data, indices, start, length);
 		}
 
 		public void Apply(Shader shader, uint mode)
@@ -98,7 +105,7 @@ namespace Engine.Graphics
 
 			if (!activeShader.IsBindingComplete)
 			{
-				activeShader.Bind(buffer);
+				activeShader.Bind(bufferId, indexBufferId);
 			}
 		}
 
@@ -128,7 +135,9 @@ namespace Engine.Graphics
 				f
 			};
 
-			Buffer(data);
+			ushort[] indices = { 0, 1 };
+
+			Buffer(data, indices);
 		}
 
 		public unsafe void Flush()

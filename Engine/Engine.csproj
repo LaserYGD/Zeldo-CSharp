@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions.cs" />
+    <Compile Include="GLUtilities.cs" />
     <Compile Include="Graphics\PrimitiveBuffer.cs" />
     <Compile Include="Graphics\PrimitiveRenderer3D.cs" />
     <Compile Include="Input\ClickableSet.cs" />
