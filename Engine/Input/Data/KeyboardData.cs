@@ -10,14 +10,14 @@ namespace Engine.Input.Data
 	{
 		private InputStates[] keys;
 
-		public KeyboardData(InputStates[] keys, int[] keysPressedThisFrame)
+		public KeyboardData(InputStates[] keys, KeyPress[] keysPressedThisFrame)
 		{
 			this.keys = keys;
 
 			KeysPressedThisFrame = keysPressedThisFrame;
 		}
 
-		public int[] KeysPressedThisFrame { get; }
+		public KeyPress[] KeysPressedThisFrame { get; }
 
 		public override bool AnyPressed()
 		{

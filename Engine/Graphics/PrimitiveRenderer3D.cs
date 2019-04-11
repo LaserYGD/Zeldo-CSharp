@@ -57,6 +57,16 @@ namespace Engine.Graphics
 				new vec3(max.x, min.y, max.z) 
 			};
 
+			quat orientation = box.Orientation;
+
+			if (orientation != quat.Identity)
+			{
+				for (int i = 0; i < points.Length; i++)
+				{
+					points[i] *= orientation;
+				}
+			}
+
 			float[] data = GetData(points, color);
 
 			ushort[] indices =

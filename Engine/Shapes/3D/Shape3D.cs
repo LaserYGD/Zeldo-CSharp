@@ -13,6 +13,7 @@ namespace Engine.Shapes._3D
 		protected Shape3D(ShapeTypes3D shapeType)
 		{
 			ShapeType = shapeType;
+			Orientation = quat.Identity;
 		}
 
 		public ShapeTypes3D ShapeType { get; }

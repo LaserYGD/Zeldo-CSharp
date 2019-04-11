@@ -13,7 +13,7 @@ namespace Engine.Networking
 
 		public GamePeer()
 		{
-			NetPeerConfiguration config = new NetPeerConfiguration("Tycoon");
+			NetPeerConfiguration config = new NetPeerConfiguration("Zeldo");
 			peer = new NetPeer(config);
 		}
 

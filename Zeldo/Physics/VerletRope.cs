@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine.Interfaces;
 
-namespace Tycoon.Data
+namespace Zeldo.Physics
 {
-	public enum CurrencyTypes
+	public class VerletRope : IDynamic
 	{
-		Dollars
+		public void Update(float dt)
+		{
+		}
 	}
 }

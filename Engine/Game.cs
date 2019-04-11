@@ -12,8 +12,35 @@ namespace Engine
 {
 	public abstract class Game
 	{
+		// The input processor (and associated callbacks) are static to avoid the garbage collector moving things
+		// around at runtime (which would cause an error in GLFW).
+		private static InputProcessor inputProcessor;
+		private static GLFWkeyfun keyCallback;
+
+		static Game()
+		{
+			keyCallback = KeyCallback;
+		}
+
+		private static void KeyCallback(IntPtr window, int key, int scancode, int action, int mods)
+		{
+			// Key can be negative in some cases (like alt + printscreen).
+			if (key == -1)
+			{
+				return;
+			}
+
+			switch (action)
+			{
+				case GLFW_PRESS: inputProcessor.OnKeyPress(key, mods);
+					break;
+
+				case GLFW_RELEASE: inputProcessor.OnKeyRelease(key);
+					break;
+			}
+		}
+
 		private Window window;
-		private InputProcessor inputProcessor;
 
 		private float previousTime;
 		private float accumulator;
@@ -38,6 +65,7 @@ namespace Engine
 			inputProcessor = new InputProcessor();
 
 			glfwMakeContextCurrent(address);
+			glfwSetKeyCallback(address, keyCallback);
 			//glfwSetMouseButtonCallback(address, OnMouseButton);
 		}
 
@@ -52,7 +80,7 @@ namespace Engine
 			*/
 		}
 
-		public void Run()
+		public unsafe void Run()
 		{
 			const float Target = 1.0f / 60;
 
@@ -69,6 +97,8 @@ namespace Engine
 				{
 					continue;
 				}
+
+				inputProcessor.Update(Target);
 
 				while (accumulator >= Target)
 				{

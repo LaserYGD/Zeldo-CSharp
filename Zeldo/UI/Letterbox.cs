@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tycoon.Tools
+namespace Zeldo.UI
 {
-	public abstract class Tool
+	public class Letterbox
 	{
-		public abstract void UsePrimary();
 	}
 }

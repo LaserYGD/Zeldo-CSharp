@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tycoon.UI.Menus
+namespace Zeldo.UI.Menus
 {
 	public class TitleMenu : Menu
 	{

@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{44ACE0D2-02CB-42C0-8CF0-2BB2C96AA981}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Tycoon</RootNamespace>
-    <AssemblyName>Tycoon</AssemblyName>
+    <RootNamespace>Zeldo</RootNamespace>
+    <AssemblyName>Zeldo</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Tycoon.Program</StartupObject>
+    <StartupObject>Zeldo.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -89,23 +89,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Currency.cs" />
-    <Compile Include="Data\CurrencyTypes.cs" />
-    <Compile Include="Data\GuestInventory.cs" />
-    <Compile Include="Data\Species.cs" />
-    <Compile Include="Entities\Guest.cs" />
+    <Compile Include="Entities\Player.cs" />
+    <Compile Include="Entities\PlayerControls.cs" />
     <Compile Include="Items\Item.cs" />
     <Compile Include="MainGame.cs" />
     <Compile Include="Physics\VerletPoint.cs" />
     <Compile Include="Physics\VerletRope.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Tools\PathModes.cs" />
-    <Compile Include="Tools\PathTool.cs" />
-    <Compile Include="Tools\Tool.cs" />
-    <Compile Include="Tools\Toolbox.cs" />
-    <Compile Include="UI\Hud\StatusDisplay.cs" />
+    <Compile Include="UI\Hud\PlayerHealthDisplay.cs" />
+    <Compile Include="UI\Hud\PlayerManaDisplay.cs" />
+    <Compile Include="UI\Letterbox.cs" />
     <Compile Include="UI\Menus\Menu.cs" />
     <Compile Include="UI\Menus\TitleMenu.cs" />
+    <Compile Include="UI\SpeechBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GlmSharp, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
@@ -122,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Json\" />
+    <Folder Include="Weather\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Fonts\Default_0.png">

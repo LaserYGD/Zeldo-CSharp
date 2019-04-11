@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine.Utility;
+using Newtonsoft.Json.Linq;
 
-namespace Tycoon.Data
+namespace Zeldo.Items
 {
-	public enum Species
+	public class Item
 	{
-		Human
 	}
 }

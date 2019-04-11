@@ -16,6 +16,7 @@ namespace Engine.Input
 		private InputStates[] buttons;
 		private InputStates[] keys;
 
+		private List<KeyPress> keyPresses;
 		private ivec2 mouseLocation;
 		private ivec2 previousMouseLocation;
 
@@ -23,6 +24,32 @@ namespace Engine.Input
 		{
 			buttons = Enumerable.Repeat(InputStates.Released, GLFW_MOUSE_BUTTON_LAST).ToArray();
 			keys = Enumerable.Repeat(InputStates.Released, GLFW_KEY_LAST).ToArray();
+			keyPresses = new List<KeyPress>();
+		}
+
+		public void KeyCallback(IntPtr window, int key, int scancode, int action, int mods)
+		{
+			if (key == -1)
+			{
+				return;
+			}
+
+			if (action == GLFW_PRESS)
+			{
+				keys[key] = InputStates.PressedThisFrame;
+				keyPresses.Add(new KeyPress(key, (KeyModifiers)mods));
+			}
+		}
+
+		public void OnKeyPress(int key, int mods)
+		{
+			keys[key] = InputStates.PressedThisFrame;
+			keyPresses.Add(new KeyPress(key, (KeyModifiers)mods));
+		}
+
+		public void OnKeyRelease(int key)
+		{
+			keys[key] = InputStates.ReleasedThisFrame;
 		}
 
 		public void OnMouseButtonPress(int button)
@@ -53,6 +80,27 @@ namespace Engine.Input
 			MessageSystem.Send(CoreMessageTypes.Input, fullData, dt);
 		}
 
+		private KeyboardData GetKeyboardData()
+		{
+			KeyboardData data = new KeyboardData(keys, keyPresses.ToArray());
+
+			for (int i = 0; i < keys.Length; i++)
+			{
+				switch (keys[i])
+				{
+					case InputStates.PressedThisFrame: keys[i] = InputStates.Held;
+						break;
+
+					case InputStates.ReleasedThisFrame: keys[i] = InputStates.Released;
+						break;
+				}
+			}
+
+			keyPresses.Clear();
+
+			return data;
+		}
+
 		private MouseData GetMouseData()
 		{
 			MouseData data = new MouseData(mouseLocation, previousMouseLocation, buttons);
@@ -60,11 +108,6 @@ namespace Engine.Input
 			previousMouseLocation = mouseLocation;
 
 			return data;
-		}
-
-		private KeyboardData GetKeyboardData()
-		{
-			return null;
 		}
 	}
 }

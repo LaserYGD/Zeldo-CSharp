@@ -46,8 +46,6 @@ namespace Engine.View
 		{
 			ivec2 dimensions = Resolution.WindowDimensions;
 
-			float aspectRatio = (float)dimensions.y / dimensions.x;
-
 			projection = isOrthographic
 				? mat4.Ortho(-4, 4, -3, 3, 0.1f, 100)
 				: mat4.PerspectiveFov(90, dimensions.x, dimensions.y, 0.1f, 100);
@@ -55,8 +53,7 @@ namespace Engine.View
 
 		public void Update(float dt)
 		{
-			mat4 view = new mat4(Orientation) * mat4.Translate(Position.x, Position.y, Position.z);
-			//mat4 view = mat4.LookAt(Position, vec3.Zero, vec3.UnitY);
+			mat4 view = new mat4(Orientation) * mat4.Translate(-Position.x, -Position.y, -Position.z);
 
 			ViewProjection = projection * view;
 		}

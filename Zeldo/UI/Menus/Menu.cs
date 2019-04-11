@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Engine.Input;
 using Engine.Input.Data;
 
-namespace Tycoon.UI.Menus
+namespace Zeldo.UI.Menus
 {
 	public abstract class Menu
 	{

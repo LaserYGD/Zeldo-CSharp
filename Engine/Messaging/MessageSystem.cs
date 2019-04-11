@@ -78,7 +78,12 @@ namespace Engine.Messaging
 
 		public static void Send(int messageType, object data, float dt = 0)
 		{
-			foreach (var receiver in functionMap[messageType])
+			if (!functionMap.TryGetValue(messageType, out List<ReceiverFunction> list))
+			{
+				return;
+			}
+
+			foreach (var receiver in list)
 			{
 				receiver?.Invoke(messageType, data, dt);
 			}
