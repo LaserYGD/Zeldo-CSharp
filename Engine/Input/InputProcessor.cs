@@ -20,11 +20,16 @@ namespace Engine.Input
 		private ivec2 mouseLocation;
 		private ivec2 previousMouseLocation;
 
+		// On the first frame, the mouse's previous location is artificially set to the current location in order to
+		// avoid a false, large delta.
+		private bool firstFrame;
+
 		public InputProcessor()
 		{
 			buttons = Enumerable.Repeat(InputStates.Released, GLFW_MOUSE_BUTTON_LAST).ToArray();
 			keys = Enumerable.Repeat(InputStates.Released, GLFW_KEY_LAST).ToArray();
 			keyPresses = new List<KeyPress>();
+			firstFrame = true;
 		}
 
 		public void KeyCallback(IntPtr window, int key, int scancode, int action, int mods)
@@ -54,10 +59,12 @@ namespace Engine.Input
 
 		public void OnMouseButtonPress(int button)
 		{
+			buttons[button] = InputStates.PressedThisFrame;
 		}
 
 		public void OnMouseButtonRelease(int button)
 		{
+			buttons[button] = InputStates.ReleasedThisFrame;
 		}
 
 		public void OnMouseMove(int x, int y)
@@ -88,11 +95,8 @@ namespace Engine.Input
 			{
 				switch (keys[i])
 				{
-					case InputStates.PressedThisFrame: keys[i] = InputStates.Held;
-						break;
-
-					case InputStates.ReleasedThisFrame: keys[i] = InputStates.Released;
-						break;
+					case InputStates.PressedThisFrame: keys[i] = InputStates.Held; break;
+					case InputStates.ReleasedThisFrame: keys[i] = InputStates.Released; break;
 				}
 			}
 
@@ -103,9 +107,24 @@ namespace Engine.Input
 
 		private MouseData GetMouseData()
 		{
+			if (firstFrame)
+			{
+				previousMouseLocation = mouseLocation;
+				firstFrame = false;
+			}
+
 			MouseData data = new MouseData(mouseLocation, previousMouseLocation, buttons);
 
 			previousMouseLocation = mouseLocation;
+
+			for (int i = 0; i < buttons.Length; i++)
+			{
+				switch (buttons[i])
+				{
+					case InputStates.PressedThisFrame: buttons[i] = InputStates.Held; break;
+					case InputStates.ReleasedThisFrame: buttons[i] = InputStates.Released; break;
+				}
+			}
 
 			return data;
 		}

@@ -12,6 +12,7 @@ using Engine.Messaging;
 using Engine.Shapes._3D;
 using Engine.View;
 using GlmSharp;
+using Zeldo.Entities.Weapons;
 using Zeldo.UI.Hud;
 
 namespace Zeldo.Entities
@@ -19,19 +20,18 @@ namespace Zeldo.Entities
 	public class Player : Entity3D, IReceiver
 	{
 		private vec3 velocity;
-		private Box box;
+		private Sword sword;
 		private PlayerControls controls;
-		private PrimitiveRenderer3D primitives;
 
 		public Player()
 		{
-			box = new Box(0.6f, 1.8f, 0.6f);
+			Box = new Box(0.6f, 1.8f, 0.6f);
+			sword = new Sword();
 			controls = new PlayerControls();
-			primitives = new PrimitiveRenderer3D();
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
-				ProcessInput((FullInputData)data, dt);
+				ProcessInput((FullInputData)data);
 			});
 		}
 
@@ -39,7 +39,38 @@ namespace Zeldo.Entities
 		public PlayerHealthDisplay HealthDisplay { get; set; }
 		public PlayerManaDisplay ManaDisplay { get; set; }
 
-		private void ProcessInput(FullInputData data, float dt)
+		public Box Box { get; }
+
+		private void ProcessInput(FullInputData data)
+		{
+			ProcessAttack(data);
+			ProcessRunning(data);
+		}
+
+		private void ProcessAttack(FullInputData data)
+		{
+			if (data.Query(controls.Attack, InputStates.PressedThisFrame, out InputBind bindUsed))
+			{
+				vec2 direction = vec2.Zero;
+
+				switch (bindUsed.InputType)
+				{
+					case InputTypes.Keyboard:
+						break;
+
+					case InputTypes.Mouse:
+						MouseData mouseData = (MouseData)data.GetData(InputTypes.Mouse);
+
+						direction = (mouseData.Location - Position.swizzle.xz).Normalized;
+
+						break;
+				}
+
+				sword.Attack(direction);
+			}
+		}
+
+		private void ProcessRunning(FullInputData data)
 		{
 			const int Speed = 3;
 
@@ -70,13 +101,7 @@ namespace Zeldo.Entities
 		public override void Update(float dt)
 		{
 			Position += velocity * dt;
-			box.Position = Position;
-		}
-
-		public override void Draw(Camera3D camera)
-		{
-			primitives.Draw(box, Color.White);
-			primitives.Flush(camera);
+			Box.Position = Position;
 		}
 	}
 }

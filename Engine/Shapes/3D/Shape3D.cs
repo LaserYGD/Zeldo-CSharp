@@ -8,7 +8,7 @@ using GlmSharp;
 
 namespace Engine.Shapes._3D
 {
-	public abstract class Shape3D : IPositionable3D, IOrientable
+	public abstract class Shape3D : ITransformable3D
 	{
 		protected Shape3D(ShapeTypes3D shapeType)
 		{
@@ -20,5 +20,11 @@ namespace Engine.Shapes._3D
 
 		public vec3 Position { get; set; }
 		public quat Orientation { get; set; }
+
+		public void SetTransform(vec3 position, quat orientation)
+		{
+			Position = position;
+			Orientation = orientation;
+		}
 	}
 }

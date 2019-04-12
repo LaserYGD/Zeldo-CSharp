@@ -11,7 +11,7 @@ namespace Engine.Input.Data
 	{
 		private InputStates[] buttons;
 
-		public MouseData(ivec2 location, ivec2 previousLocation, InputStates[] buttons)
+		public MouseData(ivec2 location, ivec2 previousLocation, InputStates[] buttons) : base(InputTypes.Mouse)
 		{
 			this.buttons = buttons;
 

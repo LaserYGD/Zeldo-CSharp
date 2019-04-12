@@ -10,7 +10,7 @@ namespace Engine.Input.Data
 	{
 		private InputStates[] keys;
 
-		public KeyboardData(InputStates[] keys, KeyPress[] keysPressedThisFrame)
+		public KeyboardData(InputStates[] keys, KeyPress[] keysPressedThisFrame) : base(InputTypes.Keyboard)
 		{
 			this.keys = keys;
 

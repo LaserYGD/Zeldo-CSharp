@@ -15,6 +15,7 @@ using Engine.UI;
 using Engine.View;
 using GlmSharp;
 using Zeldo.Entities;
+using Zeldo.Entities.Enemies;
 using Zeldo.UI.Hud;
 using static Engine.GL;
 
@@ -28,6 +29,9 @@ namespace Zeldo
 		private Camera3D camera;
 		private Canvas canvas;
 		private Scene scene;
+		private Player player;
+		private Skeleton skeleton;
+		private PrimitiveRenderer3D primitives;
 
 		public MainGame() : base("Zeldo")
 		{
@@ -38,7 +42,7 @@ namespace Zeldo
 
 			camera = new Camera3D();
 			//camera.IsOrthographic = true;
-			camera.Orientation *= quat.FromAxisAngle(1, vec3.UnitX);
+			camera.Orientation *= quat.FromAxisAngle(0.75f, vec3.UnitX);
 			camera.Position = new vec3(0, 0, 3) * camera.Orientation;
 
 			sb = new SpriteBatch();
@@ -46,7 +50,6 @@ namespace Zeldo
 				RenderTargetFlags.Color | RenderTargetFlags.Depth);
 			mainSprite = new Sprite(mainTarget, Alignments.Left | Alignments.Top);
 			mainSprite.Mods = SpriteModifiers.FlipVertical;
-			//mainSprite = new Sprite("Link.png", Alignments.Left | Alignments.Top);
 
 			PlayerHealthDisplay healthDisplay = new PlayerHealthDisplay();
 			PlayerManaDisplay manaDisplay = new PlayerManaDisplay();
@@ -55,14 +58,20 @@ namespace Zeldo
 			canvas.Add(healthDisplay);
 			canvas.Add(manaDisplay);
 
-			Player player = new Player
+			player = new Player
 			{
 				HealthDisplay = healthDisplay,
 				ManaDisplay = manaDisplay
 			};
 
+			skeleton = new Skeleton();
+			skeleton.Position = new vec3(-1.5f, 0, 1);
+
 			scene = new Scene();
 			scene.Add(player);
+			scene.Add(skeleton);
+
+			primitives = new PrimitiveRenderer3D();
 			
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
@@ -90,7 +99,10 @@ namespace Zeldo
 			glEnable(GL_CULL_FACE);
 
 			mainTarget.Apply();
-			scene.Draw(camera);
+			//scene.Draw(camera);
+			primitives.Draw(player.Box, Color.White);
+			primitives.Draw(skeleton.Box, Color.Red);
+			primitives.Flush(camera);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT);

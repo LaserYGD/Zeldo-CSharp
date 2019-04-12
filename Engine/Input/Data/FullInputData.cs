@@ -30,5 +30,22 @@ namespace Engine.Input.Data
 		{
 			return binds.Any(b => dataArray[(int)b.InputType].Query(b.Data, state));
 		}
+
+		public bool Query(List<InputBind> binds, InputStates state, out InputBind bindUsed)
+		{
+			foreach (InputBind bind in binds)
+			{
+				if (dataArray[(int)bind.InputType].Query(bind.Data, state))
+				{
+					bindUsed = bind;
+
+					return true;
+				}
+			}
+
+			bindUsed = null;
+
+			return false;
+		}
 	}
 }

@@ -89,8 +89,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Enemies\Skeleton.cs" />
+    <Compile Include="Entities\Hazards\PoisonBush.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerControls.cs" />
+    <Compile Include="Entities\Weapons\Sword.cs" />
+    <Compile Include="Interfaces\ITargetable.cs" />
     <Compile Include="Items\Item.cs" />
     <Compile Include="MainGame.cs" />
     <Compile Include="Physics\VerletPoint.cs" />

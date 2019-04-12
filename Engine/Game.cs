@@ -16,10 +16,14 @@ namespace Engine
 		// around at runtime (which would cause an error in GLFW).
 		private static InputProcessor inputProcessor;
 		private static GLFWkeyfun keyCallback;
+		private static GLFWcursorposfun cursorPositionCallback;
+		private static GLFWmousebuttonfun mouseButtonCallback;
 
 		static Game()
 		{
 			keyCallback = KeyCallback;
+			cursorPositionCallback = CursorPositionCallback;
+			mouseButtonCallback = MouseButtonCallback;
 		}
 
 		private static void KeyCallback(IntPtr window, int key, int scancode, int action, int mods)
@@ -37,6 +41,23 @@ namespace Engine
 
 				case GLFW_RELEASE: inputProcessor.OnKeyRelease(key);
 					break;
+			}
+		}
+
+		private static void CursorPositionCallback(IntPtr window, double x, double y)
+		{
+			int mX = (int)Math.Round(x);
+			int mY = (int)Math.Round(y);
+
+			inputProcessor.OnMouseMove(mX, mY);
+		}
+
+		private static void MouseButtonCallback(IntPtr window, int button, int action, int mods)
+		{
+			switch (action)
+			{
+				case GLFW_PRESS: inputProcessor.OnMouseButtonPress(button); break;
+				case GLFW_RELEASE: inputProcessor.OnMouseButtonRelease(button); break;
 			}
 		}
 
@@ -67,18 +88,8 @@ namespace Engine
 
 			glfwMakeContextCurrent(address);
 			glfwSetKeyCallback(address, keyCallback);
-			//glfwSetMouseButtonCallback(address, OnMouseButton);
-		}
-
-		private void OnMouseButton(IntPtr windowAddress, int button, int action, int mods)
-		{
-			/*
-			switch (action)
-			{
-				case GLFW_PRESS: inputProcessor.OnMouseButtonPress(button); break;
-				case GLFW_RELEASE: inputProcessor.OnMouseButtonRelease(button); break;
-			}
-			*/
+			glfwSetCursorPosCallback(address, cursorPositionCallback);
+			glfwSetMouseButtonCallback(address, mouseButtonCallback);
 		}
 
 		public void Run()
