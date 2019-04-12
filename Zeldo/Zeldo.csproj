@@ -93,6 +93,7 @@
     <Compile Include="Entities\Hazards\PoisonBush.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerControls.cs" />
+    <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
     <Compile Include="Interfaces\ITargetable.cs" />
     <Compile Include="Items\Item.cs" />
@@ -107,6 +108,8 @@
     <Compile Include="UI\Menus\Menu.cs" />
     <Compile Include="UI\Menus\TitleMenu.cs" />
     <Compile Include="UI\SpeechBox.cs" />
+    <Compile Include="Weather\Rain.cs" />
+    <Compile Include="Weather\Snow.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GlmSharp, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
@@ -123,7 +126,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Json\" />
-    <Folder Include="Weather\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Fonts\Default_0.png">

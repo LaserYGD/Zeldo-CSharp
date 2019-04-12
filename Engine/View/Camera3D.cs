@@ -41,6 +41,7 @@ namespace Engine.View
 		public vec3 Position { get; set; }
 		public quat Orientation { get; set; }
 		public mat4 ViewProjection { get; private set; }
+		public mat4 ViewProjectionInverse { get; private set; }
 
 		private void RecomputeProjection()
 		{
@@ -56,6 +57,7 @@ namespace Engine.View
 			mat4 view = new mat4(Orientation) * mat4.Translate(-Position.x, -Position.y, -Position.z);
 
 			ViewProjection = projection * view;
+			ViewProjectionInverse = ViewProjection.Inverse;
 		}
 	}
 }

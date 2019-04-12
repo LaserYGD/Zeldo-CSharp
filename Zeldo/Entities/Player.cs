@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine;
 using Engine.Core;
 using Engine.Entities;
 using Engine.Graphics;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
+using Engine.Shapes._2D;
 using Engine.Shapes._3D;
 using Engine.View;
 using GlmSharp;
@@ -26,6 +28,7 @@ namespace Zeldo.Entities
 		public Player()
 		{
 			Box = new Box(0.6f, 1.8f, 0.6f);
+			AttackLine = new Line();
 			sword = new Sword();
 			controls = new PlayerControls();
 
@@ -40,6 +43,7 @@ namespace Zeldo.Entities
 		public PlayerManaDisplay ManaDisplay { get; set; }
 
 		public Box Box { get; }
+		public Line AttackLine { get; }
 
 		private void ProcessInput(FullInputData data)
 		{
@@ -49,11 +53,14 @@ namespace Zeldo.Entities
 
 		private void ProcessAttack(FullInputData data)
 		{
-			if (data.Query(controls.Attack, InputStates.PressedThisFrame, out InputBind bindUsed))
+			InputTypes test = InputTypes.Mouse;
+
+			//if (data.Query(controls.Attack, InputStates.PressedThisFrame, out InputBind bindUsed))
 			{
 				vec2 direction = vec2.Zero;
 
-				switch (bindUsed.InputType)
+				//switch (bindUsed.InputType)
+				switch (test)
 				{
 					case InputTypes.Keyboard:
 						break;
@@ -61,7 +68,16 @@ namespace Zeldo.Entities
 					case InputTypes.Mouse:
 						MouseData mouseData = (MouseData)data.GetData(InputTypes.Mouse);
 
-						direction = (mouseData.Location - Position.swizzle.xz).Normalized;
+						vec4 projected = Scene.Camera.ViewProjection * new vec4(Position, 1);
+						vec2 halfWindow = Resolution.WindowDimensions / 2;
+						vec2 screenPosition = projected.swizzle.xy * halfWindow;
+
+						screenPosition.y *= -1;
+						screenPosition += halfWindow;
+						direction = (mouseData.Location - screenPosition).Normalized;
+
+						AttackLine.P1 = screenPosition;
+						AttackLine.P2 = mouseData.Location;
 
 						break;
 				}

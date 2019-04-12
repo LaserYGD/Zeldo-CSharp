@@ -7,6 +7,7 @@ using Engine.Core;
 using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.Shaders;
+using Engine.Shapes._2D;
 using GlmSharp;
 using static Engine.GL;
 
@@ -120,7 +121,12 @@ namespace Engine.Graphics
 			activeTexture = id;
 		}
 
-		public void DrawLine(ivec2 p1, ivec2 p2, Color color)
+		public void DrawLine(Line line, Color color)
+		{
+			DrawLine(line.P1, line.P2, color);
+		}
+
+		public void DrawLine(vec2 p1, vec2 p2, Color color)
 		{
 			Apply(primitiveShader, GL_LINES);
 

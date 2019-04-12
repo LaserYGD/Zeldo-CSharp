@@ -36,11 +36,8 @@ namespace Engine
 
 			switch (action)
 			{
-				case GLFW_PRESS: inputProcessor.OnKeyPress(key, mods);
-					break;
-
-				case GLFW_RELEASE: inputProcessor.OnKeyRelease(key);
-					break;
+				case GLFW_PRESS: inputProcessor.OnKeyPress(key, mods); break;
+				case GLFW_RELEASE: inputProcessor.OnKeyRelease(key); break;
 			}
 		}
 

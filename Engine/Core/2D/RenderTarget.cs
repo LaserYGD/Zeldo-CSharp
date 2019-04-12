@@ -30,6 +30,7 @@ namespace Engine.Core._2D
 			}
 
 			glBindTexture(GL_TEXTURE_2D, textureId);
+			Id = textureId;
 
 			bool colorEnabled = (flags & RenderTargetFlags.Color) > 0;
 			bool depthEnabled = (flags & RenderTargetFlags.Depth) > 0;

@@ -26,6 +26,7 @@ namespace Zeldo
 		private SpriteBatch sb;
 		private RenderTarget mainTarget;
 		private Sprite mainSprite;
+		private SpriteText attackText;
 		private Camera3D camera;
 		private Canvas canvas;
 		private Scene scene;
@@ -41,7 +42,7 @@ namespace Zeldo
 			glPrimitiveRestartIndex(65535);
 
 			camera = new Camera3D();
-			//camera.IsOrthographic = true;
+			camera.IsOrthographic = true;
 			camera.Orientation *= quat.FromAxisAngle(0.75f, vec3.UnitX);
 			camera.Position = new vec3(0, 0, 3) * camera.Orientation;
 
@@ -53,6 +54,9 @@ namespace Zeldo
 
 			PlayerHealthDisplay healthDisplay = new PlayerHealthDisplay();
 			PlayerManaDisplay manaDisplay = new PlayerManaDisplay();
+
+			attackText = new SpriteText("Default");
+			attackText.Position = new vec2(20);
 
 			canvas = new Canvas();
 			canvas.Add(healthDisplay);
@@ -67,7 +71,7 @@ namespace Zeldo
 			skeleton = new Skeleton();
 			skeleton.Position = new vec3(-1.5f, 0, 1);
 
-			scene = new Scene();
+			scene = new Scene(camera);
 			scene.Add(player);
 			scene.Add(skeleton);
 
@@ -112,6 +116,9 @@ namespace Zeldo
 
 			mainSprite.Draw(sb);
 			canvas.Draw(sb);
+			attackText.Value = $"{player.AttackLine.P1.x:N2}, {player.AttackLine.P1.y:N2}";
+			attackText.Draw(sb);
+			sb.DrawLine(player.AttackLine, Color.Yellow);
 			sb.Flush();
 		}
 	}

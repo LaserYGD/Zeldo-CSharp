@@ -89,7 +89,7 @@ namespace Engine.Input
 
 		private KeyboardData GetKeyboardData()
 		{
-			KeyboardData data = new KeyboardData(keys, keyPresses.ToArray());
+			KeyboardData data = new KeyboardData((InputStates[])keys.Clone(), keyPresses.ToArray());
 
 			for (int i = 0; i < keys.Length; i++)
 			{
@@ -113,7 +113,7 @@ namespace Engine.Input
 				firstFrame = false;
 			}
 
-			MouseData data = new MouseData(mouseLocation, previousMouseLocation, buttons);
+			MouseData data = new MouseData(mouseLocation, previousMouseLocation, (InputStates[])buttons.Clone());
 
 			previousMouseLocation = mouseLocation;
 

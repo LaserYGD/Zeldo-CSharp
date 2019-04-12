@@ -13,10 +13,13 @@ namespace Engine.Entities
 	{
 		private List<Entity3D> entities;
 
-		public Scene()
+		public Scene(Camera3D camera)
 		{
+			Camera = camera;
 			entities = new List<Entity3D>();
 		}
+
+		public Camera3D Camera { get; }
 
 		public void Add(Entity3D entity)
 		{
