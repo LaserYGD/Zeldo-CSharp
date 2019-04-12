@@ -21,7 +21,7 @@ namespace Engine.UI
 		{
 			elements = new List<CanvasElement>();
 
-			MessageSystem.Subscribe(this, CoreMessageTypes.Resize, (messageType, data, dt) =>
+			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) =>
 			{
 				elements.ForEach(PlaceElement);
 			});
@@ -49,7 +49,7 @@ namespace Engine.UI
 			bool top = (anchor & Alignments.Top) > 0;
 			bool bottom = (anchor & Alignments.Bottom) > 0;
 
-			ivec2 dimensions = Resolution.Dimensions;
+			ivec2 dimensions = Resolution.WindowDimensions;
 			ivec2 offset = element.Offset;
 
 			int width = dimensions.x;

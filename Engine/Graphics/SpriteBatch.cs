@@ -53,7 +53,7 @@ namespace Engine.Graphics
 			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
 			primitiveShader.Bind(bufferId, indexBufferId);
 
-			MessageSystem.Subscribe(this, CoreMessageTypes.Resize, (messageType, data, dt) => { OnResize(); });
+			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 		}
 
 		public uint Mode
@@ -75,7 +75,7 @@ namespace Engine.Graphics
 
 		private void OnResize()
 		{
-			var halfDimensions = Resolution.Dimensions / 2;
+			var halfDimensions = Resolution.WindowDimensions / 2;
 
 			mvp = mat4.Scale(1f / halfDimensions.x, 1f / halfDimensions.y, 1);
 			mvp *= mat4.Translate(-halfDimensions.x, -halfDimensions.y, 0);

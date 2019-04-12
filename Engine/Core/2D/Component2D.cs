@@ -26,6 +26,7 @@ namespace Engine.Core._2D
 		protected float[] data;
 
 		protected Alignments alignment;
+		protected SpriteModifiers mods;
 
 		protected bool positionChanged;
 		protected bool sourceChanged;
@@ -35,7 +36,9 @@ namespace Engine.Core._2D
 		{
 			scale = vec2.Ones;
 			color = Color.White;
+			mods = SpriteModifiers.None;
 			positionChanged = true;
+			sourceChanged = true;
 			colorChanged = true;
 		}
 
@@ -76,6 +79,19 @@ namespace Engine.Core._2D
 			{
 				color = value;
 				colorChanged = true;
+			}
+		}
+
+		public SpriteModifiers Mods
+		{
+			get => mods;
+			set
+			{
+				if (mods != value)
+				{
+					mods = value;
+					positionChanged = true;
+				}
 			}
 		}
 

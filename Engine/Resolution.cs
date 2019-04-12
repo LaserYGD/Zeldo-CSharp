@@ -10,9 +10,26 @@ namespace Engine
 {
 	public static class Resolution
 	{
-		private static ivec2 windowDimensions;
+		// These default settings are meant to be overridden by a config file on startup.
+		private static ivec2 renderDimensions = new ivec2(1920, 1080);
+		private static ivec2 windowDimensions = new ivec2(800, 600);
 
-		public static ivec2 Dimensions => new ivec2(800, 600);
+		public static int RenderWidth => renderDimensions.x;
+		public static int RenderHeight => renderDimensions.y;
+		public static int WindowWidth => windowDimensions.x;
+		public static int WindowHeight => windowDimensions.y;
+
+		public static ivec2 RenderDimensions
+		{
+			get => renderDimensions;
+			set
+			{
+				renderDimensions = value;
+
+				MessageSystem.Send(CoreMessageTypes.ResizeRender, value);
+			}
+		}
+
 		public static ivec2 WindowDimensions
 		{
 			get => windowDimensions;
@@ -20,7 +37,7 @@ namespace Engine
 			{
 				windowDimensions = value;
 
-				MessageSystem.Send(CoreMessageTypes.Resize, value);
+				MessageSystem.Send(CoreMessageTypes.ResizeWindow, value);
 			}
 		}
 	}

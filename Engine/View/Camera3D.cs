@@ -20,7 +20,7 @@ namespace Engine.View
 		{
 			Orientation = quat.Identity;
 
-			MessageSystem.Subscribe(this, CoreMessageTypes.Resize, (messageType, data, dt) =>
+			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeRender, (messageType, data, dt) =>
 			{
 				RecomputeProjection();
 			});
@@ -44,7 +44,7 @@ namespace Engine.View
 
 		private void RecomputeProjection()
 		{
-			ivec2 dimensions = Resolution.WindowDimensions;
+			ivec2 dimensions = Resolution.RenderDimensions;
 
 			projection = isOrthographic
 				? mat4.Ortho(-4, 4, -3, 3, 0.1f, 100)

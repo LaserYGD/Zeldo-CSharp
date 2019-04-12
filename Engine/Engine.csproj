@@ -96,6 +96,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\2D\SpriteModifiers.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
     <Compile Include="Graphics\PrimitiveBuffer.cs" />

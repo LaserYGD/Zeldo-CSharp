@@ -96,6 +96,7 @@
     <Compile Include="Physics\VerletPoint.cs" />
     <Compile Include="Physics\VerletRope.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Room.cs" />
     <Compile Include="UI\Hud\PlayerHealthDisplay.cs" />
     <Compile Include="UI\Hud\PlayerManaDisplay.cs" />
     <Compile Include="UI\Letterbox.cs" />

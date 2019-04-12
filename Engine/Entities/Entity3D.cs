@@ -5,11 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
+using Engine.View;
 using GlmSharp;
 
 namespace Engine.Entities
 {
-	public class Entity3D : ITransformable3D, IDynamic
+	public class Entity3D : ITransformable3D, IDynamic, IRenderable3D
 	{
 		private vec3 position;
 		private quat orientation;
@@ -71,6 +72,10 @@ namespace Engine.Entities
 		}
 
 		public virtual void Update(float dt)
+		{
+		}
+
+		public virtual void Draw(Camera3D camera)
 		{
 		}
 	}

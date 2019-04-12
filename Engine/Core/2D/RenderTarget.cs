@@ -8,15 +8,12 @@ using static Engine.GL;
 
 namespace Engine.Core._2D
 {
-	public class RenderTarget : QuadSource
+	public class RenderTarget : QuadSource, IDisposable
 	{
 		private uint framebufferId;
 		private uint renderbufferId;
 		private uint textureId;
-
-		private bool colorEnabled;
-		private bool depthEnabled;
-		private bool stencilEnabled;
+		private uint clearBits;
 
 		public unsafe RenderTarget(int width, int height, RenderTargetFlags flags) : base(width, height)
 		{
@@ -34,9 +31,9 @@ namespace Engine.Core._2D
 
 			glBindTexture(GL_TEXTURE_2D, textureId);
 
-			colorEnabled = (flags & RenderTargetFlags.Color) > 0;
-			depthEnabled = (flags & RenderTargetFlags.Depth) > 0;
-			stencilEnabled = (flags & RenderTargetFlags.Stencil) > 0;
+			bool colorEnabled = (flags & RenderTargetFlags.Color) > 0;
+			bool depthEnabled = (flags & RenderTargetFlags.Depth) > 0;
+			bool stencilEnabled = (flags & RenderTargetFlags.Stencil) > 0;
 
 			uint texFormat;
 			uint texType;
@@ -89,6 +86,50 @@ namespace Engine.Core._2D
 			}
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+			if (colorEnabled)
+			{
+				clearBits |= GL_COLOR_BUFFER_BIT;
+			}
+
+			if (depthEnabled)
+			{
+				clearBits |= GL_DEPTH_BUFFER_BIT;
+			}
+
+			if (stencilEnabled)
+			{
+				clearBits |= GL_STENCIL_BUFFER_BIT;
+			}
+		}
+
+		public unsafe void Dispose()
+		{
+			fixed (uint* address = &textureId)
+			{
+				glDeleteTextures(1, address);
+			}
+
+			fixed (uint* address = &framebufferId)
+			{
+				glDeleteFramebuffers(1, address);
+			}
+
+			fixed (uint* address = &renderbufferId)
+			{
+				glDeleteRenderbuffers(1, address);
+			}
+		}
+
+		public void Apply(bool clear = true)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, framebufferId);
+			glViewport(0, 0, (uint)Width, (uint)Height);
+
+			if (clear)
+			{
+				glClear(clearBits);
+			}
 		}
 	}
 }

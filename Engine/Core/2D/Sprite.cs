@@ -27,9 +27,6 @@ namespace Engine.Core._2D
 			this.source = source;
 
 			data = new float[QuadSize];
-
-			// Calling the property here sets the sourceChanged flag to true and recomputes the origin.
-			SourceRect = null;
 		}
 
 		public Bounds2D SourceRect
@@ -58,13 +55,23 @@ namespace Engine.Core._2D
 			}
 		}
 
-		public void ScaleTo(ivec2 dimensions)
-		{
-			ScaleTo(dimensions.x, dimensions.y);
-		}
-
 		public void ScaleTo(int width, int height)
 		{
+			float w;
+			float h;
+
+			if (sourceRect != null)
+			{
+				w = sourceRect.Width;
+				h = sourceRect.Height;
+			}
+			else
+			{
+				w = source.Width;
+				h = source.Height;
+			}
+
+			Scale = new vec2(width / w, height / h);
 		}
 
 		protected override void RecomputePositionData()
@@ -100,11 +107,35 @@ namespace Engine.Core._2D
 				}
 			}
 
+			int[] order = Enumerable.Range(0, 4).ToArray();
+
+			bool flipHorizontal = (mods & SpriteModifiers.FlipHorizontal) > 0;
+			bool flipVertical = (mods & SpriteModifiers.FlipVertical) > 0;
+
+			if (flipHorizontal)
+			{
+				order[0] = 2;
+				order[1] = 3;
+				order[2] = 0;
+				order[3] = 1;
+			}
+
+			if (flipVertical)
+			{
+				int temp1 = order[0];
+				int temp2 = order[2];
+
+				order[0] = order[1];
+				order[1] = temp1;
+				order[2] = order[3];
+				order[3] = temp2;
+			}
+
 			for (int i = 0; i < 4; i++)
 			{
 				int start = i * VertexSize;
 
-				vec2 p = points[i] + position;
+				vec2 p = points[order[i]] + position;
 
 				data[start] = p.x;
 				data[start + 1] = p.y;
@@ -122,7 +153,7 @@ namespace Engine.Core._2D
 				coords[2] = new vec2(sourceRect.Right, sourceRect.Top);
 				coords[3] = new vec2(sourceRect.Right, sourceRect.Bottom);
 
-				vec2 dimensions = Resolution.Dimensions;
+				vec2 dimensions = new vec2(source.Width, source.Height);
 
 				for (int i = 0; i < 4; i++)
 				{

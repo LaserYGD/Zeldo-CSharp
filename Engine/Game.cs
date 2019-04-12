@@ -52,7 +52,8 @@ namespace Engine
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-			IntPtr address = glfwCreateWindow(800, 600, title, IntPtr.Zero, IntPtr.Zero);
+			IntPtr address = glfwCreateWindow(Resolution.WindowWidth, Resolution.WindowHeight, title, IntPtr.Zero,
+				IntPtr.Zero);
 
 			if (address == IntPtr.Zero)
 			{
@@ -80,7 +81,7 @@ namespace Engine
 			*/
 		}
 
-		public unsafe void Run()
+		public void Run()
 		{
 			const float Target = 1.0f / 60;
 

@@ -73,7 +73,7 @@ namespace Zeldo.Entities
 			box.Position = Position;
 		}
 
-		public void Draw(Camera3D camera)
+		public override void Draw(Camera3D camera)
 		{
 			primitives.Draw(box, Color.White);
 			primitives.Flush(camera);

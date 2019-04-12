@@ -23,6 +23,8 @@ namespace Engine
 			glBindFramebuffer = GetDelegate<Delegates.glBindFramebuffer>();
 			glBindRenderbuffer = GetDelegate<Delegates.glBindRenderbuffer>();
 			glCheckFramebufferStatus = GetDelegate<Delegates.glCheckFramebufferStatus>();
+			glDeleteFramebuffers = GetDelegate<Delegates.glDeleteFramebuffers>();
+			glDeleteRenderbuffers = GetDelegate<Delegates.glDeleteRenderbuffers>();
 			glDrawBuffer = GetDelegate<Delegates.glDrawBuffer>();
 			glFramebufferRenderbuffer = GetDelegate<Delegates.glFramebufferRenderbuffer>();
 			glFramebufferTexture2D = GetDelegate<Delegates.glFramebufferTexture2D>();
@@ -69,6 +71,7 @@ namespace Engine
 			// Textures
 			glActiveTexture = GetDelegate<Delegates.glActiveTexture>();
 			glBindTexture = GetDelegate<Delegates.glBindTexture>();
+			glDeleteTextures = GetDelegate<Delegates.glDeleteTextures>();
 			glGenerateMipmap = GetDelegate<Delegates.glGenerateMipmap>();
 			glGenTextures = GetDelegate<Delegates.glGenTextures>();
 			glTexImage2D = GetDelegate<Delegates.glTexImage2D>();
@@ -826,6 +829,8 @@ namespace Engine
 		public static Delegates.glBindFramebuffer glBindFramebuffer;
 		public static Delegates.glBindRenderbuffer glBindRenderbuffer;
 		public static Delegates.glCheckFramebufferStatus glCheckFramebufferStatus;
+		public static Delegates.glDeleteFramebuffers glDeleteFramebuffers;
+		public static Delegates.glDeleteRenderbuffers glDeleteRenderbuffers;
 		public static Delegates.glDrawBuffer glDrawBuffer;
 		public static Delegates.glFramebufferRenderbuffer glFramebufferRenderbuffer;
 		public static Delegates.glFramebufferTexture2D glFramebufferTexture2D;
@@ -872,6 +877,7 @@ namespace Engine
 		// Textures
 		public static Delegates.glActiveTexture glActiveTexture;
 		public static Delegates.glBindTexture glBindTexture;
+		public static Delegates.glDeleteTextures glDeleteTextures;
 		public static Delegates.glGenerateMipmap glGenerateMipmap;
 		public static Delegates.glGenTextures glGenTextures;
 		public static Delegates.glTexImage2D glTexImage2D;
@@ -898,6 +904,8 @@ namespace Engine
 			public delegate void glBindFramebuffer(uint target, uint framebuffer);
 			public delegate void glBindRenderbuffer(uint target, uint renderbuffer);
 			public delegate uint glCheckFramebufferStatus(uint target);
+			public delegate void glDeleteFramebuffers(uint n, uint* framebuffers);
+			public delegate void glDeleteRenderbuffers(uint n, uint* renderbuffers);
 			public delegate void glDrawBuffer(uint buf);
 			public delegate void glFramebufferRenderbuffer(uint target, uint attachment, uint renderbuffertarget,
 				uint renderbuffer);
@@ -948,6 +956,7 @@ namespace Engine
 			// Textures
 			public delegate void glActiveTexture(uint texture);
 			public delegate void glBindTexture(uint target, uint texture);
+			public delegate void glDeleteTextures(uint n, uint* textures);
 			public delegate void glGenerateMipmap(uint target);
 			public delegate void glGenTextures(uint n, uint* textures);
 			public delegate void glTexImage2D(uint target, int level, int internalformat, uint width, uint height,
