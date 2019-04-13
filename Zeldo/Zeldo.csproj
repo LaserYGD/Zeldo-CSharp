@@ -109,6 +109,7 @@
     <Compile Include="UI\Menus\Menu.cs" />
     <Compile Include="UI\Menus\TitleMenu.cs" />
     <Compile Include="UI\SpeechBox.cs" />
+    <Compile Include="Weather\DayNightCycle.cs" />
     <Compile Include="Weather\Rain.cs" />
     <Compile Include="Weather\Snow.cs" />
   </ItemGroup>

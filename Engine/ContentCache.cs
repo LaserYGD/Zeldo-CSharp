@@ -10,12 +10,25 @@ namespace Engine
 	public static class ContentCache
 	{
 		private static Dictionary<string, SpriteFont> fonts;
+		private static Dictionary<string, Mesh> meshes;
 		private static Dictionary<string, Texture> textures;
 
 		static ContentCache()
 		{
 			fonts = new Dictionary<string, SpriteFont>();
+			meshes = new Dictionary<string, Mesh>();
 			textures = new Dictionary<string, Texture>();
+		}
+
+		public static Mesh GetMesh(string filename)
+		{
+			if (!meshes.TryGetValue(filename, out Mesh mesh))
+			{
+				mesh = Mesh.Load(filename);
+				meshes.Add(filename, mesh);
+			}
+
+			return mesh;
 		}
 
 		public static SpriteFont GetFont(string name)
