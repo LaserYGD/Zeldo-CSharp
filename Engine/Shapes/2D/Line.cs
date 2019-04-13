@@ -9,7 +9,7 @@ namespace Engine.Shapes._2D
 {
 	public class Line
 	{
-		public Line()
+		public Line() : this(vec2.Zero, vec2.Zero)
 		{
 		}
 

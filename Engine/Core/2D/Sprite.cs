@@ -97,12 +97,12 @@ namespace Engine.Core._2D
 
 			if (rotation != 0)
 			{
-				mat2 rotationMatrix = new mat2(mat4.Rotate(rotation, vec3.UnitZ));
+				mat2 matrix = Utilities.RotationMatrix2D(rotation);
 
 				for (int i = 0; i < 4; i++)
 				{
 					vec2 p = points[i];
-					p = rotationMatrix * p;
+					p = matrix * p;
 					points[i] = p;
 				}
 			}

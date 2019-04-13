@@ -96,6 +96,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="Core\2D\SpriteModifiers.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
@@ -110,6 +111,12 @@
     <Compile Include="Networking\GamePeer.cs" />
     <Compile Include="Particles\Emitters\Emitter.cs" />
     <Compile Include="Particles\Particle.cs" />
+    <Compile Include="Shapes\2D\Arc.cs" />
+    <Compile Include="Shapes\2D\Rectangle.cs" />
+    <Compile Include="Shapes\2D\ShapeHelper2D.cs" />
+    <Compile Include="Timing\RepeatingTimer.cs" />
+    <Compile Include="Timing\SingleTimer.cs" />
+    <Compile Include="Timing\Timer.cs" />
     <Compile Include="View\Camera3D.cs" />
     <Compile Include="Core\2D\Alignments.cs" />
     <Compile Include="Core\2D\Bounds2D.cs" />
@@ -147,7 +154,6 @@
     <Compile Include="Interfaces\2D\IRenderable2D.cs" />
     <Compile Include="Interfaces\2D\IRotatable.cs" />
     <Compile Include="Interfaces\2D\IScalable2D.cs" />
-    <Compile Include="Interfaces\2D\ISensitive.cs" />
     <Compile Include="Interfaces\3D\IOrientable.cs" />
     <Compile Include="Interfaces\3D\ITransformable3D.cs" />
     <Compile Include="Interfaces\IColorable.cs" />
@@ -163,7 +169,7 @@
     <Compile Include="GL.cs" />
     <Compile Include="Physics\RigidBody3D.cs" />
     <Compile Include="Resolution.cs" />
-    <Compile Include="Sensors\Sensor.cs" />
+    <Compile Include="Sensors\2D\Sensor2D.cs" />
     <Compile Include="Sensors\SensorTypes.cs" />
     <Compile Include="Sensors\Space.cs" />
     <Compile Include="Shaders\Shader.cs" />

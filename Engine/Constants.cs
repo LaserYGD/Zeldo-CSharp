@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Engine.Sensors
+namespace Engine
 {
-	[Flags]
-	public enum SensorTypes
+	public static class Constants
 	{
-		All = 3,
-		Entity = 1,
-		None = 0,
-		Zone = 2
+		public static float Pi = (float)Math.PI;
+		public static float TwoPi = Pi * 2;
 	}
 }

@@ -28,7 +28,6 @@ namespace Zeldo.Entities
 		public Player()
 		{
 			Box = new Box(0.6f, 1.8f, 0.6f);
-			AttackLine = new Line();
 			sword = new Sword();
 			controls = new PlayerControls();
 
@@ -43,7 +42,6 @@ namespace Zeldo.Entities
 		public PlayerManaDisplay ManaDisplay { get; set; }
 
 		public Box Box { get; }
-		public Line AttackLine { get; }
 
 		private void ProcessInput(FullInputData data)
 		{
@@ -53,14 +51,11 @@ namespace Zeldo.Entities
 
 		private void ProcessAttack(FullInputData data)
 		{
-			InputTypes test = InputTypes.Mouse;
-
-			//if (data.Query(controls.Attack, InputStates.PressedThisFrame, out InputBind bindUsed))
+			if (data.Query(controls.Attack, InputStates.PressedThisFrame, out InputBind bindUsed))
 			{
 				vec2 direction = vec2.Zero;
 
-				//switch (bindUsed.InputType)
-				switch (test)
+				switch (bindUsed.InputType)
 				{
 					case InputTypes.Keyboard:
 						break;
@@ -75,9 +70,6 @@ namespace Zeldo.Entities
 						screenPosition.y *= -1;
 						screenPosition += halfWindow;
 						direction = (mouseData.Location - screenPosition).Normalized;
-
-						AttackLine.P1 = screenPosition;
-						AttackLine.P2 = mouseData.Location;
 
 						break;
 				}

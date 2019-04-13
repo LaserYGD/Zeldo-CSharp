@@ -11,6 +11,8 @@ namespace Engine.Shapes._2D
 {
 	public abstract class Shape2D : IPositionable2D, IRotatable
 	{
+		protected vec2 position;
+
 		protected Shape2D(ShapeTypes2D shapeType)
 		{
 			ShapeType = shapeType;
@@ -18,8 +20,21 @@ namespace Engine.Shapes._2D
 
 		public ShapeTypes2D ShapeType { get; set; }
 
-		public vec2 Position { get; set; }
+		// Using a protected local field (rather than an auto-property) allows easier modification by extending classes
+		// (since you don't need to copy the vector first before modifying values).
+		public vec2 Position
+		{
+			get => position;
+			set => position = value;
+		}
 
 		public float Rotation { get; set; }
+
+		public abstract bool Contains(vec2 p);
+
+		public bool Overlaps(Shape2D other)
+		{
+			return ShapeHelper2D.CheckOverlap(this, other);
+		}
 	}
 }

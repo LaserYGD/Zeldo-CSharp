@@ -8,11 +8,11 @@ namespace Engine.Sensors
 {
 	public class Space
 	{
-		private List<Sensor> sensors;
+		private List<Sensor2D> sensors;
 
 		public Space()
 		{
-			sensors = new List<Sensor>();
+			sensors = new List<Sensor2D>();
 		}
 
 		public void Update()

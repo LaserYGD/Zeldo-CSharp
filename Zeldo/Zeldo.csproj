@@ -89,6 +89,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Effects\Explosion.cs" />
     <Compile Include="Entities\Enemies\Skeleton.cs" />
     <Compile Include="Entities\Hazards\PoisonBush.cs" />
     <Compile Include="Entities\Player.cs" />

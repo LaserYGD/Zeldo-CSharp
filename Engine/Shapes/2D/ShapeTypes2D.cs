@@ -8,8 +8,8 @@ namespace Engine.Shapes._2D
 {
 	public enum ShapeTypes2D
 	{
+		Arc,
 		Circle,
-		Rectangle,
-		Square
+		Rectangle
 	}
 }
