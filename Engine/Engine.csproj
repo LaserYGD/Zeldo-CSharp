@@ -141,9 +141,6 @@
     <Compile Include="ContentCache.cs" />
     <Compile Include="Core\3D\Model.cs" />
     <Compile Include="Core\2D\Sprite.cs" />
-    <Compile Include="Entities\Attachment.cs" />
-    <Compile Include="Entities\Entity3D.cs" />
-    <Compile Include="Entities\Scene.cs" />
     <Compile Include="Exceptions\RenderTargetException.cs" />
     <Compile Include="Exceptions\ShaderException.cs" />
     <Compile Include="Game.cs" />
@@ -172,7 +169,6 @@
     <Compile Include="Interfaces\IDynamic.cs" />
     <Compile Include="Interfaces\2D\IPositionable2D.cs" />
     <Compile Include="Interfaces\3D\IPositionable3D.cs" />
-    <Compile Include="Interfaces\IInteractive.cs" />
     <Compile Include="Interfaces\IReceiver.cs" />
     <Compile Include="Interfaces\IRenderTargetUser.cs" />
     <Compile Include="Messaging\CoreMessageTypes.cs" />
@@ -181,9 +177,6 @@
     <Compile Include="GL.cs" />
     <Compile Include="Physics\RigidBody3D.cs" />
     <Compile Include="Resolution.cs" />
-    <Compile Include="Sensors\2D\Sensor2D.cs" />
-    <Compile Include="Sensors\SensorTypes.cs" />
-    <Compile Include="Sensors\Space.cs" />
     <Compile Include="Shaders\Shader.cs" />
     <Compile Include="Shaders\ShaderAttribute.cs" />
     <Compile Include="Shaders\ShaderStages.cs" />

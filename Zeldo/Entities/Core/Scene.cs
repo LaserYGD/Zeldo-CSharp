@@ -6,28 +6,29 @@ using System.Threading.Tasks;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using Engine.View;
+using Zeldo.Sensors;
 
-namespace Engine.Entities
+namespace Zeldo.Entities.Core
 {
 	public class Scene : IDynamic, IRenderable3D
 	{
-		private List<Entity3D> entities;
+		private List<Entity> entities;
 
-		public Scene(Camera3D camera)
+		public Scene()
 		{
-			Camera = camera;
-			entities = new List<Entity3D>();
+			entities = new List<Entity>();
 		}
 
-		public Camera3D Camera { get; }
+		public Camera3D Camera { get; set; }
+		public Space Space { get; set; }
 
-		public void Add(Entity3D entity)
+		public void Add(Entity entity)
 		{
 			entities.Add(entity);
 			entity.Scene = this;
 		}
 
-		public List<T> GetEntityList<T>() where T : Entity3D
+		public List<Entity> GetEntityList(EntityTypes type)
 		{
 			return null;
 		}
@@ -39,7 +40,6 @@ namespace Engine.Entities
 
 		public void Draw(Camera3D camera)
 		{
-			entities.ForEach(e => e.Draw(camera));
 		}
 	}
 }

@@ -1,35 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Engine;
-using Engine.Core;
-using Engine.Entities;
-using Engine.Graphics;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.Shapes._2D;
 using Engine.Shapes._3D;
-using Engine.View;
+using Engine.Utility;
 using GlmSharp;
+using Zeldo.Entities.Core;
 using Zeldo.Entities.Weapons;
 using Zeldo.UI.Hud;
 
 namespace Zeldo.Entities
 {
-	public class Player : Entity3D, IReceiver
+	public class Player : Entity, IReceiver
 	{
+		private const int DashIndex = (int)PlayerSkills.Dash;
+		private const int JumpIndex = (int)PlayerSkills.Jump;
+
 		private vec3 velocity;
 		private Sword sword;
+		private InputBind jumpBindUsed;
+		private PlayerData playerData;
 		private PlayerControls controls;
 
-		public Player()
+		private bool onGround;
+		private bool[] skillsUnlocked;
+		private bool[] skillsEnabled;
+
+		public Player() : base(EntityTypes.Player)
 		{
 			Box = new Box(0.6f, 1.8f, 0.6f);
+			onGround = true;
 			sword = new Sword();
+			playerData = JsonUtilities.Deserialize<PlayerData>("PlayerData.json");
 			controls = new PlayerControls();
+
+			int skillCount = Utilities.EnumCount<PlayerSkills>();
+
+			skillsUnlocked = new bool[skillCount];
+			skillsEnabled = new bool[skillCount];
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
@@ -46,6 +56,7 @@ namespace Zeldo.Entities
 		private void ProcessInput(FullInputData data)
 		{
 			ProcessAttack(data);
+			ProcessJumping(data);
 			ProcessRunning(data);
 		}
 
@@ -78,10 +89,16 @@ namespace Zeldo.Entities
 			}
 		}
 
+		private void ProcessJumping(FullInputData data)
+		{
+			if (!skillsEnabled[JumpIndex])
+			{
+				return;
+			}
+		}
+
 		private void ProcessRunning(FullInputData data)
 		{
-			const int Speed = 3;
-
 			bool runLeft = data.Query(controls.RunLeft, InputStates.Held);
 			bool runRight = data.Query(controls.RunRight, InputStates.Held);
 			bool runUp = data.Query(controls.RunUp, InputStates.Held);
@@ -89,7 +106,7 @@ namespace Zeldo.Entities
 
 			if (runLeft ^ runRight)
 			{
-				velocity.x = Speed * (runLeft ? -1 : 1);
+				velocity.x = playerData.RunMaxSpeed * (runLeft ? -1 : 1);
 			}
 			else
 			{
@@ -98,12 +115,25 @@ namespace Zeldo.Entities
 
 			if (runUp ^ runDown)
 			{
-				velocity.z = Speed * (runUp ? -1 : 1);
+				velocity.z = playerData.RunMaxSpeed * (runUp ? -1 : 1);
 			}
 			else
 			{
 				velocity.z = 0;
 			}
+		}
+
+		public void UnlockSkill(PlayerSkills skill)
+		{
+			int index = (int)skill;
+
+			skillsUnlocked[index] = true;
+			skillsEnabled[index] = IsSkillEnabledOnUnlock(skill);
+		}
+
+		private bool IsSkillEnabledOnUnlock(PlayerSkills skill)
+		{
+			return true;
 		}
 
 		public override void Update(float dt)

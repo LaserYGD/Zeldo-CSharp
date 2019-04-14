@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Engine.Sensors
+namespace Zeldo.Entities
 {
-	[Flags]
-	public enum SensorTypes
+	public enum PlayerSkills
 	{
-		All = 3,
-		Entity = 1,
-		None = 0,
-		Zone = 2
+		Dash,
+		Jump
 	}
 }

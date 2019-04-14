@@ -3,21 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Engine.Entities;
-using Engine.Sensors;
-using Engine.Sensors._2D;
 using Engine.Shapes._2D;
 using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
 using Zeldo.Interfaces;
+using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Weapons
 {
 	public class Sword
 	{
 		private Arc arc;
-		private Sensor2D sensor;
+		private Sensor sensor;
 		private SingleTimer timer;
 		private List<ITargetable> targetsHit;
 
@@ -25,9 +23,8 @@ namespace Zeldo.Entities.Weapons
 		{
 			arc = new Arc();
 			targetsHit = new List<ITargetable>();
-			sensor = new Sensor2D(SensorTypes.Zone, this, arc)
+			sensor = new Sensor(SensorTypes.Zone, this, arc)
 			{
-				CanTouch = SensorTypes.Entity,
 				Enabled = false,
 				OnSense = (sensorType, owner) =>
 				{

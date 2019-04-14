@@ -11,7 +11,7 @@ namespace Engine
 	public static class Resolution
 	{
 		// These default settings are meant to be overridden by a config file on startup.
-		private static ivec2 renderDimensions = new ivec2(1920, 1080);
+		private static ivec2 renderDimensions = new ivec2(800, 600);
 		private static ivec2 windowDimensions = new ivec2(800, 600);
 
 		public static int RenderWidth => renderDimensions.x;

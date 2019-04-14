@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Engine.Entities;
 
-namespace Engine.Interfaces
+namespace Zeldo.Entities
 {
-	public interface IInteractive
+	public enum EntityTypes
 	{
-		void OnInteract(Entity3D entity);
+		Player = 1000,
+		Skeleton = 2000
 	}
 }

@@ -90,10 +90,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Effects\Explosion.cs" />
+    <Compile Include="Entities\Core\Entity.cs" />
+    <Compile Include="Entities\Core\Scene.cs" />
     <Compile Include="Entities\Enemies\Skeleton.cs" />
+    <Compile Include="Entities\EntityTypes.cs" />
     <Compile Include="Entities\Hazards\PoisonBush.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerControls.cs" />
+    <Compile Include="Entities\PlayerData.cs" />
+    <Compile Include="Entities\PlayerSkills.cs" />
     <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
     <Compile Include="Interfaces\ITargetable.cs" />
@@ -103,6 +108,9 @@
     <Compile Include="Physics\VerletRope.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Room.cs" />
+    <Compile Include="Sensors\Sensor.cs" />
+    <Compile Include="Sensors\SensorTypes.cs" />
+    <Compile Include="Sensors\Space.cs" />
     <Compile Include="UI\Hud\PlayerHealthDisplay.cs" />
     <Compile Include="UI\Hud\PlayerManaDisplay.cs" />
     <Compile Include="UI\Letterbox.cs" />
@@ -126,13 +134,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\Json\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Content\Fonts\Default_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\Json\PlayerData.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

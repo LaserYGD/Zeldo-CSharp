@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Engine.Entities;
 using Engine.Interfaces._2D;
-using Engine.Sensors;
 using Engine.Shapes._3D;
 using GlmSharp;
+using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
+using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Enemies
 {
-	public class Skeleton : Entity3D, ISensitive, ITargetable
+	public class Skeleton : Entity, ITargetable
 	{
-		public Skeleton()
+		private Sensor sensor;
+
+		public Skeleton() : base(EntityTypes.Skeleton)
 		{
 			MaxHealth = 8;
 			Health = MaxHealth;
@@ -26,15 +28,7 @@ namespace Zeldo.Entities.Enemies
 
 		public Box Box { get; }
 
-		public void OnSense(SensorTypes sensorType, object target)
-		{
-		}
-
-		public void OnSeparate(SensorTypes sensorType, object target)
-		{
-		}
-
-		public void OnHit(int damage, int power, float angle, vec2 direction)
+		public void OnHit(int damage, int power, float angle, vec2 direction, object source)
 		{
 			Health -= damage;
 

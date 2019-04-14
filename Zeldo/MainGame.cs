@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Engine;
 using Engine.Core;
 using Engine.Core._2D;
-using Engine.Entities;
 using Engine.Graphics;
 using Engine.Interfaces;
 using Engine.Messaging;
@@ -15,7 +14,9 @@ using Engine.UI;
 using Engine.View;
 using GlmSharp;
 using Zeldo.Entities;
+using Zeldo.Entities.Core;
 using Zeldo.Entities.Enemies;
+using Zeldo.Sensors;
 using Zeldo.UI.Hud;
 using static Engine.GL;
 
@@ -29,6 +30,7 @@ namespace Zeldo
 		private Camera3D camera;
 		private Canvas canvas;
 		private Scene scene;
+		private Space space;
 		private Player player;
 		private Skeleton skeleton;
 		private PrimitiveRenderer3D primitives;
@@ -58,16 +60,25 @@ namespace Zeldo
 			canvas.Add(healthDisplay);
 			canvas.Add(manaDisplay);
 
+			space = new Space();
+
 			player = new Player
 			{
 				HealthDisplay = healthDisplay,
 				ManaDisplay = manaDisplay
 			};
 
+			player.UnlockSkill(PlayerSkills.Jump);
+
 			skeleton = new Skeleton();
 			skeleton.Position = new vec3(-1.5f, 0, 1);
 
-			scene = new Scene(camera);
+			scene = new Scene
+			{
+				Camera = camera,
+				Space = space
+			};
+
 			scene.Add(player);
 			scene.Add(skeleton);
 
