@@ -21,10 +21,9 @@ namespace Engine.Core._2D
 		}
 
 		public SpriteText(SpriteFont font, string value = null,
-			Alignments alignment = Alignments.Left | Alignments.Top)
+			Alignments alignment = Alignments.Left | Alignments.Top) : base(alignment)
 		{
 			this.font = font;
-			this.alignment = alignment;
 			
 			Value = value;
 		}

@@ -32,8 +32,10 @@ namespace Engine.Core._2D
 		protected bool sourceChanged;
 		protected bool colorChanged;
 
-		protected Component2D()
+		protected Component2D(Alignments alignment)
 		{
+			this.alignment = alignment;
+
 			scale = vec2.Ones;
 			color = Color.White;
 			mods = SpriteModifiers.None;
@@ -58,6 +60,26 @@ namespace Engine.Core._2D
 			set
 			{
 				scale = value;
+				positionChanged = true;
+			}
+		}
+
+		public float X
+		{
+			get => position.x;
+			set
+			{
+				position.x = value;
+				positionChanged = true;
+			}
+		}
+
+		public float Y
+		{
+			get => position.y;
+			set
+			{
+				position.y = value;
 				positionChanged = true;
 			}
 		}
@@ -118,16 +140,17 @@ namespace Engine.Core._2D
 
 		protected void Draw(SpriteBatch sb, uint textureId, float[] data)
 		{
-			if (positionChanged)
-			{
-				RecomputePositionData();
-				positionChanged = false;
-			}
-
+			// Source is intentionally computed before position to make sure the proper origin is applied.
 			if (sourceChanged)
 			{
 				RecomputeSourceData();
 				sourceChanged = false;
+			}
+
+			if (positionChanged)
+			{
+				RecomputePositionData();
+				positionChanged = false;
 			}
 
 			if (colorChanged)

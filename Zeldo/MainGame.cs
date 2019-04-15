@@ -7,6 +7,7 @@ using Engine;
 using Engine.Core;
 using Engine.Core._2D;
 using Engine.Graphics;
+using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.Shapes._3D;
@@ -34,6 +35,9 @@ namespace Zeldo
 		private Player player;
 		private Skeleton skeleton;
 		private PrimitiveRenderer3D primitives;
+
+		private JumpTester jumpTester;
+		private JumpTester2 jumpTester2;
 
 		public MainGame() : base("Zeldo")
 		{
@@ -83,6 +87,8 @@ namespace Zeldo
 			scene.Add(skeleton);
 
 			primitives = new PrimitiveRenderer3D();
+			jumpTester = new JumpTester();
+			jumpTester2 = new JumpTester2();
 			
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
@@ -103,6 +109,9 @@ namespace Zeldo
 		{
 			scene.Update(dt);
 			camera.Update(dt);
+
+			//jumpTester.Update(dt);
+			jumpTester2.Update(dt);
 		}
 
 		protected override void Draw()
@@ -111,9 +120,9 @@ namespace Zeldo
 
 			mainTarget.Apply();
 			//scene.Draw(camera);
-			primitives.Draw(player.Box, Color.White);
-			primitives.Draw(skeleton.Box, Color.Red);
-			primitives.Flush(camera);
+			//primitives.Draw(player.Box, Color.White);
+			//primitives.Draw(skeleton.Box, Color.Red);
+			//primitives.Flush(camera);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT);
@@ -123,6 +132,8 @@ namespace Zeldo
 
 			mainSprite.Draw(sb);
 			canvas.Draw(sb);
+			//jumpTester.Draw(sb);
+			jumpTester2.Draw(sb);
 			sb.Flush();
 		}
 	}

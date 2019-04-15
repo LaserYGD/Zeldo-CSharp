@@ -99,6 +99,8 @@
     <Compile Include="Entities\PlayerControls.cs" />
     <Compile Include="Entities\PlayerData.cs" />
     <Compile Include="Entities\PlayerSkills.cs" />
+    <Compile Include="JumpTester.cs" />
+    <Compile Include="JumpTester2.cs" />
     <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
     <Compile Include="Interfaces\ITargetable.cs" />

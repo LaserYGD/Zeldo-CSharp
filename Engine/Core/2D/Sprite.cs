@@ -22,7 +22,7 @@ namespace Engine.Core._2D
 		{
 		}
 
-		public Sprite(QuadSource source, Alignments alignment = Alignments.Center)
+		public Sprite(QuadSource source, Alignments alignment = Alignments.Center) : base(alignment)
 		{
 			this.source = source;
 
@@ -36,22 +36,6 @@ namespace Engine.Core._2D
 			{
 				sourceRect = value;
 				sourceChanged = true;
-
-				int width;
-				int height;
-
-				if (sourceRect == null)
-				{
-					width = source.Width;
-					height = source.Height;
-				}
-				else
-				{
-					width = sourceRect.Width;
-					height = sourceRect.Height;
-				}
-
-				origin = Utilities.ComputeOrigin(width, height, alignment);
 			}
 		}
 
@@ -177,6 +161,27 @@ namespace Engine.Core._2D
 				data[start] = value.x;
 				data[start + 1] = value.y;
 			}
+
+			RecomputeOrigin();
+		}
+
+		private void RecomputeOrigin()
+		{
+			int width;
+			int height;
+
+			if (sourceRect == null)
+			{
+				width = source.Width;
+				height = source.Height;
+			}
+			else
+			{
+				width = sourceRect.Width;
+				height = sourceRect.Height;
+			}
+
+			origin = Utilities.ComputeOrigin(width, height, alignment);
 		}
 
 		public override void Draw(SpriteBatch sb)
