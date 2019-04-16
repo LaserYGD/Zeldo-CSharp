@@ -39,7 +39,7 @@ namespace Zeldo
 
 		public JumpTester2()
 		{
-			sprite = new Sprite("Link.png", Alignments.Bottom);
+			sprite = new Sprite("Link.png", null, Alignments.Bottom);
 			sprite.Position = new vec2(400, 600);
 
 			textArray = new SpriteText[7];

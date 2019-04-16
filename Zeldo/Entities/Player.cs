@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 using Engine;
 using Engine.Input.Data;
 using Engine.Interfaces;
@@ -9,6 +10,8 @@ using Engine.Utility;
 using GlmSharp;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Weapons;
+using Zeldo.Interfaces;
+using Zeldo.Sensors;
 using Zeldo.UI.Hud;
 
 namespace Zeldo.Entities
@@ -20,6 +23,7 @@ namespace Zeldo.Entities
 
 		private vec3 velocity;
 		private Sword sword;
+		private Sensor sensor;
 		private InputBind jumpBindUsed;
 		private PlayerData playerData;
 		private PlayerControls controls;
@@ -123,6 +127,22 @@ namespace Zeldo.Entities
 			}
 		}
 
+		private void ProcessInteraction(FullInputData data)
+		{
+			if (!data.Query(controls.Interact, InputStates.PressedThisFrame))
+			{
+				return;
+			}
+
+			foreach (Sensor contact in sensor.Contacts)
+			{
+				if (contact.Owner is IInteractive target && target.InteractionEnabled)
+				{
+					target.OnInteract(this);
+				}
+			}
+		}
+
 		public void UnlockSkill(PlayerSkills skill)
 		{
 			int index = (int)skill;
@@ -134,6 +154,10 @@ namespace Zeldo.Entities
 		private bool IsSkillEnabledOnUnlock(PlayerSkills skill)
 		{
 			return true;
+		}
+
+		public void GiveItem(int id, int count = 1)
+		{
 		}
 
 		public override void Update(float dt)

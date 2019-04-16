@@ -35,7 +35,7 @@ namespace Zeldo
 
 			for (int i = 0; i < sprites.Length; i++)
 			{
-				sprites[i] = new Sprite("Link.png", Alignments.Bottom)
+				sprites[i] = new Sprite("Link.png", null, Alignments.Bottom)
 				{
 					Position = new vec2(160 + 160 * i, 600)
 				};

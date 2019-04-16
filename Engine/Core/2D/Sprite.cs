@@ -17,14 +17,16 @@ namespace Engine.Core._2D
 		private QuadSource source;
 		private Bounds2D sourceRect;
 
-		public Sprite(string filename, Alignments alignment = Alignments.Center) :
-			this (ContentCache.GetTexture(filename), alignment)
+		public Sprite(string filename, Bounds2D sourceRect = null, Alignments alignment = Alignments.Center) :
+			this (ContentCache.GetTexture(filename), sourceRect, alignment)
 		{
 		}
 
-		public Sprite(QuadSource source, Alignments alignment = Alignments.Center) : base(alignment)
+		public Sprite(QuadSource source, Bounds2D sourceRect = null, Alignments alignment = Alignments.Center) :
+			base(alignment)
 		{
 			this.source = source;
+			this.sourceRect = sourceRect;
 
 			data = new float[QuadSize];
 		}

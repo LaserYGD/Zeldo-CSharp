@@ -99,6 +99,12 @@
     <Compile Include="Entities\PlayerControls.cs" />
     <Compile Include="Entities\PlayerData.cs" />
     <Compile Include="Entities\PlayerSkills.cs" />
+    <Compile Include="Entities\Projectiles\Arrow.cs" />
+    <Compile Include="Entities\TreasureChest.cs" />
+    <Compile Include="Entities\Weapons\Bow.cs" />
+    <Compile Include="Interfaces\IInteractive.cs" />
+    <Compile Include="Items\Inventory.cs" />
+    <Compile Include="Items\ItemTypes.cs" />
     <Compile Include="JumpTester.cs" />
     <Compile Include="JumpTester2.cs" />
     <Compile Include="Puddle.cs" />
@@ -118,6 +124,10 @@
     <Compile Include="UI\Letterbox.cs" />
     <Compile Include="UI\Menus\Menu.cs" />
     <Compile Include="UI\Menus\TitleMenu.cs" />
+    <Compile Include="UI\Screens\InventoryScreen.cs" />
+    <Compile Include="UI\Screens\ItemIcon.cs" />
+    <Compile Include="UI\Screens\ScreenControls.cs" />
+    <Compile Include="UI\Screens\ScreenManager.cs" />
     <Compile Include="UI\SpeechBox.cs" />
     <Compile Include="Weather\DayNightCycle.cs" />
     <Compile Include="Weather\Rain.cs" />
@@ -141,6 +151,9 @@
     <Content Include="Content\Fonts\Default_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\Textures\Items.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Json\PlayerData.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

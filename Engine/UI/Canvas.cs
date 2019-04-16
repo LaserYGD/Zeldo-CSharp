@@ -35,6 +35,11 @@ namespace Engine.UI
 			PlaceElement(element);
 		}
 
+		public void Remove(CanvasElement element)
+		{
+			elements.Remove(element);
+		}
+
 		public T GetElement<T>() where T : CanvasElement
 		{
 			return elements.OfType<T>().First();
@@ -64,7 +69,7 @@ namespace Engine.UI
 		{
 			foreach (CanvasElement element in elements)
 			{
-				if (element.IsVisible)
+				if (element.Visible)
 				{
 					element.Update(dt);
 				}
@@ -75,7 +80,7 @@ namespace Engine.UI
 		{
 			foreach (CanvasElement element in elements)
 			{
-				if (element.IsVisible)
+				if (element.Visible)
 				{
 					element.Draw(sb);
 				}

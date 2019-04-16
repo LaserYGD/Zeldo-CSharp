@@ -19,6 +19,7 @@ using Zeldo.Entities.Core;
 using Zeldo.Entities.Enemies;
 using Zeldo.Sensors;
 using Zeldo.UI.Hud;
+using Zeldo.UI.Screens;
 using static Engine.GL;
 
 namespace Zeldo
@@ -34,7 +35,9 @@ namespace Zeldo
 		private Space space;
 		private Player player;
 		private Skeleton skeleton;
+		private InventoryScreen inventoryScreen;
 		private PrimitiveRenderer3D primitives;
+		private ScreenManager screenManager;
 
 		private JumpTester jumpTester;
 		private JumpTester2 jumpTester2;
@@ -54,7 +57,7 @@ namespace Zeldo
 			sb = new SpriteBatch();
 			mainTarget = new RenderTarget(Resolution.RenderWidth, Resolution.RenderHeight,
 				RenderTargetFlags.Color | RenderTargetFlags.Depth);
-			mainSprite = new Sprite(mainTarget, Alignments.Left | Alignments.Top);
+			mainSprite = new Sprite(mainTarget, null, Alignments.Left | Alignments.Top);
 			mainSprite.Mods = SpriteModifiers.FlipVertical;
 
 			PlayerHealthDisplay healthDisplay = new PlayerHealthDisplay();
@@ -63,6 +66,9 @@ namespace Zeldo
 			canvas = new Canvas();
 			canvas.Add(healthDisplay);
 			canvas.Add(manaDisplay);
+
+			screenManager = new ScreenManager();
+			screenManager.Load(canvas);
 
 			space = new Space();
 
@@ -89,6 +95,9 @@ namespace Zeldo
 			primitives = new PrimitiveRenderer3D();
 			jumpTester = new JumpTester();
 			jumpTester2 = new JumpTester2();
+
+			inventoryScreen = new InventoryScreen();
+			inventoryScreen.Location = new ivec2(400, 300);
 			
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
@@ -112,6 +121,8 @@ namespace Zeldo
 
 			//jumpTester.Update(dt);
 			jumpTester2.Update(dt);
+
+			MessageSystem.ProcessChanges();
 		}
 
 		protected override void Draw()
@@ -133,7 +144,7 @@ namespace Zeldo
 			mainSprite.Draw(sb);
 			canvas.Draw(sb);
 			//jumpTester.Draw(sb);
-			jumpTester2.Draw(sb);
+			//jumpTester2.Draw(sb);
 			sb.Flush();
 		}
 	}

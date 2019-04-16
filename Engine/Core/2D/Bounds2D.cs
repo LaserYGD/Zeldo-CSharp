@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine.Interfaces._2D;
 using GlmSharp;
 
 namespace Engine.Core._2D
 {
-	public class Bounds2D
+	public class Bounds2D : ILocatable
 	{
 		public Bounds2D() : this(0, 0, 0, 0)
+		{
+		}
+
+		public Bounds2D(int size) : this(0, 0, size, size)
 		{
 		}
 
@@ -52,6 +57,26 @@ namespace Engine.Core._2D
 		{
 			get => Y + Height - 1;
 			set => Y = value - Height + 1;
+		}
+
+		public ivec2 Location
+		{
+			get => new ivec2(X, Y);
+			set
+			{
+				X = value.x;
+				Y = value.y;
+			}
+		}
+
+		public ivec2 Center
+		{
+			get => new ivec2(X + Width / 2, Y + Height / 2);
+			set
+			{
+				X = value.x - Width / 2;
+				Y = value.y - Height / 2;
+			}
 		}
 
 		public bool Contains(ivec2 point)

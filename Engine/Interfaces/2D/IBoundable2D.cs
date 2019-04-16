@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine.Core._2D;
 
-namespace Zeldo.Entities
+namespace Engine.Interfaces._2D
 {
-	public enum EntityTypes
+	public interface IBoundable2D
 	{
-		Enemy,
-		Object,
-		Player,
-		Projectile
+		Bounds2D Bounds { get; }
 	}
 }

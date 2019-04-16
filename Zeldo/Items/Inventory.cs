@@ -4,13 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.Entities
+namespace Zeldo.Items
 {
-	public enum EntityTypes
+	public class Inventory
 	{
-		Enemy,
-		Object,
-		Player,
-		Projectile
+		public bool BowAcquired { get; set; }
 	}
 }

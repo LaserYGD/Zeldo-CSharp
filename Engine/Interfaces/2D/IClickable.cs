@@ -7,7 +7,7 @@ using GlmSharp;
 
 namespace Engine.Interfaces._2D
 {
-	public interface IClickable
+	public interface IClickable : ILocatable, IBoundable2D
 	{
 		void OnHover(ivec2 mouseLocation);
 		void OnUnhover();

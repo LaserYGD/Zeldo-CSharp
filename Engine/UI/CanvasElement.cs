@@ -16,12 +16,12 @@ namespace Engine.UI
 	{
 		protected CanvasElement()
 		{
-			IsVisible = true;
+			Visible = true;
 		}
 
 		public virtual ivec2 Location { get; set; }
 
-		public bool IsVisible { get; set; }
+		public bool Visible { get; set; }
 
 		public Alignments Anchor { get; set; }
 

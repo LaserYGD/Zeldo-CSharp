@@ -16,7 +16,7 @@ namespace Zeldo.Entities.Enemies
 	{
 		private Sensor sensor;
 
-		public Skeleton() : base(EntityTypes.Skeleton)
+		public Skeleton() : base(EntityTypes.Enemy)
 		{
 			MaxHealth = 8;
 			Health = MaxHealth;

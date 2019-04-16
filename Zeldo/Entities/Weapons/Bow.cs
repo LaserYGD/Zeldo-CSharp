@@ -4,13 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.Entities
+namespace Zeldo.Entities.Weapons
 {
-	public enum EntityTypes
+	public class Bow
 	{
-		Enemy,
-		Object,
-		Player,
-		Projectile
 	}
 }

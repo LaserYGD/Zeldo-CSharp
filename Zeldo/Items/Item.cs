@@ -10,5 +10,8 @@ namespace Zeldo.Items
 {
 	public class Item
 	{
+		public string Name { get; }
+
+		public bool Stackable { get; }
 	}
 }

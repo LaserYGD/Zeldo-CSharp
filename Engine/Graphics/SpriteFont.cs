@@ -89,14 +89,67 @@ namespace Engine.Graphics
 
 		public ivec2 Measure(string value)
 		{
-			return ivec2.Zero;
+			if (value.Length == 0)
+			{
+				return ivec2.Zero;
+			}
+
+			int sumWidth = 0;
+			int length = value.Length;
+
+			for (int i = 0; i < length - 1; i++)
+			{
+				sumWidth += Glyphs[value[i]].Advance;
+			}
+
+			sumWidth += Glyphs[value[length - 1]].Width;
+
+			return new ivec2(sumWidth, Size);
 		}
 
 		public ivec2 MeasureLiteral(string value, out ivec2 offset)
 		{
 			offset = ivec2.Zero;
 
-			return ivec2.Zero;
+			if (value.Length == 0)
+			{
+				return ivec2.Zero;
+			}
+
+			int sumWidth = 0;
+			int top = int.MaxValue;
+			int bottom = 0;
+			int length = value.Length;
+
+			for (int i = 0; i < length; i++)
+			{
+				Glyph glyph = Glyphs[value[i]];
+
+				int x = glyph.Offset.x;
+				int y = glyph.Offset.y;
+				int advance = glyph.Advance;
+
+				if (i == 0)
+				{
+					offset.x = x;
+					sumWidth += advance - x;
+				}
+				else if (i == length - 1)
+				{
+					sumWidth += x + glyph.Width;
+				}
+				else
+				{
+					sumWidth += advance;
+				}
+
+				top = Math.Min(top, y);
+				bottom = Math.Max(bottom, y + glyph.Height);
+			}
+
+			offset.y = top;
+
+			return new ivec2(sumWidth, bottom - top);
 		}
 	}
 }
