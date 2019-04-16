@@ -31,6 +31,8 @@ namespace Engine.Timing
 
 				if (!trigger(Elapsed % Duration))
 				{
+					Complete = true;
+
 					return;
 				}
 

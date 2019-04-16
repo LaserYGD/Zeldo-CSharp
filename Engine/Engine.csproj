@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Core\2D\SpriteModifiers.cs" />
+    <Compile Include="Core\DynamicComponent.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
     <Compile Include="Graphics\PrimitiveBuffer.cs" />
@@ -127,9 +128,12 @@
     <Compile Include="Shapes\2D\Arc.cs" />
     <Compile Include="Shapes\2D\Rectangle.cs" />
     <Compile Include="Shapes\2D\ShapeHelper2D.cs" />
+    <Compile Include="Smoothers\3D\OrientationSmoother.cs" />
+    <Compile Include="Smoothers\Smoother.cs" />
     <Compile Include="Timing\RepeatingTimer.cs" />
     <Compile Include="Timing\SingleTimer.cs" />
     <Compile Include="Timing\Timer.cs" />
+    <Compile Include="Utility\Ease.cs" />
     <Compile Include="View\Camera3D.cs" />
     <Compile Include="Core\2D\Alignments.cs" />
     <Compile Include="Core\2D\Bounds2D.cs" />

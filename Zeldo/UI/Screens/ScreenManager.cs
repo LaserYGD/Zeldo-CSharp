@@ -26,6 +26,7 @@ namespace Zeldo.UI.Screens
 		public void Load(Canvas canvas)
 		{
 			inventoryScreen = new InventoryScreen();
+			inventoryScreen.Visible = false;
 			canvas.Add(inventoryScreen);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>

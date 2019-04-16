@@ -28,6 +28,7 @@ namespace Engine.Timing
 			if (Elapsed >= Duration)
 			{
 				trigger(Elapsed - Duration);
+				Complete = true;
 
 				return;
 			}

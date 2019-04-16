@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Engine.Interfaces;
+using Engine.Core;
 
 namespace Engine.Timing
 {
-	public abstract class Timer : IDynamic
+	public abstract class Timer : DynamicComponent
 	{
 		protected Timer(float duration, float elapsed = 0)
 		{
@@ -21,7 +21,5 @@ namespace Engine.Timing
 		public bool Paused { get; set; }
 
 		public Action<float> Tick { get; set; }
-
-		public abstract void Update(float dt);
 	}
 }

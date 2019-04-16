@@ -101,6 +101,7 @@
     <Compile Include="Entities\PlayerSkills.cs" />
     <Compile Include="Entities\Projectiles\Arrow.cs" />
     <Compile Include="Entities\TreasureChest.cs" />
+    <Compile Include="Entities\TreasureChestLid.cs" />
     <Compile Include="Entities\Weapons\Bow.cs" />
     <Compile Include="Interfaces\IInteractive.cs" />
     <Compile Include="Items\Inventory.cs" />
@@ -146,7 +147,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Content\Models\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Fonts\Default_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
