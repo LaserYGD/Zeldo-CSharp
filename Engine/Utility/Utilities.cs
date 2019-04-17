@@ -119,5 +119,19 @@ namespace Engine.Utility
 
 			return new mat2(cos, sin, -sin, cos);
 		}
+
+		public static string StripPath(string value)
+		{
+			int index = value.LastIndexOf('.');
+
+			return value.Substring(0, index);
+		}
+
+		public static string StripExtension(string value)
+		{
+			int index = value.LastIndexOf('.');
+
+			return value.Substring(0, index);
+		}
 	}
 }
