@@ -130,9 +130,13 @@
     <Compile Include="UI\Screens\ScreenControls.cs" />
     <Compile Include="UI\Screens\ScreenManager.cs" />
     <Compile Include="UI\SpeechBox.cs" />
+    <Compile Include="View\SpiralCameraController.cs" />
     <Compile Include="Weather\DayNightCycle.cs" />
     <Compile Include="Weather\Rain.cs" />
     <Compile Include="Weather\Snow.cs" />
+    <Compile Include="Weather\Thunderstorm.cs" />
+    <Compile Include="Weather\WeatherFormation.cs" />
+    <Compile Include="Weather\WeatherManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GlmSharp, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
@@ -148,6 +152,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Content\Json\Fragments\" />
     <Folder Include="Content\Models\" />
   </ItemGroup>
   <ItemGroup>

@@ -198,6 +198,7 @@
     <Compile Include="UI\CanvasElement.cs" />
     <Compile Include="Utility\JsonUtilities.cs" />
     <Compile Include="Utility\Utilities.cs" />
+    <Compile Include="View\CameraController3D.cs" />
     <Compile Include="Window.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -22,6 +22,10 @@ namespace Zeldo.Entities.Core
 		public Camera3D Camera { get; set; }
 		public Space Space { get; set; }
 
+		public void LoadFragment(string filename)
+		{
+		}
+
 		public void Add(Entity entity)
 		{
 			entities.Add(entity);

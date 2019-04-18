@@ -64,6 +64,8 @@ namespace Engine
 			glGetUniformLocation = GetDelegate<Delegates.glGetUniformLocation>();
 			glLinkProgram = GetDelegate<Delegates.glLinkProgram>();
 			glShaderSource = GetDelegate<Delegates.glShaderSource>();
+			glUniform3f= GetDelegate<Delegates.glUniform3f>();
+			glUniform4f = GetDelegate<Delegates.glUniform4f>();
 			glUniformMatrix4fv = GetDelegate<Delegates.glUniformMatrix4fv>();
 			glUseProgram = GetDelegate<Delegates.glUseProgram>();
 			glVertexAttribPointer = GetDelegate<Delegates.glVertexAttribPointer>();
@@ -870,6 +872,8 @@ namespace Engine
 		public static Delegates.glGetUniformLocation glGetUniformLocation;
 		public static Delegates.glLinkProgram glLinkProgram;
 		public static Delegates.glShaderSource glShaderSource;
+		public static Delegates.glUniform3f glUniform3f;
+		public static Delegates.glUniform4f glUniform4f;
 		public static Delegates.glUniformMatrix4fv glUniformMatrix4fv;
 		public static Delegates.glUseProgram glUseProgram;
 		public static Delegates.glVertexAttribPointer glVertexAttribPointer;
@@ -948,6 +952,8 @@ namespace Engine
 			public delegate int glGetUniformLocation(uint program, byte* name);
 			public delegate void glLinkProgram(uint program);
 			public delegate void glShaderSource(uint shader, uint count, string[] @string, int* length);
+			public delegate void glUniform3f(int location, float v0, float v1, float v2);
+			public delegate void glUniform4f(int location, float v0, float v1, float v2, float v3);
 			public delegate void glUniformMatrix4fv(int location, uint count, bool transpose, float* value);
 			public delegate void glUseProgram(uint program);
 			public delegate void glVertexAttribPointer(uint index, int size, uint type, bool normalized, uint stride,

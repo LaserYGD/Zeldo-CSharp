@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Zeldo.Weather
 {
-	public class Rain
+	public class Rain : WeatherFormation
 	{
+		public override void Update(float dt)
+		{
+		}
 	}
 }

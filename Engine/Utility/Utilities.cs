@@ -16,7 +16,22 @@ namespace Engine.Utility
 			return Enum.GetValues(typeof(T)).Length;
 		}
 
+		public static byte Lerp(byte start, byte end, float t)
+		{
+			return (byte)((end - start) * t + start);
+		}
+
+		public static int Lerp(int start, int end, float t)
+		{
+			return (int)((end - start) * t) + start;
+		}
+
 		public static float Length(vec2 v)
+		{
+			return (float)Math.Sqrt(LengthSquared(v));
+		}
+
+		public static float Length(vec3 v)
 		{
 			return (float)Math.Sqrt(LengthSquared(v));
 		}
@@ -24,6 +39,11 @@ namespace Engine.Utility
 		public static float LengthSquared(vec2 v)
 		{
 			return v.x * v.x + v.y * v.y;
+		}
+
+		public static float LengthSquared(vec3 v)
+		{
+			return v.x * v.x + v.y * v.y + v.z * v.z;
 		}
 
 		public static float Distance(vec2 p1, vec2 p2)
@@ -102,6 +122,16 @@ namespace Engine.Utility
 			if (v == vec2.Zero)
 			{
 				return vec2.Zero;
+			}
+
+			return v / Length(v);
+		}
+
+		public static vec3 Normalize(vec3 v)
+		{
+			if (v == vec3.Zero)
+			{
+				return vec3.Zero;
 			}
 
 			return v / Length(v);

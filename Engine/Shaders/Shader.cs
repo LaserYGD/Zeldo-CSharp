@@ -219,6 +219,16 @@ namespace Engine.Shaders
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
 		}
 
+		public void SetUniform(string name, vec3 value)
+		{
+			glUniform3f(uniforms[name], value.x, value.y, value.z);
+		}
+
+		public void SetUniform(string name, vec4 value)
+		{
+			glUniform4f(uniforms[name], value.r, value.g, value.b, value.a);
+		}
+
 		public unsafe void SetUniform(string name, mat4 value)
 		{
 			float[] values = value.Values1D;
