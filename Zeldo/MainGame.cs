@@ -130,26 +130,28 @@ namespace Zeldo
 
 		protected override void Draw()
 		{
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_CULL_FACE);
+			glDepthFunc(GL_LEQUAL);
+
 			modelTester.DrawTargets();
-			//mainTarget.Apply();
+			mainTarget.Apply();
+			modelTester.Draw(camera);
+
 			//scene.Draw(camera);
 			//primitives.Draw(player.Box, Color.White);
 			//primitives.Draw(skeleton.Box, Color.Red);
 			//primitives.Flush(camera);
-			//modelTester.Draw(camera);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glViewport(0, 0, (uint)Resolution.WindowWidth, (uint)Resolution.WindowHeight);
-			//glDepthFunc(GL_NEVER);
-			//glDisable(GL_CULL_FACE);
-
-			modelTester.Draw(camera);
-
-			return;
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
+			glDepthFunc(GL_NEVER);
 
 			mainSprite.Draw(sb);
-			canvas.Draw(sb);
+			//canvas.Draw(sb);
 			//jumpTester.Draw(sb);
 			//jumpTester2.Draw(sb);
 			sb.Flush();

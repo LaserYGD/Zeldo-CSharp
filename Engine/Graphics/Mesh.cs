@@ -61,8 +61,8 @@ namespace Engine.Graphics
 			}
 			while (line[0] == 'v');
 
-			// The two lines following normals ("usemtl" and smoothing group) can be ignored.
-			lineIndex += 2;
+			// The next line (smoothing group) can be ignored for the time being.
+			lineIndex++;
 
 			// Parse triangles.
 			List<ivec3> vertices = new List<ivec3>();

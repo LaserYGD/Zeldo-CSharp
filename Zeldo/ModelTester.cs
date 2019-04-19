@@ -52,8 +52,6 @@ namespace Zeldo
 			modelShader.AddAttribute<float>(3, GL_FLOAT);
 			modelShader.CreateProgram();
 			modelShader.Bind(bufferId, indexBufferId);
-			modelShader.SetUniform("shadowSampler", 0);
-			modelShader.SetUniform("textureSampler", 1);
 
 			shadowMapShader = new Shader();
 			shadowMapShader.Attach(ShaderTypes.Vertex, "ShadowMap.vert");
@@ -63,7 +61,7 @@ namespace Zeldo
 			shadowMapShader.Bind(bufferId, indexBufferId);
 
 			shadowMapTarget = new RenderTarget(ShadowMapSize, ShadowMapSize, RenderTargetFlags.Depth);
-			model = new Model("Cube");
+			model = new Model("Map");
 			defaultTexture = ContentCache.GetTexture("Grey.png");
 
 			Mesh mesh = model.Mesh;
@@ -118,11 +116,11 @@ namespace Zeldo
 
 			lightDirection = Utilities.Normalize(new vec3(-1, 0.1f, -0.5f));
 
-			mat4 lightView = mat4.LookAt(-lightDirection * 5, vec3.Zero, vec3.UnitY);
-			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 20);
+			mat4 lightView = mat4.LookAt(new vec3(0, -0.5f, 0.5f) * 5, vec3.Zero, vec3.UnitY);
+			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 100);
 
 			lightMatrix = lightProjection * lightView;
-			model.Orientation *= quat.FromAxisAngle(dt / 2, vec3.UnitY);
+			//model.Orientation *= quat.FromAxisAngle(dt / 2, vec3.UnitY);
 		}
 
 		public void DrawTargets()
@@ -140,15 +138,18 @@ namespace Zeldo
 		public void Draw(Camera3D camera)
 		{
 			glCullFace(GL_BACK);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, shadowMapTarget.Id);
+
+			// These two texture binds should be reversed (shadow map to zero and texture to one), but for some bizarre
+			// reason, it only works correctly like this. I don't understand why.
 			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, shadowMapTarget.Id);
+			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, defaultTexture.Id);
 
 			modelShader.Apply();
-			//modelShader.SetUniform("lightColor", new vec3(0, 1, 0));
-			//modelShader.SetUniform("lightDirection", lightDirection);
-			//modelShader.SetUniform("ambientIntensity", 0.1f);
+			modelShader.SetUniform("lightColor", vec3.Ones);
+			modelShader.SetUniform("lightDirection", lightDirection);
+			modelShader.SetUniform("ambientIntensity", 0.1f);
 
 			// See http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/.
 			mat4 biasMatrix = new mat4

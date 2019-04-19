@@ -14,6 +14,8 @@ uniform sampler2D textureSampler;
 
 void main()
 {
+	
+	vec4 color = texture(textureSampler, fSource);
 	float shadowValue = texture(shadowSampler, fShadowMapCoords.xy).r;
 	float d = dot(-lightDirection, fNormal);
 	float bias = 0.001;
@@ -30,8 +32,6 @@ void main()
 
 		lightIntensity = combined;
 	}
-	
-	vec4 color = texture(textureSampler, fSource);
 
-	fragColor = color;// * vec4(lightColor * lightIntensity, 1);
+	fragColor = color * vec4(lightColor * lightIntensity, 1);
 }
