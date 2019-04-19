@@ -80,6 +80,7 @@
     <None Include="Content\Fonts\Default.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Models\Map.obj" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -153,7 +154,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Json\Fragments\" />
-    <Folder Include="Content\Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Fonts\Default_0.png">
