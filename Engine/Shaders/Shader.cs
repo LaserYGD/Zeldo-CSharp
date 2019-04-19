@@ -50,11 +50,7 @@ namespace Engine.Shaders
 			uint id = glCreateShader(shaderType);
 
 			string source = File.ReadAllText("Content/Shaders/" + filename);
-
-			// See https://stackoverflow.com/a/37733830/7281613.
-			//byte* s = (byte*)Marshal.StringToCoTaskMemAuto(source);
-			//byte[] bytes = source.Select(c => (byte)c).ToArray();
-
+			
 			int length = source.Length;
 
 			glShaderSource(id, 1, new [] { source }, &length);
@@ -217,6 +213,16 @@ namespace Engine.Shaders
 			glBindVertexArray(vao);
 			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+		}
+
+		public void SetUniform(string name, int value)
+		{
+			glUniform1i(uniforms[name], value);
+		}
+
+		public void SetUniform(string name, float value)
+		{
+			glUniform1f(uniforms[name], value);
 		}
 
 		public void SetUniform(string name, vec3 value)

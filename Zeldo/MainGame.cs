@@ -41,6 +41,7 @@ namespace Zeldo
 
 		private JumpTester jumpTester;
 		private JumpTester2 jumpTester2;
+		private ModelTester modelTester;
 
 		public MainGame() : base("Zeldo")
 		{
@@ -50,7 +51,7 @@ namespace Zeldo
 			glPrimitiveRestartIndex(65535);
 
 			camera = new Camera3D();
-			camera.IsOrthographic = true;
+			//camera.IsOrthographic = true;
 			camera.Orientation *= quat.FromAxisAngle(0.75f, vec3.UnitX);
 			camera.Position = new vec3(0, 0, 3) * camera.Orientation;
 
@@ -95,6 +96,7 @@ namespace Zeldo
 			primitives = new PrimitiveRenderer3D();
 			jumpTester = new JumpTester();
 			jumpTester2 = new JumpTester2();
+			modelTester = new ModelTester();
 
 			inventoryScreen = new InventoryScreen();
 			inventoryScreen.Location = new ivec2(400, 300);
@@ -120,26 +122,31 @@ namespace Zeldo
 			camera.Update(dt);
 
 			//jumpTester.Update(dt);
-			jumpTester2.Update(dt);
+			//jumpTester2.Update(dt);
+			modelTester.Update(dt);
 
 			MessageSystem.ProcessChanges();
 		}
 
 		protected override void Draw()
 		{
-			glEnable(GL_CULL_FACE);
-
-			mainTarget.Apply();
+			modelTester.DrawTargets();
+			//mainTarget.Apply();
 			//scene.Draw(camera);
 			//primitives.Draw(player.Box, Color.White);
 			//primitives.Draw(skeleton.Box, Color.Red);
 			//primitives.Flush(camera);
+			//modelTester.Draw(camera);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glClear(GL_COLOR_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glViewport(0, 0, (uint)Resolution.WindowWidth, (uint)Resolution.WindowHeight);
-			glDepthFunc(GL_NEVER);
-			glDisable(GL_CULL_FACE);
+			//glDepthFunc(GL_NEVER);
+			//glDisable(GL_CULL_FACE);
+
+			modelTester.Draw(camera);
+
+			return;
 
 			mainSprite.Draw(sb);
 			canvas.Draw(sb);

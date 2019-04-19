@@ -17,6 +17,7 @@ namespace Engine
 			glBufferData = GetDelegate<Delegates.glBufferData>();
 			glBufferSubData = GetDelegate<Delegates.glBufferSubData>();
 			glDrawElements = GetDelegate<Delegates.glDrawElements>();
+			glDrawElementsBaseVertex = GetDelegate<Delegates.glDrawElementsBaseVertex>();
 			glGenBuffers = GetDelegate<Delegates.glGenBuffers>();
 
 			// Framebuffers
@@ -34,6 +35,7 @@ namespace Engine
 			glRenderbufferStorage = GetDelegate<Delegates.glRenderbufferStorage>();
 
 			// Other
+			glCullFace = GetDelegate<Delegates.glCullFace>();
 			glDisable = GetDelegate<Delegates.glDisable>();
 			glEnable = GetDelegate<Delegates.glEnable>();
 
@@ -64,6 +66,8 @@ namespace Engine
 			glGetUniformLocation = GetDelegate<Delegates.glGetUniformLocation>();
 			glLinkProgram = GetDelegate<Delegates.glLinkProgram>();
 			glShaderSource = GetDelegate<Delegates.glShaderSource>();
+			glUniform1i= GetDelegate<Delegates.glUniform1i>();
+			glUniform1f= GetDelegate<Delegates.glUniform1f>();
 			glUniform3f= GetDelegate<Delegates.glUniform3f>();
 			glUniform4f = GetDelegate<Delegates.glUniform4f>();
 			glUniformMatrix4fv = GetDelegate<Delegates.glUniformMatrix4fv>();
@@ -825,6 +829,7 @@ namespace Engine
 		public static Delegates.glBufferData glBufferData;
 		public static Delegates.glBufferSubData glBufferSubData;
 		public static Delegates.glDrawElements glDrawElements;
+		public static Delegates.glDrawElementsBaseVertex glDrawElementsBaseVertex;
 		public static Delegates.glGenBuffers glGenBuffers;
 
 		// Framebuffers
@@ -842,6 +847,7 @@ namespace Engine
 		public static Delegates.glRenderbufferStorage glRenderbufferStorage;
 
 		// Other
+		public static Delegates.glCullFace glCullFace;
 		public static Delegates.glDisable glDisable;
 		public static Delegates.glEnable glEnable;
 
@@ -872,6 +878,8 @@ namespace Engine
 		public static Delegates.glGetUniformLocation glGetUniformLocation;
 		public static Delegates.glLinkProgram glLinkProgram;
 		public static Delegates.glShaderSource glShaderSource;
+		public static Delegates.glUniform1i glUniform1i;
+		public static Delegates.glUniform1f glUniform1f;
 		public static Delegates.glUniform3f glUniform3f;
 		public static Delegates.glUniform4f glUniform4f;
 		public static Delegates.glUniformMatrix4fv glUniformMatrix4fv;
@@ -902,6 +910,7 @@ namespace Engine
 			public delegate void glBufferData(uint target, uint size, void* data, uint usage);
 			public delegate void glBufferSubData(uint target, int offset, uint size, void* data);
 			public delegate void glDrawElements(uint mode, uint count, uint type, void* indices);
+			public delegate void glDrawElementsBaseVertex(uint mode, uint count, uint type, void* indices, int baseVertex);
 			public delegate void glGenBuffers(uint n, uint* buffers);
 
 			// Framebuffers
@@ -921,6 +930,7 @@ namespace Engine
 			public delegate void glRenderbufferStorage(uint target, uint internalformat, uint width, uint height);
 
 			// Other
+			public delegate void glCullFace(uint mode);
 			public delegate void glDisable(uint cap);
 			public delegate void glEnable(uint cap);
 
@@ -952,6 +962,8 @@ namespace Engine
 			public delegate int glGetUniformLocation(uint program, byte* name);
 			public delegate void glLinkProgram(uint program);
 			public delegate void glShaderSource(uint shader, uint count, string[] @string, int* length);
+			public delegate void glUniform1i(int location, int v0);
+			public delegate void glUniform1f(int location, float v0);
 			public delegate void glUniform3f(int location, float v0, float v1, float v2);
 			public delegate void glUniform4f(int location, float v0, float v1, float v2, float v3);
 			public delegate void glUniformMatrix4fv(int location, uint count, bool transpose, float* value);

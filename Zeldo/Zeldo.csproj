@@ -44,6 +44,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -80,7 +81,12 @@
     <None Include="Content\Fonts\Default.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Models\Map.obj" />
+    <None Include="Content\Models\Cube.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Models\Map.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +115,7 @@
     <Compile Include="Items\ItemTypes.cs" />
     <Compile Include="JumpTester.cs" />
     <Compile Include="JumpTester2.cs" />
+    <Compile Include="ModelTester.cs" />
     <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
     <Compile Include="Interfaces\ITargetable.cs" />
@@ -159,6 +166,9 @@
     <Content Include="Content\Fonts\Default_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\Textures\Grey.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Textures\Items.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

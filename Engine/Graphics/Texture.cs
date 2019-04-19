@@ -18,6 +18,7 @@ namespace Engine.Graphics
 			uint id = 0;
 			int width = image.Width;
 			int height = image.Height;
+
 			int[] data = new int[width * height];
 
 			for (int i = 0; i < height; i++)

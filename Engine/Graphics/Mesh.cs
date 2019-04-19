@@ -16,7 +16,7 @@ namespace Engine.Graphics
 			string path = "Content/Models/" + name;
 			string[] lines = File.ReadAllLines(path + ".obj");
 			bool usesMaterial = lines[2][0] == 'm';
-			int lineIndex = usesMaterial ? 3 : 1;
+			int lineIndex = usesMaterial ? 3 : 2;
 			string line = lines[lineIndex];
 
 			// Parse points.
@@ -109,7 +109,7 @@ namespace Engine.Graphics
 			}
 			while (lineIndex < lines.Length);
 
-			string texture = !usesTexturing ? "Untextured.png" : ParseTexture(path + ".mtl");
+			string texture = !usesTexturing ? "Grey.png" : ParseTexture(path + ".mtl");
 
 			return new Mesh(points.ToArray(), source.ToArray(), normals.ToArray(), vertices.ToArray(),
 				indices.ToArray(), ContentCache.GetTexture(texture));
@@ -119,8 +119,8 @@ namespace Engine.Graphics
 		{
 			string[] tokens = line.Split(' ');
 
-			float x = int.Parse(tokens[1]);
-			float y = int.Parse(tokens[2]);
+			float x = float.Parse(tokens[1]);
+			float y = float.Parse(tokens[2]);
 
 			return new vec2(x, y);
 		}
@@ -129,9 +129,9 @@ namespace Engine.Graphics
 		{
 			string[] tokens = line.Split(' ');
 
-			float x = int.Parse(tokens[1]);
-			float y = int.Parse(tokens[2]);
-			float z = int.Parse(tokens[3]);
+			float x = float.Parse(tokens[1]);
+			float y = float.Parse(tokens[2]);
+			float z = float.Parse(tokens[3]);
 
 			return new vec3(x, y, z);
 		}
@@ -147,41 +147,6 @@ namespace Engine.Graphics
 			string line = lines.First(l => l.StartsWith("map_Kd"));
 
 			return Utilities.StripPath(line);
-		}
-
-		private static vec2[] ParseVec2s(string line)
-		{
-			string[] tokens = line.Split(',');
-
-			vec2[] array = new vec2[tokens.Length / 3];
-
-			for (int i = 0; i < tokens.Length; i += 2)
-			{
-				float x = float.Parse(tokens[i]);
-				float y = float.Parse(tokens[i + 1]);
-
-				array[i / 2] = new vec2(x, y);
-			}
-
-			return array;
-		}
-
-		private static vec3[] ParseVec3s(string line)
-		{
-			string[] tokens = line.Split(',');
-
-			vec3[] array = new vec3[tokens.Length / 3];
-
-			for (int i = 0; i < tokens.Length; i += 3)
-			{
-				float x = float.Parse(tokens[i]);
-				float y = float.Parse(tokens[i + 1]);
-				float z = float.Parse(tokens[i + 2]);
-
-				array[i / 3] = new vec3(x, y, z);
-			}
-
-			return array;
 		}
 
 		public Mesh(vec3[] points, vec2[] source, vec3[] normals, ivec3[] vertices, ushort[] indices, Texture texture)

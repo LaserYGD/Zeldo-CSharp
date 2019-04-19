@@ -33,5 +33,5 @@ void main()
 	
 	vec4 color = texture(textureSampler, fSource);
 
-	fragColor = color * vec4(lightColor * lightIntensity, 1);
+	fragColor = color;// * vec4(lightColor * lightIntensity, 1);
 }
