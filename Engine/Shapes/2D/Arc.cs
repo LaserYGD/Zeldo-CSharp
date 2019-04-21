@@ -14,15 +14,15 @@ namespace Engine.Shapes._2D
 		{
 		}
 
-		public Arc(float radius, float spread) : this(0, radius, spread)
+		public Arc(float radius, float spread) : this(radius, spread, 0)
 		{
 		}
 
-		public Arc(float angle, float radius, float spread) : base(ShapeTypes2D.Arc)
+		public Arc(float radius, float spread, float angle) : base(ShapeTypes2D.Arc)
 		{
-			Rotation = angle;
 			Radius = radius;
 			Spread = spread;
+			Rotation = angle;
 		}
 
 		public float Radius { get; set; }

@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Interfaces._2D;
+using Engine.Interfaces._3D;
 using Engine.Shapes._2D;
 using GlmSharp;
 
 namespace Zeldo.Sensors
 {
-	public class Sensor : IPositionable2D, IRotatable
+	public class Sensor : IPositionable3D, IRotatable
 	{
 		public Sensor(SensorTypes type, object owner, Shape2D shape = null, int height = 1)
 		{
@@ -25,7 +26,12 @@ namespace Zeldo.Sensors
 
 		public bool Enabled { get; set; }
 		public object Owner { get; }
-		public float Rotation { get; set; }
+
+		public float Rotation
+		{
+			get => Shape.Rotation;
+			set => Shape.Rotation = value;
+		}
 
 		// Sensors primarily exist on a 2D plane, but which plane they're currently on can changed as entities move
 		// vertically. Using an integer for elevation is sufficient for this purpose. Height allows certain sensors to
@@ -34,7 +40,21 @@ namespace Zeldo.Sensors
 		public int Elevation { get; set; }
 		public int Height { get; set; }
 
-		public vec2 Position { get; set; }
+		public vec3 Position
+		{
+			get
+			{
+				vec2 p = Shape.Position;
+
+				return new vec3(p.x, Elevation, p.y);
+			}
+			set
+			{
+				Shape.Position = new vec2(value.x, value.z);
+				Elevation = (int)value.y;
+			}
+		}
+
 		public Shape2D Shape { get; set; }
 		public List<Sensor> Contacts { get; }
 

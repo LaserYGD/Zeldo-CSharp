@@ -11,6 +11,7 @@ namespace Zeldo.Entities
 		Enemy,
 		Object,
 		Player,
-		Projectile
+		Projectile,
+		Weapon
 	}
 }

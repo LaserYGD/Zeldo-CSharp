@@ -7,11 +7,14 @@ using Engine.Core;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using GlmSharp;
+using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Core
 {
 	public abstract class Entity : ITransformable3D, IDynamic
 	{
+		private vec3 position;
+		private List<Sensor> sensors;
 		private List<DynamicComponent> components;
 
 		protected Entity(EntityTypes type)
@@ -19,12 +22,23 @@ namespace Zeldo.Entities.Core
 			EntityType = type;
 		}
 
+		protected List<Sensor> Sensors => sensors ?? (sensors = new List<Sensor>());
 		protected List<DynamicComponent> Components => components ?? (components = new List<DynamicComponent>());
 
 		public EntityTypes EntityType { get; }
 
 		public Scene Scene { get; set; }
-		public vec3 Position { get; set; }
+
+		public vec3 Position
+		{
+			get => position;
+			set
+			{
+				position = value;
+				sensors?.ForEach(s => s.Position = value);
+			}
+		}
+
 		public quat Orientation { get; set; }
 
 		public virtual void Initialize()
@@ -39,21 +53,21 @@ namespace Zeldo.Entities.Core
 
 		public virtual void Update(float dt)
 		{
-			if (components == null)
+			if (components != null)
 			{
-				return;
-			}
-
-			for (int i = components.Count - 1; i >= 0; i--)
-			{
-				var component = components[i];
-				component.Update(dt);
-
-				if (component.Complete)
+				for (int i = components.Count - 1; i >= 0; i--)
 				{
-					components.RemoveAt(i);
+					var component = components[i];
+					component.Update(dt);
+
+					if (component.Complete)
+					{
+						components.RemoveAt(i);
+					}
 				}
 			}
+
+			sensors?.ForEach(s => s.Position = position);
 		}
 	}
 }

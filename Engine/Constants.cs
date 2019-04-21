@@ -8,7 +8,9 @@ namespace Engine
 {
 	public static class Constants
 	{
-		public static float Pi = (float)Math.PI;
-		public static float TwoPi = Pi * 2;
+		public const float Pi = (float)Math.PI;
+		public const float TwoPi = Pi * 2;
+
+		public const ushort RestartIndex = 65535;
 	}
 }

@@ -65,10 +65,10 @@ namespace Engine.Graphics
 				if (mode != value)
 				{
 					Flush();
-				}
 
-				mode = value;
-				buffer.Mode = value;
+					mode = value;
+					buffer.Mode = value;
+				}
 			}
 		}
 

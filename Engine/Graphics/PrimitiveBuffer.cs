@@ -4,14 +4,13 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using GlmSharp;
 using static Engine.GL;
 
 namespace Engine.Graphics
 {
 	public class PrimitiveBuffer
 	{
-		private const ushort RestartIndex = 65535;
-
 		private static readonly uint[] restartModes =
 		{
 			GL_LINE_LOOP,
@@ -44,12 +43,13 @@ namespace Engine.Graphics
 
 		public void Buffer<T>(T[] data, ushort[] indices, int start = 0, int length = -1) where T : struct
 		{
+			int l = data.Length;
 			int size = Marshal.SizeOf(typeof(T));
-			int sizeInBytes = size * (length != -1 ? length : data.Length);
+			int sizeInBytes = size * (length != -1 ? length : l);
 
 			// See https://stackoverflow.com/a/4636735/7281613.
 			System.Buffer.BlockCopy(data, start * size, buffer, bufferSize, sizeInBytes);
-
+			
 			int max = -1;
 
 			for (int i = 0; i < indices.Length; i++)
@@ -60,13 +60,14 @@ namespace Engine.Graphics
 				max = Math.Max(max, index);
 			}
 
-			bufferSize += sizeInBytes;
 			IndexCount += indices.Length;
 			maxIndex += max + 1;
 
+			bufferSize += sizeInBytes;
+
 			if (primitiveRestartEnabled)
 			{
-				indexBuffer[IndexCount] = RestartIndex;
+				indexBuffer[IndexCount] = Constants.RestartIndex;
 				IndexCount++;
 			}
 		}

@@ -83,7 +83,7 @@ namespace Engine.Utility
 
 		public static float Angle(vec2 v)
 		{
-			return (float)Math.Atan2(v.x, v.y);
+			return (float)Math.Atan2(v.y, v.x);
 		}
 
 		public static float CorrectAngle(float angle)

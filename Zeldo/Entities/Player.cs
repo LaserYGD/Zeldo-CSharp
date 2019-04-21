@@ -56,6 +56,9 @@ namespace Zeldo.Entities
 		public PlayerManaDisplay ManaDisplay { get; set; }
 
 		public Box Box { get; }
+		public Sensor SwordSensor => sword.Sensor;
+
+		public string AttackString { get; private set; }
 
 		private void ProcessInput(FullInputData data)
 		{
@@ -85,6 +88,8 @@ namespace Zeldo.Entities
 						screenPosition.y *= -1;
 						screenPosition += halfWindow;
 						direction = (mouseData.Location - screenPosition).Normalized;
+
+						AttackString = $"Direction: {direction.x}, {direction.y} - Angle: {Utilities.Angle(direction)}";
 
 						break;
 				}
@@ -164,6 +169,9 @@ namespace Zeldo.Entities
 		{
 			Position += velocity * dt;
 			Box.Position = Position;
+
+			sword.Position = Position;
+			sword.Update(dt);
 		}
 	}
 }

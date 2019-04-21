@@ -7,21 +7,22 @@ using Engine.Shapes._2D;
 using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
+using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
 using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Weapons
 {
-	public class Sword
+	public class Sword : Entity
 	{
 		private Arc arc;
 		private Sensor sensor;
 		private SingleTimer timer;
 		private List<ITargetable> targetsHit;
 
-		public Sword()
+		public Sword() : base(EntityTypes.Weapon)
 		{
-			arc = new Arc();
+			arc = new Arc(1, 1.25f);
 			targetsHit = new List<ITargetable>();
 			sensor = new Sensor(SensorTypes.Zone, this, arc)
 			{
@@ -35,17 +36,22 @@ namespace Zeldo.Entities.Weapons
 				}
 			};
 
+			Sensors.Add(sensor);
+
 			timer = new SingleTimer(time =>
 			{
 				sensor.Enabled = false;
-				timer.Elapsed = 0;
-				timer.Paused = true;
 				targetsHit.Clear();
 			},
 			0.2f);
 
 			timer.Paused = true;
+			timer.Repeatable = true;
+
+			Components.Add(timer);
 		}
+
+		public Sensor Sensor => sensor;
 
 		private void ApplyDamage(ITargetable target)
 		{
@@ -65,6 +71,7 @@ namespace Zeldo.Entities.Weapons
 		{
 			arc.Angle = Utilities.Angle(direction);
 			sensor.Enabled = true;
+			timer.Paused = false;
 		}
 	}
 }
