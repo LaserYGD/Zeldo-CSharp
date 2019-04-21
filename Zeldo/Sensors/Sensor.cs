@@ -10,8 +10,10 @@ using GlmSharp;
 
 namespace Zeldo.Sensors
 {
-	public class Sensor : IPositionable3D, IRotatable
+	public class Sensor : IPositionable3D, IRotatable, IDisposable
 	{
+		private bool enabled;
+
 		public Sensor(SensorTypes type, object owner, Shape2D shape = null, int height = 1)
 		{
 			SensorType = type;
@@ -24,7 +26,23 @@ namespace Zeldo.Sensors
 
 		public SensorTypes SensorType { get; }
 
-		public bool Enabled { get; set; }
+		public bool Enabled
+		{
+			get => enabled;
+			set
+			{
+				if (enabled != value)
+				{
+					if (!value)
+					{
+						ClearContacts();
+					}
+
+					enabled = value;
+				}
+			}
+		}
+
 		public object Owner { get; }
 
 		public float Rotation
@@ -60,5 +78,21 @@ namespace Zeldo.Sensors
 
 		public Action<SensorTypes, object> OnSense { get; set; }
 		public Action<SensorTypes, object> OnSeparate { get; set; }
+
+		public void Dispose()
+		{
+			ClearContacts();
+		}
+
+		private void ClearContacts()
+		{
+			foreach (Sensor sensor in Contacts)
+			{
+				sensor.Contacts.Remove(this);
+				sensor.OnSeparate?.Invoke(SensorType, Owner);
+			}
+
+			Contacts.Clear();
+		}
 	}
 }

@@ -17,8 +17,8 @@ namespace Engine.Shapes._2D
 			if ((int)shape1.ShapeType > (int)shape2.ShapeType)
 			{
 				Shape2D temp = shape1;
-				shape2 = shape1;
-				shape1 = temp;
+				shape1 = shape2;
+				shape2 = temp;
 			}
 
 			switch (shape1.ShapeType)
@@ -85,7 +85,7 @@ namespace Engine.Shapes._2D
 
 			for (int i = 0; i < 2; i++)
 			{
-				float a = angle + halfSpread * (i == 0 ? -1 : 1);
+				float a = arc.Angle + halfSpread * (i == 0 ? -1 : 1);
 
 				points[i] = p1 + Utilities.Direction(a) * arc.Radius;
 			}

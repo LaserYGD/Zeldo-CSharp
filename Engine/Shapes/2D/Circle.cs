@@ -23,9 +23,9 @@ namespace Engine.Shapes._2D
 
 		public override bool Contains(vec2 p)
 		{
-			float distanceSquared = Utilities.DistanceSquared(p, Position);
+			float squared = Utilities.DistanceSquared(p, Position);
 
-			return distanceSquared <= Radius * Radius;
+			return squared <= Radius * Radius;
 		}
 	}
 }

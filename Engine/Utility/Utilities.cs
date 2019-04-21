@@ -73,7 +73,14 @@ namespace Engine.Utility
 
 		public static float DistanceSquaredToLine(vec2 p, vec2 l1, vec2 l2)
 		{
-			return 0;
+			// See https://stackoverflow.com/a/1501725/7281613. It's assumed that the two line endpoints won't be the
+			// same, but even if they are, I think the code should be okay.
+			float squared = DistanceSquared(l1, l2);
+			float t = Math.Max(0, Math.Min(1, vec2.Dot(p - l1, l2 - l1) / squared));
+
+			vec2 projection = l1 + t * (l2 - l1);
+
+			return DistanceSquared(p, projection);
 		}
 
 		public static float Angle(vec2 p1, vec2 p2)

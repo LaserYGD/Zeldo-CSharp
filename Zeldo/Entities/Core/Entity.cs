@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Engine.Core;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
+using Engine.Shapes._2D;
 using GlmSharp;
 using Zeldo.Sensors;
 
@@ -43,6 +44,19 @@ namespace Zeldo.Entities.Core
 
 		public virtual void Initialize()
 		{
+		}
+
+		protected Sensor CreateSensor(Shape2D shape = null, bool enabled = true, int height = 1,
+			SensorTypes type = SensorTypes.Entity)
+		{
+			Sensor sensor = new Sensor(type, this, shape, height);
+			sensor.Position = position;
+			sensor.Enabled = enabled;
+
+			Sensors.Add(sensor);
+			Scene.Space.Add(sensor);
+
+			return sensor;
 		}
 
 		public void SetTransform(vec3 position, quat orientation)

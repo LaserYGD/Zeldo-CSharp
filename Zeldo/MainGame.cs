@@ -14,6 +14,7 @@ using Engine.Shaders;
 using Engine.Shapes._2D;
 using Engine.Shapes._3D;
 using Engine.UI;
+using Engine.Utility;
 using Engine.View;
 using GlmSharp;
 using Zeldo.Entities;
@@ -122,13 +123,21 @@ namespace Zeldo
 			inventoryScreen.Location = new ivec2(400, 300);
 
 			attackText = new SpriteText("Default");
-			attackText.Position = new vec2(20);
-			attackText.Color = Color.Magenta;
-
 			healthText = new SpriteText("Default");
-			healthText.Position = new vec2(20, 40);
-			healthText.Color = Color.Magenta;
-			
+
+			SpriteText[] array =
+			{
+				attackText,
+				healthText
+			};
+
+			for (int i = 0; i < array.Length; i++)
+			{
+				SpriteText text = array[i];
+				text.Position = new vec2(20, 20 * (i + 1));
+				text.Color = Color.Magenta;
+			}
+
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
 			// Calling this function here is required to ensure that all classes receive initial resize messages.
@@ -155,7 +164,7 @@ namespace Zeldo
 			//modelTester.Update(dt);
 
 			attackText.Value = $"Attack: {player.AttackString}";
-			healthText.Value = $"Enemy health: 15/{skeleton.MaxHealth}";
+			healthText.Value = $"Enemy health: {skeleton.Health}/{skeleton.MaxHealth}";
 
 			MessageSystem.ProcessChanges();
 		}
@@ -172,11 +181,11 @@ namespace Zeldo
 
 			var sensor = skeleton.Sensor;
 			var swordSensor = player.SwordSensor;
-
+			
 			//scene.Draw(camera);
 			primitives.Draw(player.Box, Color.White);
 			primitives.Draw(skeleton.Box, Color.Red);
-			primitives.Draw((Circle)sensor.Shape, sensor.Elevation, Color.Cyan, 12);
+			primitives.Draw((Circle)sensor.Shape, sensor.Elevation, Color.Cyan, 20);
 
 			if (swordSensor.Enabled)
 			{
@@ -195,11 +204,21 @@ namespace Zeldo
 			mainSprite.Draw(sb);
 			attackText.Draw(sb);
 			healthText.Draw(sb);
+
 			//shadowSprite.Draw(sb);
 			//canvas.Draw(sb);
 			//jumpTester.Draw(sb);
 			//jumpTester2.Draw(sb);
+
 			sb.Flush();
+		}
+
+		private vec2 ComputeProjection(vec2 p, vec2 l1, vec2 l2)
+		{
+			float squared = Utilities.DistanceSquared(l1, l2);
+			float t = Math.Max(0, Math.Min(1, vec2.Dot(p - l1, l2 - l1) / squared));
+
+			return l1 + t * (l2 - l1);
 		}
 	}
 }

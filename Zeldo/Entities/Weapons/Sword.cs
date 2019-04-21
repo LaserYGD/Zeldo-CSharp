@@ -24,19 +24,6 @@ namespace Zeldo.Entities.Weapons
 		{
 			arc = new Arc(1, 1.25f);
 			targetsHit = new List<ITargetable>();
-			sensor = new Sensor(SensorTypes.Zone, this, arc)
-			{
-				Enabled = false,
-				OnSense = (sensorType, owner) =>
-				{
-					if (sensorType == SensorTypes.Entity && owner is ITargetable target)
-					{
-						ApplyDamage(target);
-					}
-				}
-			};
-
-			Sensors.Add(sensor);
 
 			timer = new SingleTimer(time =>
 			{
@@ -53,6 +40,18 @@ namespace Zeldo.Entities.Weapons
 
 		public Sensor Sensor => sensor;
 
+		public override void Initialize()
+		{
+			sensor = CreateSensor(arc, false);
+			sensor.OnSense = (sensorType, owner) =>
+			{
+				if (sensorType == SensorTypes.Entity && owner is ITargetable target)
+				{
+					ApplyDamage(target);
+				}
+			};
+		}
+
 		private void ApplyDamage(ITargetable target)
 		{
 			// The sword can only hit each target once per swing.
@@ -63,7 +62,7 @@ namespace Zeldo.Entities.Weapons
 
 			float angle = arc.Angle;
 
-			target.OnHit(10, 10, angle, Utilities.Direction(angle), this);
+			target.OnHit(3, 10, angle, Utilities.Direction(angle), this);
 			targetsHit.Add(target);
 		}
 

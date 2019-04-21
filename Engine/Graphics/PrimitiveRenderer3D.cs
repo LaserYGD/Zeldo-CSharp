@@ -119,6 +119,13 @@ namespace Engine.Graphics
 			Buffer(points, color, GL_LINE_LOOP);
 		}
 
+		public void DrawLine(vec3 p1, vec3 p2, Color color)
+		{
+			vec3[] points = { p1, p2 };
+
+			Buffer(points, color, GL_LINES);
+		}
+
 		public void DrawTriangle(vec3[] points, Color color)
 		{
 			float[] data = GetData(points, color);

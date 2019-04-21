@@ -60,6 +60,12 @@ namespace Zeldo.Entities
 
 		public string AttackString { get; private set; }
 
+		public override void Initialize()
+		{
+			sword.Scene = Scene;
+			sword.Initialize();
+		}
+
 		private void ProcessInput(FullInputData data)
 		{
 			ProcessAttack(data);

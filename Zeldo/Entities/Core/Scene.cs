@@ -30,6 +30,7 @@ namespace Zeldo.Entities.Core
 		{
 			entities.Add(entity);
 			entity.Scene = this;
+			entity.Initialize();
 		}
 
 		public List<Entity> GetEntityList(EntityTypes type)
