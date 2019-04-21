@@ -92,7 +92,7 @@ namespace Engine.Graphics
 			buffer.Buffer(data, indices, start, length);
 		}
 
-		public void Apply(Shader shader, uint mode)
+		public void Apply(Shader shader, uint mode)          
 		{
 			if (activeShader == shader && this.mode == mode)
 			{

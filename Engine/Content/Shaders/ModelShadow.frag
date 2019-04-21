@@ -14,8 +14,8 @@ uniform sampler2D textureSampler;
 
 void main()
 {
-	
 	vec4 color = texture(textureSampler, fSource);
+
 	float shadowValue = texture(shadowSampler, fShadowMapCoords.xy).r;
 	float d = dot(-lightDirection, fNormal);
 	float bias = 0.001;

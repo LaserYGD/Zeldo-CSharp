@@ -163,6 +163,9 @@
     <Content Include="Content\Fonts\Default_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\Textures\White.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Textures\Grey.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

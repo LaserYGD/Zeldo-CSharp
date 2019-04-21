@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Engine.Graphics;
 using Engine.Interfaces;
 using Engine.Interfaces._2D;
+using Engine.Shaders;
 using GlmSharp;
 using static Engine.GL;
 
@@ -104,6 +105,8 @@ namespace Engine.Core._2D
 			}
 		}
 
+		public Shader Shader { get; set; }
+
 		public SpriteModifiers Mods
 		{
 			get => mods;
@@ -159,8 +162,16 @@ namespace Engine.Core._2D
 				colorChanged = false;
 			}
 
-			sb.Mode = GL_TRIANGLE_STRIP;
 			sb.BindTexture(textureId);
+
+			if (Shader != null)
+			{
+				sb.Apply(Shader, GL_TRIANGLE_STRIP);
+			}
+			else
+			{
+				sb.Mode = GL_TRIANGLE_STRIP;
+			}
 
 			// Strings need to buffer each character individually in order to add the primitive restart index each
 			// time.

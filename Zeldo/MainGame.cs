@@ -10,6 +10,7 @@ using Engine.Graphics;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
+using Engine.Shaders;
 using Engine.Shapes._3D;
 using Engine.UI;
 using Engine.View;
@@ -42,6 +43,8 @@ namespace Zeldo
 		private JumpTester jumpTester;
 		private JumpTester2 jumpTester2;
 		private ModelTester modelTester;
+		private Sprite shadowSprite;
+		private Shader shadowShader;
 
 		public MainGame() : base("Zeldo")
 		{
@@ -96,7 +99,20 @@ namespace Zeldo
 			primitives = new PrimitiveRenderer3D();
 			jumpTester = new JumpTester();
 			jumpTester2 = new JumpTester2();
-			modelTester = new ModelTester();
+			modelTester = new ModelTester(camera);
+			
+			shadowShader = new Shader();
+			shadowShader.Attach(ShaderTypes.Vertex, "Sprite.vert");
+			shadowShader.Attach(ShaderTypes.Fragment, "ShadowMapVisualization.frag");
+			shadowShader.AddAttribute<float>(2, GL_FLOAT);
+			shadowShader.AddAttribute<float>(2, GL_FLOAT);
+			shadowShader.AddAttribute<float>(4, GL_UNSIGNED_BYTE, true);
+			shadowShader.CreateProgram();
+
+			shadowSprite = new Sprite(modelTester.ShadowTarget, null, Alignments.Left | Alignments.Bottom);
+			shadowSprite.Position = new vec2(0, 600);
+			shadowSprite.ScaleTo(256, 256);
+			shadowSprite.Shader = shadowShader;
 
 			inventoryScreen = new InventoryScreen();
 			inventoryScreen.Location = new ivec2(400, 300);
@@ -151,6 +167,7 @@ namespace Zeldo
 			glDepthFunc(GL_NEVER);
 
 			mainSprite.Draw(sb);
+			shadowSprite.Draw(sb);
 			//canvas.Draw(sb);
 			//jumpTester.Draw(sb);
 			//jumpTester2.Draw(sb);

@@ -26,13 +26,16 @@ namespace Zeldo
 		private Texture defaultTexture;
 		private vec3 lightDirection;
 		private mat4 lightMatrix;
+		private Camera3D camera;
 
 		private uint bufferId;
 		private uint indexBufferId;
 
-		public unsafe ModelTester()
+		public unsafe ModelTester(Camera3D camera)
 		{
 			const int ShadowMapSize = 1024;
+
+			this.camera = camera;
 
 			uint[] buffers = new uint[2];
 
@@ -110,13 +113,15 @@ namespace Zeldo
 			}
 		}
 
+		public RenderTarget ShadowTarget => shadowMapTarget;
+
 		public void Update(float dt)
 		{
 			const int OrthoSize = 12;
 
 			lightDirection = Utilities.Normalize(new vec3(-1, 0.1f, -0.5f));
 
-			mat4 lightView = mat4.LookAt(new vec3(0, -0.5f, 0.5f) * 5, vec3.Zero, vec3.UnitY);
+			mat4 lightView = mat4.LookAt(-lightDirection, vec3.Zero, vec3.UnitY);
 			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 100);
 
 			lightMatrix = lightProjection * lightView;
