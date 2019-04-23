@@ -31,6 +31,8 @@ namespace Zeldo
 		private uint bufferId;
 		private uint indexBufferId;
 
+		private float rotation;
+
 		public unsafe ModelTester(Camera3D camera)
 		{
 			const int ShadowMapSize = 1024;
@@ -114,18 +116,22 @@ namespace Zeldo
 		}
 
 		public RenderTarget ShadowTarget => shadowMapTarget;
+		public vec3 LightDirection => lightDirection;
 
 		public void Update(float dt)
 		{
 			const int OrthoSize = 12;
 
-			lightDirection = Utilities.Normalize(new vec3(-1, 0.1f, -0.5f));
+			rotation += dt;
+
+			vec2 direction = -Utilities.Direction(rotation);
+
+			lightDirection = Utilities.Normalize(new vec3(direction.x, -0.1f, direction.y));
 
 			mat4 lightView = mat4.LookAt(-lightDirection, vec3.Zero, vec3.UnitY);
 			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 100);
 
 			lightMatrix = lightProjection * lightView;
-			//model.Orientation *= quat.FromAxisAngle(dt / 2, vec3.UnitY);
 		}
 
 		public void DrawTargets()

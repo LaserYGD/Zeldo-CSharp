@@ -161,7 +161,7 @@ namespace Zeldo
 
 			//jumpTester.Update(dt);
 			//jumpTester2.Update(dt);
-			//modelTester.Update(dt);
+			modelTester.Update(dt);
 
 			attackText.Value = $"Attack: {player.AttackString}";
 			healthText.Value = $"Enemy health: {skeleton.Health}/{skeleton.MaxHealth}";
@@ -175,10 +175,11 @@ namespace Zeldo
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);
 
-			//modelTester.DrawTargets();
+			modelTester.DrawTargets();
 			mainTarget.Apply();
-			//modelTester.Draw(camera);
+			modelTester.Draw(camera);
 
+			/*
 			var sensor = skeleton.Sensor;
 			var swordSensor = player.SwordSensor;
 			
@@ -191,7 +192,12 @@ namespace Zeldo
 			{
 				primitives.Draw((Arc)swordSensor.Shape, swordSensor.Elevation, Color.Cyan, 10);
 			}
+			*/
 
+			vec3 p1 = vec3.UnitY * 1;
+			vec3 p2 = p1 + modelTester.LightDirection * 1.5f;
+
+			primitives.DrawLine(p1, p2, Color.Yellow);
 			primitives.Flush();
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -202,23 +208,15 @@ namespace Zeldo
 			glDepthFunc(GL_NEVER);
 
 			mainSprite.Draw(sb);
-			attackText.Draw(sb);
-			healthText.Draw(sb);
+			//attackText.Draw(sb);
+			//healthText.Draw(sb);
 
-			//shadowSprite.Draw(sb);
+			shadowSprite.Draw(sb);
 			//canvas.Draw(sb);
 			//jumpTester.Draw(sb);
 			//jumpTester2.Draw(sb);
 
 			sb.Flush();
-		}
-
-		private vec2 ComputeProjection(vec2 p, vec2 l1, vec2 l2)
-		{
-			float squared = Utilities.DistanceSquared(l1, l2);
-			float t = Math.Max(0, Math.Min(1, vec2.Dot(p - l1, l2 - l1) / squared));
-
-			return l1 + t * (l2 - l1);
 		}
 	}
 }
