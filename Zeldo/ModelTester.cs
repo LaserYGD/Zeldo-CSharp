@@ -57,6 +57,9 @@ namespace Zeldo
 			modelShader.AddAttribute<float>(3, GL_FLOAT);
 			modelShader.CreateProgram();
 			modelShader.Bind(bufferId, indexBufferId);
+			modelShader.Use();
+			modelShader.SetUniform("shadowSampler", 0);
+			modelShader.SetUniform("textureSampler", 1);
 
 			shadowMapShader = new Shader();
 			shadowMapShader.Attach(ShaderTypes.Vertex, "ShadowMap.vert");
@@ -120,15 +123,15 @@ namespace Zeldo
 
 		public void Update(float dt)
 		{
-			const int OrthoSize = 12;
+			const int OrthoSize = 8;
 
 			rotation += dt;
 
 			vec2 direction = -Utilities.Direction(rotation);
 
-			lightDirection = Utilities.Normalize(new vec3(direction.x, -0.1f, direction.y));
+			lightDirection = Utilities.Normalize(new vec3(direction.x, -0.4f, direction.y));
 
-			mat4 lightView = mat4.LookAt(-lightDirection, vec3.Zero, vec3.UnitY);
+			mat4 lightView = mat4.LookAt(-lightDirection * 10, vec3.Zero, vec3.UnitY);
 			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 100);
 
 			lightMatrix = lightProjection * lightView;
@@ -136,9 +139,6 @@ namespace Zeldo
 
 		public void DrawTargets()
 		{
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_FRONT);
-
 			shadowMapTarget.Apply();
 			shadowMapShader.Apply();
 			shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.World);
@@ -148,13 +148,11 @@ namespace Zeldo
 
 		public void Draw(Camera3D camera)
 		{
+			glEnable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
-
-			// These two texture binds should be reversed (shadow map to zero and texture to one), but for some bizarre
-			// reason, it only works correctly like this. I don't understand why.
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, shadowMapTarget.Id);
 			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, shadowMapTarget.Id);
+			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, defaultTexture.Id);
 
 			modelShader.Apply();

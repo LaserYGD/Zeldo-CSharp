@@ -111,7 +111,7 @@ namespace Zeldo
 			shadowShader.Attach(ShaderTypes.Fragment, "ShadowMapVisualization.frag");
 			shadowShader.AddAttribute<float>(2, GL_FLOAT);
 			shadowShader.AddAttribute<float>(2, GL_FLOAT);
-			shadowShader.AddAttribute<float>(4, GL_UNSIGNED_BYTE, true);
+			shadowShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
 			shadowShader.CreateProgram();
 
 			shadowSprite = new Sprite(modelTester.ShadowTarget, null, Alignments.Left | Alignments.Bottom);
@@ -193,12 +193,12 @@ namespace Zeldo
 				primitives.Draw((Arc)swordSensor.Shape, swordSensor.Elevation, Color.Cyan, 10);
 			}
 			*/
-
+			
 			vec3 p1 = vec3.UnitY * 1;
 			vec3 p2 = p1 + modelTester.LightDirection * 1.5f;
 
-			primitives.DrawLine(p1, p2, Color.Yellow);
-			primitives.Flush();
+			//primitives.DrawLine(p1, p2, Color.Yellow);
+			//primitives.Flush();
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -211,7 +211,7 @@ namespace Zeldo
 			//attackText.Draw(sb);
 			//healthText.Draw(sb);
 
-			shadowSprite.Draw(sb);
+			//shadowSprite.Draw(sb);
 			//canvas.Draw(sb);
 			//jumpTester.Draw(sb);
 			//jumpTester2.Draw(sb);

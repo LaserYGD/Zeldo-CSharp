@@ -207,6 +207,11 @@ namespace Engine.Shaders
 			}
 		}
 
+		public void Use()
+		{
+			glUseProgram(program);
+		}
+
 		public void Apply()
 		{
 			glUseProgram(program);
