@@ -125,11 +125,11 @@ namespace Zeldo
 		{
 			const int OrthoSize = 8;
 
-			rotation += dt;
+			rotation += dt / 2;
 
 			vec2 direction = -Utilities.Direction(rotation);
 
-			lightDirection = Utilities.Normalize(new vec3(direction.x, -0.4f, direction.y));
+			lightDirection = Utilities.Normalize(new vec3(direction.x, -0.15f, direction.y));
 
 			mat4 lightView = mat4.LookAt(-lightDirection * 10, vec3.Zero, vec3.UnitY);
 			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 100);
