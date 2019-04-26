@@ -4,23 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Interfaces;
-using Engine.Interfaces._3D;
 using Engine.View;
 using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Core
 {
-	public class Scene : IDynamic, IRenderable3D
+	public class Scene : IDynamic
 	{
 		private List<Entity> entities;
 
 		public Scene()
 		{
 			entities = new List<Entity>();
+			ModelBatch = new ModelBatch();
 		}
 
 		public Camera3D Camera { get; set; }
 		public Space Space { get; set; }
+		public ModelBatch ModelBatch { get; }
 
 		public void LoadFragment(string filename)
 		{
@@ -41,10 +42,6 @@ namespace Zeldo.Entities.Core
 		public void Update(float dt)
 		{
 			entities.ForEach(e => e.Update(dt));
-		}
-
-		public void Draw(Camera3D camera)
-		{
 		}
 	}
 }

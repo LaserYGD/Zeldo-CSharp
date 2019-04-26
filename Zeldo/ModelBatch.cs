@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine;
+using Engine.Core;
 using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Graphics;
@@ -17,28 +18,22 @@ using static Engine.GL;
 
 namespace Zeldo
 {
-	public class ModelTester : IDynamic, IRenderTargetUser, IRenderable3D
+	public class ModelBatch : IRenderTargetUser, IRenderable3D
 	{
 		private Model model;
 		private Shader modelShader;
 		private Shader shadowMapShader;
 		private RenderTarget shadowMapTarget;
 		private Texture defaultTexture;
-		private vec3 lightDirection;
 		private mat4 lightMatrix;
-		private Camera3D camera;
 
 		private uint bufferId;
 		private uint indexBufferId;
 
-		private float rotation;
-
-		public unsafe ModelTester(Camera3D camera)
+		public unsafe ModelBatch()
 		{
 			const int ShadowMapSize = 1024;
-
-			this.camera = camera;
-
+			
 			uint[] buffers = new uint[2];
 
 			fixed (uint* address = &buffers[0])
@@ -118,27 +113,18 @@ namespace Zeldo
 			}
 		}
 
-		public RenderTarget ShadowTarget => shadowMapTarget;
-		public vec3 LightDirection => lightDirection;
-
-		public void Update(float dt)
-		{
-			const int OrthoSize = 8;
-
-			rotation += dt / 2;
-
-			vec2 direction = -Utilities.Direction(rotation);
-
-			lightDirection = Utilities.Normalize(new vec3(direction.x, -0.15f, direction.y));
-
-			mat4 lightView = mat4.LookAt(-lightDirection * 10, vec3.Zero, vec3.UnitY);
-			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 100);
-
-			lightMatrix = lightProjection * lightView;
-		}
+		public vec3 LightDirection { get; set; }
+		public Color LightColor { get; set; }
 
 		public void DrawTargets()
 		{
+			const int OrthoSize = 8;
+
+			mat4 lightView = mat4.LookAt(-LightDirection * 10, vec3.Zero, vec3.UnitY);
+			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 100);
+
+			lightMatrix = lightProjection * lightView;
+
 			shadowMapTarget.Apply();
 			shadowMapShader.Apply();
 			shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.World);
@@ -156,8 +142,8 @@ namespace Zeldo
 			glBindTexture(GL_TEXTURE_2D, defaultTexture.Id);
 
 			modelShader.Apply();
-			modelShader.SetUniform("lightColor", vec3.Ones);
-			modelShader.SetUniform("lightDirection", lightDirection);
+			modelShader.SetUniform("lightDirection", LightDirection);
+			modelShader.SetUniform("lightColor", LightColor.ToVec3());
 			modelShader.SetUniform("ambientIntensity", 0.1f);
 
 			// See http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/.

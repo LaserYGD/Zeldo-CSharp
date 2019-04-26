@@ -41,15 +41,10 @@ namespace Zeldo
 		private InventoryScreen inventoryScreen;
 		private PrimitiveRenderer3D primitives;
 		private ScreenManager screenManager;
+		private List<IRenderTargetUser> renderTargetUsers;
 
 		private JumpTester jumpTester;
 		private JumpTester2 jumpTester2;
-		private ModelTester modelTester;
-		private Sprite shadowSprite;
-		private Shader shadowShader;
-
-		private SpriteText attackText;
-		private SpriteText healthText;
 
 		public MainGame() : base("Zeldo")
 		{
@@ -64,6 +59,7 @@ namespace Zeldo
 			camera.Position = new vec3(0, 0, 3) * camera.Orientation;
 
 			sb = new SpriteBatch();
+
 			mainTarget = new RenderTarget(Resolution.RenderWidth, Resolution.RenderHeight,
 				RenderTargetFlags.Color | RenderTargetFlags.Depth);
 			mainSprite = new Sprite(mainTarget, null, Alignments.Left | Alignments.Top);
@@ -101,42 +97,15 @@ namespace Zeldo
 			scene.Add(player);
 			scene.Add(skeleton);
 
+			renderTargetUsers = new List<IRenderTargetUser>();
+			renderTargetUsers.Add(scene.ModelBatch);
+
 			primitives = new PrimitiveRenderer3D(camera);
 			jumpTester = new JumpTester();
 			jumpTester2 = new JumpTester2();
-			modelTester = new ModelTester(camera);
-			
-			shadowShader = new Shader();
-			shadowShader.Attach(ShaderTypes.Vertex, "Sprite.vert");
-			shadowShader.Attach(ShaderTypes.Fragment, "ShadowMapVisualization.frag");
-			shadowShader.AddAttribute<float>(2, GL_FLOAT);
-			shadowShader.AddAttribute<float>(2, GL_FLOAT);
-			shadowShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
-			shadowShader.CreateProgram();
-
-			shadowSprite = new Sprite(modelTester.ShadowTarget, null, Alignments.Left | Alignments.Bottom);
-			shadowSprite.Position = new vec2(0, 600);
-			shadowSprite.ScaleTo(256, 256);
-			shadowSprite.Shader = shadowShader;
 
 			inventoryScreen = new InventoryScreen();
 			inventoryScreen.Location = new ivec2(400, 300);
-
-			attackText = new SpriteText("Default");
-			healthText = new SpriteText("Default");
-
-			SpriteText[] array =
-			{
-				attackText,
-				healthText
-			};
-
-			for (int i = 0; i < array.Length; i++)
-			{
-				SpriteText text = array[i];
-				text.Position = new vec2(20, 20 * (i + 1));
-				text.Color = Color.Magenta;
-			}
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
@@ -161,10 +130,6 @@ namespace Zeldo
 
 			//jumpTester.Update(dt);
 			//jumpTester2.Update(dt);
-			modelTester.Update(dt);
-
-			attackText.Value = $"Attack: {player.AttackString}";
-			healthText.Value = $"Enemy health: {skeleton.Health}/{skeleton.MaxHealth}";
 
 			MessageSystem.ProcessChanges();
 		}
@@ -175,9 +140,9 @@ namespace Zeldo
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);
 
-			modelTester.DrawTargets();
+			renderTargetUsers.ForEach(t => t.DrawTargets());
 			mainTarget.Apply();
-			modelTester.Draw(camera);
+			scene.ModelBatch.Draw(camera);
 
 			/*
 			var sensor = skeleton.Sensor;
@@ -193,12 +158,6 @@ namespace Zeldo
 				primitives.Draw((Arc)swordSensor.Shape, swordSensor.Elevation, Color.Cyan, 10);
 			}
 			*/
-			
-			vec3 p1 = vec3.UnitY * 1;
-			vec3 p2 = p1 + modelTester.LightDirection * 1.5f;
-
-			//primitives.DrawLine(p1, p2, Color.Yellow);
-			//primitives.Flush();
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -208,10 +167,7 @@ namespace Zeldo
 			glDepthFunc(GL_NEVER);
 
 			mainSprite.Draw(sb);
-			//attackText.Draw(sb);
-			//healthText.Draw(sb);
-
-			//shadowSprite.Draw(sb);
+			
 			//canvas.Draw(sb);
 			//jumpTester.Draw(sb);
 			//jumpTester2.Draw(sb);
