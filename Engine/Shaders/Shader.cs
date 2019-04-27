@@ -31,7 +31,8 @@ namespace Engine.Shaders
 			uniforms = new Dictionary<string, int>();
 		}
 
-		public bool IsBindingComplete { get; private set; }
+		public bool BindingComplete { get; private set; }
+		public bool Disposed { get; private set; }
 
 		public uint Stride { get; private set; }
 
@@ -194,17 +195,26 @@ namespace Engine.Shaders
 				glEnableVertexAttribArray(index);
 			}
 
-			IsBindingComplete = true;
+			BindingComplete = true;
 		}
 
 		public unsafe void Dispose()
 		{
+			// Sprites can have shaders applied. Those sprites may or may not own the shader, though. This check
+			// prevents duplicate disposal if the shader is disposed from multiple places.
+			if (Disposed)
+			{
+				return;
+			}
+
 			glDeleteProgram(program);
 
 			fixed (uint* address = &vao)
 			{
 				glDeleteVertexArrays(1, address);
 			}
+
+			Disposed = true;
 		}
 
 		public void Use()

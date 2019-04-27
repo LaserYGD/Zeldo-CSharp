@@ -13,7 +13,7 @@ using Engine.View;
 using GlmSharp;
 using static Engine.GL;
 
-namespace Engine.Graphics
+namespace Engine.Graphics._3D
 {
 	public class PrimitiveRenderer3D
 	{
@@ -34,7 +34,8 @@ namespace Engine.Graphics
 
 			buffer = new PrimitiveBuffer(BufferCapacity, IndexCapacity);
 
-			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexBufferId);
+			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexBufferId,
+				GL_DYNAMIC_DRAW);
 
 			primitiveShader = new Shader();
 			primitiveShader.Attach(ShaderTypes.Vertex, "Primitives3D.vert");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine.Graphics._3D;
 using Engine.Interfaces;
 using Engine.View;
 using Zeldo.Sensors;
@@ -16,7 +17,7 @@ namespace Zeldo.Entities.Core
 		public Scene()
 		{
 			entities = new List<Entity>();
-			ModelBatch = new ModelBatch();
+			ModelBatch = new ModelBatch(10000, 1000);
 		}
 
 		public Camera3D Camera { get; set; }

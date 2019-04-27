@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Engine;
-using Engine.Core;
 using Engine.Core._2D;
-using Engine.Graphics;
-using Engine.Input.Data;
+using Engine.Core._3D;
+using Engine.Graphics._2D;
+using Engine.Graphics._3D;
 using Engine.Interfaces;
 using Engine.Messaging;
-using Engine.Shaders;
-using Engine.Shapes._2D;
-using Engine.Shapes._3D;
 using Engine.UI;
 using Engine.Utility;
 using Engine.View;
@@ -54,7 +47,7 @@ namespace Zeldo
 			glPrimitiveRestartIndex(Constants.RestartIndex);
 
 			camera = new Camera3D();
-			camera.IsOrthographic = true;
+			//camera.IsOrthographic = true;
 			camera.Orientation *= quat.FromAxisAngle(0.75f, vec3.UnitX);
 			camera.Position = new vec3(0, 0, 3) * camera.Orientation;
 
@@ -96,6 +89,10 @@ namespace Zeldo
 
 			scene.Add(player);
 			scene.Add(skeleton);
+			
+			ModelBatch modelBatch = scene.ModelBatch;
+			modelBatch.Add(new Model("Map"));
+			modelBatch.LightDirection = Utilities.Normalize(new vec3(-1, -0.2f, -0.5f));
 
 			renderTargetUsers = new List<IRenderTargetUser>();
 			renderTargetUsers.Add(scene.ModelBatch);

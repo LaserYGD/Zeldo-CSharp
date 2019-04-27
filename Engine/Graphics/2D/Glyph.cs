@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GlmSharp;
 
-namespace Engine.Graphics
+namespace Engine.Graphics._2D
 {
 	public class Glyph
 	{

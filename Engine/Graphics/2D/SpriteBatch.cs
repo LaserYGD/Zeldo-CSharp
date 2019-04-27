@@ -11,7 +11,7 @@ using Engine.Shapes._2D;
 using GlmSharp;
 using static Engine.GL;
 
-namespace Engine.Graphics
+namespace Engine.Graphics._2D
 {
 	public class SpriteBatch : IReceiver
 	{
@@ -33,17 +33,18 @@ namespace Engine.Graphics
 
 			buffer = new PrimitiveBuffer(BufferCapacity, IndexCapacity);
 
-			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexBufferId);
+			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexBufferId,
+				GL_DYNAMIC_DRAW);
 
 			// These two shaders (owned by the sprite batch) can be completed here (in terms of binding a buffer).
 			// External shaders are bound when first applied.
 			spriteShader = new Shader();
 			spriteShader.Attach(ShaderTypes.Vertex, "Sprite.vert");
 			spriteShader.Attach(ShaderTypes.Fragment, "Sprite.frag");
-			spriteShader.CreateProgram();
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
 			spriteShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
+			spriteShader.CreateProgram();
 			spriteShader.Bind(bufferId, indexBufferId);
 
 			primitiveShader = new Shader();
@@ -104,7 +105,7 @@ namespace Engine.Graphics
 
 			this.mode = mode;
 
-			if (!activeShader.IsBindingComplete)
+			if (!activeShader.BindingComplete)
 			{
 				activeShader.Bind(bufferId, indexBufferId);
 			}

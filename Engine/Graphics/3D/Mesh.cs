@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Engine.Utility;
 using GlmSharp;
 
-namespace Engine.Graphics
+namespace Engine.Graphics._3D
 {
 	public class Mesh
 	{
@@ -156,6 +156,7 @@ namespace Engine.Graphics
 			Normals = normals;
 			Vertices = vertices;
 			Indices = indices;
+			MaxIndex = indices.Max();
 			Texture = texture;
 		}
 
@@ -163,7 +164,9 @@ namespace Engine.Graphics
 		public vec2[] Source { get; }
 		public vec3[] Normals { get; }
 		public ivec3[] Vertices { get; }
+
 		public ushort[] Indices { get; }
+		public ushort MaxIndex { get; }
 
 		public Texture Texture { get; }
 	}

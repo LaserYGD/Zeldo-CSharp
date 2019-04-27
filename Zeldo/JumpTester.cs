@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Engine;
 using Engine.Core._2D;
 using Engine.Graphics;
+using Engine.Graphics._2D;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Interfaces._2D;

@@ -16,8 +16,7 @@ namespace Engine
 			glBindBuffer = GetDelegate<Delegates.glBindBuffer>();
 			glBufferData = GetDelegate<Delegates.glBufferData>();
 			glBufferSubData = GetDelegate<Delegates.glBufferSubData>();
-			glDrawElements = GetDelegate<Delegates.glDrawElements>();
-			glDrawElementsBaseVertex = GetDelegate<Delegates.glDrawElementsBaseVertex>();
+			glDeleteBuffers = GetDelegate<Delegates.glDeleteBuffers>();
 			glGenBuffers = GetDelegate<Delegates.glGenBuffers>();
 
 			// Framebuffers
@@ -44,6 +43,8 @@ namespace Engine
 			glClear = GetDelegate<Delegates.glClear>();
 			glClearColor = GetDelegate<Delegates.glClearColor>();
 			glDepthFunc = GetDelegate<Delegates.glDepthFunc>();
+			glDrawElements = GetDelegate<Delegates.glDrawElements>();
+			glDrawElementsBaseVertex = GetDelegate<Delegates.glDrawElementsBaseVertex>();
 			glPrimitiveRestartIndex = GetDelegate<Delegates.glPrimitiveRestartIndex>();
 			glViewport = GetDelegate<Delegates.glViewport>();
 
@@ -828,8 +829,7 @@ namespace Engine
 		public static Delegates.glBindBuffer glBindBuffer;
 		public static Delegates.glBufferData glBufferData;
 		public static Delegates.glBufferSubData glBufferSubData;
-		public static Delegates.glDrawElements glDrawElements;
-		public static Delegates.glDrawElementsBaseVertex glDrawElementsBaseVertex;
+		public static Delegates.glDeleteBuffers glDeleteBuffers;
 		public static Delegates.glGenBuffers glGenBuffers;
 
 		// Framebuffers
@@ -856,6 +856,8 @@ namespace Engine
 		public static Delegates.glClear glClear;
 		public static Delegates.glClearColor glClearColor;
 		public static Delegates.glDepthFunc glDepthFunc;
+		public static Delegates.glDrawElements glDrawElements;
+		public static Delegates.glDrawElementsBaseVertex glDrawElementsBaseVertex;
 		public static Delegates.glPrimitiveRestartIndex glPrimitiveRestartIndex;
 		public static Delegates.glViewport glViewport;
 
@@ -909,8 +911,7 @@ namespace Engine
 			public delegate void glBindBuffer(uint target, uint buffer);
 			public delegate void glBufferData(uint target, uint size, void* data, uint usage);
 			public delegate void glBufferSubData(uint target, int offset, uint size, void* data);
-			public delegate void glDrawElements(uint mode, uint count, uint type, void* indices);
-			public delegate void glDrawElementsBaseVertex(uint mode, uint count, uint type, void* indices, int baseVertex);
+			public delegate void glDeleteBuffers(uint n, uint* buffers);
 			public delegate void glGenBuffers(uint n, uint* buffers);
 
 			// Framebuffers
@@ -939,6 +940,8 @@ namespace Engine
 			public delegate void glClear(uint mask);
 			public delegate void glClearColor(float red, float green, float blue, float alpha);
 			public delegate void glDepthFunc(uint func);
+			public delegate void glDrawElements(uint mode, uint count, uint type, void* indices);
+			public delegate void glDrawElementsBaseVertex(uint mode, uint count, uint type, void* indices, int baseVertex);
 			public delegate void glPrimitiveRestartIndex(uint index);
 			public delegate void glViewport(int x, int y, uint width, uint height);
 

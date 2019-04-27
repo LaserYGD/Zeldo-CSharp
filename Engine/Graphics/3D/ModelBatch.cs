@@ -16,33 +16,30 @@ using Engine.View;
 using GlmSharp;
 using static Engine.GL;
 
-namespace Zeldo
+namespace Engine.Graphics._3D
 {
-	public class ModelBatch : IRenderTargetUser, IRenderable3D
+	public class ModelBatch : IRenderTargetUser, IRenderable3D, IDisposable
 	{
-		private Model model;
 		private Shader modelShader;
 		private Shader shadowMapShader;
 		private RenderTarget shadowMapTarget;
 		private Texture defaultTexture;
 		private mat4 lightMatrix;
+		private List<ModelHandle> handles;
 
 		private uint bufferId;
 		private uint indexBufferId;
 
-		public unsafe ModelBatch()
+		// These sizes are updated as data is buffered to the GPU. The data isn't actually stored here.
+		private int bufferSize;
+		private int indexBufferSize;
+		private int maxIndex;
+
+		public ModelBatch(int bufferSize, int indexBufferSize)
 		{
-			const int ShadowMapSize = 1024;
+			const int ShadowMapSize = 2048;
 			
-			uint[] buffers = new uint[2];
-
-			fixed (uint* address = &buffers[0])
-			{
-				glGenBuffers(2, address);
-			}
-
-			bufferId = buffers[0];
-			indexBufferId = buffers[1];
+			GLUtilities.AllocateBuffers(bufferSize, indexBufferSize, out bufferId, out indexBufferId, GL_STATIC_DRAW);
 
 			modelShader = new Shader();
 			modelShader.Attach(ShaderTypes.Vertex, "ModelShadow.vert");
@@ -64,9 +61,22 @@ namespace Zeldo
 			shadowMapShader.Bind(bufferId, indexBufferId);
 
 			shadowMapTarget = new RenderTarget(ShadowMapSize, ShadowMapSize, RenderTargetFlags.Depth);
-			model = new Model("Map");
 			defaultTexture = ContentCache.GetTexture("Grey.png");
+			handles = new List<ModelHandle>();
 
+			// These default values are arbitrary, just to make sure something shows up.
+			LightDirection = vec3.UnitX;
+			LightColor = Color.White;
+			AmbientIntensity = 0.1f;
+		}
+
+		public vec3 LightDirection { get; set; }
+		public Color LightColor { get; set; }
+
+		public float AmbientIntensity { get; set; }
+
+		public unsafe void Add(Model model)
+		{
 			Mesh mesh = model.Mesh;
 
 			var points = mesh.Points;
@@ -95,26 +105,50 @@ namespace Zeldo
 				buffer[start + 7] = n.z;
 			}
 
+			ushort[] indices = mesh.Indices;
+
+			int size = sizeof(float) * buffer.Length;
+			int indexSize = sizeof(ushort) * indices.Length;
+
+			handles.Add(new ModelHandle(model, indices.Length, indexBufferSize, maxIndex == 0 ? 0 : maxIndex + 1));
+			maxIndex += mesh.MaxIndex;
+
 			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
 
 			fixed (float* address = &buffer[0])
 			{
-				glBufferData(GL_ARRAY_BUFFER, (uint)(sizeof(float) * buffer.Length), address, GL_STATIC_DRAW);
+				glBufferSubData(GL_ARRAY_BUFFER, bufferSize, (uint)size, address);
 			}
 
-			var indices = mesh.Indices;
+			bufferSize += size;
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
 
 			fixed (ushort* address = &indices[0])
 			{
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, (uint)(sizeof(ushort) * indices.Length), address,
-					GL_STATIC_DRAW);
+				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indexBufferSize, (uint)indexSize, address);
 			}
+
+			indexBufferSize += indexSize;
 		}
 
-		public vec3 LightDirection { get; set; }
-		public Color LightColor { get; set; }
+		public unsafe void Dispose()
+		{
+			uint[] buffers =
+			{
+				bufferId,
+				indexBufferId
+			};
+
+			fixed (uint* address = &buffers[0])
+			{
+				glDeleteBuffers(2, address);
+			}
+
+			modelShader.Dispose();
+			shadowMapShader.Dispose();
+			shadowMapTarget.Dispose();
+		}
 
 		public void DrawTargets()
 		{
@@ -127,9 +161,15 @@ namespace Zeldo
 
 			shadowMapTarget.Apply();
 			shadowMapShader.Apply();
-			shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.World);
 
-			Draw(model.Mesh);
+			foreach (ModelHandle handle in handles)
+			{
+				Model model = handle.Model;
+
+				model.RecomputeWorldMatrix();
+				shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix);
+				Draw(handle);
+			}
 		}
 
 		public void Draw(Camera3D camera)
@@ -144,7 +184,7 @@ namespace Zeldo
 			modelShader.Apply();
 			modelShader.SetUniform("lightDirection", LightDirection);
 			modelShader.SetUniform("lightColor", LightColor.ToVec3());
-			modelShader.SetUniform("ambientIntensity", 0.1f);
+			modelShader.SetUniform("ambientIntensity", AmbientIntensity);
 
 			// See http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/.
 			mat4 biasMatrix = new mat4
@@ -156,19 +196,25 @@ namespace Zeldo
 			);
 
 			mat4 cameraMatrix = camera.ViewProjection;
-			mat4 world = model.World;
-			quat orientation = model.Orientation;
 
-			modelShader.SetUniform("orientation", orientation.ToMat4);
-			modelShader.SetUniform("mvp", cameraMatrix * world);
-			modelShader.SetUniform("lightBiasMatrix", biasMatrix * lightMatrix * world);
+			foreach (ModelHandle handle in handles)
+			{
+				Model model = handle.Model;
+				mat4 world = model.WorldMatrix;
+				quat orientation = model.Orientation;
 
-			Draw(model.Mesh);
+				modelShader.SetUniform("orientation", orientation.ToMat4);
+				modelShader.SetUniform("mvp", cameraMatrix * world);
+				modelShader.SetUniform("lightBiasMatrix", biasMatrix * lightMatrix * world);
+
+				Draw(handle);
+			}
 		}
 
-		private unsafe void Draw(Mesh mesh)
+		private unsafe void Draw(ModelHandle handle)
 		{
-			glDrawElements(GL_TRIANGLES, (uint)mesh.Indices.Length, GL_UNSIGNED_SHORT, null);
+			glDrawElementsBaseVertex(GL_TRIANGLES, (uint)handle.Count, GL_UNSIGNED_SHORT, (void*)handle.Offset,
+				handle.BaseVertex);
 		}
 	}
 }

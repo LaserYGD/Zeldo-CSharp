@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Remoting.Contexts;
 using Engine;
+using Engine.Core._3D;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
@@ -27,6 +28,7 @@ namespace Zeldo.Entities
 		private InputBind jumpBindUsed;
 		private PlayerData playerData;
 		private PlayerControls controls;
+		private Model model;
 
 		private bool onGround;
 		private bool[] skillsUnlocked;
@@ -39,6 +41,7 @@ namespace Zeldo.Entities
 			sword = new Sword();
 			playerData = JsonUtilities.Deserialize<PlayerData>("PlayerData.json");
 			controls = new PlayerControls();
+			model = new Model("Player");
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 
@@ -62,6 +65,8 @@ namespace Zeldo.Entities
 
 		public override void Initialize()
 		{
+			Scene.ModelBatch.Add(model);
+
 			sword.Scene = Scene;
 			sword.Initialize();
 		}
@@ -175,6 +180,7 @@ namespace Zeldo.Entities
 		{
 			Position += velocity * dt;
 			Box.Position = Position;
+			model.Position = Position;
 
 			sword.Position = Position;
 			sword.Update(dt);

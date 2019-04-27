@@ -116,8 +116,11 @@
     <Compile Include="Core\DynamicComponent.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
+    <Compile Include="Graphics\3D\ModelBatch.cs" />
+    <Compile Include="Graphics\3D\ModelHandle.cs" />
+    <Compile Include="Graphics\3D\ShadowMapVisualizer.cs" />
     <Compile Include="Graphics\PrimitiveBuffer.cs" />
-    <Compile Include="Graphics\PrimitiveRenderer3D.cs" />
+    <Compile Include="Graphics\3D\PrimitiveRenderer3D.cs" />
     <Compile Include="Input\ClickableSet.cs" />
     <Compile Include="Input\Data\KeyboardData.cs" />
     <Compile Include="Input\Data\KeyModifiers.cs" />
@@ -154,10 +157,10 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameLoop.cs" />
     <Compile Include="GLFW.cs" />
-    <Compile Include="Graphics\Glyph.cs" />
-    <Compile Include="Graphics\Mesh.cs" />
-    <Compile Include="Graphics\SpriteBatch.cs" />
-    <Compile Include="Graphics\SpriteFont.cs" />
+    <Compile Include="Graphics\2D\Glyph.cs" />
+    <Compile Include="Graphics\3D\Mesh.cs" />
+    <Compile Include="Graphics\2D\SpriteBatch.cs" />
+    <Compile Include="Graphics\2D\SpriteFont.cs" />
     <Compile Include="Graphics\Texture.cs" />
     <Compile Include="Input\Data\FullInputData.cs" />
     <Compile Include="Input\Data\InputBind.cs" />

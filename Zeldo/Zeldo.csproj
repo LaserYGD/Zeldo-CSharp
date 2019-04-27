@@ -115,7 +115,6 @@
     <Compile Include="Items\ItemTypes.cs" />
     <Compile Include="JumpTester.cs" />
     <Compile Include="JumpTester2.cs" />
-    <Compile Include="ModelBatch.cs" />
     <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
     <Compile Include="Interfaces\ITargetable.cs" />
@@ -161,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\Json\Fragments\" />
+    <Folder Include="Graphics\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Fonts\Default_0.png">

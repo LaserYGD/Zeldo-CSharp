@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Graphics;
+using Engine.Graphics._2D;
 using Engine.Interfaces;
 using Engine.Interfaces._2D;
 using Engine.Shaders;
@@ -12,7 +13,8 @@ using static Engine.GL;
 
 namespace Engine.Core._2D
 {
-	public abstract class Component2D : IPositionable2D, IRotatable, IScalable2D, IColorable, IRenderable2D
+	public abstract class Component2D : IPositionable2D, IRotatable, IScalable2D, IColorable, IRenderable2D,
+		IDisposable
 	{
 		// Each vertex contains position, texture coordinates, and color.
 		protected const int VertexSize = 5;
@@ -137,6 +139,11 @@ namespace Engine.Core._2D
 			{
 				data[i * VertexSize + 4] = f;
 			}
+		}
+
+		public void Dispose()
+		{
+			Shader?.Dispose();
 		}
 
 		public abstract void Draw(SpriteBatch sb);
