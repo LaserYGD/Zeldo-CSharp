@@ -12,20 +12,46 @@ using GlmSharp;
 
 namespace Engine.UI
 {
-	public abstract class CanvasElement : ILocatable, IDynamic, IRenderable2D
+	public abstract class CanvasElement : IBoundable2D, IDynamic, IRenderable2D
 	{
+		private ivec2 location;
+
 		protected CanvasElement()
 		{
 			Visible = true;
 		}
 
-		public virtual ivec2 Location { get; set; }
+		protected bool Centered { get; set; }
+
+		public virtual ivec2 Location
+		{
+			get => location;
+			set
+			{
+				location = value;
+
+				if (Bounds == null)
+				{
+					return;
+				}
+
+				if (Centered)
+				{
+					Bounds.Center = value;
+				}
+				else
+				{
+					Bounds.Location = value;
+				}
+			}
+		}
 
 		public bool Visible { get; set; }
 
 		public Alignments Anchor { get; set; }
 
 		public ivec2 Offset { get; set; }
+		public Bounds2D Bounds { get; protected set; }
 
 		public virtual void Update(float dt)
 		{

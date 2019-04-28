@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Core;
+using Engine.Core._2D;
 using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.Shaders;
@@ -125,6 +126,31 @@ namespace Engine.Graphics._2D
 		public void Draw(Line line, Color color)
 		{
 			DrawLine(line.P1, line.P2, color);
+		}
+
+		public void Draw(Bounds2D bounds, Color color)
+		{
+			Apply(primitiveShader, GL_LINE_LOOP);
+
+			var corners = bounds.Corners;
+
+			float f = color.ToFloat();
+			float[] data = new float[12];
+
+			for (int i = 0; i < 4; i++)
+			{
+				ivec2 p = corners[i];
+
+				int start = i * 3;
+
+				data[start] = p.x;
+				data[start + 1] = p.y;
+				data[start + 2] = f;
+			}
+
+			ushort[] indices = { 0, 1, 2, 3 };
+
+			Buffer(data, indices);
 		}
 
 		public void DrawLine(vec2 p1, vec2 p2, Color color)

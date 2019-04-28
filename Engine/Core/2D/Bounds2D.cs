@@ -79,6 +79,14 @@ namespace Engine.Core._2D
 			}
 		}
 
+		public ivec2[] Corners => new[]
+		{
+			new ivec2(X, Y),
+			new ivec2(Right, Y),
+			new ivec2(Right, Bottom),
+			new ivec2(X, Bottom)
+		};
+
 		public bool Contains(ivec2 point)
 		{
 			return Contains(point.x, point.y);

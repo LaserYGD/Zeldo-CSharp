@@ -14,8 +14,10 @@ using Zeldo.Entities;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Enemies;
 using Zeldo.Sensors;
+using Zeldo.UI;
 using Zeldo.UI.Hud;
 using Zeldo.UI.Screens;
+using Zeldo.UI.Speech;
 using static Engine.GL;
 
 namespace Zeldo
@@ -60,10 +62,15 @@ namespace Zeldo
 
 			PlayerHealthDisplay healthDisplay = new PlayerHealthDisplay();
 			PlayerManaDisplay manaDisplay = new PlayerManaDisplay();
+			SpeechBox speechBox = new SpeechBox();
 
 			canvas = new Canvas();
 			canvas.Add(healthDisplay);
 			canvas.Add(manaDisplay);
+			canvas.Add(speechBox);
+
+			speechBox.Refresh("That artifact is crucial to my research. Every reference I've found places it deep " +
+				"within the ruins, but to retrieve it myself would be... a risk I'm unwilling to take.");
 
 			screenManager = new ScreenManager();
 			screenManager.Load(canvas);
@@ -84,6 +91,7 @@ namespace Zeldo
 			scene = new Scene
 			{
 				Camera = camera,
+				Canvas = canvas,
 				Space = space
 			};
 
@@ -163,9 +171,9 @@ namespace Zeldo
 			glDisable(GL_CULL_FACE);
 			glDepthFunc(GL_NEVER);
 
-			mainSprite.Draw(sb);
-			
-			//canvas.Draw(sb);
+			mainSprite.Draw(sb);		
+			canvas.Draw(sb);
+
 			//jumpTester.Draw(sb);
 			//jumpTester2.Draw(sb);
 

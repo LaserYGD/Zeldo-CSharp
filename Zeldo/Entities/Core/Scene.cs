@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Engine.Graphics._3D;
 using Engine.Interfaces;
+using Engine.UI;
 using Engine.View;
 using Zeldo.Sensors;
 
@@ -21,6 +22,7 @@ namespace Zeldo.Entities.Core
 		}
 
 		public Camera3D Camera { get; set; }
+		public Canvas Canvas { get; set; }
 		public Space Space { get; set; }
 		public ModelBatch ModelBatch { get; }
 

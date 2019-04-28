@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Core._2D;
+using Engine.Graphics._2D;
 using Engine.Shapes._2D;
 using GlmSharp;
 
@@ -169,6 +170,41 @@ namespace Engine.Utility
 			int index = value.LastIndexOf('.');
 
 			return value.Substring(0, index);
+		}
+
+		public static string[] WrapLines(string value, SpriteFont font, int width)
+		{
+			List<string> lines = new List<string>();
+			string[] words = value.Split(' ');
+			StringBuilder builder = new StringBuilder();
+
+			int currentWidth = 0;
+			int spaceWidth = font.Measure(" ").x;
+
+			foreach (string word in words)
+			{
+				int wordWidth = font.Measure(word).x;
+
+				if (currentWidth + wordWidth > width)
+				{
+					lines.Add(builder.ToString());
+					builder.Clear();
+					builder.Append(word + " ");
+					currentWidth = wordWidth + spaceWidth;
+				}
+				else
+				{
+					currentWidth += wordWidth + spaceWidth;
+					builder.Append(word + " ");
+				}
+			}
+
+			if (builder.Length > 0)
+			{
+				lines.Add(builder.ToString());
+			}
+
+			return lines.ToArray();
 		}
 	}
 }

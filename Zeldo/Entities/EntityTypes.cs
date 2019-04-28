@@ -8,6 +8,7 @@ namespace Zeldo.Entities
 {
 	public enum EntityTypes
 	{
+		Character,
 		Enemy,
 		Object,
 		Player,

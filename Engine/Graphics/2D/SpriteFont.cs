@@ -95,14 +95,11 @@ namespace Engine.Graphics._2D
 			}
 
 			int sumWidth = 0;
-			int length = value.Length;
 
-			for (int i = 0; i < length - 1; i++)
+			foreach (char c in value)
 			{
-				sumWidth += Glyphs[value[i]].Advance;
+				sumWidth += Glyphs[c].Advance;
 			}
-
-			sumWidth += Glyphs[value[length - 1]].Width;
 
 			return new ivec2(sumWidth, Size);
 		}

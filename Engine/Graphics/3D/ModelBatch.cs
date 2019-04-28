@@ -154,6 +154,8 @@ namespace Engine.Graphics._3D
 		{
 			const int OrthoSize = 8;
 
+			glDisable(GL_CULL_FACE);
+
 			mat4 lightView = mat4.LookAt(-LightDirection * 10, vec3.Zero, vec3.UnitY);
 			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 100);
 
