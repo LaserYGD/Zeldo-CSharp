@@ -29,8 +29,8 @@ namespace Engine.Graphics._2D
 
 		public SpriteBatch()
 		{
-			const int BufferCapacity = 20000;
-			const int IndexCapacity = 1000;
+			const int BufferCapacity = 30000;
+			const int IndexCapacity = 3000;
 
 			buffer = new PrimitiveBuffer(BufferCapacity, IndexCapacity);
 

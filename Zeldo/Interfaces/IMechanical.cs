@@ -4,15 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.Entities
+namespace Zeldo.Interfaces
 {
-	public enum EntityTypes
+	public interface IMechanical
 	{
-		Character,
-		Enemy,
-		Object,
-		Player,
-		Projectile,
-		Weapon
+		int Id { get; }
+
+		void TriggerMechanism();
 	}
 }

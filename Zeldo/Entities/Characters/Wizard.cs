@@ -19,7 +19,7 @@ namespace Zeldo.Entities.Characters
 
 		private string[] lines;
 
-		public Wizard() : base(EntityTypes.Character)
+		public Wizard() : base(EntityGroups.Character)
 		{
 			shape = new Circle(1);
 			sensor = new Sensor(SensorTypes.Entity, this, shape);

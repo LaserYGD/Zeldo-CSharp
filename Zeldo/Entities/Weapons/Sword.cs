@@ -20,7 +20,7 @@ namespace Zeldo.Entities.Weapons
 		private SingleTimer timer;
 		private List<ITargetable> targetsHit;
 
-		public Sword() : base(EntityTypes.Weapon)
+		public Sword() : base(EntityGroups.Weapon)
 		{
 			arc = new Arc(1, 1.25f);
 			targetsHit = new List<ITargetable>();

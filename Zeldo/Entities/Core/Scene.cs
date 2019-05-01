@@ -37,11 +37,6 @@ namespace Zeldo.Entities.Core
 			entity.Initialize();
 		}
 
-		public List<Entity> GetEntityList(EntityTypes type)
-		{
-			return null;
-		}
-
 		public void Update(float dt)
 		{
 			entities.ForEach(e => e.Update(dt));

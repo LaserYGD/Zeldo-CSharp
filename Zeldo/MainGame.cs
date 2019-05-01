@@ -48,8 +48,10 @@ namespace Zeldo
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glPrimitiveRestartIndex(Constants.RestartIndex);
 
+			Properties.Load("Entity.properties");
+
 			camera = new Camera3D();
-			//camera.IsOrthographic = true;
+			camera.IsOrthographic = true;
 			camera.Orientation *= quat.FromAxisAngle(0.75f, vec3.UnitX);
 			camera.Position = new vec3(0, 0, 3) * camera.Orientation;
 
@@ -70,7 +72,9 @@ namespace Zeldo
 			canvas.Add(speechBox);
 
 			speechBox.Refresh("That artifact is crucial to my research. Every reference I've found places it deep " +
-				"within the ruins, but to retrieve it myself would be... a risk I'm unwilling to take.");
+				"within the ruins, but to retrieve it myself would be... a risk I'm unwilling to take. But I have " +
+				"money to spare, and if you agree to retrieve the artifact and return it to me intact, I promise " +
+				"I'll reward you handsomly.");
 
 			screenManager = new ScreenManager();
 			screenManager.Load(canvas);

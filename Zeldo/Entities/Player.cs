@@ -34,7 +34,7 @@ namespace Zeldo.Entities
 		private bool[] skillsUnlocked;
 		private bool[] skillsEnabled;
 
-		public Player() : base(EntityTypes.Player)
+		public Player() : base(EntityGroups.Player)
 		{
 			Box = new Box(0.6f, 1.8f, 0.6f);
 			onGround = true;

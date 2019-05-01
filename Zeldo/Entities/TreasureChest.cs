@@ -13,7 +13,7 @@ namespace Zeldo.Entities
 		private int itemId;
 		private bool opened;
 
-		public TreasureChest() : base(EntityTypes.Object)
+		public TreasureChest() : base(EntityGroups.Object)
 		{
 		}
 

@@ -119,6 +119,7 @@
     <Compile Include="Graphics\3D\ModelBatch.cs" />
     <Compile Include="Graphics\3D\ModelHandle.cs" />
     <Compile Include="Graphics\3D\ShadowMapVisualizer.cs" />
+    <Compile Include="Graphics\GLBuffer.cs" />
     <Compile Include="Graphics\PrimitiveBuffer.cs" />
     <Compile Include="Graphics\3D\PrimitiveRenderer3D.cs" />
     <Compile Include="Input\ClickableSet.cs" />
@@ -131,10 +132,12 @@
     <Compile Include="Networking\GamePeer.cs" />
     <Compile Include="Particles\Emitters\Emitter.cs" />
     <Compile Include="Particles\Particle.cs" />
+    <Compile Include="Properties.cs" />
     <Compile Include="Shapes\2D\Arc.cs" />
     <Compile Include="Shapes\2D\Rectangle.cs" />
     <Compile Include="Shapes\2D\ShapeHelper2D.cs" />
     <Compile Include="Smoothers\3D\OrientationSmoother.cs" />
+    <Compile Include="Smoothers\3D\PositionSmoother3D.cs" />
     <Compile Include="Smoothers\Smoother.cs" />
     <Compile Include="Timing\RepeatingTimer.cs" />
     <Compile Include="Timing\SingleTimer.cs" />

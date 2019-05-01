@@ -9,7 +9,7 @@ namespace Zeldo.Entities.Projectiles
 {
 	public class Arrow : Entity
 	{
-		public Arrow() : base(EntityTypes.Projectile)
+		public Arrow() : base(EntityGroups.Projectile)
 		{
 		}
 	}

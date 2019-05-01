@@ -8,13 +8,14 @@ using Engine.Interfaces;
 
 namespace Zeldo.Weather
 {
-	public abstract class WeatherFormation : IDynamic
+	public abstract class WeatherFormation : IDynamic, IDisposable
 	{
 		public virtual Color FilterLight(Color color)
 		{
 			return color;
 		}
 
+		public abstract void Dispose();
 		public abstract void Update(float dt);
 	}
 }

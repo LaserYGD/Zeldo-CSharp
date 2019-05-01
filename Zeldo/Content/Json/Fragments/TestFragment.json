@@ -1,0 +1,11 @@
+﻿{
+	"Entities": [
+		{
+			"Type": "Lever",
+			"Id": 100,
+			"Targets": [
+				200
+			] 
+		}
+	]
+}

@@ -17,16 +17,18 @@ namespace Zeldo.Entities.Core
 		private vec3 position;
 		private List<Sensor> sensors;
 		private List<DynamicComponent> components;
+		private List<EntityAttachment> attachments;
 
-		protected Entity(EntityTypes type)
+		protected Entity(EntityGroups group)
 		{
-			EntityType = type;
+			Group = group;
+			attachments = new List<EntityAttachment>();
 		}
 
 		protected List<Sensor> Sensors => sensors ?? (sensors = new List<Sensor>());
 		protected List<DynamicComponent> Components => components ?? (components = new List<DynamicComponent>());
 
-		public EntityTypes EntityType { get; }
+		public EntityGroups Group { get; }
 
 		public Scene Scene { get; set; }
 
@@ -42,8 +44,14 @@ namespace Zeldo.Entities.Core
 
 		public quat Orientation { get; set; }
 
-		public virtual void Initialize()
+		protected void Attach(ITransformable3D target)
 		{
+			Attach(target, vec3.Zero, quat.Identity);
+		}
+
+		protected void Attach(ITransformable3D target, vec3 position, quat orientation)
+		{
+			attachments.Add(new EntityAttachment(target, position, orientation));
 		}
 
 		protected Sensor CreateSensor(Shape2D shape = null, bool enabled = true, int height = 1,
@@ -57,6 +65,10 @@ namespace Zeldo.Entities.Core
 			Scene.Space.Add(sensor);
 
 			return sensor;
+		}
+
+		public virtual void Initialize()
+		{
 		}
 
 		public void SetTransform(vec3 position, quat orientation)
@@ -82,6 +94,11 @@ namespace Zeldo.Entities.Core
 			}
 
 			sensors?.ForEach(s => s.Position = position);
+
+			foreach (EntityAttachment attachment in attachments)
+			{
+
+			}
 		}
 	}
 }

@@ -81,10 +81,24 @@
     <None Include="Content\Fonts\Default.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Json\Fragments\TestFragment.json" />
     <None Include="Content\Models\Map.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Models\Player.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Models\Wall.obj" />
+    <None Include="Content\Shaders\Rain.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Shaders\Rain.geom">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Shaders\Rain.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Text\Entity.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -99,19 +113,23 @@
     <Compile Include="Effects\Explosion.cs" />
     <Compile Include="Entities\Characters\Wizard.cs" />
     <Compile Include="Entities\Core\Entity.cs" />
+    <Compile Include="Entities\Core\EntityAttachment.cs" />
     <Compile Include="Entities\Core\Scene.cs" />
     <Compile Include="Entities\Enemies\Skeleton.cs" />
-    <Compile Include="Entities\EntityTypes.cs" />
+    <Compile Include="Entities\Core\EntityIds.cs" />
+    <Compile Include="Entities\Core\EntityGroups.cs" />
     <Compile Include="Entities\Hazards\PoisonBush.cs" />
+    <Compile Include="Entities\JesterWall.cs" />
+    <Compile Include="Entities\Mechanisms\Lever.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerControls.cs" />
     <Compile Include="Entities\PlayerData.cs" />
     <Compile Include="Entities\PlayerSkills.cs" />
     <Compile Include="Entities\Projectiles\Arrow.cs" />
     <Compile Include="Entities\TreasureChest.cs" />
-    <Compile Include="Entities\TreasureChestLid.cs" />
     <Compile Include="Entities\Weapons\Bow.cs" />
     <Compile Include="Interfaces\IInteractive.cs" />
+    <Compile Include="Interfaces\IMechanical.cs" />
     <Compile Include="Items\Inventory.cs" />
     <Compile Include="Items\ItemTypes.cs" />
     <Compile Include="JumpTester.cs" />
@@ -159,9 +177,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\Json\Fragments\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Content\Fonts\Default_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

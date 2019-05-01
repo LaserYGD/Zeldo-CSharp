@@ -25,15 +25,7 @@ namespace Engine
 		public static unsafe void AllocateBuffers(int bufferSize, int indexSize, out uint bufferId,
 			out uint indexBufferId, uint usage)
 		{
-			uint[] buffers = new uint[2];
-
-			fixed (uint* address = &buffers[0])
-			{
-				glGenBuffers(2, address);
-			}
-
-			bufferId = buffers[0];
-			indexBufferId = buffers[1];
+			GenerateBuffers(out bufferId, out indexBufferId);
 
 			// Note that buffer capacity should be given in bytes, while index capacity should be given in indexes
 			// (i.e. unsigned shorts). This is meant to match how primitive buffers are created.
