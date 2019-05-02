@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Graphics;
-using Engine.Graphics._3D;
+﻿using Engine.Graphics._3D;
 using Engine.Interfaces._3D;
 using GlmSharp;
 
@@ -12,13 +6,15 @@ namespace Engine.Core._3D
 {
 	public class Model : ITransformable3D
 	{
-		public Model(string filename)
+		public Model(string name)
 		{
-			Mesh = ContentCache.GetMesh(filename);
+			Mesh = ContentCache.GetMesh(name);
+			Scale = vec3.Ones;
 			Orientation = quat.Identity;
 		}
 
 		public vec3 Position { get; set; }
+		public vec3 Scale { get; set; }
 		public quat Orientation { get; set; }
 		public Mesh Mesh { get; }
 		public mat4 WorldMatrix { get; private set; }
@@ -31,7 +27,7 @@ namespace Engine.Core._3D
 
 		public void RecomputeWorldMatrix()
 		{
-			WorldMatrix = Orientation.ToMat4 * mat4.Translate(Position);
+			WorldMatrix = mat4.Translate(Position) * Orientation.ToMat4 * mat4.Scale(Scale);
 		}
 	}
 }

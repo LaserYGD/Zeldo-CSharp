@@ -16,6 +16,10 @@ namespace Zeldo.Weather
 			return lightningVisible ? Color.White : color;
 		}
 
+		public override void Dispose()
+		{
+		}
+
 		public override void Update(float dt)
 		{
 		}

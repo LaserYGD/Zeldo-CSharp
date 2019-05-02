@@ -14,7 +14,6 @@ using Zeldo.Entities;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Enemies;
 using Zeldo.Sensors;
-using Zeldo.UI;
 using Zeldo.UI.Hud;
 using Zeldo.UI.Screens;
 using Zeldo.UI.Speech;
@@ -37,6 +36,7 @@ namespace Zeldo
 		private PrimitiveRenderer3D primitives;
 		private ScreenManager screenManager;
 		private List<IRenderTargetUser> renderTargetUsers;
+		private PhysicsTester physicsTester;
 
 		private JumpTester jumpTester;
 		private JumpTester2 jumpTester2;
@@ -51,9 +51,9 @@ namespace Zeldo
 			Properties.Load("Entity.properties");
 
 			camera = new Camera3D();
-			camera.IsOrthographic = true;
+			//camera.IsOrthographic = true;
 			camera.Orientation *= quat.FromAxisAngle(0.75f, vec3.UnitX);
-			camera.Position = new vec3(0, 0, 3) * camera.Orientation;
+			camera.Position = new vec3(0, 0, 5) * camera.Orientation;
 
 			sb = new SpriteBatch();
 
@@ -61,6 +61,8 @@ namespace Zeldo
 				RenderTargetFlags.Color | RenderTargetFlags.Depth);
 			mainSprite = new Sprite(mainTarget, null, Alignments.Left | Alignments.Top);
 			mainSprite.Mods = SpriteModifiers.FlipVertical;
+
+			physicsTester = new PhysicsTester();
 
 			PlayerHealthDisplay healthDisplay = new PlayerHealthDisplay();
 			PlayerManaDisplay manaDisplay = new PlayerManaDisplay();
@@ -133,12 +135,13 @@ namespace Zeldo
 		
 		protected override void Update(float dt)
 		{
-			scene.Update(dt);
-			space.Update();
+			//scene.Update(dt);
+			//space.Update();
 			camera.Update(dt);
 
 			//jumpTester.Update(dt);
 			//jumpTester2.Update(dt);
+			physicsTester.Update(dt);
 
 			MessageSystem.ProcessChanges();
 		}
@@ -149,9 +152,11 @@ namespace Zeldo
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);
 
-			renderTargetUsers.ForEach(t => t.DrawTargets());
+			//renderTargetUsers.ForEach(t => t.DrawTargets());
+			physicsTester.Batch.DrawTargets();
 			mainTarget.Apply();
-			scene.ModelBatch.Draw(camera);
+			physicsTester.Batch.Draw(camera);
+			//scene.ModelBatch.Draw(camera);
 
 			/*
 			var sensor = skeleton.Sensor;
@@ -176,7 +181,7 @@ namespace Zeldo
 			glDepthFunc(GL_NEVER);
 
 			mainSprite.Draw(sb);		
-			canvas.Draw(sb);
+			//canvas.Draw(sb);
 
 			//jumpTester.Draw(sb);
 			//jumpTester2.Draw(sb);

@@ -110,8 +110,8 @@ namespace Engine.Graphics._3D
 			int size = sizeof(float) * buffer.Length;
 			int indexSize = sizeof(ushort) * indices.Length;
 
-			handles.Add(new ModelHandle(model, indices.Length, indexBufferSize, maxIndex == 0 ? 0 : maxIndex + 1));
-			maxIndex += mesh.MaxIndex;
+			handles.Add(new ModelHandle(model, indices.Length, indexBufferSize, maxIndex));
+			maxIndex += mesh.MaxIndex + 1;
 
 			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
 

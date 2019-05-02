@@ -8,6 +8,10 @@ namespace Zeldo.Weather
 {
 	public class Snow : WeatherFormation
 	{
+		public override void Dispose()
+		{
+		}
+
 		public override void Update(float dt)
 		{
 		}

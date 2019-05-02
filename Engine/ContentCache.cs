@@ -22,12 +22,12 @@ namespace Engine
 			textures = new Dictionary<string, Texture>();
 		}
 
-		public static Mesh GetMesh(string filename)
+		public static Mesh GetMesh(string name)
 		{
-			if (!meshes.TryGetValue(filename, out Mesh mesh))
+			if (!meshes.TryGetValue(name, out Mesh mesh))
 			{
-				mesh = Mesh.Load(filename);
-				meshes.Add(filename, mesh);
+				mesh = Mesh.Load(name);
+				meshes.Add(name, mesh);
 			}
 
 			return mesh;
