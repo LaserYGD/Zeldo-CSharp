@@ -1,0 +1,37 @@
+﻿{
+	"Wizard": [
+		"Woah! Is that what I think it is? A dragon!",
+		"It's pretty small for a dragon. Aren't dragons meant to be larger and more.. on-fire?",
+		"That's right, Sofia. They're fearsome beasts, bred for war. Their hides are thick and their fire unyielding in its destructive power!",
+		"Aww. I think he's cute!",
+		""
+	],
+
+	"Sofia": [
+		"I don't trust you! There's no way to know if you're being truthful!",
+		""
+	],
+
+	"King": [
+		"Walk with me, if you would.",
+		"I have ruled this city and this land for more than half of my life. When I took the throne, ",
+		"But this "
+	],
+
+	"Wizard 2": [
+		"Why is your hat so huge?",
+		"Do you hide the magic under the hat?",
+		"Looks like your hat is controlling you!",
+		"Through two years of research and trial, I have become attuned to the element of fire itself. Although I cannot expel my power without use of a |Gold generator|, you'll find no |Cyan focus| on my person.",
+		"But... magic cannot be channeled without a |Cyan focus|. Any layman could tell you that.",
+		"Are you saying the sorceress lied to us?",
+		"No. She did not lie. To lie requires intent, and the sorceress, for all her wisdom, believes her words are true.",
+		"But she is wrong. I'm living proof of that.",
+		"Is it painful?",
+		"Less so with each passing day."
+	],
+
+	"Friend": [
+
+	] 
+}

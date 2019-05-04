@@ -1,0 +1,3 @@
+- Small fire that needs to be grown bigger and bigger by providing various sources of fuel (some that decay and some that don't) in order to trigger a secret (inspired by Chilled TTT part 139 near the beginning)
+
+- Visible watch that appears as an overlay while a button is held (tells you the time of day more accurately than just watching the sun, which is especially useful underground) => Could use a custom time/date system that players can learn in-game (ideally through an optional, but easy-to-find side quest relatively early in the game) => Clockmaker NPC who can upgrade the watch to also view weather patterns and lunar phases
