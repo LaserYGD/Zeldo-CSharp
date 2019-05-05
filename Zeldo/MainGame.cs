@@ -1,28 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Engine;
 using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Graphics._2D;
 using Engine.Graphics._3D;
+using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
+using Engine.Physics;
 using Engine.UI;
 using Engine.Utility;
 using Engine.View;
 using GlmSharp;
+using Jitter;
+using Jitter.Collision;
+using Jitter.Collision.Shapes;
+using Jitter.Dynamics;
+using Jitter.LinearMath;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
-using Zeldo.Entities.Enemies;
+using Zeldo.Physics;
 using Zeldo.Sensors;
 using Zeldo.UI.Hud;
 using Zeldo.UI.Screens;
-using Zeldo.UI.Speech;
 using static Engine.GL;
 
 namespace Zeldo
 {
 	public class MainGame : Game, IReceiver
 	{
+		private const float PhysicsStep = 1 / 120f;
+
 		private SpriteBatch sb;
 		private RenderTarget mainTarget;
 		private Sprite mainSprite;
@@ -30,16 +39,12 @@ namespace Zeldo
 		private Canvas canvas;
 		private Scene scene;
 		private Space space;
-		private Player player;
-		private Skeleton skeleton;
-		private InventoryScreen inventoryScreen;
-		private PrimitiveRenderer3D primitives;
+		private World world;
 		private ScreenManager screenManager;
 		private List<IRenderTargetUser> renderTargetUsers;
-		private PhysicsTester physicsTester;
 
-		private JumpTester jumpTester;
-		private JumpTester2 jumpTester2;
+		private List<RigidBody> debugBodies = new List<RigidBody>();
+		private List<Model> debugModels = new List<Model>();
 
 		public MainGame() : base("Zeldo")
 		{
@@ -62,61 +67,61 @@ namespace Zeldo
 			mainSprite = new Sprite(mainTarget, null, Alignments.Left | Alignments.Top);
 			mainSprite.Mods = SpriteModifiers.FlipVertical;
 
-			physicsTester = new PhysicsTester();
-
 			PlayerHealthDisplay healthDisplay = new PlayerHealthDisplay();
 			PlayerManaDisplay manaDisplay = new PlayerManaDisplay();
-			SpeechBox speechBox = new SpeechBox();
 
 			canvas = new Canvas();
 			canvas.Add(healthDisplay);
 			canvas.Add(manaDisplay);
-			canvas.Add(speechBox);
-
-			speechBox.Refresh("That artifact is crucial to my research. Every reference I've found places it deep " +
-				"within the ruins, but to retrieve it myself would be... a risk I'm unwilling to take. But I have " +
-				"money to spare, and if you agree to retrieve the artifact and return it to me intact, I promise " +
-				"I'll reward you handsomly.");
 
 			screenManager = new ScreenManager();
 			screenManager.Load(canvas);
 
-			space = new Space();
-
-			player = new Player
+			/*
+			Player player = new Player
 			{
 				HealthDisplay = healthDisplay,
 				ManaDisplay = manaDisplay
 			};
 
 			player.UnlockSkill(PlayerSkills.Jump);
+			*/
 
-			skeleton = new Skeleton();
-			skeleton.Position = new vec3(-1.5f, 0, 1);
+			CollisionSystem system = new CollisionSystemSAP();
+			system.UseTriangleMeshNormal = true;
+			system.CollisionDetected += (body1, body2, point1, point2, normal, penetration) =>
+			{
+				return;
+
+				// This assumes that all physics bodies will have entities attached.
+				Entity entity1 = (Entity)body1.Tag;
+				Entity entity2 = (Entity)body2.Tag;
+
+				vec3 p1 = point1.ToVec3();
+				vec3 p2 = point2.ToVec3();
+				vec3 n = normal.ToVec3();
+
+				entity1.OnCollision(entity2, p1, n);
+				entity2.OnCollision(entity1, p2, -n);
+			};
+			
+			world = new World(system);
+			space = new Space();
 
 			scene = new Scene
 			{
 				Camera = camera,
 				Canvas = canvas,
-				Space = space
+				Space = space,
+				World = world
 			};
 
-			scene.Add(player);
-			scene.Add(skeleton);
-			
-			ModelBatch modelBatch = scene.ModelBatch;
-			modelBatch.Add(new Model("Map"));
-			modelBatch.LightDirection = Utilities.Normalize(new vec3(-1, -0.2f, -0.5f));
+			//scene.Add(player);
 
 			renderTargetUsers = new List<IRenderTargetUser>();
 			renderTargetUsers.Add(scene.ModelBatch);
 
-			primitives = new PrimitiveRenderer3D(camera);
-			jumpTester = new JumpTester();
-			jumpTester2 = new JumpTester2();
-
-			inventoryScreen = new InventoryScreen();
-			inventoryScreen.Location = new ivec2(400, 300);
+			LoadTestingData();
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
@@ -132,16 +137,78 @@ namespace Zeldo
 		{
 			mainSprite.ScaleTo(Resolution.WindowWidth, Resolution.WindowHeight);
 		}
+
+		private void LoadTestingData()
+		{
+			TriangleMeshShape shape = TriangleMeshLoader.Load("MapPhysics.obj");
+			RigidBody body = new RigidBody(shape);
+			body.IsStatic = true;
+
+			world.AddBody(body);
+
+			Model model = new Model("Map");
+
+			ModelBatch batch = scene.ModelBatch;
+			batch.Add(model);
+			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.5f, -0.5f));
+
+			MessageSystem.Subscribe(this, CoreMessageTypes.Mouse, (messageType, data, dt) =>
+			{
+				MouseData mouseData = (MouseData)data;
+
+				if (mouseData.Query(GLFW.GLFW_MOUSE_BUTTON_LEFT, InputStates.PressedThisFrame))
+				{
+					Random random = new Random();
+
+					const float Range = 4;
+
+					float x = (float)random.NextDouble() * Range * 2 - Range;
+					float y = 4;
+					float z = (float)random.NextDouble() * Range * 2 - Range;
+					float sizeX = 0.5f;
+					float sizeY = 0.5f;
+					float sizeZ = 0.5f;
+					float angleX = (float)random.NextDouble() * Constants.TwoPi;
+					float angleY = (float)random.NextDouble() * Constants.TwoPi;
+					float angleZ = (float)random.NextDouble() * Constants.TwoPi;
+
+					quat orientation = quat.FromAxisAngle(angleX, vec3.UnitX) *
+						quat.FromAxisAngle(angleY, vec3.UnitY) * quat.FromAxisAngle(angleZ, vec3.UnitZ);
+					
+					RigidBody box = new RigidBody(new BoxShape(sizeX, sizeY, sizeZ));
+					box.Position = new JVector(x, y, z);
+					box.Orientation = orientation.ToJMatrix();
+
+					world.AddBody(box);
+
+					Model cube = new Model("Cube");
+					cube.Scale = new vec3(sizeX, sizeY, sizeZ);
+					cube.Position = box.Position.ToVec3();
+					cube.Orientation = box.Orientation.ToQuat();
+
+					batch.Add(cube);
+
+					debugBodies.Add(box);
+					debugModels.Add(cube);
+				}
+			});
+		}
 		
 		protected override void Update(float dt)
 		{
-			//scene.Update(dt);
-			//space.Update();
+			world.Step(dt, true, PhysicsStep, 8);
+			space.Update();
+			scene.Update(dt);
 			camera.Update(dt);
 
-			//jumpTester.Update(dt);
-			//jumpTester2.Update(dt);
-			physicsTester.Update(dt);
+			for (int i = 0; i < debugBodies.Count; i++)
+			{
+				var body = debugBodies[i];
+				var model = debugModels[i];
+
+				model.Position = body.Position.ToVec3();
+				model.Orientation = body.Orientation.ToQuat();
+			}
 
 			MessageSystem.ProcessChanges();
 		}
@@ -152,26 +219,9 @@ namespace Zeldo
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);
 
-			//renderTargetUsers.ForEach(t => t.DrawTargets());
-			physicsTester.Batch.DrawTargets();
+			renderTargetUsers.ForEach(t => t.DrawTargets());
 			mainTarget.Apply();
-			physicsTester.Batch.Draw(camera);
-			//scene.ModelBatch.Draw(camera);
-
-			/*
-			var sensor = skeleton.Sensor;
-			var swordSensor = player.SwordSensor;
-			
-			//scene.Draw(camera);
-			primitives.Draw(player.Box, Color.White);
-			primitives.Draw(skeleton.Box, Color.Red);
-			primitives.Draw((Circle)sensor.Shape, sensor.Elevation, Color.Cyan, 20);
-
-			if (swordSensor.Enabled)
-			{
-				primitives.Draw((Arc)swordSensor.Shape, swordSensor.Elevation, Color.Cyan, 10);
-			}
-			*/
+			scene.ModelBatch.Draw(camera);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -181,10 +231,7 @@ namespace Zeldo
 			glDepthFunc(GL_NEVER);
 
 			mainSprite.Draw(sb);		
-			//canvas.Draw(sb);
-
-			//jumpTester.Draw(sb);
-			//jumpTester2.Draw(sb);
+			canvas.Draw(sb);
 
 			sb.Flush();
 		}

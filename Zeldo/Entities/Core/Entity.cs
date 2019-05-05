@@ -77,6 +77,10 @@ namespace Zeldo.Entities.Core
 			Orientation = orientation;
 		}
 
+		public virtual void OnCollision(Entity entity, vec3 point, vec3 normal)
+		{
+		}
+
 		public virtual void Update(float dt)
 		{
 			if (components != null)
@@ -93,12 +97,12 @@ namespace Zeldo.Entities.Core
 				}
 			}
 
-			sensors?.ForEach(s => s.Position = position);
-
 			foreach (EntityAttachment attachment in attachments)
 			{
 
 			}
+
+			sensors?.ForEach(s => s.Position = position);
 		}
 	}
 }

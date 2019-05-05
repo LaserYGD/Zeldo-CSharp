@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Engine.Graphics._3D;
 using Engine.Interfaces;
 using Engine.UI;
 using Engine.View;
+using Jitter;
 using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Core
@@ -18,12 +15,13 @@ namespace Zeldo.Entities.Core
 		public Scene()
 		{
 			entities = new List<Entity>();
-			ModelBatch = new ModelBatch(10000, 1000);
+			ModelBatch = new ModelBatch(100000, 10000);
 		}
 
 		public Camera3D Camera { get; set; }
 		public Canvas Canvas { get; set; }
 		public Space Space { get; set; }
+		public World World { get; set; }
 		public ModelBatch ModelBatch { get; }
 
 		public void LoadFragment(string filename)

@@ -159,7 +159,6 @@
     <Compile Include="Exceptions\RenderTargetException.cs" />
     <Compile Include="Exceptions\ShaderException.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="GameLoop.cs" />
     <Compile Include="GLFW.cs" />
     <Compile Include="Graphics\2D\Glyph.cs" />
     <Compile Include="Graphics\3D\Mesh.cs" />
@@ -190,7 +189,6 @@
     <Compile Include="Messaging\MessageHandle.cs" />
     <Compile Include="Messaging\MessageSystem.cs" />
     <Compile Include="GL.cs" />
-    <Compile Include="Physics\RigidBody3D.cs" />
     <Compile Include="Resolution.cs" />
     <Compile Include="Shaders\Shader.cs" />
     <Compile Include="Shaders\ShaderAttribute.cs" />

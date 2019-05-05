@@ -13,7 +13,7 @@ namespace Engine.Graphics._3D
 	{
 		public static Mesh Load(string name)
 		{
-			string path = "Content/Models/" + name;
+			string path = "Content/Meshes/" + name;
 			string[] lines = File.ReadAllLines(path + ".obj");
 			bool usesMaterial = lines[2][0] == 'm';
 			int lineIndex = usesMaterial ? 3 : 2;

@@ -85,16 +85,19 @@
     <None Include="Content\Json\Speech.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Models\Cube.obj">
+    <None Include="Content\Meshes\Cube.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Models\Map.obj">
+    <None Include="Content\Meshes\Map.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Models\Player.obj">
+    <None Include="Content\Meshes\Physics\MapPhysics.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Models\Wall.obj" />
+    <None Include="Content\Meshes\Player.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Meshes\Wall.obj" />
     <None Include="Content\Shaders\Rain.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -116,6 +119,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\TileFlags.cs" />
     <Compile Include="Effects\Explosion.cs" />
     <Compile Include="Entities\Characters\Wizard.cs" />
     <Compile Include="Entities\Core\Entity.cs" />
@@ -143,6 +147,7 @@
     <Compile Include="Items\ItemTypes.cs" />
     <Compile Include="JumpTester.cs" />
     <Compile Include="JumpTester2.cs" />
+    <Compile Include="Physics\TriangleMeshLoader.cs" />
     <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
     <Compile Include="Interfaces\ITargetable.cs" />
