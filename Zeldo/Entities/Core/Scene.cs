@@ -15,7 +15,7 @@ namespace Zeldo.Entities.Core
 		public Scene()
 		{
 			entities = new List<Entity>();
-			ModelBatch = new ModelBatch(100000, 10000);
+			ModelBatch = new ModelBatch(200000, 20000);
 		}
 
 		public Camera3D Camera { get; set; }

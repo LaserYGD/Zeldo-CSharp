@@ -125,6 +125,12 @@ namespace Engine.Utility
 			return new ivec2(x, y);
 		}
 
+		public static vec2 Project(vec2 v, vec2 onto)
+		{
+			// See https://math.oregonstate.edu/home/programs/undergrad/CalculusQuestStudyGuides/vcalc/dotprod/dotprod.html.
+			return vec2.Dot(onto, v) / vec2.Dot(onto, onto) * onto;
+		}
+
 		public static vec2 Normalize(vec2 v)
 		{
 			if (v == vec2.Zero)

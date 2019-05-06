@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Engine;
 using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Graphics._2D;
 using Engine.Graphics._3D;
-using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.Physics;
@@ -17,8 +15,6 @@ using Jitter;
 using Jitter.Collision;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
-using Jitter.LinearMath;
-using Zeldo.Entities;
 using Zeldo.Entities.Core;
 using Zeldo.Physics;
 using Zeldo.Sensors;
@@ -43,8 +39,15 @@ namespace Zeldo
 		private ScreenManager screenManager;
 		private List<IRenderTargetUser> renderTargetUsers;
 
+		/*
 		private List<RigidBody> debugBodies = new List<RigidBody>();
 		private List<Model> debugModels = new List<Model>();
+		private RepeatingTimer timer;
+		
+		private int cubeCount = 0;
+		*/
+
+		private CharacterControlTester tester;
 
 		public MainGame() : base("Zeldo")
 		{
@@ -121,7 +124,9 @@ namespace Zeldo
 			renderTargetUsers = new List<IRenderTargetUser>();
 			renderTargetUsers.Add(scene.ModelBatch);
 
-			LoadTestingData();
+			//LoadTestingData();
+
+			tester = new CharacterControlTester();
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
@@ -152,54 +157,83 @@ namespace Zeldo
 			batch.Add(model);
 			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.5f, -0.5f));
 
+			const int TotalCubes = 120;
+
+			/*
+			timer = new RepeatingTimer(time =>
+			{
+				Random random = new Random();
+
+				const float Range = 3.5f;
+				const float AngularVelocityRange = 1;
+
+				float x = (float)random.NextDouble() * Range * 2 - Range;
+				float y = 6;
+				float z = (float)random.NextDouble() * Range * 2 - Range;
+				float sizeX = 0.5f;
+				float sizeY = 0.5f;
+				float sizeZ = 0.5f;
+				float angleX = (float)random.NextDouble() * Constants.TwoPi;
+				float angleY = (float)random.NextDouble() * Constants.TwoPi;
+				float angleZ = (float)random.NextDouble() * Constants.TwoPi;
+				float angularVelocityX = (float)random.NextDouble() * AngularVelocityRange;
+				float angularVelocityY = (float)random.NextDouble() * AngularVelocityRange;
+				float angularVelocityZ = (float)random.NextDouble() * AngularVelocityRange;
+
+				quat orientation = quat.FromAxisAngle(angleX, vec3.UnitX) *
+				                   quat.FromAxisAngle(angleY, vec3.UnitY) * quat.FromAxisAngle(angleZ, vec3.UnitZ);
+
+				RigidBody box = new RigidBody(new BoxShape(sizeX, sizeY, sizeZ));
+				box.Position = new JVector(x, y, z);
+				box.Orientation = orientation.ToJMatrix();
+				box.AngularVelocity = new JVector(angularVelocityX, angularVelocityY, angularVelocityZ);
+
+				world.AddBody(box);
+
+				Model cube = new Model("Cube");
+				cube.Scale = new vec3(sizeX, sizeY, sizeZ);
+				cube.Position = box.Position.ToVec3();
+				cube.Orientation = box.Orientation.ToQuat();
+
+				batch.Add(cube);
+
+				debugBodies.Add(box);
+				debugModels.Add(cube);
+
+				return ++cubeCount < TotalCubes;
+			}, 0.01f);
+
+			timer.Paused = true;
+
 			MessageSystem.Subscribe(this, CoreMessageTypes.Mouse, (messageType, data, dt) =>
 			{
+				if (timer.Complete)
+				{
+					return;
+				}
+
 				MouseData mouseData = (MouseData)data;
 
 				if (mouseData.Query(GLFW.GLFW_MOUSE_BUTTON_LEFT, InputStates.PressedThisFrame))
 				{
-					Random random = new Random();
-
-					const float Range = 4;
-
-					float x = (float)random.NextDouble() * Range * 2 - Range;
-					float y = 4;
-					float z = (float)random.NextDouble() * Range * 2 - Range;
-					float sizeX = 0.5f;
-					float sizeY = 0.5f;
-					float sizeZ = 0.5f;
-					float angleX = (float)random.NextDouble() * Constants.TwoPi;
-					float angleY = (float)random.NextDouble() * Constants.TwoPi;
-					float angleZ = (float)random.NextDouble() * Constants.TwoPi;
-
-					quat orientation = quat.FromAxisAngle(angleX, vec3.UnitX) *
-						quat.FromAxisAngle(angleY, vec3.UnitY) * quat.FromAxisAngle(angleZ, vec3.UnitZ);
-					
-					RigidBody box = new RigidBody(new BoxShape(sizeX, sizeY, sizeZ));
-					box.Position = new JVector(x, y, z);
-					box.Orientation = orientation.ToJMatrix();
-
-					world.AddBody(box);
-
-					Model cube = new Model("Cube");
-					cube.Scale = new vec3(sizeX, sizeY, sizeZ);
-					cube.Position = box.Position.ToVec3();
-					cube.Orientation = box.Orientation.ToQuat();
-
-					batch.Add(cube);
-
-					debugBodies.Add(box);
-					debugModels.Add(cube);
+					timer.Paused = false;
 				}
 			});
+			*/
 		}
 		
 		protected override void Update(float dt)
 		{
-			world.Step(dt, true, PhysicsStep, 8);
-			space.Update();
-			scene.Update(dt);
+			//world.Step(dt, true, PhysicsStep, 8);
+			//space.Update();
+			//scene.Update(dt);
 			camera.Update(dt);
+
+			/*
+			if (!timer.Complete)
+			{
+				timer.Update(dt);
+			}
 
 			for (int i = 0; i < debugBodies.Count; i++)
 			{
@@ -209,6 +243,9 @@ namespace Zeldo
 				model.Position = body.Position.ToVec3();
 				model.Orientation = body.Orientation.ToQuat();
 			}
+			*/
+
+			tester.Update(dt);
 
 			MessageSystem.ProcessChanges();
 		}
@@ -219,9 +256,9 @@ namespace Zeldo
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);
 
-			renderTargetUsers.ForEach(t => t.DrawTargets());
-			mainTarget.Apply();
-			scene.ModelBatch.Draw(camera);
+			//renderTargetUsers.ForEach(t => t.DrawTargets());
+			//mainTarget.Apply();
+			//scene.ModelBatch.Draw(camera);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -230,8 +267,9 @@ namespace Zeldo
 			glDisable(GL_CULL_FACE);
 			glDepthFunc(GL_NEVER);
 
-			mainSprite.Draw(sb);		
-			canvas.Draw(sb);
+			//mainSprite.Draw(sb);		
+			//canvas.Draw(sb);
+			tester.Draw(sb);
 
 			sb.Flush();
 		}

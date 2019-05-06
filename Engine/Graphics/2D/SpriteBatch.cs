@@ -9,6 +9,7 @@ using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.Shaders;
 using Engine.Shapes._2D;
+using Engine.Utility;
 using GlmSharp;
 using static Engine.GL;
 
@@ -84,11 +85,22 @@ namespace Engine.Graphics._2D
 			mvp *= mat4.Translate(-halfDimensions.x, -halfDimensions.y, 0);
 		}
 
-		public void Buffer(float[] data, ushort[] indices, int start = 0, int length = -1)
+		public void Buffer(float[] data, ushort[] indices = null, int start = 0, int length = -1)
 		{
 			if (activeShader == null)
 			{
 				activeShader = spriteShader;
+			}
+
+			if (indices == null)
+			{
+				// Each 2D vertex has position and color.
+				indices = new ushort[data.Length / 3];
+
+				for (int i = 0; i < indices.Length; i++)
+				{
+					indices[i] = (ushort)i;
+				}
 			}
 			
 			buffer.Buffer(data, indices, start, length);
@@ -103,8 +115,7 @@ namespace Engine.Graphics._2D
 
 			Flush();
 			activeShader = shader;
-
-			this.mode = mode;
+			Mode = mode;
 
 			if (!activeShader.BindingComplete)
 			{
@@ -126,6 +137,28 @@ namespace Engine.Graphics._2D
 		public void Draw(Line line, Color color)
 		{
 			DrawLine(line.P1, line.P2, color);
+		}
+
+		public void Draw(Circle circle, int segments, Color color)
+		{
+			Apply(primitiveShader, GL_LINE_LOOP);
+
+			float increment = Constants.TwoPi / segments;
+			float[] data = new float[segments * 3];
+			float f = color.ToFloat();
+
+			for (int i = 0; i < segments; i++)
+			{
+				vec2 p = circle.Position + Utilities.Direction(increment * i + circle.Rotation) * circle.Radius;
+
+				int start = i * 3;
+
+				data[start] = p.x;
+				data[start + 1] = p.y;
+				data[start + 2] = f;
+			}
+
+			Buffer(data);
 		}
 
 		public void Draw(Bounds2D bounds, Color color)

@@ -119,6 +119,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CharacterControlTester.cs" />
     <Compile Include="Data\TileFlags.cs" />
     <Compile Include="Effects\Explosion.cs" />
     <Compile Include="Entities\Characters\Wizard.cs" />
