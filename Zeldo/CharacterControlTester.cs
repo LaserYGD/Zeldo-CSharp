@@ -21,18 +21,43 @@ namespace Zeldo
 		private const int Deceleration = 1200;
 
 		private Circle playerCircle;
-		private Circle[] staticCircles;
+		private List<Circle> staticCircles;
+		private List<Line> staticLines;
 		private vec2 playerVelocity;
 
 		public CharacterControlTester()
 		{
+			const int Padding = 10;
+			const int WallX = 800;
+			const int WallY = 150;
+
 			playerCircle = new Circle(30);
 			playerCircle.Position = Resolution.WindowDimensions / 2;
 
-			staticCircles = new Circle[3];
-			staticCircles[0] = new Circle(100) { Position = new vec2(200) };
-			staticCircles[1] = new Circle(80) { Position = new vec2(290, 310) };
-			staticCircles[2] = new Circle(250) { Position = new vec2(950, 600) };
+			staticCircles = new List<Circle>();
+			staticCircles.Add(new Circle(100) { Position = new vec2(200) });
+			staticCircles.Add(new Circle(80) { Position = new vec2(290, 310) });
+			staticCircles.Add(new Circle(250) { Position = new vec2(950, 600) });
+
+			vec2[] linePoints =
+			{
+				new vec2(Padding),
+				new vec2(WallX, Padding),
+				new vec2(WallX, 150),
+				new vec2(Resolution.WindowWidth - Padding, 150),
+				new vec2(Resolution.WindowWidth - Padding, Resolution.WindowHeight - Padding),
+				new vec2(Padding, Resolution.WindowHeight - Padding)
+			};
+
+			staticLines = new List<Line>();
+
+			for (int i = 0; i < linePoints.Length; i++)
+			{
+				vec2 p1 = linePoints[i];
+				vec2 p2 = i == linePoints.Length - 1 ? linePoints[0] : linePoints[i + 1];
+
+				staticLines.Add(new Line(p1, p2));
+			}
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Keyboard, (messageType, data, dt) =>
 			{
@@ -91,13 +116,21 @@ namespace Zeldo
 
 			List<vec2> correctionVectors = new List<vec2>();
 
-			foreach (Circle circle in staticCircles)
+			staticCircles.ForEach(c =>
 			{
-				if (ResolveStaticCircleCollision(circle, out vec2 v))
+				if (ResolveStaticCircleCollision(c, out vec2 v))
 				{
 					correctionVectors.Add(v);
 				}
-			}
+			});
+
+			staticLines.ForEach(l =>
+			{
+				if (ResolveStaticLineCollision(l, out vec2 v))
+				{
+					correctionVectors.Add(v);
+				}
+			});
 
 			int count = correctionVectors.Count;
 
@@ -161,6 +194,30 @@ namespace Zeldo
 			return false;
 		}
 
+		private bool ResolveStaticLineCollision(Line line, out vec2 correctionVector)
+		{
+			float d = Utilities.DistanceSquaredToLine(playerCircle.Position, line);
+			float r = playerCircle.Radius;
+
+			if (d < r * r)
+			{
+				float penetration = r - (float)Math.Sqrt(d);
+
+				// This assumes that all static lines will be oriented such that the right-hand vector faces back into
+				// the stage (in order to be used a correction vector).
+				vec2 l = line.P2 - line.P1;
+				vec2 outVector = new vec2(-l.y, l.x);
+
+				correctionVector = Utilities.Normalize(outVector) * penetration;
+
+				return true;
+			}
+
+			correctionVector = vec2.Zero;
+
+			return false;
+		}
+
 		public void Draw(SpriteBatch sb)
 		{
 			const int Segments = 25;
@@ -172,16 +229,10 @@ namespace Zeldo
 				sb.Draw(circle, Segments, Color.Green);
 			}
 
-			Line l1 = new Line(new vec2(600, 500), new vec2(850, 150));
-			Line l2 = new Line(new vec2(600, 500), new vec2(550, 250));
-
-			vec2 v1 = l1.P2 - l1.P1;
-			vec2 v2 = l2.P2 - l2.P1;
-			vec2 projected = Utilities.Project(v2, v1) + l2.P1;
-
-			sb.Draw(l1, Color.Red);
-			sb.Draw(l2, Color.Magenta);
-			sb.DrawLine(l2.P2, projected, Color.Yellow);
+			foreach (Line line in staticLines)
+			{
+				sb.Draw(line, Color.Yellow);
+			}
 		}
 	}
 }
