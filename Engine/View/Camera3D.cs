@@ -52,10 +52,13 @@ namespace Engine.View
 
 		private void RecomputeProjection()
 		{
+			const float OrthoWidth = 8;
+			const float OrthoHeight = 4.5f;
+
 			ivec2 dimensions = Resolution.RenderDimensions;
 
 			projection = isOrthographic
-				? mat4.Ortho(-16, 16, -9, 9, 0.1f, 100)
+				? mat4.Ortho(-OrthoWidth, OrthoWidth, -OrthoHeight, OrthoHeight, 0.1f, 100)
 				: mat4.PerspectiveFov(90, dimensions.x, dimensions.y, 0.1f, 100);
 		}
 

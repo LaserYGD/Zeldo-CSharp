@@ -59,9 +59,9 @@ namespace Zeldo
 			Properties.Load("Entity.properties");
 
 			camera = new Camera3D();
-			//camera.IsOrthographic = true;
+			camera.IsOrthographic = true;
 			camera.Orientation *= quat.FromAxisAngle(0.75f, vec3.UnitX);
-			camera.Position = new vec3(0, 0, 5) * camera.Orientation;
+			camera.Position = new vec3(0, 0, 5) * camera.Orientation + new vec3(0, 0, -0.5f);
 
 			sb = new SpriteBatch();
 
@@ -118,6 +118,10 @@ namespace Zeldo
 				Space = space,
 				World = world
 			};
+
+			ModelBatch batch = scene.ModelBatch;
+			batch.Add(new Model("Map"));
+			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.5f, -0.25f));
 
 			//scene.Add(player);
 
@@ -256,9 +260,9 @@ namespace Zeldo
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);
 
-			//renderTargetUsers.ForEach(t => t.DrawTargets());
-			//mainTarget.Apply();
-			//scene.ModelBatch.Draw(camera);
+			renderTargetUsers.ForEach(t => t.DrawTargets());
+			mainTarget.Apply();
+			scene.ModelBatch.Draw(camera);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -267,7 +271,7 @@ namespace Zeldo
 			glDisable(GL_CULL_FACE);
 			glDepthFunc(GL_NEVER);
 
-			//mainSprite.Draw(sb);		
+			mainSprite.Draw(sb);		
 			//canvas.Draw(sb);
 			tester.Draw(sb);
 

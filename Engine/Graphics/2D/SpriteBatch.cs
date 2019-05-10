@@ -163,16 +163,21 @@ namespace Engine.Graphics._2D
 
 		public void Draw(Bounds2D bounds, Color color)
 		{
+			Draw(bounds.ToRectangle(), color);
+		}
+
+		public void Draw(Rectangle rect, Color color)
+		{
 			Apply(primitiveShader, GL_LINE_LOOP);
 
-			var corners = bounds.Corners;
+			var corners = rect.Corners;
 
 			float f = color.ToFloat();
 			float[] data = new float[12];
 
 			for (int i = 0; i < 4; i++)
 			{
-				ivec2 p = corners[i];
+				vec2 p = corners[i];
 
 				int start = i * 3;
 
@@ -181,9 +186,7 @@ namespace Engine.Graphics._2D
 				data[start + 2] = f;
 			}
 
-			ushort[] indices = { 0, 1, 2, 3 };
-
-			Buffer(data, indices);
+			Buffer(data);
 		}
 
 		public void DrawLine(vec2 p1, vec2 p2, Color color)

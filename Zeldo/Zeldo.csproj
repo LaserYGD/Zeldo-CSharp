@@ -97,6 +97,9 @@
     <None Include="Content\Meshes\Player.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Meshes\Tree.dae">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Content\Meshes\Wall.obj" />
     <None Include="Content\Shaders\Rain.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -134,6 +137,7 @@
     <Compile Include="Entities\Mechanisms\Lever.cs" />
     <Compile Include="Entities\Objects\Book.cs" />
     <Compile Include="Entities\Objects\Crate.cs" />
+    <Compile Include="Entities\Weapons\Twinblade.cs" />
     <Compile Include="PhysicsTester.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerControls.cs" />

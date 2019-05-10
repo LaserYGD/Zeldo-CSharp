@@ -23,6 +23,7 @@ namespace Zeldo
 		private Circle playerCircle;
 		private List<Circle> staticCircles;
 		private List<Line> staticLines;
+		private List<Rectangle> staticRectangles;
 		private vec2 playerVelocity;
 
 		public CharacterControlTester()
@@ -43,8 +44,8 @@ namespace Zeldo
 			{
 				new vec2(Padding),
 				new vec2(WallX, Padding),
-				new vec2(WallX, 150),
-				new vec2(Resolution.WindowWidth - Padding, 150),
+				new vec2(WallX, WallY),
+				new vec2(Resolution.WindowWidth - Padding, WallY),
 				new vec2(Resolution.WindowWidth - Padding, Resolution.WindowHeight - Padding),
 				new vec2(Padding, Resolution.WindowHeight - Padding)
 			};
@@ -58,6 +59,11 @@ namespace Zeldo
 
 				staticLines.Add(new Line(p1, p2));
 			}
+
+			staticRectangles = new List<Rectangle>();
+			staticRectangles.Add(new Rectangle(40, Resolution.WindowHeight - 40, 80));
+			staticRectangles.Add(new Rectangle(620, 180, 150, 100));
+			staticRectangles.Add(new Rectangle(810, 440, 100));
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Keyboard, (messageType, data, dt) =>
 			{
@@ -127,6 +133,14 @@ namespace Zeldo
 			staticLines.ForEach(l =>
 			{
 				if (ResolveStaticLineCollision(l, out vec2 v))
+				{
+					correctionVectors.Add(v);
+				}
+			});
+
+			staticRectangles.ForEach(r =>
+			{
+				if (ResolveStaticRectangleCollision(r, out vec2 v))
 				{
 					correctionVectors.Add(v);
 				}
@@ -218,21 +232,20 @@ namespace Zeldo
 			return false;
 		}
 
+		private bool ResolveStaticRectangleCollision(Rectangle rect, out vec2 correctionVector)
+		{
+			correctionVector = vec2.Zero;
+
+			return false;
+		}
+
 		public void Draw(SpriteBatch sb)
 		{
-			const int Segments = 25;
+			staticCircles.ForEach(c => sb.Draw(c, 40, Color.Green));
+			staticLines.ForEach(l => sb.Draw(l, Color.Yellow));
+			staticRectangles.ForEach(r => sb.Draw(r, Color.Magenta));
 
-			sb.Draw(playerCircle, Segments, Color.Cyan);
-
-			foreach (Circle circle in staticCircles)
-			{
-				sb.Draw(circle, Segments, Color.Green);
-			}
-
-			foreach (Line line in staticLines)
-			{
-				sb.Draw(line, Color.Yellow);
-			}
+			sb.Draw(playerCircle, 25, Color.Cyan);
 		}
 	}
 }

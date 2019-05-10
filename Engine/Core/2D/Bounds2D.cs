@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Interfaces._2D;
+using Engine.Shapes._2D;
 using GlmSharp;
 
 namespace Engine.Core._2D
@@ -105,6 +106,11 @@ namespace Engine.Core._2D
 		public Bounds2D Expand(int value)
 		{
 			return new Bounds2D(X - value, Y - value, Width + value * 2, Height + value * 2);
+		}
+
+		public Rectangle ToRectangle()
+		{
+			return new Rectangle(X, Y, Width, Height);
 		}
 	}
 }

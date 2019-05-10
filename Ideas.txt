@@ -5,3 +5,5 @@
 - Room with clutter arranged in such a way that it forms a subtle arrow pointing at a secret wall (could do the same with shadows in an indoor space with clever lighting)
 
 - While it's raining, have leaves on trees occasionally twitch (to simulate a raindrop landing) => Could even use RNG based on the orientation of the leaf (such that flatter leaves react to raindrops more frequently)
+
+- The ability to increase your strength a few times (maybe with items or maybe as an inherent character trait). Some weapons might require 1-2 strength upgrades to wield effectively (like heavy hammers). Can also use to solve puzzles and bypass obstacles (similar to LTTP), but could also have other more hidden changes (such as the ability to turn a wheel that previously was too heavy to move) => Like Matthewmatosis said about Zelda, make sure strength upgrades are consistent in terms of effects
