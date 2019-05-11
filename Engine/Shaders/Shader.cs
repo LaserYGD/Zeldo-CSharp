@@ -166,7 +166,9 @@ namespace Engine.Shaders
 		public void AddAttribute<T>(uint count, uint type, bool normalized = false, uint padding = 0)
 		{
 			attributes.Add(new ShaderAttribute(count, type, Stride, normalized));
-			Stride += (uint)Marshal.SizeOf<T>() * (count + padding);
+
+			// Padding is given in bytes directly (so that the padding can encompass data of multiple types).
+			Stride += (uint)Marshal.SizeOf<T>() * count + padding;
 		}
 
 		public unsafe void Bind(uint bufferId, uint indexBufferId)

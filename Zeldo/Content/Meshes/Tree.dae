@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.78.0 commit date:2016-09-26, commit time:12:42, hash:4bb1e22</authoring_tool>
     </contributor>
-    <created>2019-05-10T23:42:46</created>
-    <modified>2019-05-10T23:42:46</modified>
+    <created>2019-05-11T00:02:29</created>
+    <modified>2019-05-11T00:02:29</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -139,9 +139,9 @@
     <geometry id="Cube-mesh" name="Cube">
       <mesh>
         <source id="Cube-mesh-positions">
-          <float_array id="Cube-mesh-positions-array" count="42">-1.505352 -1.355799 4.29798 -0.1780701 0.1780701 2.785268 1.220584 1.795413 4.157077 0.17807 -0.1780701 2.785268 -0.1780702 -0.17807 -2.785268 -0.17807 0.1780702 -2.785268 0.1780701 0.17807 -2.785268 0.1780701 -0.1780701 -2.785268 -0.1780701 -0.1780701 2.526139 -1.149212 -1.711939 4.29798 -1.505352 -1.711939 4.038852 0.1780701 0.1780701 2.496794 1.576725 1.439272 4.157077 1.576725 1.795413 3.868603</float_array>
+          <float_array id="Cube-mesh-positions-array" count="36">0.3920454 0.3920455 -1.590231 0.3920454 -0.3920455 -1.590231 -0.3920456 -0.3920454 -1.590231 -0.3920453 0.3920456 -1.590231 0.3920457 0.3920453 1.590231 0.3920452 -0.3920457 1.590231 -0.3920456 -0.3920453 1.590231 -0.3920454 0.3920455 1.590231 0.1304896 0.1304895 4.971103 0.1304894 -0.1304897 4.971103 -0.1304896 0.1304895 4.971103 -0.1304897 -0.1304895 4.971103</float_array>
           <technique_common>
-            <accessor source="#Cube-mesh-positions-array" count="14" stride="3">
+            <accessor source="#Cube-mesh-positions-array" count="12" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
@@ -149,9 +149,9 @@
           </technique_common>
         </source>
         <source id="Cube-mesh-normals">
-          <float_array id="Cube-mesh-normals-array" count="72">0.3825371 0.3825373 -0.8410296 1.87974e-6 0 1 1 0 0 0 -1 0 -1 1.80266e-7 0 -0.3575854 0.7941044 0.4914579 2.51044e-7 1 0 0.8482211 -0.311613 0.4282735 -0.4234318 -0.4234321 -0.8008814 0.5070911 0.5070908 -0.6969345 -0.8303291 0.3507603 0.4330368 0.4022704 -0.7691141 0.4966308 -0.5326875 -0.5326875 -0.6576384 0.3825379 0.3825373 -0.8410291 -1.25991e-6 0 1 1 -5.67181e-7 0 -4.60248e-7 -1 0 -1 1.90111e-7 0 -0.3575862 0.794104 0.4914579 2.01418e-7 1 0 0.8482212 -0.311613 0.4282736 -0.4234321 -0.4234321 -0.8008812 -0.8303288 0.3507608 0.4330369 0.4022712 -0.769114 0.4966303</float_array>
+          <float_array id="Cube-mesh-normals-array" count="60">0 0 -1 -4.48352e-7 -0.9970209 0.07713294 1 0 0 0 -1 0 -1 3.82422e-7 0 2.28052e-7 1 0 -3.50049e-6 0 1 0.9970209 -5.38023e-7 0.07713294 -0.9970209 2.24176e-7 0.07713299 2.24176e-7 0.9970209 0.07713294 0 0 -1 -7.31139e-7 -0.9970209 0.07713294 1 -5.73634e-7 0 -4.94114e-7 -1 0 -1 1.91211e-7 0 1.90044e-7 1 0 4.24917e-6 0 1 0.9970209 -4.04111e-7 0.07713294 -0.9970209 2.69408e-7 0.07713294 0 0.9970209 0.07713294</float_array>
           <technique_common>
-            <accessor source="#Cube-mesh-normals-array" count="24" stride="3">
+            <accessor source="#Cube-mesh-normals-array" count="20" stride="3">
               <param name="X" type="float"/>
               <param name="Y" type="float"/>
               <param name="Z" type="float"/>
@@ -161,11 +161,11 @@
         <vertices id="Cube-mesh-vertices">
           <input semantic="POSITION" source="#Cube-mesh-positions"/>
         </vertices>
-        <polylist material="Material-material" count="24">
+        <polylist material="Material-material" count="20">
           <input semantic="VERTEX" source="#Cube-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Cube-mesh-normals" offset="1"/>
-          <vcount>3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 </vcount>
-          <p>1 0 12 0 3 0 7 1 5 1 4 1 8 2 5 2 1 2 5 3 11 3 1 3 11 4 7 4 3 4 8 5 9 5 3 5 8 6 7 6 4 6 8 7 0 7 10 7 3 8 0 8 1 8 0 9 9 9 10 9 11 10 12 10 13 10 11 11 2 11 1 11 13 12 12 12 2 12 1 13 2 13 12 13 7 14 6 14 5 14 8 15 4 15 5 15 5 16 6 16 11 16 11 17 6 17 7 17 8 18 10 18 9 18 8 19 3 19 7 19 8 20 1 20 0 20 3 21 9 21 0 21 11 22 3 22 12 22 11 23 13 23 2 23</p>
+          <vcount>3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 </vcount>
+          <p>0 0 2 0 3 0 5 1 11 1 6 1 4 2 1 2 0 2 5 3 2 3 1 3 6 4 3 4 2 4 0 5 7 5 4 5 10 6 9 6 8 6 4 7 9 7 5 7 6 8 10 8 7 8 7 9 8 9 4 9 0 10 1 10 2 10 5 11 9 11 11 11 4 12 5 12 1 12 5 13 6 13 2 13 6 14 7 14 3 14 0 15 3 15 7 15 10 16 11 16 9 16 4 17 8 17 9 17 6 18 11 18 10 18 7 19 10 19 8 19</p>
         </polylist>
       </mesh>
     </geometry>
@@ -173,27 +173,27 @@
   <library_controllers>
     <controller id="Armature_Cube-skin" name="Armature">
       <skin source="#Cube-mesh">
-        <bind_shape_matrix>1 0 0 0 0 1 0 0 0 0 1 2.666244 0 0 0 1</bind_shape_matrix>
+        <bind_shape_matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</bind_shape_matrix>
         <source id="Armature_Cube-skin-joints">
-          <Name_array id="Armature_Cube-skin-joints-array" count="3">Bone Bone_001 Bone_002</Name_array>
+          <Name_array id="Armature_Cube-skin-joints-array" count="2">Bone Bone_001</Name_array>
           <technique_common>
-            <accessor source="#Armature_Cube-skin-joints-array" count="3" stride="1">
+            <accessor source="#Armature_Cube-skin-joints-array" count="2" stride="1">
               <param name="JOINT" type="name"/>
             </accessor>
           </technique_common>
         </source>
         <source id="Armature_Cube-skin-bind_poses">
-          <float_array id="Armature_Cube-skin-bind_poses-array" count="48">0.9999974 0 -0.002310931 0 0.002310931 0 0.9999974 0 0 -1 0 0 0 0 0 1 0.1906498 0.481688 -0.8553534 4.640586 0.5725616 0.6532096 0.4954701 -2.696663 0.7973869 -0.5842037 -0.1512616 0.8110667 0 0 0 1 -0.6043412 0.7570911 0.2481625 -1.33948 -0.5482323 -0.6211754 0.5599841 -3.032795 0.5781115 0.2023708 0.7904638 -4.298 0 0 0 1</float_array>
+          <float_array id="Armature_Cube-skin-bind_poses-array" count="32">1 0 0 0 0 0 1 0 0 -1 0 0 0 0 0 1 1 0 0 0 0 0 1 -1.568143 0 -1 0 0 0 0 0 1</float_array>
           <technique_common>
-            <accessor source="#Armature_Cube-skin-bind_poses-array" count="3" stride="16">
+            <accessor source="#Armature_Cube-skin-bind_poses-array" count="2" stride="16">
               <param name="TRANSFORM" type="float4x4"/>
             </accessor>
           </technique_common>
         </source>
         <source id="Armature_Cube-skin-weights">
-          <float_array id="Armature_Cube-skin-weights-array" count="22">1 0.3333998 0.3332003 0.3333998 1 0.3333333 0.3333333 0.3333333 1 1 1 1 0.3370786 0.3281626 0.3347588 1 1 0.3375834 0.328881 0.3335355 1 1</float_array>
+          <float_array id="Armature_Cube-skin-weights-array" count="8">1 1 1 1 1 1 1 1</float_array>
           <technique_common>
-            <accessor source="#Armature_Cube-skin-weights-array" count="22" stride="1">
+            <accessor source="#Armature_Cube-skin-weights-array" count="8" stride="1">
               <param name="WEIGHT" type="float"/>
             </accessor>
           </technique_common>
@@ -202,11 +202,11 @@
           <input semantic="JOINT" source="#Armature_Cube-skin-joints"/>
           <input semantic="INV_BIND_MATRIX" source="#Armature_Cube-skin-bind_poses"/>
         </joints>
-        <vertex_weights count="14">
+        <vertex_weights count="12">
           <input semantic="JOINT" source="#Armature_Cube-skin-joints" offset="0"/>
           <input semantic="WEIGHT" source="#Armature_Cube-skin-weights" offset="1"/>
-          <vcount>1 3 1 3 1 1 1 1 3 1 1 3 1 1 </vcount>
-          <v>2 0 0 1 1 2 2 3 1 4 0 5 1 6 2 7 0 8 0 9 0 10 0 11 0 12 1 13 2 14 2 15 2 16 0 17 1 18 2 19 1 20 1 21</v>
+          <vcount>0 0 0 0 1 1 1 1 1 1 1 1 </vcount>
+          <v>1 0 1 1 1 2 1 3 1 4 1 5 1 6 1 7</v>
         </vertex_weights>
       </skin>
     </controller>
@@ -224,12 +224,9 @@
       <node id="Armature" name="Armature" type="NODE">
         <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
         <node id="Bone" name="Bone" sid="Bone" type="JOINT">
-          <matrix sid="transform">0.9999973 0.002310971 1.76952e-8 0 1.76971e-8 0 -1 0 -0.002310971 0.9999973 2.37906e-8 0 0 0 0 1</matrix>
+          <matrix sid="transform">1 0 0 0 0 0 -1 0 0 1 0 0 0 0 0 1</matrix>
           <node id="Bone_001" name="Bone.001" sid="Bone_001" type="JOINT">
-            <matrix sid="transform">0.1926261 0.5714149 0.7977344 0 -0.8549105 0.4967918 -0.1494186 5.428155 -0.4816879 -0.6532095 0.5842038 0 0 0 0 1</matrix>
-          </node>
-          <node id="Bone_002" name="Bone.002" sid="Bone_002" type="JOINT">
-            <matrix sid="transform">-0.6049132 -0.5495251 0.5762833 0 0.2467653 0.5587158 0.7917978 5.428155 -0.7570913 0.6211756 -0.2023708 0 0 0 0 1</matrix>
+            <matrix sid="transform">1 0 0 0 0 1 0 1.568143 0 0 1 0 0 0 0 1</matrix>
           </node>
         </node>
       </node>

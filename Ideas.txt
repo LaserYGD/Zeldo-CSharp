@@ -9,3 +9,19 @@
 - The ability to increase your strength a few times (maybe with items or maybe as an inherent character trait). Some weapons might require 1-2 strength upgrades to wield effectively (like heavy hammers). Can also use to solve puzzles and bypass obstacles (similar to LTTP), but could also have other more hidden changes (such as the ability to turn a wheel that previously was too heavy to move) => Like Matthewmatosis said about Zelda, make sure strength upgrades are consistent in terms of effects
 
 - 3D map (with a similar fixed angle/perspective/pixelated rendering style to the main game). Camera should be able to pan around and zoom too (to an extent). Maybe rotate a bit too, but only very slightly? => Inspired by watching a Metroid TAS with Jared and seeing the station map start to reveal itself when examining a terminal => Could also display correct lighting/shadows and be upgraded to show realistic weather patterns as well (maybe even with synced timing on lightning and such)
+
+- Speech system using sound effects (similar to Banjo Kazooie, but less silly), with pitch/inflection that can subtly bend up or down based on simple text rules (such as pitching upward at the end of a sentence if that line of text ends with a question mark). Could go a long way towards helping characters feel more memorable and expressive (could experiment with modifying/animating parts of the text to mimic this inflection, such as text shaking to indicate fear)
+
+- Make sure many areas have multiple ways to move around (to make replayability and experimentation more important, and to aid with the depth of speedrun routing) => Be especially careful of this problem for tall stages (which might be tedious to climb several times) => The Ascend skill will probably help with this a lot, though
+
+
+
+
+
+
+
+
+
+
+
+

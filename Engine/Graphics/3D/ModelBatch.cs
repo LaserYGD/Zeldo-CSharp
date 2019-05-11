@@ -56,7 +56,7 @@ namespace Engine.Graphics._3D
 			shadowMapShader = new Shader();
 			shadowMapShader.Attach(ShaderTypes.Vertex, "ShadowMap.vert");
 			shadowMapShader.Attach(ShaderTypes.Fragment, "ShadowMap.frag");
-			shadowMapShader.AddAttribute<float>(3, GL_FLOAT, false, 5);
+			shadowMapShader.AddAttribute<float>(3, GL_FLOAT, false, sizeof(float) * 5);
 			shadowMapShader.CreateProgram();
 			shadowMapShader.Bind(bufferId, indexBufferId);
 
