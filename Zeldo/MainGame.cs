@@ -47,7 +47,8 @@ namespace Zeldo
 		private int cubeCount = 0;
 		*/
 
-		private CharacterControlTester tester;
+		private SkeletalTester skeletalTester;
+		//private CharacterControlTester tester;
 
 		public MainGame() : base("Zeldo")
 		{
@@ -59,7 +60,7 @@ namespace Zeldo
 			Properties.Load("Entity.properties");
 
 			camera = new Camera3D();
-			camera.IsOrthographic = true;
+			//camera.IsOrthographic = true;
 			camera.Orientation *= quat.FromAxisAngle(0.75f, vec3.UnitX);
 			camera.Position = new vec3(0, 0, 5) * camera.Orientation + new vec3(0, 0, -0.5f);
 
@@ -120,7 +121,7 @@ namespace Zeldo
 			};
 
 			ModelBatch batch = scene.ModelBatch;
-			batch.Add(new Model("Map"));
+			batch.Add(new Model("Map.obj"));
 			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.5f, -0.25f));
 
 			//scene.Add(player);
@@ -130,7 +131,8 @@ namespace Zeldo
 
 			//LoadTestingData();
 
-			tester = new CharacterControlTester();
+			skeletalTester = new SkeletalTester();
+			//tester = new CharacterControlTester();
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
@@ -249,7 +251,8 @@ namespace Zeldo
 			}
 			*/
 
-			tester.Update(dt);
+			//tester.Update(dt);
+			skeletalTester.Update(dt);
 
 			MessageSystem.ProcessChanges();
 		}
@@ -260,9 +263,13 @@ namespace Zeldo
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);
 
-			renderTargetUsers.ForEach(t => t.DrawTargets());
+			var batch = skeletalTester.Batch;
+
+			//renderTargetUsers.ForEach(t => t.DrawTargets());
+			batch.DrawTargets();
 			mainTarget.Apply();
-			scene.ModelBatch.Draw(camera);
+			//scene.ModelBatch.Draw(camera);
+			batch.Draw(camera);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -273,7 +280,7 @@ namespace Zeldo
 
 			mainSprite.Draw(sb);		
 			//canvas.Draw(sb);
-			tester.Draw(sb);
+			//tester.Draw(sb);
 
 			sb.Flush();
 		}

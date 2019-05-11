@@ -41,7 +41,7 @@ namespace Zeldo.Entities
 			sword = new Sword();
 			playerData = JsonUtilities.Deserialize<PlayerData>("PlayerData.json");
 			controls = new PlayerControls();
-			model = new Model("Player");
+			model = new Model("Player.obj");
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 

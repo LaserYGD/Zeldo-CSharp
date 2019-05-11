@@ -85,6 +85,9 @@
     <None Include="Content\Json\Speech.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Meshes\Cube.dae">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Meshes\Cube.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -99,6 +102,7 @@
     </None>
     <None Include="Content\Meshes\Tree.dae">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Wall.obj" />
     <None Include="Content\Shaders\Rain.frag">
@@ -165,6 +169,7 @@
     <Compile Include="Sensors\Sensor.cs" />
     <Compile Include="Sensors\SensorTypes.cs" />
     <Compile Include="Sensors\Space.cs" />
+    <Compile Include="SkeletalTester.cs" />
     <Compile Include="UI\Hud\PlayerHealthDisplay.cs" />
     <Compile Include="UI\Hud\PlayerManaDisplay.cs" />
     <Compile Include="UI\Letterbox.cs" />

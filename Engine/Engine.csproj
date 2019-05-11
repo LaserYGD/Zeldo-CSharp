@@ -116,8 +116,10 @@
     <Compile Include="Core\DynamicComponent.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
+    <Compile Include="Graphics\3D\DaeLoader.cs" />
     <Compile Include="Graphics\3D\ModelBatch.cs" />
     <Compile Include="Graphics\3D\ModelHandle.cs" />
+    <Compile Include="Graphics\3D\ObjLoader.cs" />
     <Compile Include="Graphics\3D\ShadowMapVisualizer.cs" />
     <Compile Include="Graphics\GLBuffer.cs" />
     <Compile Include="Graphics\PrimitiveBuffer.cs" />
@@ -144,6 +146,7 @@
     <Compile Include="Timing\SingleTimer.cs" />
     <Compile Include="Timing\Timer.cs" />
     <Compile Include="Utility\Ease.cs" />
+    <Compile Include="Utility\XmlExtensions.cs" />
     <Compile Include="View\Camera3D.cs" />
     <Compile Include="Core\2D\Alignments.cs" />
     <Compile Include="Core\2D\Bounds2D.cs" />
@@ -223,6 +226,8 @@
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
