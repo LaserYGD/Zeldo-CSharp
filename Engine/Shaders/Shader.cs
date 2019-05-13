@@ -163,9 +163,10 @@ namespace Engine.Shaders
 			glDeleteShader(fragmentShader);
 		}
 
-		public void AddAttribute<T>(uint count, uint type, bool normalized = false, uint padding = 0)
+		public void AddAttribute<T>(uint count, uint type, bool isInteger = false, bool isNormalized = false,
+			uint padding = 0)
 		{
-			attributes.Add(new ShaderAttribute(count, type, Stride, normalized));
+			attributes.Add(new ShaderAttribute(count, type, Stride, isInteger, isNormalized));
 
 			// Padding is given in bytes directly (so that the padding can encompass data of multiple types).
 			Stride += (uint)Marshal.SizeOf<T>() * count + padding;
@@ -192,11 +193,22 @@ namespace Engine.Shaders
 
 				uint index = (uint)i;
 
-				glVertexAttribPointer(index, (int)attribute.Count, attribute.Type, attribute.Normalized, Stride,
-					(void*)attribute.Offset);
+				if (attribute.IsInteger)
+				{
+					glVertexAttribIPointer(index, (int)attribute.Count, attribute.Type, Stride,
+						(void*)attribute.Offset);
+				}
+				else
+				{
+					glVertexAttribPointer(index, (int)attribute.Count, attribute.Type, attribute.IsNormalized, Stride,
+						(void*)attribute.Offset);
+				}
+
 				glEnableVertexAttribArray(index);
 			}
 
+			// This assumes that shaders won't be bound twice.
+			attributes = null;
 			BindingComplete = true;
 		}
 
@@ -250,6 +262,14 @@ namespace Engine.Shaders
 		public void SetUniform(string name, vec4 value)
 		{
 			glUniform4f(uniforms[name], value.r, value.g, value.b, value.a);
+		}
+
+		public unsafe void SetUniform(string name, vec4[] values)
+		{
+			fixed (float* address = &values[0].x)
+			{
+				glUniform4fv(uniforms[name], (uint)values.Length, address);
+			}
 		}
 
 		public unsafe void SetUniform(string name, mat4 value)

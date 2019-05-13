@@ -71,8 +71,10 @@ namespace Engine
 			glUniform1f= GetDelegate<Delegates.glUniform1f>();
 			glUniform3f= GetDelegate<Delegates.glUniform3f>();
 			glUniform4f = GetDelegate<Delegates.glUniform4f>();
+			glUniform4fv = GetDelegate<Delegates.glUniform4fv>();
 			glUniformMatrix4fv = GetDelegate<Delegates.glUniformMatrix4fv>();
 			glUseProgram = GetDelegate<Delegates.glUseProgram>();
+			glVertexAttribIPointer = GetDelegate<Delegates.glVertexAttribIPointer>();
 			glVertexAttribPointer = GetDelegate<Delegates.glVertexAttribPointer>();
 
 			// Textures
@@ -884,8 +886,10 @@ namespace Engine
 		public static Delegates.glUniform1f glUniform1f;
 		public static Delegates.glUniform3f glUniform3f;
 		public static Delegates.glUniform4f glUniform4f;
+		public static Delegates.glUniform4fv glUniform4fv;
 		public static Delegates.glUniformMatrix4fv glUniformMatrix4fv;
 		public static Delegates.glUseProgram glUseProgram;
+		public static Delegates.glVertexAttribIPointer glVertexAttribIPointer;
 		public static Delegates.glVertexAttribPointer glVertexAttribPointer;
 
 		// Textures
@@ -969,8 +973,10 @@ namespace Engine
 			public delegate void glUniform1f(int location, float v0);
 			public delegate void glUniform3f(int location, float v0, float v1, float v2);
 			public delegate void glUniform4f(int location, float v0, float v1, float v2, float v3);
+			public delegate void glUniform4fv(int location, uint count, float* value);
 			public delegate void glUniformMatrix4fv(int location, uint count, bool transpose, float* value);
 			public delegate void glUseProgram(uint program);
+			public delegate void glVertexAttribIPointer(uint index, int size, uint type, uint stride, void* pointer);
 			public delegate void glVertexAttribPointer(uint index, int size, uint type, bool normalized, uint stride,
 				void* pointer);
 

@@ -3,8 +3,9 @@
 layout (location = 0) in vec3 vPosition;
 layout (location = 1) in vec2 vSource;
 layout (location = 2) in vec3 vNormal;
-layout (location = 3) in ivec2 boneIndexes;
-layout (location = 4) in vec2 boneWeights;
+layout (location = 3) in vec2 boneWeights;
+layout (location = 4) in ivec2 boneIndexes;
+layout (location = 5) in int boneCount;
 
 out vec2 fSource;
 out vec3 fNormal;
@@ -17,16 +18,12 @@ uniform vec4 bones[2];
 
 void main()
 {
-	vec4 position = mvp * vec4(vPosition, 1);
+	vec4 position = vec4(vPosition, 1);
 	vec4 normal = orientation * vec4(vNormal, 1);
 
-	int[] indexArray = int[2];
-	indexArray[0] = boneIndexes.x;
-	indexArray[1] = boneIndexes.y;
-
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < boneCount; i++)
 	{
-		int index = indexArray[i];
+		int index = boneIndexes[i];
 
 		if (index == -1)
 		{
@@ -39,7 +36,13 @@ void main()
 		normal *= bone;
 	}
 
+//	position.x *= boneWeights.x;
+//	position.x *= boneIndexes.x + 1;
+//	position.x *= boneCount;
+
+	gl_Position = mvp * position;
+
 	fSource = vSource;
-	fNormal = normal;
+	fNormal = normal.xyz;
 	fShadowMapCoords = lightBiasMatrix * position;
 }

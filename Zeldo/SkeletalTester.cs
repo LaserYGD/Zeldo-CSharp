@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using System;
+using Engine;
 using Engine.Core;
 using Engine.Core._2D;
 using Engine.Core._3D;
@@ -35,12 +36,13 @@ namespace Zeldo
 
 			skeletalShader = new Shader();
 			skeletalShader.Attach(ShaderTypes.Vertex, "Skeletal.vert");
-			skeletalShader.Attach(ShaderTypes.Fragment, "ModelShadow.vert");
+			skeletalShader.Attach(ShaderTypes.Fragment, "ModelShadow.frag");
 			skeletalShader.AddAttribute<float>(3, GL_FLOAT);
 			skeletalShader.AddAttribute<float>(2, GL_FLOAT);
 			skeletalShader.AddAttribute<float>(3, GL_FLOAT);
-			skeletalShader.AddAttribute<byte>(2, GL_BYTE, true);
 			skeletalShader.AddAttribute<float>(2, GL_FLOAT);
+			skeletalShader.AddAttribute<short>(2, GL_SHORT, true);
+			skeletalShader.AddAttribute<int>(1, GL_INT, true);
 			skeletalShader.CreateProgram();
 			skeletalShader.Bind(bufferId, indexId);
 			skeletalShader.Use();
@@ -48,24 +50,100 @@ namespace Zeldo
 			skeletalShader.SetUniform("textureSampler", 1);
 
 			shadowMapShader = new Shader();
-			shadowMapShader.Attach(ShaderTypes.Vertex, "ShadowMap.vert");
+			shadowMapShader.Attach(ShaderTypes.Vertex, "ShadowMapSkeletal.vert");
 			shadowMapShader.Attach(ShaderTypes.Fragment, "ShadowMap.frag");
-			shadowMapShader.AddAttribute<float>(3, GL_FLOAT, false, sizeof(float) * 2);
-			shadowMapShader.AddAttribute<byte>(2, GL_BYTE, true);
+			shadowMapShader.AddAttribute<float>(3, GL_FLOAT, false, false, 20);
 			shadowMapShader.AddAttribute<float>(2, GL_FLOAT);
+			shadowMapShader.AddAttribute<short>(2, GL_SHORT, true);
+			shadowMapShader.AddAttribute<int>(1, GL_INT, true);
 			shadowMapShader.CreateProgram();
 			shadowMapShader.Bind(bufferId, indexId);
 
 			shadowMapTarget = new RenderTarget(ShadowMapSize, ShadowMapSize, RenderTargetFlags.Depth);
 			defaultTexture = ContentCache.GetTexture("Grey.png");
-			lightDirection = Utilities.Normalize(new vec3(1, -0.5f, -0.25f));
+			lightDirection = -vec3.UnitY;
 
-			model = new Model("Tree.dae");
-			model.Scale = new vec3(0.75f);
+			model = new Model("Triangle.dae");
+
+			BufferMesh(model.Mesh);
+		}
+
+		private unsafe void BufferMesh(Mesh mesh)
+		{
+			const int VertexSize = sizeof(float) * 10 + sizeof(int) * 2;
+			
+			var points = mesh.Points;
+			var source = mesh.Source;
+			var normals = mesh.Normals;
+			var vertices = mesh.Vertices;
+			var boneIndexes = mesh.BoneIndexes;
+			var boneWeights = mesh.BoneWeights;
+
+			byte[] buffer = new byte[VertexSize * vertices.Length];
+
+			for (int i = 0; i < vertices.Length; i++)
+			{
+				var v = vertices[i];
+				var p = points[v.x];
+				var s = source[v.y];
+				var n = normals[v.z];
+				var bW = boneWeights[i];
+				var bI = boneIndexes[i];
+
+				int start = VertexSize * i;
+
+				// Buffer floats.
+				float[] floats =
+				{
+					p.x,
+					p.y,
+					p.z,
+					s.x,
+					s.y,
+					n.x,
+					n.y,
+					n.z,
+					bW.x,
+					bW.y
+				};
+
+				Buffer.BlockCopy(floats, 0, buffer, start, 40);
+
+				// Buffer shorts.
+				short[] shorts =
+				{
+					(short)bI.x,
+					(short)bI.y
+				};
+				
+				Buffer.BlockCopy(shorts, 0, buffer, start + 40, 4);
+
+				// Buffer integers.
+				int boneCount = bI.y == -1 ? 1 : 2;
+
+				Buffer.BlockCopy(BitConverter.GetBytes(boneCount), 0, buffer, start + 44, 4);
+			}
+
+			ushort[] indices = mesh.Indices;
+
+			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
+
+			fixed (byte* address = &buffer[0])
+			{
+				glBufferSubData(GL_ARRAY_BUFFER, 0, (uint)buffer.Length, address);
+			}
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
+
+			fixed (ushort* address = &indices[0])
+			{
+				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, (uint)(sizeof(ushort) * indices.Length), address);
+			}
 		}
 
 		public void Update(float dt)
 		{
+			//model.Orientation *= quat.FromAxisAngle(dt / 2, vec3.UnitY);
 		}
 
 		public void DrawTargets()
@@ -76,21 +154,22 @@ namespace Zeldo
 
 			mat4 lightView = mat4.LookAt(-lightDirection * 10, vec3.Zero, vec3.UnitY);
 			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 100);
-
-			vec2[] bones =
+			
+			vec4[] bones =
 			{
-				vec2.Ones,
-				vec2.Ones
+				quat.Identity.ToVec4(),
+				quat.Identity.ToVec4()
 			};
 
 			lightMatrix = lightProjection * lightView;
 
 			shadowMapTarget.Apply();
 			shadowMapShader.Apply();
-			//shadowMapShader.SetUniform("bones", bones);
+			shadowMapShader.SetUniform("bones[0]", bones);
 
 			model.RecomputeWorldMatrix();
 			shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix);
+
 			Draw(model.Mesh);
 		}
 
@@ -103,11 +182,17 @@ namespace Zeldo
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, defaultTexture.Id);
 
+			vec4[] bones =
+			{
+				quat.Identity.ToVec4(),
+				quat.Identity.ToVec4()
+			};
+
 			skeletalShader.Apply();
 			skeletalShader.SetUniform("lightDirection", lightDirection);
 			skeletalShader.SetUniform("lightColor", Color.White.ToVec3());
 			skeletalShader.SetUniform("ambientIntensity", 0.1f);
-			//shadowMapShader.SetUniform("bones", bones);
+			skeletalShader.SetUniform("bones[0]", bones);
 
 			// See http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/.
 			mat4 biasMatrix = new mat4
@@ -125,6 +210,8 @@ namespace Zeldo
 			skeletalShader.SetUniform("orientation", orientation.ToMat4);
 			skeletalShader.SetUniform("mvp", cameraMatrix * world);
 			skeletalShader.SetUniform("lightBiasMatrix", biasMatrix * lightMatrix * world);
+
+			Draw(model.Mesh);
 		}
 
 		private unsafe void Draw(Mesh mesh)

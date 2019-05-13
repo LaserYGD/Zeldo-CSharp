@@ -79,35 +79,40 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Content\Shaders\ModelShadow.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Shaders\ModelShadow.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Shaders\Primitives.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Shaders\Primitives2D.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Shaders\Primitives3D.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Shaders\ShadowMap.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Shaders\ShadowMap.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Shaders\ShadowMapSkeletal.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Shaders\ShadowMapVisualization.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Shaders\Skeletal.vert" />
+    <None Include="Content\Shaders\Skeletal.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Shaders\Sprite.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Content\Shaders\Sprite.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
@@ -117,10 +122,10 @@
     <Compile Include="Core\DynamicComponent.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
-    <Compile Include="Graphics\3D\DaeLoader.cs" />
+    <Compile Include="Graphics\3D\Loaders\DaeLoader.cs" />
     <Compile Include="Graphics\3D\ModelBatch.cs" />
     <Compile Include="Graphics\3D\ModelHandle.cs" />
-    <Compile Include="Graphics\3D\ObjLoader.cs" />
+    <Compile Include="Graphics\3D\Loaders\ObjLoader.cs" />
     <Compile Include="Graphics\3D\ShadowMapVisualizer.cs" />
     <Compile Include="Graphics\GLBuffer.cs" />
     <Compile Include="Graphics\PrimitiveBuffer.cs" />

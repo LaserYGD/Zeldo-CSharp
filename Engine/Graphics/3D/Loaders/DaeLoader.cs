@@ -7,7 +7,7 @@ using System.Xml.Linq;
 using Engine.Utility;
 using GlmSharp;
 
-namespace Engine.Graphics._3D
+namespace Engine.Graphics._3D.Loaders
 {
 	public static class DaeLoader
 	{
@@ -28,8 +28,11 @@ namespace Engine.Graphics._3D
 			vec3[] points = ParseVec3Source(GetSourceById("positions"));
 			vec3[] normals = ParseVec3Source(GetSourceById("normals"));
 
-			// Parse the rest.
-			string rawList = meshElement.Local("polylist").Local("p").Value;
+			SwapAxes(points);
+			SwapAxes(normals);
+
+			// Parse other geometry data.
+			string rawList = meshElement.Local("triangles").Local("p").Value;
 			string[] tokens = rawList.Split(' ');
 
 			int[] rawIndices = tokens.Select(int.Parse).ToArray();
@@ -49,12 +52,25 @@ namespace Engine.Graphics._3D
 
 			ushort[] indices = new ushort[vertices.Length];
 
-			for (int i = 0; i < indices.Length; i++)
+			for (int i = 0; i < indices.Length; i += 3)
 			{
-				indices[i] = (ushort)i;
+				// The winding order of triangles needs to be reversed in order to play with the engine code.
+				indices[i] = (ushort)(i + 2);
+				indices[i + 1] = (ushort)(i + 1);
+				indices[i + 2] = (ushort)i;
 			}
 
-			return new Mesh(points, source, normals, vertices, indices, null);
+			// Parse bones.
+			ivec2[] boneIndexes = new ivec2[vertices.Length];
+			vec2[] boneWeights = new vec2[vertices.Length];
+
+			for (int i = 0; i < vertices.Length; i++)
+			{
+				boneIndexes[i] = new ivec2(0, -1);
+				boneWeights[i] = new vec2(1, 0);
+			}
+
+			return new Mesh(points, source, normals, vertices, indices, null, boneIndexes, boneWeights);
 		}
 
 		private static vec3[] ParseVec3Source(XElement source)
@@ -77,6 +93,22 @@ namespace Engine.Graphics._3D
 			}
 
 			return points;
+		}
+
+		private static void SwapAxes(vec3[] array)
+		{
+			// Blender's Y and Z axis are flipped with the engine code (in my code, the Y axis is up). This applies to
+			// both positions and normals.
+			for (int i = 0; i < array.Length; i++)
+			{
+				vec3 v = array[i];
+
+				float temp = v.y;
+				v.y = v.z;
+				v.z = temp;
+
+				array[i] = v;
+			}
 		}
 	}
 }

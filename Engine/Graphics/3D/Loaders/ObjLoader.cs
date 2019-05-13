@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Engine.Utility;
 using GlmSharp;
 
-namespace Engine.Graphics._3D
+namespace Engine.Graphics._3D.Loaders
 {
 	public static class ObjLoader
 	{

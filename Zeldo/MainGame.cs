@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Engine;
+using Engine.Core;
 using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Graphics._2D;
@@ -111,7 +112,7 @@ namespace Zeldo
 			
 			world = new World(system);
 			space = new Space();
-
+			
 			scene = new Scene
 			{
 				Camera = camera,
@@ -121,7 +122,7 @@ namespace Zeldo
 			};
 
 			ModelBatch batch = scene.ModelBatch;
-			batch.Add(new Model("Map.obj"));
+			batch.Add(new Model("Triangle.dae"));
 			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.5f, -0.25f));
 
 			//scene.Add(player);
@@ -163,9 +164,9 @@ namespace Zeldo
 			batch.Add(model);
 			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.5f, -0.5f));
 
+			/*
 			const int TotalCubes = 120;
 
-			/*
 			timer = new RepeatingTimer(time =>
 			{
 				Random random = new Random();
@@ -227,7 +228,7 @@ namespace Zeldo
 			});
 			*/
 		}
-		
+
 		protected override void Update(float dt)
 		{
 			//world.Step(dt, true, PhysicsStep, 8);
@@ -262,14 +263,12 @@ namespace Zeldo
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);
-
-			var batch = skeletalTester.Batch;
-
-			//renderTargetUsers.ForEach(t => t.DrawTargets());
-			batch.DrawTargets();
+			
+			//renderTargetUsers.ForEach(u => u.DrawTargets());
+			skeletalTester.DrawTargets();
 			mainTarget.Apply();
 			//scene.ModelBatch.Draw(camera);
-			batch.Draw(camera);
+			skeletalTester.Draw(camera);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -281,7 +280,7 @@ namespace Zeldo
 			mainSprite.Draw(sb);		
 			//canvas.Draw(sb);
 			//tester.Draw(sb);
-
+			
 			sb.Flush();
 		}
 	}

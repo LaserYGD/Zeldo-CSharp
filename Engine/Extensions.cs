@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GlmSharp;
 
 namespace Engine
 {
@@ -21,6 +22,13 @@ namespace Engine
 			};
 
 			return BitConverter.ToInt32(bytes, 0);
+		}
+
+		public static vec4 ToVec4(this quat quat)
+		{
+			float[] values = quat.Values;
+
+			return new vec4(values[0], values[1], values[2], values[3]);
 		}
 	}
 }

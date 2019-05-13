@@ -45,7 +45,7 @@ namespace Engine.Graphics._2D
 			spriteShader.Attach(ShaderTypes.Fragment, "Sprite.frag");
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
-			spriteShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
+			spriteShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, false, true);
 			spriteShader.CreateProgram();
 			spriteShader.Bind(bufferId, indexBufferId);
 
@@ -54,7 +54,7 @@ namespace Engine.Graphics._2D
 			primitiveShader.Attach(ShaderTypes.Fragment, "Primitives.frag");
 			primitiveShader.CreateProgram();
 			primitiveShader.AddAttribute<float>(2, GL_FLOAT);
-			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
+			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, false, true);
 			primitiveShader.Bind(bufferId, indexBufferId);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });

@@ -104,6 +104,9 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Meshes\Triangle.dae">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Meshes\Wall.obj" />
     <None Include="Content\Shaders\Rain.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

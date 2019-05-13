@@ -14,6 +14,13 @@
 
 - Make sure many areas have multiple ways to move around (to make replayability and experimentation more important, and to aid with the depth of speedrun routing) => Be especially careful of this problem for tall stages (which might be tedious to climb several times) => The Ascend skill will probably help with this a lot, though
 
+- Consider zooming in the camera a bit when the player goes into a smaller building (inspired by Game Maker's Toolkit mentioning that BotW does this trick)
+
+- Dungeon with the main entrance close/collapsed, so you need to enter through a secret side entrance (could also use this as a way to access visible, but inaccessible secrets within a dungeon) => Probably shouldn't have the door be locked because that implies you can find a key
+
+- Percentage display on a save slot that's hidden by default and needs to be explicitly shown by the player (in order to not reveal how much of the game is left)
+
+
 
 
 
