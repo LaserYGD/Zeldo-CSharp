@@ -281,5 +281,27 @@ namespace Engine.Shaders
 				glUniformMatrix4fv(uniforms[name], 1, false, address);
 			}
 		}
+
+		public unsafe void SetUniform(string name, mat4[] values)
+		{
+			float[] floats = new float[values.Length * 16];
+
+			for (int i = 0; i < values.Length; i++)
+			{
+				int start = i * 16;
+
+				var array = values[i].Values1D;
+
+				for (int j = 0; j < 16; j++)
+				{
+					floats[start + j] = array[j];
+				}
+			}
+
+			fixed (float* address = &floats[0])
+			{
+				glUniformMatrix4fv(uniforms[name], (uint)values.Length, false, address);
+			}
+		}
 	}
 }

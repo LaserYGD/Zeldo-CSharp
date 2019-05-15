@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <asset>
     <contributor>
       <author>Blender User</author>
-      <authoring_tool>Blender 2.78.0 commit date:2016-09-26, commit time:12:42, hash:4bb1e22</authoring_tool>
+      <authoring_tool>Blender 2.79.0 commit date:2018-03-22, commit time:14:10, hash:f4dc9f9d68b</authoring_tool>
     </contributor>
-    <created>2019-05-11T00:02:29</created>
-    <modified>2019-05-11T00:02:29</modified>
+    <created>2019-05-14T00:04:07</created>
+    <modified>2019-05-14T00:04:07</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -24,9 +24,9 @@
       </optics>
       <extra>
         <technique profile="blender">
-          <YF_dofdist>0</YF_dofdist>
-          <shiftx>0</shiftx>
-          <shifty>0</shifty>
+          <shiftx sid="shiftx" type="float">0</shiftx>
+          <shifty sid="shifty" type="float">0</shifty>
+          <YF_dofdist sid="YF_dofdist" type="float">0</YF_dofdist>
         </technique>
       </extra>
     </camera>
@@ -43,60 +43,60 @@
       </technique_common>
       <extra>
         <technique profile="blender">
-          <adapt_thresh>0.000999987</adapt_thresh>
-          <area_shape>1</area_shape>
-          <area_size>0.1</area_size>
-          <area_sizey>0.1</area_sizey>
-          <area_sizez>1</area_sizez>
-          <atm_distance_factor>1</atm_distance_factor>
-          <atm_extinction_factor>1</atm_extinction_factor>
-          <atm_turbidity>2</atm_turbidity>
-          <att1>0</att1>
-          <att2>1</att2>
-          <backscattered_light>1</backscattered_light>
-          <bias>1</bias>
-          <blue>1</blue>
-          <buffers>1</buffers>
-          <bufflag>0</bufflag>
-          <bufsize>2880</bufsize>
-          <buftype>2</buftype>
-          <clipend>30.002</clipend>
-          <clipsta>1.000799</clipsta>
-          <compressthresh>0.04999995</compressthresh>
-          <dist sid="blender_dist">29.99998</dist>
-          <energy sid="blender_energy">1</energy>
-          <falloff_type>2</falloff_type>
-          <filtertype>0</filtertype>
-          <flag>0</flag>
-          <gamma sid="blender_gamma">1</gamma>
-          <green>1</green>
-          <halo_intensity sid="blnder_halo_intensity">1</halo_intensity>
-          <horizon_brightness>1</horizon_brightness>
-          <mode>8192</mode>
-          <ray_samp>1</ray_samp>
-          <ray_samp_method>1</ray_samp_method>
-          <ray_samp_type>0</ray_samp_type>
-          <ray_sampy>1</ray_sampy>
-          <ray_sampz>1</ray_sampz>
-          <red>1</red>
-          <samp>3</samp>
-          <shadhalostep>0</shadhalostep>
-          <shadow_b sid="blender_shadow_b">0</shadow_b>
-          <shadow_g sid="blender_shadow_g">0</shadow_g>
-          <shadow_r sid="blender_shadow_r">0</shadow_r>
-          <sky_colorspace>0</sky_colorspace>
-          <sky_exposure>1</sky_exposure>
-          <skyblendfac>1</skyblendfac>
-          <skyblendtype>1</skyblendtype>
-          <soft>3</soft>
-          <spotblend>0.15</spotblend>
-          <spotsize>75</spotsize>
-          <spread>1</spread>
-          <sun_brightness>1</sun_brightness>
-          <sun_effect_type>0</sun_effect_type>
-          <sun_intensity>1</sun_intensity>
-          <sun_size>1</sun_size>
-          <type>0</type>
+          <type sid="type" type="int">0</type>
+          <flag sid="flag" type="int">0</flag>
+          <mode sid="mode" type="int">8192</mode>
+          <gamma sid="blender_gamma" type="float">1</gamma>
+          <red sid="red" type="float">1</red>
+          <green sid="green" type="float">1</green>
+          <blue sid="blue" type="float">1</blue>
+          <shadow_r sid="blender_shadow_r" type="float">0</shadow_r>
+          <shadow_g sid="blender_shadow_g" type="float">0</shadow_g>
+          <shadow_b sid="blender_shadow_b" type="float">0</shadow_b>
+          <energy sid="blender_energy" type="float">1</energy>
+          <dist sid="blender_dist" type="float">29.99998</dist>
+          <spotsize sid="spotsize" type="float">75</spotsize>
+          <spotblend sid="spotblend" type="float">0.15</spotblend>
+          <halo_intensity sid="blnder_halo_intensity" type="float">1</halo_intensity>
+          <att1 sid="att1" type="float">0</att1>
+          <att2 sid="att2" type="float">1</att2>
+          <falloff_type sid="falloff_type" type="int">2</falloff_type>
+          <clipsta sid="clipsta" type="float">1.000799</clipsta>
+          <clipend sid="clipend" type="float">30.002</clipend>
+          <bias sid="bias" type="float">1</bias>
+          <soft sid="soft" type="float">3</soft>
+          <compressthresh sid="compressthresh" type="float">0.04999995</compressthresh>
+          <bufsize sid="bufsize" type="int">2880</bufsize>
+          <samp sid="samp" type="int">3</samp>
+          <buffers sid="buffers" type="int">1</buffers>
+          <filtertype sid="filtertype" type="int">0</filtertype>
+          <bufflag sid="bufflag" type="int">0</bufflag>
+          <buftype sid="buftype" type="int">2</buftype>
+          <ray_samp sid="ray_samp" type="int">1</ray_samp>
+          <ray_sampy sid="ray_sampy" type="int">1</ray_sampy>
+          <ray_sampz sid="ray_sampz" type="int">1</ray_sampz>
+          <ray_samp_type sid="ray_samp_type" type="int">0</ray_samp_type>
+          <area_shape sid="area_shape" type="int">1</area_shape>
+          <area_size sid="area_size" type="float">0.1</area_size>
+          <area_sizey sid="area_sizey" type="float">0.1</area_sizey>
+          <area_sizez sid="area_sizez" type="float">1</area_sizez>
+          <adapt_thresh sid="adapt_thresh" type="float">0.000999987</adapt_thresh>
+          <ray_samp_method sid="ray_samp_method" type="int">1</ray_samp_method>
+          <shadhalostep sid="shadhalostep" type="int">0</shadhalostep>
+          <sun_effect_type sid="sun_effect_type" type="int">0</sun_effect_type>
+          <skyblendtype sid="skyblendtype" type="int">1</skyblendtype>
+          <horizon_brightness sid="horizon_brightness" type="float">1</horizon_brightness>
+          <spread sid="spread" type="float">1</spread>
+          <sun_brightness sid="sun_brightness" type="float">1</sun_brightness>
+          <sun_size sid="sun_size" type="float">1</sun_size>
+          <backscattered_light sid="backscattered_light" type="float">1</backscattered_light>
+          <sun_intensity sid="sun_intensity" type="float">1</sun_intensity>
+          <atm_turbidity sid="atm_turbidity" type="float">2</atm_turbidity>
+          <atm_extinction_factor sid="atm_extinction_factor" type="float">1</atm_extinction_factor>
+          <atm_distance_factor sid="atm_distance_factor" type="float">1</atm_distance_factor>
+          <skyblendfac sid="skyblendfac" type="float">1</skyblendfac>
+          <sky_exposure sid="sky_exposure" type="float">1</sky_exposure>
+          <sky_colorspace sid="sky_colorspace" type="int">0</sky_colorspace>
         </technique>
       </extra>
     </light>
@@ -161,19 +161,18 @@
         <vertices id="Cube-mesh-vertices">
           <input semantic="POSITION" source="#Cube-mesh-positions"/>
         </vertices>
-        <polylist material="Material-material" count="20">
+        <triangles material="Material-material" count="20">
           <input semantic="VERTEX" source="#Cube-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Cube-mesh-normals" offset="1"/>
-          <vcount>3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 </vcount>
           <p>0 0 2 0 3 0 5 1 11 1 6 1 4 2 1 2 0 2 5 3 2 3 1 3 6 4 3 4 2 4 0 5 7 5 4 5 10 6 9 6 8 6 4 7 9 7 5 7 6 8 10 8 7 8 7 9 8 9 4 9 0 10 1 10 2 10 5 11 9 11 11 11 4 12 5 12 1 12 5 13 6 13 2 13 6 14 7 14 3 14 0 15 3 15 7 15 10 16 11 16 9 16 4 17 8 17 9 17 6 18 11 18 10 18 7 19 10 19 8 19</p>
-        </polylist>
+        </triangles>
       </mesh>
     </geometry>
   </library_geometries>
   <library_controllers>
     <controller id="Armature_Cube-skin" name="Armature">
       <skin source="#Cube-mesh">
-        <bind_shape_matrix>1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</bind_shape_matrix>
+        <bind_shape_matrix>0.9999999 0 0 0 0 0.9999999 0 0 0 0 0.9999999 0 0 0 0 1</bind_shape_matrix>
         <source id="Armature_Cube-skin-joints">
           <Name_array id="Armature_Cube-skin-joints-array" count="2">Bone Bone_001</Name_array>
           <technique_common>
@@ -183,7 +182,7 @@
           </technique_common>
         </source>
         <source id="Armature_Cube-skin-bind_poses">
-          <float_array id="Armature_Cube-skin-bind_poses-array" count="32">1 0 0 0 0 0 1 0 0 -1 0 0 0 0 0 1 1 0 0 0 0 0 1 -1.568143 0 -1 0 0 0 0 0 1</float_array>
+          <float_array id="Armature_Cube-skin-bind_poses-array" count="32">0.6373448 1.51955e-7 0 0 0 0 0.6373448 0.8569279 1.51955e-7 -0.6373448 0 0 0 0 0 1 0.6373448 0 0 0 0 0 0.6373449 -0.5206674 0 -0.6373448 0 0 0 0 0 1</float_array>
           <technique_common>
             <accessor source="#Armature_Cube-skin-bind_poses-array" count="2" stride="16">
               <param name="TRANSFORM" type="float4x4"/>
@@ -191,9 +190,9 @@
           </technique_common>
         </source>
         <source id="Armature_Cube-skin-weights">
-          <float_array id="Armature_Cube-skin-weights-array" count="8">1 1 1 1 1 1 1 1</float_array>
+          <float_array id="Armature_Cube-skin-weights-array" count="12">1 1 1 1 1 1 1 1 1 1 1 1</float_array>
           <technique_common>
-            <accessor source="#Armature_Cube-skin-weights-array" count="8" stride="1">
+            <accessor source="#Armature_Cube-skin-weights-array" count="12" stride="1">
               <param name="WEIGHT" type="float"/>
             </accessor>
           </technique_common>
@@ -205,8 +204,8 @@
         <vertex_weights count="12">
           <input semantic="JOINT" source="#Armature_Cube-skin-joints" offset="0"/>
           <input semantic="WEIGHT" source="#Armature_Cube-skin-weights" offset="1"/>
-          <vcount>0 0 0 0 1 1 1 1 1 1 1 1 </vcount>
-          <v>1 0 1 1 1 2 1 3 1 4 1 5 1 6 1 7</v>
+          <vcount>1 1 1 1 1 1 1 1 1 1 1 1 </vcount>
+          <v>0 0 0 1 0 2 0 3 1 4 1 5 1 6 1 7 1 8 1 9 1 10 1 11</v>
         </vertex_weights>
       </skin>
     </controller>
@@ -222,11 +221,11 @@
         <instance_light url="#Lamp-light"/>
       </node>
       <node id="Armature" name="Armature" type="NODE">
-        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
-        <node id="Bone" name="Bone" sid="Bone" type="JOINT">
-          <matrix sid="transform">1 0 0 0 0 0 -1 0 0 1 0 0 0 0 0 1</matrix>
-          <node id="Bone_001" name="Bone.001" sid="Bone_001" type="JOINT">
-            <matrix sid="transform">1 0 0 0 0 1 0 1.568143 0 0 1 0 0 0 0 1</matrix>
+        <matrix sid="transform">1.569009 0 0 0 0 1.569009 0 0 0 0 1.569009 0 0 0 0 1</matrix>
+        <node id="Armature_Bone" name="Bone" sid="Bone" type="JOINT">
+          <matrix sid="transform">1 0 2.38419e-7 0 2.38419e-7 0 -0.9999999 0 0 0.9999999 1.19209e-7 -0.8569279 0 0 0 1</matrix>
+          <node id="Armature_Bone_001" name="Bone.001" sid="Bone_001" type="JOINT">
+            <matrix sid="transform">1 0 -2.38419e-7 0 0 1 0 1.377595 2.38419e-7 0 1 0 0 0 0 1</matrix>
           </node>
         </node>
       </node>
@@ -237,7 +236,7 @@
         <rotate sid="rotationX">1 0 0 0</rotate>
         <scale sid="scale">1 1 1</scale>
         <instance_controller url="#Armature_Cube-skin">
-          <skeleton>#Bone</skeleton>
+          <skeleton>#Armature_Bone</skeleton>
           <bind_material>
             <technique_common>
               <instance_material symbol="Material-material" target="#Material-material"/>

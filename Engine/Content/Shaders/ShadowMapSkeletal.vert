@@ -6,7 +6,7 @@ layout (location = 2) in ivec2 boneIndexes;
 layout (location = 3) in int boneCount;
 
 uniform mat4 lightMatrix;
-uniform vec4 bones[2];
+uniform mat4 bones[2];
 
 void main()
 {

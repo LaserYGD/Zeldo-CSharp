@@ -13,8 +13,8 @@ namespace Engine.Graphics._3D.Loaders
 	{
 		public static Mesh Load(string filename)
 		{
-			XDocument document = XDocument.Load(Mesh.Path + filename);
-			XElement geometryElement = document.Root.Local("library_geometries").Local("geometry");
+			XElement root = XDocument.Load(Mesh.Path + filename).Root;
+			XElement geometryElement = root.Local("library_geometries").Local("geometry");
 			XElement meshElement = geometryElement.Local("mesh");
 			XElement[] sourceElements = meshElement.Locals("source").ToArray();
 
@@ -61,16 +61,13 @@ namespace Engine.Graphics._3D.Loaders
 			}
 
 			// Parse bones.
-			ivec2[] boneIndexes = new ivec2[vertices.Length];
-			vec2[] boneWeights = new vec2[vertices.Length];
-
-			for (int i = 0; i < vertices.Length; i++)
-			{
-				boneIndexes[i] = new ivec2(0, -1);
-				boneWeights[i] = new vec2(1, 0);
-			}
+			ParseBones(root, out ivec2[] boneIndexes, out vec2[] boneWeights);
 
 			return new Mesh(points, source, normals, vertices, indices, null, boneIndexes, boneWeights);
+		}
+
+		private static void ParseBones(XElement root, out ivec2[] boneIndexes, out vec2[] boneWeights)
+		{
 		}
 
 		private static vec3[] ParseVec3Source(XElement source)

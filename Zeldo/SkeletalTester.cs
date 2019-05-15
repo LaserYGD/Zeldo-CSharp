@@ -24,9 +24,13 @@ namespace Zeldo
 		private Texture defaultTexture;
 		private mat4 lightMatrix;
 		private vec3 lightDirection;
+		private mat4 bone1;
+		private mat4 bone2;
 
 		private uint bufferId;
 		private uint indexId;
+
+		private float angle;
 
 		public SkeletalTester()
 		{
@@ -63,7 +67,7 @@ namespace Zeldo
 			defaultTexture = ContentCache.GetTexture("Grey.png");
 			lightDirection = -vec3.UnitY;
 
-			model = new Model("Triangle.dae");
+			model = new Model("Tree.dae");
 
 			BufferMesh(model.Mesh);
 		}
@@ -143,7 +147,10 @@ namespace Zeldo
 
 		public void Update(float dt)
 		{
-			//model.Orientation *= quat.FromAxisAngle(dt / 2, vec3.UnitY);
+			angle += dt / 2;
+			
+			bone1 = quat.FromAxisAngle(angle, vec3.UnitY).ToMat4;
+			bone2 = quat.Identity.ToMat4;
 		}
 
 		public void DrawTargets()
@@ -155,10 +162,10 @@ namespace Zeldo
 			mat4 lightView = mat4.LookAt(-lightDirection * 10, vec3.Zero, vec3.UnitY);
 			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 100);
 			
-			vec4[] bones =
+			mat4[] bones =
 			{
-				quat.Identity.ToVec4(),
-				quat.Identity.ToVec4()
+				bone1,
+				bone2
 			};
 
 			lightMatrix = lightProjection * lightView;
@@ -182,10 +189,10 @@ namespace Zeldo
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, defaultTexture.Id);
 
-			vec4[] bones =
+			mat4[] bones =
 			{
-				quat.Identity.ToVec4(),
-				quat.Identity.ToVec4()
+				bone1,
+				bone2
 			};
 
 			skeletalShader.Apply();

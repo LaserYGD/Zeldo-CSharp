@@ -20,7 +20,9 @@
 
 - Percentage display on a save slot that's hidden by default and needs to be explicitly shown by the player (in order to not reveal how much of the game is left)
 
+- Consider how the health and mana systems affect gameplay (inspired by Mark Brown's video on health, where he mentions that when you're running low on health in Doom, the game is designed to encourage aggressive behavior) => Consider a Halo-style system with a regenerating shield (can be contextualized in-game), but non-regenerating health (might be too complex?) => Also consider rewarding aggressive play vs. passive play at different skill levels
 
+- Consider doing something more creative with death
 
 
 

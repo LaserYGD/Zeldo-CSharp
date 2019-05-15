@@ -14,7 +14,7 @@ out vec4 fShadowMapCoords;
 uniform mat4 orientation;
 uniform mat4 mvp;
 uniform mat4 lightBiasMatrix;
-uniform vec4 bones[2];
+uniform mat4 bones[2];
 
 void main()
 {
@@ -30,7 +30,7 @@ void main()
 			break;
 		}
 
-		vec4 bone = bones[index] * boneWeights[i];
+		mat4 bone = bones[index] * boneWeights[i];
 
 		position *= bone;
 		normal *= bone;
