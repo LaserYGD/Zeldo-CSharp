@@ -18,10 +18,6 @@ namespace Zeldo.Entities.Mechanisms
 
 		public bool InteractionEnabled => true;
 
-		public override void Initialize()
-		{
-		}
-
 		public void OnInteract(Entity entity)
 		{
 		}

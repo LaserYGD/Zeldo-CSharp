@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Core;
+using Engine.Core._3D;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
+using Engine.Physics;
 using Engine.Shapes._2D;
 using GlmSharp;
+using Jitter.Dynamics;
 using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Core
@@ -15,6 +18,7 @@ namespace Zeldo.Entities.Core
 	public abstract class Entity : ITransformable3D, IDynamic
 	{
 		private vec3 position;
+		private quat orientation;
 		private List<Sensor> sensors;
 		private List<DynamicComponent> components;
 		private List<EntityAttachment> attachments;
@@ -30,7 +34,7 @@ namespace Zeldo.Entities.Core
 
 		public EntityGroups Group { get; }
 
-		public Scene Scene { get; set; }
+		public Scene Scene { get; protected set; }
 
 		public vec3 Position
 		{
@@ -39,10 +43,19 @@ namespace Zeldo.Entities.Core
 			{
 				position = value;
 				sensors?.ForEach(s => s.Position = value);
+				attachments.ForEach(a => a.Target.Position = value + a.Position);
 			}
 		}
 
-		public quat Orientation { get; set; }
+		public quat Orientation
+		{
+			get => orientation;
+			set
+			{
+				orientation = value;
+				attachments.ForEach(a => a.Target.Orientation = value * a.Orientation);
+			}
+		}
 
 		protected void Attach(ITransformable3D target)
 		{
@@ -54,7 +67,18 @@ namespace Zeldo.Entities.Core
 			attachments.Add(new EntityAttachment(target, position, orientation));
 		}
 
-		protected Sensor CreateSensor(Shape2D shape = null, bool enabled = true, int height = 1,
+		protected Model CreateModel(Scene scene, string filename)
+		{
+			Model model = new Model(filename);
+			model.SetTransform(position, orientation);
+
+			Attach(model);
+			scene.ModelBatch.Add(model);
+
+			return model;
+		}
+
+		protected Sensor CreateSensor(Scene scene, Shape2D shape = null, bool enabled = true, int height = 1,
 			SensorTypes type = SensorTypes.Entity)
 		{
 			Sensor sensor = new Sensor(type, this, shape, height);
@@ -62,13 +86,14 @@ namespace Zeldo.Entities.Core
 			sensor.Enabled = enabled;
 
 			Sensors.Add(sensor);
-			Scene.Space.Add(sensor);
+			scene.Space.Add(sensor);
 
 			return sensor;
 		}
 
-		public virtual void Initialize()
+		public virtual void Initialize(Scene scene)
 		{
+			Scene = scene;
 		}
 
 		public void SetTransform(vec3 position, quat orientation)

@@ -31,8 +31,7 @@ namespace Zeldo.Entities.Core
 		public void Add(Entity entity)
 		{
 			entities.Add(entity);
-			entity.Scene = this;
-			entity.Initialize();
+			entity.Initialize(this);
 		}
 
 		public void Update(float dt)

@@ -38,11 +38,9 @@ namespace Zeldo.Entities.Weapons
 			Components.Add(timer);
 		}
 
-		public Sensor Sensor => sensor;
-
-		public override void Initialize()
+		public override void Initialize(Scene scene)
 		{
-			sensor = CreateSensor(arc, false);
+			sensor = CreateSensor(scene, arc, false);
 			sensor.OnSense = (sensorType, owner) =>
 			{
 				if (sensorType == SensorTypes.Entity && owner is ITargetable target)
@@ -50,6 +48,8 @@ namespace Zeldo.Entities.Weapons
 					ApplyDamage(target);
 				}
 			};
+
+			base.Initialize(scene);
 		}
 
 		private void ApplyDamage(ITargetable target)

@@ -141,6 +141,8 @@
     <Compile Include="Particles\Emitters\Emitter.cs" />
     <Compile Include="Particles\Particle.cs" />
     <Compile Include="Physics\PhysicsExtensions.cs" />
+    <Compile Include="Physics\PhysicsUtilities.cs" />
+    <Compile Include="Physics\RaycastResults.cs" />
     <Compile Include="Properties.cs" />
     <Compile Include="Shapes\2D\Arc.cs" />
     <Compile Include="Shapes\2D\Rectangle.cs" />

@@ -28,12 +28,13 @@ namespace Zeldo.Entities.Enemies
 		public int MaxHealth { get; set; }
 
 		public Box Box { get; }
-		public Sensor Sensor => sensor;
 
-		public override void Initialize()
+		public override void Initialize(Scene scene)
 		{
 			Circle circle = new Circle(0.4f);
-			sensor = CreateSensor(circle);
+			sensor = CreateSensor(scene, circle);
+
+			base.Initialize(scene);
 		}
 
 		public void OnHit(int damage, int power, float angle, vec2 direction, object source)

@@ -68,6 +68,8 @@ namespace Engine.Graphics._3D.Loaders
 
 		private static void ParseBones(XElement root, out ivec2[] boneIndexes, out vec2[] boneWeights)
 		{
+			boneIndexes = null;
+			boneWeights = null;
 		}
 
 		private static vec3[] ParseVec3Source(XElement source)

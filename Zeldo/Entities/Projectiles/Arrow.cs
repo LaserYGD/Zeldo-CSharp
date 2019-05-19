@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Zeldo.Entities.Core;
+﻿using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities.Projectiles
 {
@@ -11,6 +6,13 @@ namespace Zeldo.Entities.Projectiles
 	{
 		public Arrow() : base(EntityGroups.Projectile)
 		{
+		}
+
+		public override void Initialize(Scene scene)
+		{
+			CreateModel(scene, "Arrow.obj");
+
+			base.Initialize(scene);
 		}
 	}
 }

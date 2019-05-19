@@ -32,10 +32,12 @@ namespace Zeldo.Entities.Characters
 
 		public bool InteractionEnabled => true;
 
-		public override void Initialize()
+		public override void Initialize(Scene scene)
 		{
-			sensor = CreateSensor(shape);
-			speechBox = Scene.Canvas.GetElement<SpeechBox>();
+			sensor = CreateSensor(scene, shape);
+			speechBox = scene.Canvas.GetElement<SpeechBox>();
+
+			base.Initialize(scene);
 		}
 
 		public void OnInteract(Entity entity)

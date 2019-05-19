@@ -16,7 +16,9 @@ using Jitter;
 using Jitter.Collision;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
+using Zeldo.Entities;
 using Zeldo.Entities.Core;
+using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
 using Zeldo.Sensors;
 using Zeldo.UI.Hud;
@@ -40,17 +42,6 @@ namespace Zeldo
 		private ScreenManager screenManager;
 		private List<IRenderTargetUser> renderTargetUsers;
 
-		/*
-		private List<RigidBody> debugBodies = new List<RigidBody>();
-		private List<Model> debugModels = new List<Model>();
-		private RepeatingTimer timer;
-		
-		private int cubeCount = 0;
-		*/
-
-		private SkeletalTester skeletalTester;
-		//private CharacterControlTester tester;
-
 		public MainGame() : base("Zeldo")
 		{
 			glClearColor(0, 0, 0, 1);
@@ -61,8 +52,8 @@ namespace Zeldo
 			Properties.Load("Entity.properties");
 
 			camera = new Camera3D();
-			//camera.IsOrthographic = true;
-			camera.Orientation *= quat.FromAxisAngle(0.75f, vec3.UnitX);
+			camera.IsOrthographic = true;
+			camera.Orientation *= quat.FromAxisAngle(0.8f, vec3.UnitX);
 			camera.Position = new vec3(0, 0, 5) * camera.Orientation + new vec3(0, 0, -0.5f);
 
 			sb = new SpriteBatch();
@@ -80,17 +71,7 @@ namespace Zeldo
 			canvas.Add(manaDisplay);
 
 			screenManager = new ScreenManager();
-			screenManager.Load(canvas);
-
-			/*
-			Player player = new Player
-			{
-				HealthDisplay = healthDisplay,
-				ManaDisplay = manaDisplay
-			};
-
-			player.UnlockSkill(PlayerSkills.Jump);
-			*/
+			screenManager.Load(canvas);		
 
 			CollisionSystem system = new CollisionSystemSAP();
 			system.UseTriangleMeshNormal = true;
@@ -122,18 +103,27 @@ namespace Zeldo
 			};
 
 			ModelBatch batch = scene.ModelBatch;
-			batch.Add(new Model("Triangle.dae"));
+			batch.Add(new Model("Map.obj"));
 			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.5f, -0.25f));
 
-			//scene.Add(player);
+			Bow bow = new Bow();
+			bow.Initialize(scene);
+
+			Player player = new Player
+			{
+				HealthDisplay = healthDisplay,
+				ManaDisplay = manaDisplay
+			};
+
+			player.UnlockSkill(PlayerSkills.Jump);
+			player.Equip(bow);
+
+			scene.Add(player);
 
 			renderTargetUsers = new List<IRenderTargetUser>();
 			renderTargetUsers.Add(scene.ModelBatch);
 
 			//LoadTestingData();
-
-			skeletalTester = new SkeletalTester();
-			//tester = new CharacterControlTester();
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
@@ -233,27 +223,8 @@ namespace Zeldo
 		{
 			//world.Step(dt, true, PhysicsStep, 8);
 			//space.Update();
-			//scene.Update(dt);
+			scene.Update(dt);
 			camera.Update(dt);
-
-			/*
-			if (!timer.Complete)
-			{
-				timer.Update(dt);
-			}
-
-			for (int i = 0; i < debugBodies.Count; i++)
-			{
-				var body = debugBodies[i];
-				var model = debugModels[i];
-
-				model.Position = body.Position.ToVec3();
-				model.Orientation = body.Orientation.ToQuat();
-			}
-			*/
-
-			//tester.Update(dt);
-			skeletalTester.Update(dt);
 
 			MessageSystem.ProcessChanges();
 		}
@@ -264,11 +235,9 @@ namespace Zeldo
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);
 			
-			//renderTargetUsers.ForEach(u => u.DrawTargets());
-			skeletalTester.DrawTargets();
+			renderTargetUsers.ForEach(u => u.DrawTargets());
 			mainTarget.Apply();
-			//scene.ModelBatch.Draw(camera);
-			skeletalTester.Draw(camera);
+			scene.ModelBatch.Draw(camera);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -279,7 +248,6 @@ namespace Zeldo
 
 			mainSprite.Draw(sb);		
 			//canvas.Draw(sb);
-			//tester.Draw(sb);
 			
 			sb.Flush();
 		}

@@ -23,12 +23,13 @@ namespace Zeldo.Entities
 		private const int JumpIndex = (int)PlayerSkills.Jump;
 
 		private vec3 velocity;
-		private Sword sword;
 		private Sensor sensor;
 		private InputBind jumpBindUsed;
 		private PlayerData playerData;
 		private PlayerControls controls;
 		private Model model;
+		private Sword sword;
+		private Bow bow;
 
 		private bool onGround;
 		private bool[] skillsUnlocked;
@@ -41,7 +42,6 @@ namespace Zeldo.Entities
 			sword = new Sword();
 			playerData = JsonUtilities.Deserialize<PlayerData>("PlayerData.json");
 			controls = new PlayerControls();
-			model = new Model("Player.obj");
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 
@@ -59,16 +59,12 @@ namespace Zeldo.Entities
 		public PlayerManaDisplay ManaDisplay { get; set; }
 
 		public Box Box { get; }
-		public Sensor SwordSensor => sword.Sensor;
 
-		public string AttackString { get; private set; }
-
-		public override void Initialize()
+		public override void Initialize(Scene scene)
 		{
-			Scene.ModelBatch.Add(model);
+			CreateModel(scene, "Player.obj");
 
-			sword.Scene = Scene;
-			sword.Initialize();
+			base.Initialize(scene);
 		}
 
 		private void ProcessInput(FullInputData data)
@@ -100,12 +96,13 @@ namespace Zeldo.Entities
 						screenPosition += halfWindow;
 						direction = (mouseData.Location - screenPosition).Normalized;
 
-						AttackString = $"Direction: {direction.x}, {direction.y} - Angle: {Utilities.Angle(direction)}";
-
 						break;
 				}
 
-				sword.Attack(direction);
+				float angle = Utilities.Angle(direction);
+
+				//sword.Attack(direction);
+				bow.PrimaryAttack(direction, angle);
 			}
 		}
 
@@ -159,6 +156,11 @@ namespace Zeldo.Entities
 			}
 		}
 
+		public void Equip(Bow bow)
+		{
+			this.bow = bow;
+		}
+
 		public void UnlockSkill(PlayerSkills skill)
 		{
 			int index = (int)skill;
@@ -180,10 +182,12 @@ namespace Zeldo.Entities
 		{
 			Position += velocity * dt;
 			Box.Position = Position;
-			model.Position = Position;
 
-			sword.Position = Position;
-			sword.Update(dt);
+			bow.Position = Position;
+			bow.Update(dt);
+
+			//sword.Position = Position;
+			//sword.Update(dt);
 		}
 	}
 }
