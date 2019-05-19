@@ -111,6 +111,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Wall.obj" />
+    <None Include="Content\Shaders\Puddle.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Shaders\Rain.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -171,11 +174,15 @@
     <Compile Include="Physics\VerletPoint.cs" />
     <Compile Include="Physics\VerletRope.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="PuddleTester.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="Sensors\Sensor.cs" />
     <Compile Include="Sensors\SensorTypes.cs" />
     <Compile Include="Sensors\Space.cs" />
+    <Compile Include="Settings\GraphicsSettings.cs" />
+    <Compile Include="Settings\SoundSettings.cs" />
     <Compile Include="SkeletalTester.cs" />
+    <Compile Include="Sky.cs" />
     <Compile Include="UI\Hud\PlayerHealthDisplay.cs" />
     <Compile Include="UI\Hud\PlayerManaDisplay.cs" />
     <Compile Include="UI\Letterbox.cs" />
@@ -186,6 +193,7 @@
     <Compile Include="UI\Screens\ScreenControls.cs" />
     <Compile Include="UI\Screens\ScreenManager.cs" />
     <Compile Include="UI\Speech\SpeechBox.cs" />
+    <Compile Include="UI\Subtitles.cs" />
     <Compile Include="View\SpiralCameraController.cs" />
     <Compile Include="Weather\DayNightCycle.cs" />
     <Compile Include="Weather\Rain.cs" />

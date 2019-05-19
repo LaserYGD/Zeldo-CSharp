@@ -12,7 +12,7 @@ using static Engine.GL;
 
 namespace Engine.Graphics._3D
 {
-	public class ModelBatch : IRenderTargetUser, IRenderable3D, IDisposable
+	public class ModelBatch : IRenderTargetUser
 	{
 		private Shader modelShader;
 		private Shader shadowMapShader;
@@ -66,6 +66,10 @@ namespace Engine.Graphics._3D
 
 		public vec3 LightDirection { get; set; }
 		public Color LightColor { get; set; }
+
+		// Setting the VP matrix externally allows the same batch of models to be rendered from different perspectives
+		// (e.g. reflections in puddles).
+		public mat4 ViewProjection { get; set; }
 
 		public float AmbientIntensity { get; set; }
 
@@ -168,14 +172,13 @@ namespace Engine.Graphics._3D
 			}
 		}
 
-		public void Draw(Camera3D camera)
+		public void Draw()
 		{
 			glEnable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, shadowMapTarget.Id);
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, defaultTexture.Id);
+			
+			shadowMapTarget.Bind(0);
+			defaultTexture.Bind(1);
 
 			modelShader.Apply();
 			modelShader.SetUniform("lightDirection", LightDirection);
@@ -191,8 +194,6 @@ namespace Engine.Graphics._3D
 				0.5f, 0.5f, 0.5f, 1
 			);
 
-			mat4 cameraMatrix = camera.ViewProjection;
-
 			foreach (ModelHandle handle in handles)
 			{
 				Model model = handle.Model;
@@ -200,7 +201,7 @@ namespace Engine.Graphics._3D
 				quat orientation = model.Orientation;
 
 				modelShader.SetUniform("orientation", orientation.ToMat4);
-				modelShader.SetUniform("mvp", cameraMatrix * world);
+				modelShader.SetUniform("mvp", ViewProjection * world);
 				modelShader.SetUniform("lightBiasMatrix", biasMatrix * lightMatrix * world);
 
 				Draw(handle);

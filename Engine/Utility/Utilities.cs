@@ -164,6 +164,12 @@ namespace Engine.Utility
 			return new mat2(cos, sin, -sin, cos);
 		}
 
+		public static vec3 Reflect(vec3 v, vec3 normal)
+		{
+			// See https://math.stackexchange.com/a/13263.
+			return v - 2 * vec3.Dot(v, normal) * normal;
+		}
+
 		public static string StripPath(string value)
 		{
 			int index = value.LastIndexOf('.');

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Exceptions;
+using GlmSharp;
 using static Engine.GL;
 
 namespace Engine.Core._2D
@@ -14,6 +15,10 @@ namespace Engine.Core._2D
 		private uint renderbufferId;
 		private uint textureId;
 		private uint clearBits;
+
+		public RenderTarget(ivec2 dimensions, RenderTargetFlags flags) : this(dimensions.x, dimensions.y, flags)
+		{
+		}
 
 		public unsafe RenderTarget(int width, int height, RenderTargetFlags flags) : base(width, height)
 		{

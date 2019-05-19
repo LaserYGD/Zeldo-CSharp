@@ -140,83 +140,9 @@ namespace Zeldo
 			mainSprite.ScaleTo(Resolution.WindowWidth, Resolution.WindowHeight);
 		}
 
-		private void LoadTestingData()
+		public void Dispose()
 		{
-			TriangleMeshShape shape = TriangleMeshLoader.Load("MapPhysics.obj");
-			RigidBody body = new RigidBody(shape);
-			body.IsStatic = true;
-
-			world.AddBody(body);
-
-			Model model = new Model("Map");
-
-			ModelBatch batch = scene.ModelBatch;
-			batch.Add(model);
-			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.5f, -0.5f));
-
-			/*
-			const int TotalCubes = 120;
-
-			timer = new RepeatingTimer(time =>
-			{
-				Random random = new Random();
-
-				const float Range = 3.5f;
-				const float AngularVelocityRange = 1;
-
-				float x = (float)random.NextDouble() * Range * 2 - Range;
-				float y = 6;
-				float z = (float)random.NextDouble() * Range * 2 - Range;
-				float sizeX = 0.5f;
-				float sizeY = 0.5f;
-				float sizeZ = 0.5f;
-				float angleX = (float)random.NextDouble() * Constants.TwoPi;
-				float angleY = (float)random.NextDouble() * Constants.TwoPi;
-				float angleZ = (float)random.NextDouble() * Constants.TwoPi;
-				float angularVelocityX = (float)random.NextDouble() * AngularVelocityRange;
-				float angularVelocityY = (float)random.NextDouble() * AngularVelocityRange;
-				float angularVelocityZ = (float)random.NextDouble() * AngularVelocityRange;
-
-				quat orientation = quat.FromAxisAngle(angleX, vec3.UnitX) *
-				                   quat.FromAxisAngle(angleY, vec3.UnitY) * quat.FromAxisAngle(angleZ, vec3.UnitZ);
-
-				RigidBody box = new RigidBody(new BoxShape(sizeX, sizeY, sizeZ));
-				box.Position = new JVector(x, y, z);
-				box.Orientation = orientation.ToJMatrix();
-				box.AngularVelocity = new JVector(angularVelocityX, angularVelocityY, angularVelocityZ);
-
-				world.AddBody(box);
-
-				Model cube = new Model("Cube");
-				cube.Scale = new vec3(sizeX, sizeY, sizeZ);
-				cube.Position = box.Position.ToVec3();
-				cube.Orientation = box.Orientation.ToQuat();
-
-				batch.Add(cube);
-
-				debugBodies.Add(box);
-				debugModels.Add(cube);
-
-				return ++cubeCount < TotalCubes;
-			}, 0.01f);
-
-			timer.Paused = true;
-
-			MessageSystem.Subscribe(this, CoreMessageTypes.Mouse, (messageType, data, dt) =>
-			{
-				if (timer.Complete)
-				{
-					return;
-				}
-
-				MouseData mouseData = (MouseData)data;
-
-				if (mouseData.Query(GLFW.GLFW_MOUSE_BUTTON_LEFT, InputStates.PressedThisFrame))
-				{
-					timer.Paused = false;
-				}
-			});
-			*/
+			MessageSystem.Unsubscribe(this);
 		}
 
 		protected override void Update(float dt)
@@ -237,7 +163,7 @@ namespace Zeldo
 			
 			renderTargetUsers.ForEach(u => u.DrawTargets());
 			mainTarget.Apply();
-			scene.ModelBatch.Draw(camera);
+			scene.Draw(camera);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -247,7 +173,7 @@ namespace Zeldo
 			glDepthFunc(GL_NEVER);
 
 			mainSprite.Draw(sb);		
-			//canvas.Draw(sb);
+			canvas.Draw(sb);
 			
 			sb.Flush();
 		}

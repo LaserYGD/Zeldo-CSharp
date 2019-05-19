@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using static Engine.GL;
 
 namespace Engine.Core._2D
 {
@@ -22,5 +18,11 @@ namespace Engine.Core._2D
 		public uint Id { get; protected set; }
 		public int Width { get; }
 		public int Height { get; }
+
+		public void Bind(uint index)
+		{
+			glActiveTexture(GL_TEXTURE0 + index);
+			glBindTexture(GL_TEXTURE_2D, Id);
+		}
 	}
 }

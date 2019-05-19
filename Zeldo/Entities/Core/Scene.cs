@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Engine.Graphics._3D;
 using Engine.Interfaces;
+using Engine.Interfaces._3D;
 using Engine.UI;
 using Engine.View;
 using Jitter;
@@ -8,7 +9,7 @@ using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Core
 {
-	public class Scene : IDynamic
+	public class Scene : IDynamic, IRenderable3D
 	{
 		private List<Entity> entities;
 
@@ -37,6 +38,12 @@ namespace Zeldo.Entities.Core
 		public void Update(float dt)
 		{
 			entities.ForEach(e => e.Update(dt));
+		}
+
+		public void Draw(Camera3D camera)
+		{
+			ModelBatch.ViewProjection = camera.ViewProjection;
+			ModelBatch.Draw();
 		}
 	}
 }
