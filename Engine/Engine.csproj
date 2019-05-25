@@ -118,6 +118,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation\Animation.cs" />
+    <Compile Include="Animation\AnimationPlayer.cs" />
+    <Compile Include="Animation\Bone.cs" />
+    <Compile Include="Animation\Keyframe.cs" />
+    <Compile Include="Animation\Skeleton.cs" />
+    <Compile Include="Animation\Timeline.cs" />
+    <Compile Include="Animation\Transform.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Core\2D\SpriteModifiers.cs" />
     <Compile Include="Core\DynamicComponent.cs" />

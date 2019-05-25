@@ -142,6 +142,8 @@
     <Compile Include="CharacterControlTester.cs" />
     <Compile Include="Data\TileFlags.cs" />
     <Compile Include="Effects\Explosion.cs" />
+    <Compile Include="Entities\Characters\LeviathonHead.cs" />
+    <Compile Include="Entities\Characters\LeviathonTentacle.cs" />
     <Compile Include="Entities\Characters\Wizard.cs" />
     <Compile Include="Entities\Core\Entity.cs" />
     <Compile Include="Entities\Core\EntityAttachment.cs" />

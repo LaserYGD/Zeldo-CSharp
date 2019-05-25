@@ -1,4 +1,5 @@
-﻿using Engine.Graphics._3D;
+﻿using Engine.Animation;
+using Engine.Graphics._3D;
 using Engine.Interfaces._3D;
 using GlmSharp;
 
@@ -17,7 +18,12 @@ namespace Engine.Core._3D
 		public vec3 Scale { get; set; }
 		public quat Orientation { get; set; }
 		public Mesh Mesh { get; }
-		public mat4 WorldMatrix { get; private set; }
+
+		// Attached skeletons are updated externally through animations.
+		public Skeleton Skeleton { get; set; }
+
+		// This matrix is only used for non-animated meshes.
+		public mat4? WorldMatrix { get; private set; }
 
 		public void SetTransform(vec3 position, quat orientation)
 		{
