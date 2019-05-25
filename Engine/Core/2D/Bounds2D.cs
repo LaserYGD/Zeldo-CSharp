@@ -80,6 +80,16 @@ namespace Engine.Core._2D
 			}
 		}
 
+		public ivec2 Dimensions
+		{
+			get => new ivec2(Width, Height);
+			set
+			{
+				Width = value.x;
+				Height = value.y;
+			}
+		}
+
 		public ivec2[] Corners => new[]
 		{
 			new ivec2(X, Y),

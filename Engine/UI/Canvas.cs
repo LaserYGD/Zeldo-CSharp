@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Core;
 using Engine.Core._2D;
-using Engine.Graphics;
 using Engine.Graphics._2D;
 using Engine.Interfaces;
 using Engine.Interfaces._2D;
@@ -14,13 +9,15 @@ using GlmSharp;
 
 namespace Engine.UI
 {
-	public class Canvas : IReceiver, IDynamic, IRenderable2D
+	public class Canvas : IReceiver, IDynamic, IRenderTargetUser2D, IRenderable2D
 	{
 		private List<CanvasElement> elements;
+		private List<IRenderTargetUser2D> renderTargetUsers;
 
 		public Canvas()
 		{
 			elements = new List<CanvasElement>();
+			renderTargetUsers = new List<IRenderTargetUser2D>();
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) =>
 			{
@@ -32,6 +29,8 @@ namespace Engine.UI
 
 		public void Dispose()
 		{
+			elements.ForEach(e => e.Dispose());
+
 			MessageSystem.Unsubscribe(this);
 		}
 
@@ -39,6 +38,11 @@ namespace Engine.UI
 		{
 			elements.Add(element);
 			PlaceElement(element);
+
+			if (element.UsesRenderTarget)
+			{
+				renderTargetUsers.Add((IRenderTargetUser2D)element);
+			}
 		}
 
 		public void Remove(CanvasElement element)
@@ -80,6 +84,11 @@ namespace Engine.UI
 					element.Update(dt);
 				}
 			}
+		}
+
+		public void DrawTargets(SpriteBatch sb)
+		{
+			renderTargetUsers.ForEach(u => u.DrawTargets(sb));
 		}
 
 		public void Draw(SpriteBatch sb)

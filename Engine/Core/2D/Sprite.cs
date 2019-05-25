@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Graphics;
+﻿using System.Linq;
 using Engine.Graphics._2D;
-using Engine.Interfaces;
-using Engine.Interfaces._2D;
 using Engine.Utility;
 using GlmSharp;
 

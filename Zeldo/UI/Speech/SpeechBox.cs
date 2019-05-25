@@ -1,26 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Engine;
 using Engine.Core;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
+using Engine.Interfaces._2D;
+using Engine.Shaders;
 using Engine.Timing;
 using Engine.UI;
 using Engine.Utility;
 using GlmSharp;
+using static Engine.GL;
 
 namespace Zeldo.UI.Speech
 {
-	public class SpeechBox : CanvasElement
+	public class SpeechBox : CanvasElement, IRenderTargetUser2D
 	{
 		private const int Padding = 10;
 
 		private SpriteFont font;
 		private List<SpriteText> lines;
 		private RepeatingTimer timer;
+
+		// Speech boxes can optionally be given custom shaders for both individual characters and the full text.
+		private RenderTarget renderTarget;
+		private Shader fullShader;
+		private Shader glyphShader;
+		private Sprite fullSprite;
 
 		public SpeechBox()
 		{
@@ -30,6 +35,29 @@ namespace Zeldo.UI.Speech
 			Anchor = Alignments.Bottom;
 			Offset = new ivec2(0, 100);
 			Centered = true;
+		}
+
+		public int Width
+		{
+			set => Bounds.Width = value;
+		}
+
+		public int Height
+		{
+			set => Bounds.Height = value;
+		}
+
+		public override void Dispose()
+		{
+			renderTarget?.Dispose();
+		}
+
+		public void Attach(Shader fullShader, Shader glyphShader)
+		{
+			this.fullShader = fullShader;
+			this.glyphShader = glyphShader;
+
+			renderTarget = new RenderTarget(Bounds.Dimensions, RenderTargetFlags.Color);
 		}
 
 		public void Refresh(string value)
@@ -63,8 +91,34 @@ namespace Zeldo.UI.Speech
 			}
 		}
 
+		public void DrawTargets(SpriteBatch sb)
+		{
+			// If this function is called, it's assumed the render target (and related shaders) were properly set up.
+			renderTarget.Apply();
+			fullShader.Apply();
+
+			DrawInternal(sb);
+		}
+
 		public override void Draw(SpriteBatch sb)
 		{
+			if (UsesRenderTarget)
+			{
+				fullSprite.Draw(sb);
+
+				return;
+			}
+
+			DrawInternal(sb);
+		}
+
+		private void DrawInternal(SpriteBatch sb)
+		{
+			if (glyphShader != null)
+			{
+				sb.Apply(glyphShader, GL_TRIANGLE_STRIP);
+			}
+
 			sb.Draw(Bounds, Color.White);
 			lines.ForEach(l => l.Draw(sb));
 		}

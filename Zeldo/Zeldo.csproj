@@ -115,6 +115,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Wall.obj" />
+    <None Include="Content\Shaders\2D\LeviathonSpeech.frag" />
     <None Include="Content\Shaders\Puddle.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

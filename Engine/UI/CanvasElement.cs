@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Core;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
 using Engine.Interfaces;
@@ -12,7 +7,7 @@ using GlmSharp;
 
 namespace Engine.UI
 {
-	public abstract class CanvasElement : IBoundable2D, IDynamic, IRenderable2D
+	public abstract class CanvasElement : IBoundable2D, IDynamic, IRenderable2D, IDisposable
 	{
 		private ivec2 location;
 
@@ -47,11 +42,16 @@ namespace Engine.UI
 		}
 
 		public bool Visible { get; set; }
+		public bool UsesRenderTarget { get; protected set; }
 
 		public Alignments Anchor { get; set; }
 
 		public ivec2 Offset { get; set; }
 		public Bounds2D Bounds { get; protected set; }
+
+		public virtual void Dispose()
+		{
+		}
 
 		public virtual void Update(float dt)
 		{
