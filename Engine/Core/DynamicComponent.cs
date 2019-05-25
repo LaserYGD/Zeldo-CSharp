@@ -9,7 +9,7 @@ namespace Engine.Core
 {
 	public abstract class DynamicComponent : IDynamic
 	{
-		public abstract bool Complete { get; }
+		public virtual bool Complete { get; protected set; }
 
 		public abstract void Update(float dt);
 	}

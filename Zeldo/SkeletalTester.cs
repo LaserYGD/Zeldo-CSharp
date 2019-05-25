@@ -182,7 +182,7 @@ namespace Zeldo
 			shadowMapShader.SetUniform("bones[0]", bones);
 
 			model.RecomputeWorldMatrix();
-			shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix);
+			shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix.Value);
 
 			Draw(model.Mesh);
 		}
@@ -218,7 +218,7 @@ namespace Zeldo
 			);
 
 			mat4 cameraMatrix = camera.ViewProjection;
-			mat4 world = model.WorldMatrix;
+			mat4 world = model.WorldMatrix.Value;
 			quat orientation = model.Orientation;
 
 			skeletalShader.SetUniform("orientation", orientation.ToMat4);

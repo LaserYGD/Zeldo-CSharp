@@ -162,7 +162,7 @@ namespace Engine.Graphics._3D
 				Model model = handle.Model;
 
 				model.RecomputeWorldMatrix();
-				shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix);
+				shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix.Value);
 				Draw(handle);
 			}
 		}
@@ -192,7 +192,7 @@ namespace Engine.Graphics._3D
 			foreach (ModelHandle handle in handles)
 			{
 				Model model = handle.Model;
-				mat4 world = model.WorldMatrix;
+				mat4 world = model.WorldMatrix.Value;
 				quat orientation = model.Orientation;
 
 				modelShader.SetUniform("orientation", orientation.ToMat4);
