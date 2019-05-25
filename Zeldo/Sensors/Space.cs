@@ -21,11 +21,17 @@ namespace Zeldo.Sensors
 			sensors.Add(sensor);
 		}
 
+		public void Remove(Sensor sensor)
+		{
+			sensor.Dispose();
+			sensors.Remove(sensor);
+		}
+
 		public void Update()
 		{
 			foreach (Sensor sensor1 in sensors)
 			{
-				if (!sensor1.Enabled)
+				if (!sensor1.IsEnabled)
 				{
 					continue;
 				}
@@ -34,7 +40,7 @@ namespace Zeldo.Sensors
 
 				foreach (Sensor sensor2 in sensors)
 				{
-					if (sensor1 == sensor2 || !sensor2.Enabled)
+					if (sensor1 == sensor2 || !sensor2.IsEnabled)
 					{
 						continue;
 					}

@@ -27,7 +27,7 @@ namespace Zeldo.Entities.Weapons
 
 			timer = new SingleTimer(time =>
 			{
-				sensor.Enabled = false;
+				sensor.IsEnabled = false;
 				targetsHit.Clear();
 			},
 			0.2f);
@@ -69,7 +69,7 @@ namespace Zeldo.Entities.Weapons
 		public void Attack(vec2 direction)
 		{
 			arc.Angle = Utilities.Angle(direction);
-			sensor.Enabled = true;
+			sensor.IsEnabled = true;
 			timer.Paused = false;
 		}
 	}

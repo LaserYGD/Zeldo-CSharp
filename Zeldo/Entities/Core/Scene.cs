@@ -35,6 +35,12 @@ namespace Zeldo.Entities.Core
 			entity.Initialize(this);
 		}
 
+		public void Remove(Entity entity)
+		{
+			entity.Dispose();
+			entities.Remove(entity);
+		}
+
 		public void Update(float dt)
 		{
 			entities.ForEach(e => e.Update(dt));

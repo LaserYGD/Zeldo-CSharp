@@ -130,7 +130,11 @@ namespace Engine.Graphics._3D
 			indexBufferSize += indexSize;
 		}
 
-		public unsafe void Dispose()
+		public void Remove(Model model)
+		{
+		}
+
+		public void Dispose()
 		{
 			modelShader.Dispose();
 			shadowMapShader.Dispose();

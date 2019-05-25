@@ -16,8 +16,10 @@ using Jitter;
 using Jitter.Collision;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
+using Jitter.LinearMath;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
+using Zeldo.Entities.Objects;
 using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
 using Zeldo.Sensors;
@@ -104,7 +106,7 @@ namespace Zeldo
 
 			ModelBatch batch = scene.ModelBatch;
 			batch.Add(new Model("Map.obj"));
-			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.5f, -0.25f));
+			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.75f, -0.25f));
 
 			Bow bow = new Bow();
 			bow.Initialize(scene);
@@ -118,12 +120,20 @@ namespace Zeldo
 			player.UnlockSkill(PlayerSkills.Jump);
 			player.Equip(bow);
 
+            Cannonball cannonball = new Cannonball();
+            cannonball.Position = new vec3(1.5f, 10, 0);
+
 			scene.Add(player);
+            scene.Add(cannonball);
 
 			renderTargetUsers = new List<IRenderTargetUser>();
 			renderTargetUsers.Add(scene.ModelBatch);
 
-			//LoadTestingData();
+		    var shape = TriangleMeshLoader.Load("MapPhysics.obj");
+            var body = new RigidBody(shape);
+		    body.IsStatic = true;
+            
+            world.AddBody(body);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
@@ -147,7 +157,7 @@ namespace Zeldo
 
 		protected override void Update(float dt)
 		{
-			//world.Step(dt, true, PhysicsStep, 8);
+			world.Step(dt, true, PhysicsStep, 8);
 			//space.Update();
 			scene.Update(dt);
 			camera.Update(dt);

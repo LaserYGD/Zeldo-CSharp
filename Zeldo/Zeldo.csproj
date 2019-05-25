@@ -77,6 +77,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
     <None Include="App.config" />
     <None Include="Content\Fonts\Default.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -86,6 +87,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Arrow.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Meshes\Cannonball.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Cube.dae">
@@ -141,6 +145,7 @@
     <Compile Include="Entities\Characters\Wizard.cs" />
     <Compile Include="Entities\Core\Entity.cs" />
     <Compile Include="Entities\Core\EntityAttachment.cs" />
+    <Compile Include="Entities\Core\EntityAttachmentTypes.cs" />
     <Compile Include="Entities\Core\Scene.cs" />
     <Compile Include="Entities\Enemies\Skeleton.cs" />
     <Compile Include="Entities\Core\EntityIds.cs" />
@@ -149,6 +154,7 @@
     <Compile Include="Entities\JesterWall.cs" />
     <Compile Include="Entities\Mechanisms\Lever.cs" />
     <Compile Include="Entities\Objects\Book.cs" />
+    <Compile Include="Entities\Objects\Cannonball.cs" />
     <Compile Include="Entities\Objects\Crate.cs" />
     <Compile Include="Entities\Weapons\Twinblade.cs" />
     <Compile Include="Entities\Player.cs" />

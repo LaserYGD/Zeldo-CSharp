@@ -20,13 +20,13 @@ namespace Zeldo.Sensors
 			Owner = owner;
 			Shape = shape;
 			Height = height;
-			Enabled = true;
+			IsEnabled = true;
 			Contacts = new List<Sensor>();
 		}
 
 		public SensorTypes SensorType { get; }
 
-		public bool Enabled
+		public bool IsEnabled
 		{
 			get => enabled;
 			set
@@ -82,17 +82,18 @@ namespace Zeldo.Sensors
 		public void Dispose()
 		{
 			ClearContacts();
+			IsEnabled = false;
 		}
 
-		private void ClearContacts()
-		{
-			foreach (Sensor sensor in Contacts)
-			{
-				sensor.Contacts.Remove(this);
-				sensor.OnSeparate?.Invoke(SensorType, Owner);
-			}
+	    private void ClearContacts()
+	    {
+	        foreach (Sensor sensor in Contacts)
+	        {
+	            sensor.Contacts.Remove(this);
+	            sensor.OnSeparate?.Invoke(SensorType, Owner);
+	        }
 
-			Contacts.Clear();
-		}
+	        Contacts.Clear();
+        }
 	}
 }
