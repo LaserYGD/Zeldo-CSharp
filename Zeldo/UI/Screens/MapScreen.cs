@@ -4,15 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Engine.Input.Data
+namespace Zeldo.UI.Screens
 {
-	public enum InputTypes
+	public class MapScreen
 	{
-		Keyboard,
-		Mouse,
-		Xbox360,
-		Xbone,
-		DS3,
-		DS4
 	}
 }

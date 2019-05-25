@@ -23,6 +23,11 @@ namespace Zeldo.UI.Screens
 
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		public void Dispose()
+		{
+			MessageSystem.Unsubscribe(this);
+		}
+
 		public void Load(Canvas canvas)
 		{
 			inventoryScreen = new InventoryScreen();

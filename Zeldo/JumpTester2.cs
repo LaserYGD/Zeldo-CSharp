@@ -66,6 +66,11 @@ namespace Zeldo
 
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		public void Dispose()
+		{
+			MessageSystem.Unsubscribe(this);
+		}
+
 		private void ProcessKeyboard(KeyboardData data)
 		{
 			if (!onGround)

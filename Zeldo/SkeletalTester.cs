@@ -72,6 +72,13 @@ namespace Zeldo
 			BufferMesh(model.Mesh);
 		}
 
+		public void Dispose()
+		{
+			skeletalShader.Dispose();
+			shadowMapShader.Dispose();
+			shadowMapTarget.Dispose();
+		}
+
 		private unsafe void BufferMesh(Mesh mesh)
 		{
 			const int VertexSize = sizeof(float) * 10 + sizeof(int) * 2;

@@ -132,20 +132,11 @@ namespace Engine.Graphics._3D
 
 		public unsafe void Dispose()
 		{
-			uint[] buffers =
-			{
-				bufferId,
-				indexBufferId
-			};
-
-			fixed (uint* address = &buffers[0])
-			{
-				glDeleteBuffers(2, address);
-			}
-
 			modelShader.Dispose();
 			shadowMapShader.Dispose();
 			shadowMapTarget.Dispose();
+
+			GLUtilities.DeleteBuffers(bufferId, indexBufferId);
 		}
 
 		public void DrawTargets()

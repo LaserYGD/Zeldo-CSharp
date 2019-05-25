@@ -30,6 +30,11 @@ namespace Engine.UI
 
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		public void Dispose()
+		{
+			MessageSystem.Unsubscribe(this);
+		}
+
 		public void Add(CanvasElement element)
 		{
 			elements.Add(element);

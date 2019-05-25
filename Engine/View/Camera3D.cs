@@ -44,6 +44,11 @@ namespace Engine.View
 		public mat4 ViewProjection { get; private set; }
 		public mat4 ViewProjectionInverse { get; private set; }
 
+		public void Dispose()
+		{
+			MessageSystem.Unsubscribe(this);
+		}
+
 		public void SetTransform(vec3 position, quat orientation)
 		{
 			Position = position;

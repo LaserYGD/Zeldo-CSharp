@@ -1,0 +1,30 @@
+﻿{
+	"Player": {
+		"Attack": [
+			"Mouse|Left",
+			"Xbox|RB",
+			"DS|R1"
+		],
+
+		"Interact": [
+			"Keyboard|E",
+			"Xbox|X",
+			"DS|Square"
+		],
+
+		"Jump": [
+			"Keyboard|Space",
+			"Xbox|A",
+			"DS|X"
+		]
+	},
+
+	"Screens": {
+		"Inventory": [ "Keyboard|I" ],
+		"Map": [
+			"Keyboard|M",
+			"Xbox|Back",
+			"DS|Select"
+		]
+	}
+}

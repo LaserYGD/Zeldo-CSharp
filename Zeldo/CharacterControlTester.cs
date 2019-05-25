@@ -73,6 +73,11 @@ namespace Zeldo
 
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		public void Dispose()
+		{
+			MessageSystem.Unsubscribe(this);
+		}
+
 		private void ProcessKeyboard(KeyboardData data, float dt)
 		{
 			bool up = data.Query(GLFW_KEY_W, InputStates.Held);
@@ -246,6 +251,6 @@ namespace Zeldo
 			staticRectangles.ForEach(r => sb.Draw(r, Color.Magenta));
 
 			sb.Draw(playerCircle, 25, Color.Cyan);
-		}
+		}		
 	}
 }

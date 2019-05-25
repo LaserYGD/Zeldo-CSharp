@@ -67,6 +67,11 @@ namespace Zeldo.Entities
 			base.Initialize(scene);
 		}
 
+		public void Dispose()
+		{
+			MessageSystem.Unsubscribe(this);
+		}
+
 		private void ProcessInput(FullInputData data)
 		{
 			ProcessAttack(data);

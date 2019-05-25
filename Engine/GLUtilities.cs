@@ -35,5 +35,19 @@ namespace Engine
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, (uint)indexSize * sizeof(ushort), null, usage);
 		}
+
+		public static unsafe void DeleteBuffers(uint bufferId, uint indexId)
+		{
+			uint[] buffers =
+			{
+				bufferId,
+				indexId
+			};
+
+			fixed (uint* address = &buffers[0])
+			{
+				glDeleteBuffers(2, address);
+			}
+		}
 	}
 }

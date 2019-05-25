@@ -106,6 +106,11 @@ namespace Zeldo
 
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		public void Dispose()
+		{
+			MessageSystem.Unsubscribe(this);
+		}
+
 		private float QuadraticIn(float p)
 		{
 			return p * p;

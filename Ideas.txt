@@ -24,6 +24,57 @@
 
 - Consider doing something more creative with death
 
+- Remember the giraffe section from The Last of Us (peaceful moments where the player can just relax and enjoy the view)
+
+- Make sure the map is "calling out to be explored" (phrasing used by Mark Brown in his written thoughts on Rage 2) => Given the viewpoint, this can still be done with visuals, but should also be bolstered by narrative and character reasons to explore a new area
+
+- Make sure upgrades are sufficiently impactful to be worth the trouble to find them (i.e. don't give shitty 5% stat boosts. Make them bigger, like double damage or a new elemental effect that alters gameplay in an interesting way)
+
+- Make sure there are interesting reasons to use different weapons and abilities (inspired by Mark Brown's written review of Rage 2, where he said there's never any reason to use anything other than the basic assault rifle) => Specific enemy weaknesses can achieve this, or maybe altering loot dropped based on kill style (letting you tailor your combat style to whether you need health, mana, money, or other resources)
+
+- Consider enemy prioritization during combat (this would be helped by enemies who primarily buff others or affect the environment in some way) => Would also be good if there isn't always a clear answer on what the "correct" or "best" combat choice is for a particular encounter, especially for speedrunning
+
+- Difficulty curve can be tricky in open-world games (e.g. Dark Souls after you get the Lordvessel) => Could experiment with powering up enemies as you complete dungeons, or something that better fits the narrative, like the villain beginning to concentrate forces to the remaining strongholds
+
+- Should also be careful to not always make the game harder and harder. It can be nice to really enjoy the new power you've received by just wrecking relatively easy enemies and bosses in the mid- to late-game, rather than always having to struggle
+
+- "The Old Kingdom", a large, secret, late-game zone hidden deep under the world (inspired by Mark Brown's video on Dark Souls and the feeling of going deeper and deeper, or ascending higher and higher) => The kingdom should be discussed and have lore hidden in books to add an air of mystery that this place might actually exist
+
+- A hidden underground collection of bridges and passageways acting as "fast travel" for the world (rather than giving a teleport and potentially breaking the player's need for exploration and memorable landmarks) => Could have at least one character discuss teleportation as something magic hasn't achieved yet, or maybe even have teleportation be unlocked in the late-game to facilitate 100% completion (once the player is likely to have already explored to an acceptable level)
+
+- Could also have limited fast-travel points to major hubs in the world, but only a handful of them (could be contextualized in-game by requiring some kind of structure as a teleport location)
+
+- Enemies/bosses that interact (inspired by watching Dunkey's video on Monster Hunter World when a giant bird swoops in and picks up the t-rex being fought) => Could also have rare roaming enemies that only appear under specific circumstances (like a hidden boss)
+
+- An item to retrieve and return (like an egg that can eventually be hatched)
+
+- Sleeping mobs (or even sleeping bosses, like a dungeon it's possible to sneak through until the very end if entered at night)
+
+- Electricity beast (something that can channel lightning to an extent, or becomes way more powerful during a thunderstorm, but also drops an upgraded version of its loot)
+
+- Dungeon based on darkness, light, and shadows (inspired by watching one of Chilled's TTT videos where the lights go off and everyone has a flashlight)
+
+- Quick idea: caves with shafts of light at the start (plus some ambient light), but it gets progressively darker and more difficult as you descend (which also requires using light items)
+
+- Hidden, cryptic map that can lead to an endgame secret (inspired by the Vitruvian Grub in Hollow Knight)
+
+- Train system (or maybe increasingly more forms of fast travel at various speeds and among various locations, triggered by completing world events)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

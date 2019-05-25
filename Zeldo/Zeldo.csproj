@@ -151,7 +151,6 @@
     <Compile Include="Entities\Objects\Book.cs" />
     <Compile Include="Entities\Objects\Crate.cs" />
     <Compile Include="Entities\Weapons\Twinblade.cs" />
-    <Compile Include="PhysicsTester.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerControls.cs" />
     <Compile Include="Entities\PlayerData.cs" />
@@ -190,6 +189,7 @@
     <Compile Include="UI\Menus\TitleMenu.cs" />
     <Compile Include="UI\Screens\InventoryScreen.cs" />
     <Compile Include="UI\Screens\ItemIcon.cs" />
+    <Compile Include="UI\Screens\MapScreen.cs" />
     <Compile Include="UI\Screens\ScreenControls.cs" />
     <Compile Include="UI\Screens\ScreenManager.cs" />
     <Compile Include="UI\Speech\SpeechBox.cs" />
@@ -223,6 +223,9 @@
     <Content Include="Content\Fonts\Default_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Content\Json\Controls\DefaultControls.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Textures\White.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -85,6 +85,14 @@ namespace Engine.Graphics._2D
 			mvp *= mat4.Translate(-halfDimensions.x, -halfDimensions.y, 0);
 		}
 
+		public void Dispose()
+		{
+			spriteShader.Dispose();
+			primitiveShader.Dispose();
+
+			GLUtilities.DeleteBuffers(bufferId, indexBufferId);
+		}
+
 		public void Buffer(float[] data, ushort[] indices = null, int start = 0, int length = -1)
 		{
 			if (activeShader == null)
