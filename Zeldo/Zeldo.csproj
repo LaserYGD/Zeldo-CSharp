@@ -154,6 +154,7 @@
     <Compile Include="Entities\JesterWall.cs" />
     <Compile Include="Entities\Mechanisms\Lever.cs" />
     <Compile Include="Entities\Objects\Book.cs" />
+    <Compile Include="Entities\Objects\Cannon.cs" />
     <Compile Include="Entities\Objects\Cannonball.cs" />
     <Compile Include="Entities\Objects\Crate.cs" />
     <Compile Include="Entities\Weapons\Twinblade.cs" />
@@ -167,7 +168,7 @@
     <Compile Include="Interfaces\IInteractive.cs" />
     <Compile Include="Interfaces\IMechanical.cs" />
     <Compile Include="Items\Inventory.cs" />
-    <Compile Include="Items\ItemTypes.cs" />
+    <Compile Include="Items\ItemIds.cs" />
     <Compile Include="JumpTester.cs" />
     <Compile Include="JumpTester2.cs" />
     <Compile Include="Physics\TriangleMeshLoader.cs" />

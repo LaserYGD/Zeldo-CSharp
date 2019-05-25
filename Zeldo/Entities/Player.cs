@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.Remoting.Contexts;
 using Engine;
 using Engine.Core._3D;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
-using Engine.Shapes._2D;
 using Engine.Shapes._3D;
 using Engine.Utility;
 using GlmSharp;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Weapons;
 using Zeldo.Interfaces;
+using Zeldo.Items;
 using Zeldo.Sensors;
 using Zeldo.UI.Hud;
 
@@ -37,7 +36,6 @@ namespace Zeldo.Entities
 
 		public Player() : base(EntityGroups.Player)
 		{
-			Box = new Box(0.6f, 1.8f, 0.6f);
 			onGround = true;
 			sword = new Sword();
 			playerData = JsonUtilities.Deserialize<PlayerData>("PlayerData.json");
@@ -58,7 +56,8 @@ namespace Zeldo.Entities
 		public PlayerHealthDisplay HealthDisplay { get; set; }
 		public PlayerManaDisplay ManaDisplay { get; set; }
 
-		public Box Box { get; }
+		// The player owns their own inventory.
+		public Inventory Inventory { get; }
 
 		public override void Initialize(Scene scene)
 		{
@@ -67,7 +66,7 @@ namespace Zeldo.Entities
 			base.Initialize(scene);
 		}
 
-		public void Dispose()
+		public override void Dispose()
 		{
 			MessageSystem.Unsubscribe(this);
 		}
@@ -186,7 +185,6 @@ namespace Zeldo.Entities
 		public override void Update(float dt)
 		{
 			Position += velocity * dt;
-			Box.Position = Position;
 
 			bow.Position = Position;
 			bow.Update(dt);

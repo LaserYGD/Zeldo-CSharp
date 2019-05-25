@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Engine.Core;
 using Engine.Core._3D;
 using Engine.Interfaces;
@@ -20,9 +21,9 @@ namespace Zeldo.Entities.Core
 		private List<Sensor> sensors;
 		private List<DynamicComponent> components;
 		private List<EntityAttachment> attachments;
-	    private RigidBody controllingBody;
+		private RigidBody controllingBody;
 
-        // The entity's transform properties (Position and Orientation) also update attachments. Since the controlling
+		// The entity's transform properties (Position and Orientation) also update attachments. Since the controlling
         // physics body is itself an attachment, this would cause bodies to set their own transforms again (which is
         // wasteful). Using this variable avoids that.
 	    private bool selfUpdate;
@@ -51,7 +52,7 @@ namespace Zeldo.Entities.Core
 
 			    if (controllingBody != null && !selfUpdate)
 			    {
-			        controllingBody.Position = value.ToJVector();
+				    controllingBody.Position = value.ToJVector();
 			    }
 			}
 		}
@@ -66,10 +67,12 @@ namespace Zeldo.Entities.Core
 
 			    if (!selfUpdate)
 			    {
-			        controllingBody.Orientation = value.ToJMatrix();
+				    controllingBody.Orientation = value.ToJMatrix();
 			    }
 			}
 		}
+
+		public RigidBody ControllingBody => controllingBody;
 
 		protected void Attach(EntityAttachmentTypes attachmentType, ITransformable3D target)
 		{
@@ -119,7 +122,7 @@ namespace Zeldo.Entities.Core
 
 		    if (controlling)
 		    {
-		        controllingBody = body;
+			    controllingBody = body;
 		    }
 
 			return body;

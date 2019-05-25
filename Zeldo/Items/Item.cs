@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Utility;
-using Newtonsoft.Json.Linq;
-
-namespace Zeldo.Items
+﻿namespace Zeldo.Items
 {
 	public class Item
 	{
+		public int Id { get; }
 		public string Name { get; }
-
-		public bool Stackable { get; }
+		public bool IsStackable { get; }
 	}
 }
