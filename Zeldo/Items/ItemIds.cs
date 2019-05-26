@@ -3,8 +3,18 @@ namespace Zeldo.Items
 {
 	public static class ItemIds
 	{
-		public const int Bow = 10000;
-		public const int Sword = 10010;
-		public const int Twinblade = 10020;
+		// Consumables
+		public const int Potion = 130000;
+
+		// Keys
+		public const int TinyGear = 110000;
+
+		// Objects
+		public const int Cannonball = 120000;
+
+		// Weapons
+		public const int Bow = 100000;
+		public const int Sword = 100010;
+		public const int Twinblade = 100020;
 	}
 }

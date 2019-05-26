@@ -1,0 +1,38 @@
+﻿{
+	"Bow": {
+		"Id": 100000,
+		"Type": "Weapon",
+		"Description": "Sturdy shortbow capable of firing standard arrows."
+	},
+	
+	"Cannonball": {
+		"Id": 120000,
+		"Type": "Object",
+		"Description": "Thick, heavy ball made of solid lead."
+	},
+
+	"Potion": {
+		"Id": 130000,
+		"Type": "Consumable",
+		"Description": "Glass flask filled with a murky red liquid. Heals six hearts on use."
+	},
+
+	"Sword": {
+		"Id": 100010,
+		"Type": "Weapon",
+		"Description": "Reliable, finely-balanced blade."
+	},
+
+	"Tiny Gear": {
+		"Id": 110000,
+		"Type": "Key",
+		"Description": "A small, metallic gear. Its teeth are irregularly shaped.",
+		"Spoiler": "Opens a path to the upper floors of the Windmill."
+	},
+	
+	"Twinblade": {
+		"Id": 100020,
+		"Type": "Weapon",
+		"Description": "Imposing double-ended blade with a wrapped grip in the center."
+	}
+}
