@@ -12,7 +12,7 @@ using static Engine.GL;
 
 namespace Engine.Graphics._3D
 {
-	public class ModelBatch : IRenderTargetUser
+	public class ModelBatch : IRenderTargetUser3D
 	{
 		private Shader modelShader;
 		private Shader shadowMapShader;

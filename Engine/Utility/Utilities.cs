@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
+using Engine.Interfaces._2D;
 using Engine.Shapes._2D;
 using GlmSharp;
 
@@ -168,6 +169,14 @@ namespace Engine.Utility
 		{
 			// See https://math.stackexchange.com/a/13263.
 			return v - 2 * vec3.Dot(v, normal) * normal;
+		}
+
+		public static void PositionItems(IPositionable2D[] items, vec2 start, vec2 spacing)
+		{
+			for (int i = 0; i < items.Length; i++)
+			{
+				items[i].Position = start + spacing * i;
+			}
 		}
 
 		public static string StripPath(string value)

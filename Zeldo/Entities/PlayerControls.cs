@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Engine.Input.Data;
 using static Engine.GLFW;
 
@@ -18,6 +14,7 @@ namespace Zeldo.Entities
 			RunDown = new List<InputBind> { new InputBind(InputTypes.Keyboard, GLFW_KEY_S) };
 			Attack = new List<InputBind> { new InputBind(InputTypes.Mouse, GLFW_MOUSE_BUTTON_LEFT) };
 			Jump = new List<InputBind> { new InputBind(InputTypes.Keyboard, GLFW_KEY_SPACE) };
+			Grab = new List<InputBind> { new InputBind(InputTypes.Keyboard, GLFW_KEY_LEFT_SHIFT) };
 			Interact = new List<InputBind> { new InputBind(InputTypes.Keyboard, GLFW_KEY_E) };
 		}
 
@@ -27,6 +24,7 @@ namespace Zeldo.Entities
 		public List<InputBind> RunDown { get; }
 		public List<InputBind> Attack { get; }
 		public List<InputBind> Jump { get; }
+		public List<InputBind> Grab { get; }
 		public List<InputBind> Interact { get; }
 	}
 }

@@ -79,9 +79,10 @@
   <ItemGroup>
     <None Include=".editorconfig" />
     <None Include="App.config" />
-    <None Include="Content\Fonts\Default.fnt">
+    <None Include="Content\Fonts\Debug.fnt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Fonts\Leviathon.fnt" />
     <None Include="Content\Json\Fragments\TestFragment.json" />
     <None Include="Content\Json\Items.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -200,6 +201,7 @@
     <Compile Include="UI\Hud\PlayerHealthDisplay.cs" />
     <Compile Include="UI\Hud\PlayerManaDisplay.cs" />
     <Compile Include="UI\Letterbox.cs" />
+    <Compile Include="UI\PlayerDebugView.cs" />
     <Compile Include="UI\Screens\Settings\AudioScreen.cs" />
     <Compile Include="UI\Menus\PauseMenu.cs" />
     <Compile Include="UI\Screens\Settings\ControlScreen.cs" />
@@ -239,9 +241,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Content\Fonts\Default_0.png">
+    <Content Include="Content\Fonts\Debug_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\Fonts\Leviathon_0.png" />
     <None Include="Content\Json\Controls\DefaultControls.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

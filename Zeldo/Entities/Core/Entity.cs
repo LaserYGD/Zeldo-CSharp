@@ -65,7 +65,7 @@ namespace Zeldo.Entities.Core
 				orientation = value;
 				attachments.ForEach(a => a.Target.Orientation = value * a.Orientation);
 
-			    if (!selfUpdate)
+			    if (controllingBody != null && !selfUpdate)
 			    {
 				    controllingBody.Orientation = value.ToJMatrix();
 			    }

@@ -9,7 +9,7 @@ using Zeldo.Entities.Core;
 
 namespace Zeldo
 {
-	public class PuddleTester : IDynamic, IRenderTargetUser, IRenderable3D
+	public class PuddleTester : IDynamic, IRenderTargetUser3D, IRenderable3D
 	{
 		private RenderTarget modelTarget;
 		private Shader shader;

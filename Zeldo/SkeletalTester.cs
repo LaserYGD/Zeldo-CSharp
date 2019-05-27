@@ -15,7 +15,7 @@ using static Engine.GL;
 
 namespace Zeldo
 {
-	public class SkeletalTester : IDynamic, IRenderTargetUser, IRenderable3D
+	public class SkeletalTester : IDynamic, IRenderTargetUser3D, IRenderable3D
 	{
 		private Model model;
 		private Shader skeletalShader;

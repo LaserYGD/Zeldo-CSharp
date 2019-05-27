@@ -12,6 +12,7 @@ using Zeldo.Entities.Weapons;
 using Zeldo.Interfaces;
 using Zeldo.Items;
 using Zeldo.Sensors;
+using Zeldo.UI;
 using Zeldo.UI.Hud;
 
 namespace Zeldo.Entities
@@ -19,6 +20,7 @@ namespace Zeldo.Entities
 	public class Player : Entity, IReceiver
 	{
 		private const int DashIndex = (int)PlayerSkills.Dash;
+		private const int GrabIndex = (int)PlayerSkills.Grab;
 		private const int JumpIndex = (int)PlayerSkills.Jump;
 
 		private vec3 velocity;
@@ -55,6 +57,7 @@ namespace Zeldo.Entities
 		public List<MessageHandle> MessageHandles { get; set; }
 		public PlayerHealthDisplay HealthDisplay { get; set; }
 		public PlayerManaDisplay ManaDisplay { get; set; }
+		public PlayerDebugView DebugView { get; set; }
 
 		// The player owns their own inventory.
 		public Inventory Inventory { get; }
@@ -175,6 +178,12 @@ namespace Zeldo.Entities
 
 		private bool IsSkillEnabledOnUnlock(PlayerSkills skill)
 		{
+			switch (skill)
+			{
+				case PlayerSkills.Grab: return false;
+				case PlayerSkills.Jump: return onGround;
+			}
+
 			return true;
 		}
 
@@ -191,6 +200,11 @@ namespace Zeldo.Entities
 
 			//sword.Position = Position;
 			//sword.Update(dt);
+
+			DebugView.Lines = new []
+			{
+				"Grab enabled: " + skillsEnabled[GrabIndex]
+			};
 		}
 	}
 }

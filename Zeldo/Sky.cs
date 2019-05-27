@@ -1,10 +1,11 @@
 ﻿using Engine;
 using Engine.Core._2D;
-using Engine.Interfaces;
+using Engine.Graphics._2D;
+using Engine.Interfaces._2D;
 
 namespace Zeldo
 {
-	public class Sky : IRenderTargetUser
+	public class Sky : IRenderTargetUser2D
 	{
 		public Sky()
 		{
@@ -18,7 +19,7 @@ namespace Zeldo
 			Target.Dispose();
 		}
 
-		public void DrawTargets()
+		public void DrawTargets(SpriteBatch sb)
 		{
 			Target.Apply();
 		}

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine;
+﻿using Engine;
 using Engine.Core._2D;
 using Engine.Graphics;
 using Engine.Graphics._2D;
@@ -26,7 +21,7 @@ namespace Zeldo.UI.Screens
 
 		public ItemIcon(string label, Bounds2D sourceRect)
 		{
-			this.label = new SpriteText("Default", label, Alignments.Center);
+			this.label = new SpriteText("Debug", label, Alignments.Center);
 
 			sprite = new Sprite(spritesheet, sourceRect);
 			Bounds = new Bounds2D(64);

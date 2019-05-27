@@ -9,6 +9,7 @@ namespace Zeldo.Entities
 	public enum PlayerSkills
 	{
 		Dash,
+		Grab,
 		Jump
 	}
 }

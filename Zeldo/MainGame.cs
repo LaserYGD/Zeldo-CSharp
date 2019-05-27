@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using Engine;
-using Engine.Core;
 using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Graphics._2D;
 using Engine.Graphics._3D;
 using Engine.Interfaces;
+using Engine.Interfaces._3D;
 using Engine.Messaging;
 using Engine.Physics;
 using Engine.UI;
@@ -14,15 +14,14 @@ using Engine.View;
 using GlmSharp;
 using Jitter;
 using Jitter.Collision;
-using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
-using Jitter.LinearMath;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Objects;
 using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
 using Zeldo.Sensors;
+using Zeldo.UI;
 using Zeldo.UI.Hud;
 using Zeldo.UI.Screens;
 using static Engine.GL;
@@ -42,7 +41,7 @@ namespace Zeldo
 		private Space space;
 		private World world;
 		private ScreenManager screenManager;
-		private List<IRenderTargetUser> renderTargetUsers;
+		private List<IRenderTargetUser3D> renderTargetUsers;
 
 		public MainGame() : base("Zeldo")
 		{
@@ -67,10 +66,12 @@ namespace Zeldo
 
 			PlayerHealthDisplay healthDisplay = new PlayerHealthDisplay();
 			PlayerManaDisplay manaDisplay = new PlayerManaDisplay();
+			PlayerDebugView debugView = new PlayerDebugView();
 
 			canvas = new Canvas();
 			canvas.Add(healthDisplay);
 			canvas.Add(manaDisplay);
+			canvas.Add(debugView);
 
 			screenManager = new ScreenManager();
 			screenManager.Load(canvas);		
@@ -114,9 +115,11 @@ namespace Zeldo
 			Player player = new Player
 			{
 				HealthDisplay = healthDisplay,
-				ManaDisplay = manaDisplay
+				ManaDisplay = manaDisplay,
+				DebugView = debugView
 			};
 
+			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 			player.Equip(bow);
 
@@ -126,7 +129,7 @@ namespace Zeldo
 			scene.Add(player);
             scene.Add(cannonball);
 
-			renderTargetUsers = new List<IRenderTargetUser>();
+			renderTargetUsers = new List<IRenderTargetUser3D>();
 			renderTargetUsers.Add(scene.ModelBatch);
 
 		    var shape = TriangleMeshLoader.Load("MapPhysics.obj");
