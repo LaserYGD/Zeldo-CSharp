@@ -4,7 +4,6 @@ using Engine.Core._3D;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
-using Engine.Shapes._3D;
 using Engine.Utility;
 using GlmSharp;
 using Zeldo.Entities.Core;

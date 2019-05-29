@@ -120,6 +120,7 @@
     </None>
     <None Include="Content\Meshes\Wall.obj" />
     <None Include="Content\Shaders\2D\LeviathonSpeech.frag" />
+    <None Include="Content\Shaders\2D\Raindrops.frag" />
     <None Include="Content\Shaders\Puddle.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -133,6 +134,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Text\Entity.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Text\View.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -164,6 +168,7 @@
     <Compile Include="Entities\Objects\Cannon.cs" />
     <Compile Include="Entities\Objects\Cannonball.cs" />
     <Compile Include="Entities\Objects\Crate.cs" />
+    <Compile Include="Entities\Objects\Door.cs" />
     <Compile Include="Entities\Weapons\Twinblade.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerControls.cs" />
@@ -188,6 +193,7 @@
     <Compile Include="Physics\VerletRope.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PuddleTester.cs" />
+    <Compile Include="RaindropTester.cs" />
     <Compile Include="Room.cs" />
     <Compile Include="Sensors\Sensor.cs" />
     <Compile Include="Sensors\SensorTypes.cs" />
@@ -215,6 +221,7 @@
     <Compile Include="UI\Screens\ScreenManager.cs" />
     <Compile Include="UI\Speech\SpeechBox.cs" />
     <Compile Include="UI\Subtitles.cs" />
+    <Compile Include="View\DefaultCameraController.cs" />
     <Compile Include="View\SpiralCameraController.cs" />
     <Compile Include="Weather\DayNightCycle.cs" />
     <Compile Include="Weather\Rain.cs" />

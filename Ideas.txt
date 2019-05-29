@@ -60,8 +60,11 @@
 
 - Train system (or maybe increasingly more forms of fast travel at various speeds and among various locations, triggered by completing world events)
 
+- In many video game dungeons, there's stress associated with picking the "correct" path forward vs. exploring side rooms (since you don't want to miss stuff). Could be cool to subtly signal which is the correct path through lighting effects (based on theme), such as a shaft of light or bright torch outside certain doors or tunnels => Might be detrimental to exploration. The goal is to have players run around and explore without stressing about whether they took the "wrong" path
 
+- Something like prism stones could help here too (and allow more complex, labyrith-like areas to be built)
 
+- Be imaginitive with upgrades and items => Make sure that obstacles make sense to exist in the world, rather than simply being place artificially to block the player (inspired by Matthewmatosis's video on Axiom Verge and Environmental Station Alpha)
 
 
 

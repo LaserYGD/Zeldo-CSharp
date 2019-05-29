@@ -71,7 +71,7 @@ namespace Engine.View
 		{
 			this.controller = controller;
 
-			controller.Camera = this;
+			controller.Initialize(this);
 		}
 
 		public void Update(float dt)

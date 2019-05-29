@@ -4,6 +4,10 @@ namespace Engine.Core._2D
 {
 	public abstract class QuadSource
 	{
+		protected QuadSource() : this(0, 0, 0)
+		{
+		}
+
 		protected QuadSource(int width, int height) : this(0, width, height)
 		{
 		}
@@ -16,8 +20,8 @@ namespace Engine.Core._2D
 		}
 
 		public uint Id { get; protected set; }
-		public int Width { get; }
-		public int Height { get; }
+		public int Width { get; protected set; }
+		public int Height { get; protected set; }
 
 		public void Bind(uint index)
 		{

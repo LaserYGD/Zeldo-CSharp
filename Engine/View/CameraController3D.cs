@@ -8,7 +8,12 @@ namespace Engine.View
 {
 	public abstract class CameraController3D
 	{
-		public Camera3D Camera { get; set; }
+		protected Camera3D Camera { get; private set; }
+
+		public virtual void Initialize(Camera3D camera)
+		{
+			Camera = camera;
+		}
 
 		public abstract void Update();
 	}

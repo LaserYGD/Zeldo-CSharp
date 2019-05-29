@@ -24,6 +24,7 @@ using Zeldo.Sensors;
 using Zeldo.UI;
 using Zeldo.UI.Hud;
 using Zeldo.UI.Screens;
+using Zeldo.View;
 using static Engine.GL;
 
 namespace Zeldo
@@ -51,11 +52,12 @@ namespace Zeldo
 			glPrimitiveRestartIndex(Constants.RestartIndex);
 
 			Properties.Load("Entity.properties");
+			Properties.Load("View.properties");
 
 			camera = new Camera3D();
 			camera.IsOrthographic = true;
-			camera.Orientation *= quat.FromAxisAngle(0.8f, vec3.UnitX);
-			camera.Position = new vec3(0, 0, 5) * camera.Orientation + new vec3(0, 0, -0.5f);
+			//camera.Orientation *= quat.FromAxisAngle(0.8f, vec3.UnitX);
+			//camera.Position = new vec3(0, 0, 5) * camera.Orientation + new vec3(0, 0, -0.5f);
 
 			sb = new SpriteBatch();
 
@@ -122,6 +124,8 @@ namespace Zeldo
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 			player.Equip(bow);
+
+			camera.Attach(new DefaultCameraController(player));
 
             Cannonball cannonball = new Cannonball();
             cannonball.Position = new vec3(1.5f, 10, 0);
