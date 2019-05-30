@@ -53,6 +53,7 @@ namespace Zeldo
 
 			Properties.Load("Entity.properties");
 			Properties.Load("View.properties");
+			Properties.Load("World.properties");
 
 			camera = new Camera3D();
 			camera.IsOrthographic = true;

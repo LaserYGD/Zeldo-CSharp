@@ -179,6 +179,26 @@ namespace Engine.Utility
 			}
 		}
 
+		public static T Closest<T>(IEnumerable<T> items, vec2 position) where T : class, IPositionable2D
+		{
+			T closest = null;
+
+			float d = float.MaxValue;
+
+			foreach (T item in items)
+			{
+				float squared = Utilities.DistanceSquared(position, item.Position);
+
+				if (squared < d)
+				{
+					d = squared;
+					closest = item;
+				}
+			}
+
+			return closest;
+		}
+
 		public static string StripPath(string value)
 		{
 			int index = value.LastIndexOf('.');

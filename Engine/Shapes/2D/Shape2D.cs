@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Interfaces;
-using Engine.Interfaces._2D;
+﻿using Engine.Interfaces._2D;
 using GlmSharp;
 
 namespace Engine.Shapes._2D
@@ -26,6 +20,18 @@ namespace Engine.Shapes._2D
 		{
 			get => position;
 			set => position = value;
+		}
+
+		public float X
+		{
+			get => position.x;
+			set => position.x = value;
+		}
+
+		public float Y
+		{
+			get => position.y;
+			set => position.y = value;
 		}
 
 		public float Rotation { get; set; }

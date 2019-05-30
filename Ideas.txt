@@ -66,7 +66,7 @@
 
 - Be imaginitive with upgrades and items => Make sure that obstacles make sense to exist in the world, rather than simply being place artificially to block the player (inspired by Matthewmatosis's video on Axiom Verge and Environmental Station Alpha)
 
-
+- Large creatures/machinery slowing moving in the background (inspired by a Trials Fusion track with a big robot slowing doing its work in the background)
 
 
 

@@ -8,21 +8,9 @@ namespace Engine.Graphics
 	{
 		public static unsafe Texture Load(string filename, string folder)
 		{
-			Bitmap image = new Bitmap("Content/" + folder + filename);
+			LoadData(folder + filename, out int width, out int height, out int[] data);
 
 			uint id = 0;
-			int width = image.Width;
-			int height = image.Height;
-
-			int[] data = new int[width * height];
-
-			for (int i = 0; i < height; i++)
-			{
-				for (int j = 0; j < width; j++)
-				{
-					data[i * width + j] = image.GetPixel(j, i).ToRgba();
-				}
-			}
 
 			glGenTextures(1, &id);
 
@@ -33,6 +21,26 @@ namespace Engine.Graphics
 			SetDefaultParameters();
 
 			return texture;
+		}
+
+		// This function is useful externally to load texture data without using OpenGL calls. Useful when a texture
+		// is used for purposes other than direct rendering.
+		public static void LoadData(string path, out int width, out int height, out int[] data)
+		{
+			Bitmap image = new Bitmap("Content/" + path);
+			
+			width = image.Width;
+			height = image.Height;
+
+			data = new int[width * height];
+
+			for (int i = 0; i < height; i++)
+			{
+				for (int j = 0; j < width; j++)
+				{
+					data[i * width + j] = image.GetPixel(j, i).ToRgba();
+				}
+			}
 		}
 
 		private static void SetDefaultParameters()

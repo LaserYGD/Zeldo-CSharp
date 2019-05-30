@@ -34,18 +34,6 @@ namespace Engine.Shapes._2D
 			Height = height;
 		}
 
-		public float X
-		{
-			get => Left;
-			set => Left = value;
-		}
-
-		public float Y
-		{
-			get => Top;
-			set => Top = value;
-		}
-
 		public float Width { get; set; }
 		public float Height { get; set; }
 

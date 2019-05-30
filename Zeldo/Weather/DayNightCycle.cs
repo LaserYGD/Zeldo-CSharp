@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Engine;
 using Engine.Core;
 using Engine.Interfaces;
 using Engine.Shaders;
@@ -15,17 +11,30 @@ namespace Zeldo.Weather
 	{
 		private Shader shader;
 
+		private int dayDuration;
+
 		public DayNightCycle()
 		{
+			// Day duration is listed in minutes in the property file.
+			dayDuration = Properties.GetInt("day.duration") * 60;
+			
 			LightColor = Color.White;
 			LightDirection = Utilities.Normalize(new vec3(-1, -0.4f, 0));
 		}
+
+		public float TimeOfDay { get; private set; }
 
 		public Color LightColor { get; private set; }
 		public vec3 LightDirection { get; private set; }
 
 		public void Update(float dt)
 		{
+			TimeOfDay += dt;
+
+			if (TimeOfDay >= dayDuration)
+			{
+				TimeOfDay -= dayDuration;
+			}
 		}
 	}
 }
