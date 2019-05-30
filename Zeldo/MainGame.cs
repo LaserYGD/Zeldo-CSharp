@@ -52,6 +52,7 @@ namespace Zeldo
 			glPrimitiveRestartIndex(Constants.RestartIndex);
 
 			Properties.Load("Entity.properties");
+			Properties.Load("UI.properties");
 			Properties.Load("View.properties");
 			Properties.Load("World.properties");
 

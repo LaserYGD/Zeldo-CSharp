@@ -18,7 +18,6 @@ namespace Zeldo.Entities.Core
 		private vec3 position;
 		private quat orientation;
 		private List<Sensor> sensors;
-		private List<DynamicComponent> components;
 		private List<EntityAttachment> attachments;
 		private RigidBody controllingBody;
 
@@ -31,10 +30,11 @@ namespace Zeldo.Entities.Core
 		{
 			Group = group;
 			attachments = new List<EntityAttachment>();
+			Components = new ComponentCollection();
 		}
 
 		protected List<Sensor> Sensors => sensors ?? (sensors = new List<Sensor>());
-		protected List<DynamicComponent> Components => components ?? (components = new List<DynamicComponent>());
+		protected ComponentCollection Components { get; }
 
 		public EntityGroups Group { get; }
 
@@ -166,19 +166,7 @@ namespace Zeldo.Entities.Core
 
 		public virtual void Update(float dt)
 		{
-			if (components != null)
-			{
-				for (int i = components.Count - 1; i >= 0; i--)
-				{
-					var component = components[i];
-					component.Update(dt);
-
-					if (component.Complete)
-					{
-						components.RemoveAt(i);
-					}
-				}
-			}
+			Components.Update(dt);
 
 		    if (controllingBody != null)
 		    {

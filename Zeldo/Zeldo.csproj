@@ -84,6 +84,7 @@
     </None>
     <None Include="Content\Fonts\Leviathon.fnt" />
     <None Include="Content\Json\Fragments\TestFragment.json" />
+    <None Include="Content\Json\Hud.json" />
     <None Include="Content\Json\Items.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -119,6 +120,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Wall.obj" />
+    <None Include="Content\Properties\UI.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Shaders\2D\LeviathonSpeech.frag" />
     <None Include="Content\Shaders\2D\Raindrops.frag" />
     <None Include="Content\Shaders\Puddle.frag">
@@ -133,13 +137,15 @@
     <None Include="Content\Shaders\Rain.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Text\Entity.properties">
+    <None Include="Content\Properties\Entity.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Text\View.properties">
+    <None Include="Content\Properties\View.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Text\World.properties" />
+    <None Include="Content\Properties\World.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +217,7 @@
     <Compile Include="Sky.cs" />
     <Compile Include="UI\Controls\ToggleButton.cs" />
     <Compile Include="UI\Controls\Slider.cs" />
+    <Compile Include="UI\Hud\ItemShowcaseDisplay.cs" />
     <Compile Include="UI\Hud\PlayerHealthDisplay.cs" />
     <Compile Include="UI\Hud\PlayerManaDisplay.cs" />
     <Compile Include="UI\Letterbox.cs" />

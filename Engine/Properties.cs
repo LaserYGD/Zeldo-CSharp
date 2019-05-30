@@ -9,7 +9,7 @@ namespace Engine
 
 		public static void Load(string filename)
 		{
-			string[] lines = File.ReadAllLines("Content/Text/" + filename);
+			string[] lines = File.ReadAllLines("Content/Properties/" + filename);
 
 			foreach (string line in lines)
 			{

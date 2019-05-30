@@ -68,10 +68,11 @@
 
 - Large creatures/machinery slowing moving in the background (inspired by a Trials Fusion track with a big robot slowing doing its work in the background)
 
+- Cash-gobbling enemy (saps up coins or other loot, but drops all of it when killed) => Should be rare, or maybe even an NPC
 
+- Consider how the player character's actions and decision-making align with the player (inspired by Matthewmatosis's video on Demon Souls, where he mentioned that being creative in fights and traversing slowly and cautiously are how an actual person would behave in that situation, not exploiting known AI patterns to dodge attacks) => Outsmart the bosses, not just press roll at the right time
 
-
-
+- Try to make encounters (bosses, enemies, dungeons, characters, movement, etc.) varied and exciting so the player doesn't get bored and is encouraged to flex different gaming skillsets
 
 
 

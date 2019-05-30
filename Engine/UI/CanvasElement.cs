@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Engine.Core;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
 using Engine.Interfaces;
@@ -13,8 +15,11 @@ namespace Engine.UI
 
 		protected CanvasElement()
 		{
+			Components = new ComponentCollection();
 			Visible = true;
 		}
+
+		protected ComponentCollection Components { get; }
 
 		protected bool Centered { get; set; }
 
@@ -55,6 +60,7 @@ namespace Engine.UI
 
 		public virtual void Update(float dt)
 		{
+			Components.Update(dt);
 		}
 
 		public abstract void Draw(SpriteBatch sb);

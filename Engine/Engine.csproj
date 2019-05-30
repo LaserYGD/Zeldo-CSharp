@@ -127,6 +127,7 @@
     <Compile Include="Animation\Transform.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Core\2D\SpriteModifiers.cs" />
+    <Compile Include="Core\ComponentCollection.cs" />
     <Compile Include="Core\DynamicComponent.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
