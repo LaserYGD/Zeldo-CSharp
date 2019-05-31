@@ -17,6 +17,7 @@ using Jitter.Collision;
 using Jitter.Dynamics;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
+using Zeldo.Entities.Enemies;
 using Zeldo.Entities.Objects;
 using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
@@ -129,11 +130,16 @@ namespace Zeldo
 
 			camera.Attach(new DefaultCameraController(player));
 
-            Cannonball cannonball = new Cannonball();
+			Sunflower sunflower = new Sunflower();
+			sunflower.Position = new vec3(-2, 1, 0);
+
+			Cannonball cannonball = new Cannonball();
             cannonball.Position = new vec3(1.5f, 10, 0);
 
 			scene.Add(player);
+			scene.Add(sunflower);
             scene.Add(cannonball);
+			scene.LoadFragment("WindmillRoom.json");
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
 			renderTargetUsers.Add(scene.ModelBatch);

@@ -29,6 +29,7 @@ namespace Zeldo.Entities.Core
 		protected Entity(EntityGroups group)
 		{
 			Group = group;
+			orientation = quat.Identity;
 			attachments = new List<EntityAttachment>();
 			Components = new ComponentCollection();
 		}

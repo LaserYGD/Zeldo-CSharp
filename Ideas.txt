@@ -74,10 +74,11 @@
 
 - Try to make encounters (bosses, enemies, dungeons, characters, movement, etc.) varied and exciting so the player doesn't get bored and is encouraged to flex different gaming skillsets
 
+- Should take care to build up the shipwreck as an actual object that existed (maybe by finding part of it wrecked on a beach, meeting a rare survivor, or viewing and learning about an in-progress rebuild of a new ship) => Consider which characters would logically know about the ship and how they could help the player locate and traverse its wreckage at the bottom of the lake
 
+- Flame weapon upgrade (or elemental upgrades in general) to absorb nearby sources of that essence and use it to power up your attacks (inspired by my potential Kitterket enemy, which I imagine as a cat-like creature that pounces away and leaves a trail of fire or toxin) => Could be interesting because it would recontextualize a hazardous damage source as a tool to incorporate into combat
 
-
-
+- Music should gradually grow and evolve over the course of a dungeon (not only gaining energy, but also carefully losing energy and presence in rare cases) => Could be triggered by reaching a certain level of progression in the dungeon, similar to (I think) what Ori does
 
 
 

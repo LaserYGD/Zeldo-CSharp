@@ -1,0 +1,15 @@
+﻿{
+	"Entities": [
+
+	],
+
+	"UserData": {
+		"Windows": [
+			{
+				"Position": "1, 2, 3",
+				"Width": 1.5,
+				"Height": 2
+			}
+		]
+	}
+}

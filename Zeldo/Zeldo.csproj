@@ -84,6 +84,9 @@
     </None>
     <None Include="Content\Fonts\Leviathon.fnt" />
     <None Include="Content\Json\Fragments\TestFragment.json" />
+    <None Include="Content\Json\Fragments\WindmillRoom.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Json\Hud.json" />
     <None Include="Content\Json\Items.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -110,6 +113,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Player.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Meshes\Sunflower.dae">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Tree.dae">
@@ -173,6 +179,7 @@
     <Compile Include="Entities\Core\EntityIds.cs" />
     <Compile Include="Entities\Core\EntityGroups.cs" />
     <Compile Include="Entities\Enemies\Sunflower.cs" />
+    <Compile Include="Entities\Enemies\SunflowerHelper.cs" />
     <Compile Include="Entities\Enemies\SunflowerTendril.cs" />
     <Compile Include="Entities\Hazards\PoisonBush.cs" />
     <Compile Include="Entities\JesterWall.cs" />

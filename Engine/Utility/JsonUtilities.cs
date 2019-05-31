@@ -1,18 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Engine.Utility
 {
 	public static class JsonUtilities
 	{
+		private const string Path = "Content/Json/";
+
+		public static JObject Load(string filename)
+		{
+			return JObject.Parse(File.ReadAllText(Path + filename));
+		}
+
 		public static T Deserialize<T>(string filename)
 		{
-			return JsonConvert.DeserializeObject<T>(File.ReadAllText("Content/Json/" + filename));
+			return JsonConvert.DeserializeObject<T>(File.ReadAllText(Path + filename));
 		}
 	}
 }
