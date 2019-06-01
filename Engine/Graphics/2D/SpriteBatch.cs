@@ -142,7 +142,7 @@ namespace Engine.Graphics._2D
 			activeTexture = id;
 		}
 
-		public void Draw(Line line, Color color)
+		public void Draw(Line2D line, Color color)
 		{
 			DrawLine(line.P1, line.P2, color);
 		}

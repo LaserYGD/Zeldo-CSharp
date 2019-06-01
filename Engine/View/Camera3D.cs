@@ -15,6 +15,9 @@ namespace Engine.View
 		private mat4 projection;
 		private CameraController3D controller;
 
+		private float orthoHalfWidth;
+		private float orthoHalfHeight;
+
 		private bool isOrthographic;
 
 		public Camera3D()
@@ -28,6 +31,21 @@ namespace Engine.View
 		}
 
 		public List<MessageHandle> MessageHandles { get; set; }
+
+		public float OrthoWidth
+		{
+			get => orthoHalfWidth * 2;
+			set => orthoHalfWidth = value / 2;
+		}
+
+		public float OrthoHeight
+		{
+			get => orthoHalfHeight * 2;
+			set => orthoHalfHeight = value / 2;
+		}
+
+		public float NearPlane { get; set; }
+		public float FarPlane { get; set; }
 
 		public bool IsOrthographic
 		{
@@ -57,14 +75,11 @@ namespace Engine.View
 
 		private void RecomputeProjection()
 		{
-			const float OrthoWidth = 8;
-			const float OrthoHeight = 4.5f;
-
 			ivec2 dimensions = Resolution.RenderDimensions;
 
 			projection = isOrthographic
-				? mat4.Ortho(-OrthoWidth, OrthoWidth, -OrthoHeight, OrthoHeight, 0.1f, 100)
-				: mat4.PerspectiveFov(90, dimensions.x, dimensions.y, 0.1f, 100);
+				? mat4.Ortho(-orthoHalfWidth, orthoHalfWidth, -orthoHalfHeight, orthoHalfHeight, NearPlane, FarPlane)
+				: mat4.PerspectiveFov(90, dimensions.x, dimensions.y, NearPlane, FarPlane);
 		}
 
 		public void Attach(CameraController3D controller)

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Engine.Core;
 using Engine.Core._2D;
 using Engine.Core._3D;
-using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using Engine.Shaders;
-using Engine.View;
 using GlmSharp;
 using static Engine.GL;
 
@@ -71,6 +68,8 @@ namespace Engine.Graphics._3D
 		// (e.g. reflections in puddles).
 		public mat4 ViewProjection { get; set; }
 
+		public float ShadowNearPlane { get; set; }
+		public float ShadowFarPlane { get; set; }
 		public float AmbientIntensity { get; set; }
 
 		public unsafe void Add(Model model)
@@ -150,7 +149,8 @@ namespace Engine.Graphics._3D
 			glDisable(GL_CULL_FACE);
 
 			mat4 lightView = mat4.LookAt(-LightDirection * 10, vec3.Zero, vec3.UnitY);
-			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize, 0.1f, 100);
+			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize,
+				ShadowNearPlane, ShadowFarPlane);
 
 			lightMatrix = lightProjection * lightView;
 

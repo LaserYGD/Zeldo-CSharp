@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Engine;
 using Engine.Graphics._3D;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
@@ -14,20 +15,27 @@ namespace Zeldo.Entities.Core
 {
 	public class Scene : IDynamic, IRenderable3D
 	{
+		private ModelBatch batch;
 		private List<Entity> entities;
 
 		public Scene()
 		{
 			entities = new List<Entity>();
-			ModelBatch = new ModelBatch(200000, 20000);
 			UserData = new Dictionary<string, object>();
+
+			int bufferSize = Properties.GetInt("model.batch.buffer.size");
+			int indexSize = Properties.GetInt("model.batch.index.size");
+
+			batch = new ModelBatch(bufferSize, indexSize);
+			batch.ShadowNearPlane = Properties.GetFloat("shadow.near.plane");
+			batch.ShadowFarPlane = Properties.GetFloat("shadow.far.plane");
 		}
 
 		public Camera3D Camera { get; set; }
 		public Canvas Canvas { get; set; }
 		public Space Space { get; set; }
 		public World World { get; set; }
-		public ModelBatch ModelBatch { get; }
+		public ModelBatch ModelBatch => batch;
 
 		// In this context, "user data" means custom data optionally loaded with each fragment. Used as needed in order
 		// to implement custom features for different kinds of locations.
@@ -48,7 +56,6 @@ namespace Zeldo.Entities.Core
 					{
 						foreach (var item in value)
 						{
-
 						}
 					}
 				}
@@ -74,8 +81,8 @@ namespace Zeldo.Entities.Core
 
 		public void Draw(Camera3D camera)
 		{
-			ModelBatch.ViewProjection = camera.ViewProjection;
-			ModelBatch.Draw();
+			batch.ViewProjection = camera.ViewProjection;
+			batch.Draw();
 		}
 	}
 }

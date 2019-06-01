@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Engine;
+using Engine.Core;
 using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Graphics._2D;
@@ -42,6 +43,7 @@ namespace Zeldo
 		private Scene scene;
 		private Space space;
 		private World world;
+		private ShadowMapSizeTester shadowMapSizeTester;
 		private ScreenManager screenManager;
 		private List<IRenderTargetUser3D> renderTargetUsers;
 
@@ -59,8 +61,6 @@ namespace Zeldo
 
 			camera = new Camera3D();
 			camera.IsOrthographic = true;
-			//camera.Orientation *= quat.FromAxisAngle(0.8f, vec3.UnitX);
-			//camera.Position = new vec3(0, 0, 5) * camera.Orientation + new vec3(0, 0, -0.5f);
 
 			sb = new SpriteBatch();
 
@@ -139,7 +139,7 @@ namespace Zeldo
 			scene.Add(player);
 			scene.Add(sunflower);
             scene.Add(cannonball);
-			scene.LoadFragment("WindmillRoom.json");
+			//scene.LoadFragment("WindmillRoom.json");
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
 			renderTargetUsers.Add(scene.ModelBatch);
@@ -149,6 +149,8 @@ namespace Zeldo
 		    body.IsStatic = true;
             
             world.AddBody(body);
+
+			shadowMapSizeTester = new ShadowMapSizeTester(camera, scene.ModelBatch);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
@@ -176,6 +178,7 @@ namespace Zeldo
 			//space.Update();
 			scene.Update(dt);
 			camera.Update(dt);
+			camera.Orientation *= quat.FromAxisAngle(dt / 4, vec3.UnitY);
 
 			MessageSystem.ProcessChanges();
 		}
@@ -187,6 +190,7 @@ namespace Zeldo
 			glDepthFunc(GL_LEQUAL);
 			
 			renderTargetUsers.ForEach(u => u.DrawTargets());
+			shadowMapSizeTester.DrawTargets();
 			mainTarget.Apply();
 			scene.Draw(camera);
 
@@ -199,6 +203,7 @@ namespace Zeldo
 
 			mainSprite.Draw(sb);		
 			canvas.Draw(sb);
+			shadowMapSizeTester.Draw(sb);
 			
 			sb.Flush();
 		}

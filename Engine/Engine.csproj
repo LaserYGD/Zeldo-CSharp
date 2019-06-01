@@ -135,6 +135,7 @@
     <Compile Include="Graphics\3D\ModelBatch.cs" />
     <Compile Include="Graphics\3D\ModelHandle.cs" />
     <Compile Include="Graphics\3D\Loaders\ObjLoader.cs" />
+    <Compile Include="Graphics\3D\ShadowMapSizeTester.cs" />
     <Compile Include="Graphics\3D\ShadowMapVisualizer.cs" />
     <Compile Include="Graphics\GLBuffer.cs" />
     <Compile Include="Graphics\PrimitiveBuffer.cs" />
@@ -157,6 +158,7 @@
     <Compile Include="Shapes\2D\Arc.cs" />
     <Compile Include="Shapes\2D\Rectangle.cs" />
     <Compile Include="Shapes\2D\ShapeHelper2D.cs" />
+    <Compile Include="Shapes\3D\Line3D.cs" />
     <Compile Include="Smoothers\3D\OrientationSmoother.cs" />
     <Compile Include="Smoothers\3D\PositionSmoother3D.cs" />
     <Compile Include="Smoothers\Smoother.cs" />
@@ -216,7 +218,7 @@
     <Compile Include="Shaders\ShaderStages.cs" />
     <Compile Include="Shaders\ShaderTypes.cs" />
     <Compile Include="Shapes\2D\Circle.cs" />
-    <Compile Include="Shapes\2D\Line.cs" />
+    <Compile Include="Shapes\2D\Line2D.cs" />
     <Compile Include="Shapes\2D\Shape2D.cs" />
     <Compile Include="Shapes\2D\ShapeTypes2D.cs" />
     <Compile Include="Shapes\3D\Box.cs" />

@@ -66,9 +66,9 @@ namespace Zeldo.Entities.Enemies
 			}
 			else
 			{
-				Rectangle[] windows = (Rectangle[])Scene.UserData["Windows"];
-				Rectangle[] patches = SunflowerHelper.ProjectSunlight(windows, Scene.ModelBatch.LightDirection, 0);
-				Rectangle target = Utilities.Closest(patches, Position.swizzle.xz);
+				//Rectangle[] windows = (Rectangle[])Scene.UserData["Windows"];
+				//Rectangle[] patches = SunflowerHelper.ProjectSunlight(windows, Scene.ModelBatch.LightDirection, 0);
+				//Rectangle target = Utilities.Closest(patches, Position.swizzle.xz);
 
 				// Move to target location (using a navigation system)
 				// Once reached, play an animation and begin gather sunlight

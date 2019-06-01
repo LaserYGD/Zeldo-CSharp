@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Engine.Core;
-using Engine.Interfaces._3D;
 using Engine.Shaders;
 using Engine.Shapes._2D;
 using Engine.Shapes._3D;
@@ -15,35 +10,61 @@ using static Engine.GL;
 
 namespace Engine.Graphics._3D
 {
-	public class PrimitiveRenderer3D
+	public class PrimitiveRenderer3D : IDisposable
 	{
 		private Camera3D camera;
-		private Shader primitiveShader;
+		private Shader shader;
 		private PrimitiveBuffer buffer;
 
 		private uint bufferId;
-		private uint indexBufferId;
+		private uint indexId;
 		private uint mode;
 
 		public PrimitiveRenderer3D(Camera3D camera)
 		{
-			const int BufferCapacity = 2048;
-			const int IndexCapacity = 256;
+			const int BufferCapacity = 10000;
+			const int IndexCapacity = 1000;
 
 			this.camera = camera;
 
 			buffer = new PrimitiveBuffer(BufferCapacity, IndexCapacity);
 
-			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexBufferId,
-				GL_DYNAMIC_DRAW);
+			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexId, GL_DYNAMIC_DRAW);
 
-			primitiveShader = new Shader();
-			primitiveShader.Attach(ShaderTypes.Vertex, "Primitives3D.vert");
-			primitiveShader.Attach(ShaderTypes.Fragment, "Primitives.frag");
-			primitiveShader.CreateProgram();
-			primitiveShader.AddAttribute<float>(3, GL_FLOAT);
-			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
-			primitiveShader.Bind(bufferId, indexBufferId);
+			shader = new Shader();
+			shader.Attach(ShaderTypes.Vertex, "Primitives3D.vert");
+			shader.Attach(ShaderTypes.Fragment, "Primitives.frag");
+			shader.AddAttribute<float>(3, GL_FLOAT);
+			shader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, false, true);
+			shader.CreateProgram();
+			shader.Bind(bufferId, indexId);
+		}
+
+		public void Dispose()
+		{
+			shader.Dispose();
+
+			GLUtilities.DeleteBuffers(bufferId, indexId);
+		}
+
+		public void Draw(Arc arc, float y, Color color, int segments)
+		{
+			vec2 center = arc.Position;
+			vec3[] points = new vec3[segments + 2];
+
+			float start = arc.Angle - arc.Spread / 2;
+			float increment = arc.Spread / segments;
+
+			for (int i = 0; i <= segments; i++)
+			{
+				vec2 p = center + Utilities.Direction(start + increment * i) * arc.Radius;
+
+				points[i] = new vec3(p.x, y, p.y);
+			}
+
+			points[points.Length - 1] = new vec3(center.x, y, center.y);
+
+			Buffer(points, color, GL_LINE_LOOP);
 		}
 
 		public void Draw(Box box, Color color)
@@ -100,24 +121,9 @@ namespace Engine.Graphics._3D
 			Buffer(points, color, GL_LINE_LOOP);
 		}
 
-		public void Draw(Arc arc, float y, Color color, int segments)
+		public void Draw(Line3D line, Color color)
 		{
-			vec2 center = arc.Position;
-			vec3[] points = new vec3[segments + 2];
-
-			float start = arc.Angle - arc.Spread / 2;
-			float increment = arc.Spread / segments;
-
-			for (int i = 0; i <= segments; i++)
-			{
-				vec2 p = center + Utilities.Direction(start + increment * i) * arc.Radius;
-
-				points[i] = new vec3(p.x, y, p.y);
-			}
-
-			points[points.Length - 1] = new vec3(center.x, y, center.y);
-
-			Buffer(points, color, GL_LINE_LOOP);
+			DrawLine(line.P1, line.P2, color);
 		}
 
 		public void DrawLine(vec3 p1, vec3 p2, Color color)
@@ -168,8 +174,7 @@ namespace Engine.Graphics._3D
 
 			float[] data = GetData(points, color);
 
-			// If the index array is null, it's assumed that a looped render mode is active (meaning that indices can
-			// be added sequentially).
+			// If the index array is null, it's assumed that indices can be added sequentially.
 			if (indices == null)
 			{
 				indices = new ushort[points.Length];
@@ -190,8 +195,8 @@ namespace Engine.Graphics._3D
 				return;
 			}
 
-			primitiveShader.Apply();
-			primitiveShader.SetUniform("mvp", camera.ViewProjection);
+			shader.Apply();
+			shader.SetUniform("mvp", camera.ViewProjection);
 
 			glDrawElements(mode, buffer.Flush(), GL_UNSIGNED_SHORT, null);
 		}

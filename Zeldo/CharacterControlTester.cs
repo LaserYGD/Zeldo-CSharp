@@ -22,7 +22,7 @@ namespace Zeldo
 
 		private Circle playerCircle;
 		private List<Circle> staticCircles;
-		private List<Line> staticLines;
+		private List<Line2D> staticLines;
 		private List<Rectangle> staticRectangles;
 		private vec2 playerVelocity;
 
@@ -50,14 +50,14 @@ namespace Zeldo
 				new vec2(Padding, Resolution.WindowHeight - Padding)
 			};
 
-			staticLines = new List<Line>();
+			staticLines = new List<Line2D>();
 
 			for (int i = 0; i < linePoints.Length; i++)
 			{
 				vec2 p1 = linePoints[i];
 				vec2 p2 = i == linePoints.Length - 1 ? linePoints[0] : linePoints[i + 1];
 
-				staticLines.Add(new Line(p1, p2));
+				staticLines.Add(new Line2D(p1, p2));
 			}
 
 			staticRectangles = new List<Rectangle>();
@@ -213,7 +213,7 @@ namespace Zeldo
 			return false;
 		}
 
-		private bool ResolveStaticLineCollision(Line line, out vec2 correctionVector)
+		private bool ResolveStaticLineCollision(Line2D line, out vec2 correctionVector)
 		{
 			float d = Utilities.DistanceSquaredToLine(playerCircle.Position, line);
 			float r = playerCircle.Radius;

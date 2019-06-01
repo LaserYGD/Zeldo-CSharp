@@ -23,7 +23,12 @@ namespace Zeldo.View
 
 			vec2 v = Utilities.Direction(angle);
 
-			fixedOffset = new vec3(0, v.y, -v.x) * distance + new vec3(0, 0, 7);
+			fixedOffset = new vec3(0, v.y, -v.x) * distance;
+
+			camera.OrthoWidth = Properties.GetFloat("camera.ortho.width");
+			camera.OrthoHeight = Properties.GetFloat("camera.ortho.height");
+			camera.NearPlane = Properties.GetFloat("camera.near.plane");
+			camera.FarPlane = Properties.GetFloat("camera.far.plane");
 			camera.Orientation = quat.FromAxisAngle(angle, vec3.UnitX);
 
 			base.Initialize(camera);

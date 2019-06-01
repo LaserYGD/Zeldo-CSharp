@@ -58,7 +58,7 @@ namespace Engine.Utility
 			return LengthSquared(p2 - p1);
 		}
 
-		public static float DistanceToLine(vec2 p, Line line)
+		public static float DistanceToLine(vec2 p, Line2D line)
 		{
 			return DistanceToLine(p, line.P1, line.P2);
 		}
@@ -68,7 +68,7 @@ namespace Engine.Utility
 			return (float)Math.Sqrt(DistanceSquaredToLine(p, l1, l2));
 		}
 
-		public static float DistanceSquaredToLine(vec2 p, Line line)
+		public static float DistanceSquaredToLine(vec2 p, Line2D line)
 		{
 			return DistanceSquaredToLine(p, line.P1, line.P2);
 		}
