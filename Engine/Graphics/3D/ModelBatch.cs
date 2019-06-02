@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Engine.Core;
 using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Interfaces._3D;
 using Engine.Shaders;
+using Engine.View;
 using GlmSharp;
 using static Engine.GL;
 
@@ -16,6 +18,7 @@ namespace Engine.Graphics._3D
 		private RenderTarget shadowMapTarget;
 		private Texture defaultTexture;
 		private mat4 lightMatrix;
+		private Camera3D camera;
 		private List<ModelHandle> handles;
 
 		private uint bufferId;
@@ -26,9 +29,11 @@ namespace Engine.Graphics._3D
 		private int indexBufferSize;
 		private int maxIndex;
 
-		public ModelBatch(int bufferSize, int indexBufferSize)
+		public ModelBatch(Camera3D camera, int bufferSize, int indexBufferSize)
 		{
 			const int ShadowMapSize = 2048;
+
+			this.camera = camera;
 			
 			GLUtilities.AllocateBuffers(bufferSize, indexBufferSize, out bufferId, out indexBufferId, GL_STATIC_DRAW);
 
@@ -144,12 +149,18 @@ namespace Engine.Graphics._3D
 
 		public void DrawTargets()
 		{
-			const int OrthoSize = 8;
-
 			glDisable(GL_CULL_FACE);
 
-			mat4 lightView = mat4.LookAt(-LightDirection * 10, vec3.Zero, vec3.UnitY);
-			mat4 lightProjection = mat4.Ortho(-OrthoSize, OrthoSize, -OrthoSize, OrthoSize,
+			vec3 orthoHalfSize = ComputeShadowFrustum(out vec3 cameraCenter) / 2;
+
+			// The light matrix is positioned such that the far plane exactly hits the back side of the camera's view
+			// box (from the light's perspective). This allows off-screen objects between the light's origin and the
+			// screen to still cast shadows.
+			float range = ShadowFarPlane - ShadowNearPlane;
+			float offset = range / 2 - orthoHalfSize.z;
+
+			mat4 lightView = mat4.LookAt(cameraCenter - LightDirection * offset, cameraCenter, vec3.UnitY);
+			mat4 lightProjection = mat4.Ortho(-orthoHalfSize.x, orthoHalfSize.x, -orthoHalfSize.y, orthoHalfSize.y,
 				ShadowNearPlane, ShadowFarPlane);
 
 			lightMatrix = lightProjection * lightView;
@@ -165,6 +176,53 @@ namespace Engine.Graphics._3D
 				shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix.Value);
 				Draw(handle);
 			}
+		}
+
+		private vec3 ComputeShadowFrustum(out vec3 cameraCenter)
+		{
+			float orthoHalfWidth = camera.OrthoWidth / 2;
+			float orthoHalfHeight = camera.OrthoHeight / 2;
+			float nearPlane = -camera.NearPlane;
+			float farPlane = -camera.FarPlane;
+
+			var points = new vec3[8];
+			points[0] = new vec3(-orthoHalfWidth, orthoHalfHeight, nearPlane);
+			points[1] = new vec3(orthoHalfWidth, orthoHalfHeight, nearPlane);
+			points[2] = new vec3(orthoHalfWidth, -orthoHalfHeight, nearPlane);
+			points[3] = new vec3(-orthoHalfWidth, -orthoHalfHeight, nearPlane);
+
+			for (int i = 0; i < 4; i++)
+			{
+				vec3 p = points[i];
+				p.z = farPlane;
+				points[i + 4] = p;
+			}
+
+			quat cameraOrientation = camera.Orientation;
+
+			for (int i = 0; i < points.Length; i++)
+			{
+				points[i] *= cameraOrientation;
+			}
+
+			cameraCenter = camera.Position + new vec3(0, 0, nearPlane + (farPlane - nearPlane) / 2) *
+				cameraOrientation;
+
+			quat lightInverse = new quat(mat4.LookAt(vec3.Zero, LightDirection, vec3.UnitY)).Inverse;
+
+			for (int i = 0; i < points.Length; i++)
+			{
+				points[i] = points[i] * lightInverse;
+			}
+
+			float left = points.Min(p => p.x);
+			float right = points.Max(p => p.x);
+			float top = points.Max(p => p.y);
+			float bottom = points.Min(p => p.y);
+			float near = points.Min(p => p.z);
+			float far = points.Max(p => p.z);
+
+			return new vec3(right - left, top - bottom, far - near);
 		}
 
 		public void Draw()

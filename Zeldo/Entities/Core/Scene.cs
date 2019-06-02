@@ -15,6 +15,7 @@ namespace Zeldo.Entities.Core
 {
 	public class Scene : IDynamic, IRenderable3D
 	{
+		private Camera3D camera;
 		private ModelBatch batch;
 		private List<Entity> entities;
 
@@ -22,16 +23,24 @@ namespace Zeldo.Entities.Core
 		{
 			entities = new List<Entity>();
 			UserData = new Dictionary<string, object>();
-
-			int bufferSize = Properties.GetInt("model.batch.buffer.size");
-			int indexSize = Properties.GetInt("model.batch.index.size");
-
-			batch = new ModelBatch(bufferSize, indexSize);
-			batch.ShadowNearPlane = Properties.GetFloat("shadow.near.plane");
-			batch.ShadowFarPlane = Properties.GetFloat("shadow.far.plane");
 		}
 
-		public Camera3D Camera { get; set; }
+		public Camera3D Camera
+		{
+			get => camera;
+			set
+			{
+				camera = value;
+
+				int bufferSize = Properties.GetInt("model.batch.buffer.size");
+				int indexSize = Properties.GetInt("model.batch.index.size");
+
+				batch = new ModelBatch(camera, bufferSize, indexSize);
+				batch.ShadowNearPlane = Properties.GetFloat("shadow.near.plane");
+				batch.ShadowFarPlane = Properties.GetFloat("shadow.far.plane");
+			}
+		}
+
 		public Canvas Canvas { get; set; }
 		public Space Space { get; set; }
 		public World World { get; set; }
