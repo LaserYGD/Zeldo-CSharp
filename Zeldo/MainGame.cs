@@ -172,13 +172,19 @@ namespace Zeldo
 			MessageSystem.Unsubscribe(this);
 		}
 
+		private float rotation;
+
 		protected override void Update(float dt)
 		{
 			world.Step(dt, true, PhysicsStep, 8);
 			//space.Update();
 			scene.Update(dt);
 			camera.Update(dt);
-			camera.Orientation *= quat.FromAxisAngle(dt / 4, vec3.UnitY);
+
+			vec2 v = Utilities.Direction(rotation);
+			rotation += dt / 8;
+
+			scene.ModelBatch.LightDirection = Utilities.Normalize(new vec3(v.x, -0.25f, v.y));
 
 			MessageSystem.ProcessChanges();
 		}

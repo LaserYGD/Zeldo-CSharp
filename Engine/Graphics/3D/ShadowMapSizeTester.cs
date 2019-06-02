@@ -25,13 +25,13 @@ namespace Engine.Graphics._3D
 			this.batch = batch;
 
 			localCamera = new Camera3D();
-			localCamera.Position = vec3.UnitZ * 20;
+			localCamera.Position = vec3.UnitZ * 25 - new vec3(0, 8, 0);
 			localCamera.Orientation = quat.FromAxisAngle(0, vec3.UnitX);
-			//localCamera.OrthoWidth = 64;
-			//localCamera.OrthoHeight = 36;
+			localCamera.OrthoWidth = 64;
+			localCamera.OrthoHeight = 36;
 			localCamera.NearPlane = 1;
 			localCamera.FarPlane = 60;
-			//localCamera.IsOrthographic = true;
+			localCamera.IsOrthographic = true;
 
 			renderTarget = new RenderTarget(300, 225, RenderTargetFlags.Color | RenderTargetFlags.Depth);
 			primitives = new PrimitiveRenderer3D(localCamera);
@@ -52,8 +52,12 @@ namespace Engine.Graphics._3D
 			vec3[] cameraBox = DrawViewBox(camera.OrthoWidth, camera.OrthoHeight, camera.NearPlane, camera.FarPlane,
 				vec3.Zero, camera.Orientation, Color.Green, out vec3 center);
 
-			quat light = new quat(batch.LightDirection);
-			vec3[] transformed = cameraBox.Select(p => p * light).ToArray();
+			vec3 light = batch.LightDirection;
+			quat lightOrientation = new quat(mat4.LookAt(vec3.Zero, light, vec3.UnitY));
+			vec3[] transformed = cameraBox.Select(p => p * lightOrientation.Inverse).ToArray();
+
+			//localCamera.Position = center - light * 25;
+			//localCamera.Orientation = new quat(mat4.LookAt(vec3.Zero, light, vec3.UnitY));
 
 			float left = transformed.Min(p => p.x);
 			float right = transformed.Max(p => p.x);
@@ -62,11 +66,10 @@ namespace Engine.Graphics._3D
 			float near = batch.ShadowNearPlane;
 			float far = batch.ShadowFarPlane;
 
-			//vec3 shadowPosition = center - batch.LightDirection * (far - near) / 2;
+			vec3 shadowPosition = center - batch.LightDirection * (far - near) / 2;
 
-			primitives.DrawLine(center, center - batch.LightDirection * 12 * camera.Orientation, Color.Yellow);
-
-			//DrawViewBox(right - left, top - bottom, near, far, shadowPosition, light, Color.Yellow, out center);
+			DrawViewBox(right - left, top - bottom, near, far, shadowPosition, lightOrientation, Color.Yellow,
+				out center);
 
 			primitives.Flush();
 		}
