@@ -80,7 +80,7 @@
 
 - Music should gradually grow and evolve over the course of a dungeon (not only gaining energy, but also carefully losing energy and presence in rare cases) => Could be triggered by reaching a certain level of progression in the dungeon, similar to (I think) what Ori does
 
-
+- In dungeons, consider how individual rooms play into the flow of the entire dungeon (rather than just being isolated challenges unrelated to one another) => What's the over-arching objective of the dungeon? How does each isolated section help you progress towards it?
 
 
 

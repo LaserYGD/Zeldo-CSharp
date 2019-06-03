@@ -126,6 +126,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Wall.obj" />
+    <None Include="Content\Meshes\WindowRoom.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Properties\UI.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -163,6 +166,7 @@
   <ItemGroup>
     <Compile Include="CharacterControlTester.cs" />
     <Compile Include="Controllers\RunController.cs" />
+    <Compile Include="Data\SaveSlot.cs" />
     <Compile Include="Data\TileFlags.cs" />
     <Compile Include="Effects\Explosion.cs" />
     <Compile Include="Entities\Characters\LeviathonHead.cs" />
@@ -173,6 +177,7 @@
     <Compile Include="Entities\Core\EntityAttachmentTypes.cs" />
     <Compile Include="Entities\Core\LivingEntity.cs" />
     <Compile Include="Entities\Core\Scene.cs" />
+    <Compile Include="Entities\Core\SceneFragment.cs" />
     <Compile Include="Entities\Enemies\Enemy.cs" />
     <Compile Include="Entities\Enemies\Groot.cs" />
     <Compile Include="Entities\Enemies\Skeleton.cs" />
@@ -242,7 +247,7 @@
     <Compile Include="UI\Screens\ScreenManager.cs" />
     <Compile Include="UI\Speech\SpeechBox.cs" />
     <Compile Include="UI\Subtitles.cs" />
-    <Compile Include="View\DefaultCameraController.cs" />
+    <Compile Include="View\FollowCameraController.cs" />
     <Compile Include="View\SpiralCameraController.cs" />
     <Compile Include="Weather\DayNightCycle.cs" />
     <Compile Include="Weather\Rain.cs" />

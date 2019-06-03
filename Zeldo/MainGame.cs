@@ -111,7 +111,6 @@ namespace Zeldo
 			};
 
 			ModelBatch batch = scene.ModelBatch;
-			batch.Add(new Model("Map.obj"));
 			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.75f, -0.25f));
 
 			Bow bow = new Bow();
@@ -128,17 +127,10 @@ namespace Zeldo
 			player.UnlockSkill(PlayerSkills.Jump);
 			player.Equip(bow);
 
-			camera.Attach(new DefaultCameraController(player));
-
-			Sunflower sunflower = new Sunflower();
-			sunflower.Position = new vec3(-2, 1, 0);
-
-			Cannonball cannonball = new Cannonball();
-            cannonball.Position = new vec3(1.5f, 10, 0);
+			camera.Attach(new FollowCameraController(player));
 
 			scene.Add(player);
-			scene.Add(sunflower);
-            scene.Add(cannonball);
+			scene.ModelBatch.Add(new Model("WindowRoom.obj"));
 			//scene.LoadFragment("WindmillRoom.json");
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
@@ -182,9 +174,9 @@ namespace Zeldo
 			camera.Update(dt);
 
 			vec2 v = Utilities.Direction(rotation);
-			rotation += dt / 8;
+			rotation += dt / 4;
 
-			scene.ModelBatch.LightDirection = Utilities.Normalize(new vec3(v.x, -0.25f, v.y));
+			scene.ModelBatch.LightDirection = Utilities.Normalize(new vec3(v.x, -0.5f, v.y));
 
 			MessageSystem.ProcessChanges();
 		}

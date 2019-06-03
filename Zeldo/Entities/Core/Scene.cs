@@ -18,10 +18,12 @@ namespace Zeldo.Entities.Core
 		private Camera3D camera;
 		private ModelBatch batch;
 		private List<Entity> entities;
+		private List<SceneFragment> fragments;
 
 		public Scene()
 		{
 			entities = new List<Entity>();
+			fragments = new List<SceneFragment>();
 			UserData = new Dictionary<string, object>();
 		}
 
@@ -52,23 +54,11 @@ namespace Zeldo.Entities.Core
 
 		public void LoadFragment(string filename)
 		{
-			var json = JsonUtilities.Load("Fragments/" + filename);
-			var userData = json["UserData"];
+			fragments.Add(SceneFragment.Load(filename));
+		}
 
-			if (userData != null)
-			{
-				foreach (JProperty block in userData.ToArray())
-				{
-					var value = block.Value;
-
-					if (value.Type == JTokenType.Array)
-					{
-						foreach (var item in value)
-						{
-						}
-					}
-				}
-			}
+		public void UnloadFragment()
+		{
 		}
 
 		public void Add(Entity entity)

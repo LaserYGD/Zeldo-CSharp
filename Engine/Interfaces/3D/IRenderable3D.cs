@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.View;
+﻿using Engine.View;
 
 namespace Engine.Interfaces._3D
 {

@@ -1,14 +1,13 @@
 ﻿{
+	"Origin": "0, 0",
 	"Entities": [
-
 	],
 
 	"UserData": {
 		"Windows": [
 			{
 				"Position": "1, 2, 3",
-				"Width": 1.5,
-				"Height": 2
+				"Radius": 1.5
 			}
 		]
 	}
