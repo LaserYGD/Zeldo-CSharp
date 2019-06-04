@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using Engine.Exceptions;
-using Engine.Graphics;
 using GlmSharp;
 using static Engine.GL;
 
@@ -17,7 +14,7 @@ namespace Engine.Shaders
 		private uint program;
 		private uint vao;
 		private uint bufferId;
-		private uint indexBufferId;
+		private uint indexId;
 		private uint fragmentShader;
 		private uint geometryShader;
 		private uint vertexShader;
@@ -172,17 +169,17 @@ namespace Engine.Shaders
 			Stride += (uint)Marshal.SizeOf<T>() * count + padding;
 		}
 
-		public unsafe void Bind(uint bufferId, uint indexBufferId)
+		public unsafe void Bind(uint bufferId, uint indexId)
 		{
 			this.bufferId = bufferId;
-			this.indexBufferId = indexBufferId;
+			this.indexId = indexId;
 
 			glBindVertexArray(vao);
 
 			// The index buffer ID can be zero when array rendering is being used.
-			if (indexBufferId != 0)
+			if (indexId != 0)
 			{
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
 			}
 
 			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
@@ -241,7 +238,7 @@ namespace Engine.Shaders
 			glUseProgram(program);
 			glBindVertexArray(vao);
 			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
 		}
 
 		public void SetUniform(string name, int value)

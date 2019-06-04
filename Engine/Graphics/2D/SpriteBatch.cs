@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Engine.Core;
 using Engine.Core._2D;
 using Engine.Interfaces;
@@ -15,7 +11,7 @@ using static Engine.GL;
 
 namespace Engine.Graphics._2D
 {
-	public class SpriteBatch : IReceiver
+	public class SpriteBatch
 	{
 		private Shader spriteShader;
 		private Shader primitiveShader;
@@ -24,7 +20,7 @@ namespace Engine.Graphics._2D
 		private mat4 mvp;
 
 		private uint bufferId;
-		private uint indexBufferId;
+		private uint indexId;
 		private uint mode;
 		private uint activeTexture;
 
@@ -35,7 +31,7 @@ namespace Engine.Graphics._2D
 
 			buffer = new PrimitiveBuffer(BufferCapacity, IndexCapacity);
 
-			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexBufferId,
+			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexId,
 				GL_DYNAMIC_DRAW);
 
 			// These two shaders (owned by the sprite batch) can be completed here (in terms of binding a buffer).
@@ -47,7 +43,7 @@ namespace Engine.Graphics._2D
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
 			spriteShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, false, true);
 			spriteShader.CreateProgram();
-			spriteShader.Bind(bufferId, indexBufferId);
+			spriteShader.Bind(bufferId, indexId);
 
 			primitiveShader = new Shader();
 			primitiveShader.Attach(ShaderTypes.Vertex, "Primitives2D.vert");
@@ -55,9 +51,7 @@ namespace Engine.Graphics._2D
 			primitiveShader.CreateProgram();
 			primitiveShader.AddAttribute<float>(2, GL_FLOAT);
 			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, false, true);
-			primitiveShader.Bind(bufferId, indexBufferId);
-
-			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
+			primitiveShader.Bind(bufferId, indexId);
 		}
 
 		public uint Mode
@@ -75,22 +69,12 @@ namespace Engine.Graphics._2D
 			}
 		}
 
-		public List<MessageHandle> MessageHandles { get; set; }
-
-		private void OnResize()
-		{
-			var halfDimensions = Resolution.WindowDimensions / 2;
-
-			mvp = mat4.Scale(1f / halfDimensions.x, 1f / halfDimensions.y, 1);
-			mvp *= mat4.Translate(-halfDimensions.x, -halfDimensions.y, 0);
-		}
-
 		public void Dispose()
 		{
 			spriteShader.Dispose();
 			primitiveShader.Dispose();
 
-			GLUtilities.DeleteBuffers(bufferId, indexBufferId);
+			GLUtilities.DeleteBuffers(bufferId, indexId);
 		}
 
 		public void Buffer(float[] data, ushort[] indices = null, int start = 0, int length = -1)
@@ -114,7 +98,7 @@ namespace Engine.Graphics._2D
 			buffer.Buffer(data, indices, start, length);
 		}
 
-		public void Apply(Shader shader, uint mode)          
+		public void Apply(Shader shader, uint mode)
 		{
 			if (activeShader == shader && this.mode == mode)
 			{
@@ -127,8 +111,18 @@ namespace Engine.Graphics._2D
 
 			if (!activeShader.BindingComplete)
 			{
-				activeShader.Bind(bufferId, indexBufferId);
+				activeShader.Bind(bufferId, indexId);
 			}
+		}
+
+		public void ApplyTarget(RenderTarget renderTarget)
+		{
+			var halfDimensions = (renderTarget?.Dimensions ?? Resolution.WindowDimensions) / 2;
+
+			mvp = mat4.Scale(1f / halfDimensions.x, 1f / halfDimensions.y, 1);
+			mvp *= mat4.Translate(-halfDimensions.x, -halfDimensions.y, 0);
+
+			renderTarget?.Apply();
 		}
 
 		public void BindTexture(uint id)
@@ -147,7 +141,7 @@ namespace Engine.Graphics._2D
 			DrawLine(line.P1, line.P2, color);
 		}
 
-		public void Draw(Circle circle, int segments, Color color)
+		public void Draw(Circle circle, int segments, Color color, float scale = 1)
 		{
 			Apply(primitiveShader, GL_LINE_LOOP);
 
@@ -157,7 +151,8 @@ namespace Engine.Graphics._2D
 
 			for (int i = 0; i < segments; i++)
 			{
-				vec2 p = circle.Position + Utilities.Direction(increment * i + circle.Rotation) * circle.Radius;
+				vec2 p = (circle.Position + Utilities.Direction(increment * i + circle.Rotation) * circle.Radius) *
+					scale;
 
 				int start = i * 3;
 
@@ -174,7 +169,7 @@ namespace Engine.Graphics._2D
 			Draw(bounds.ToRectangle(), color);
 		}
 
-		public void Draw(Rectangle rect, Color color)
+		public void Draw(Rectangle rect, Color color, float scale = 1)
 		{
 			Apply(primitiveShader, GL_LINE_LOOP);
 
@@ -185,7 +180,7 @@ namespace Engine.Graphics._2D
 
 			for (int i = 0; i < 4; i++)
 			{
-				vec2 p = corners[i];
+				vec2 p = corners[i] * scale;
 
 				int start = i * 3;
 

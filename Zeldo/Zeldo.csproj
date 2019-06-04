@@ -129,6 +129,12 @@
     <None Include="Content\Meshes\WindowRoom.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Properties\Enemy.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Properties\Player.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Properties\UI.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -172,6 +178,7 @@
     <Compile Include="Entities\Characters\LeviathonHead.cs" />
     <Compile Include="Entities\Characters\LeviathonTentacle.cs" />
     <Compile Include="Entities\Characters\Wizard.cs" />
+    <Compile Include="Entities\Core\Actor.cs" />
     <Compile Include="Entities\Core\Entity.cs" />
     <Compile Include="Entities\Core\EntityAttachment.cs" />
     <Compile Include="Entities\Core\EntityAttachmentTypes.cs" />
@@ -180,6 +187,7 @@
     <Compile Include="Entities\Core\SceneFragment.cs" />
     <Compile Include="Entities\Enemies\Enemy.cs" />
     <Compile Include="Entities\Enemies\Groot.cs" />
+    <Compile Include="Entities\Enemies\Kitterket.cs" />
     <Compile Include="Entities\Enemies\Skeleton.cs" />
     <Compile Include="Entities\Core\EntityIds.cs" />
     <Compile Include="Entities\Core\EntityGroups.cs" />
@@ -208,6 +216,9 @@
     <Compile Include="Items\ItemIds.cs" />
     <Compile Include="JumpTester.cs" />
     <Compile Include="JumpTester2.cs" />
+    <Compile Include="Physics\2D\GroundVisualizer.cs" />
+    <Compile Include="Physics\2D\RigidBody2D.cs" />
+    <Compile Include="Physics\2D\World2D.cs" />
     <Compile Include="Physics\TriangleMeshLoader.cs" />
     <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
@@ -255,6 +266,7 @@
     <Compile Include="Weather\Thunderstorm.cs" />
     <Compile Include="Weather\WeatherFormation.cs" />
     <Compile Include="Weather\WeatherManager.cs" />
+    <Compile Include="ZeldoConstants.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GlmSharp, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
@@ -288,9 +300,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Textures\Items.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\Json\PlayerData.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

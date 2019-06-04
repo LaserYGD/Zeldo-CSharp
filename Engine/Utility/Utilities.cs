@@ -53,7 +53,17 @@ namespace Engine.Utility
 			return Length(p2 - p1);
 		}
 
+		public static float Distance(vec3 p1, vec3 p2)
+		{
+			return Length(p2 - p1);
+		}
+
 		public static float DistanceSquared(vec2 p1, vec2 p2)
+		{
+			return LengthSquared(p2 - p1);
+		}
+
+		public static float DistanceSquared(vec3 p1, vec3 p2)
 		{
 			return LengthSquared(p2 - p1);
 		}

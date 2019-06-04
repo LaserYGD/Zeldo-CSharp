@@ -9,6 +9,7 @@ using Engine.Shapes._2D;
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
+using Zeldo.Physics._2D;
 using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Core
@@ -19,12 +20,14 @@ namespace Zeldo.Entities.Core
 		private quat orientation;
 		private List<Sensor> sensors;
 		private List<EntityAttachment> attachments;
-		private RigidBody controllingBody;
+
+		// This body is also used by actors (entities that use the 2D movement system).
+		protected RigidBody controllingBody;
 
 		// The entity's transform properties (Position and Orientation) also update attachments. Since the controlling
         // physics body is itself an attachment, this would cause bodies to set their own transforms again (which is
         // wasteful). Using this variable avoids that.
-	    private bool selfUpdate;
+	    protected bool selfUpdate;
 
 		protected Entity(EntityGroups group)
 		{
@@ -74,6 +77,28 @@ namespace Zeldo.Entities.Core
 
 		public RigidBody ControllingBody => controllingBody;
 
+		public virtual void Dispose()
+		{
+			sensors?.ForEach(Scene.Space.Remove);
+
+			foreach (var attachment in attachments)
+			{
+				var target = attachment.Target;
+
+				switch (attachment.AttachmentType)
+				{
+					case EntityAttachmentTypes.Model:
+						Scene.ModelBatch.Remove((Model)target);
+						break;
+				}
+			}
+
+			if (controllingBody != null)
+			{
+				Scene.World3D.RemoveBody(controllingBody);
+			}
+		}
+
 		protected void Attach(EntityAttachmentTypes attachmentType, ITransformable3D target)
 		{
 			Attach(attachmentType, target, vec3.Zero, quat.Identity);
@@ -118,7 +143,7 @@ namespace Zeldo.Entities.Core
 
             // Note that the contrlling body is intentionally not attached as a regular attachment. Doing so would
             // complicate transform sets by that body.
-			scene.World.AddBody(body);
+			scene.World3D.AddBody(body);
 
 		    if (controlling)
 		    {
@@ -143,26 +168,8 @@ namespace Zeldo.Entities.Core
 		{
 		}
 
-		public virtual void Dispose()
+		public void PlayAnimation(string animation)
 		{
-			sensors?.ForEach(Scene.Space.Remove);
-
-			foreach (var attachment in attachments)
-			{
-				var target = attachment.Target;
-
-				switch (attachment.AttachmentType)
-				{
-					case EntityAttachmentTypes.Model:
-						Scene.ModelBatch.Remove((Model)target);
-						break;
-				}
-			}
-
-		    if (controllingBody != null)
-		    {
-		        Scene.World.RemoveBody(controllingBody);
-		    }
 		}
 
 		public virtual void Update(float dt)

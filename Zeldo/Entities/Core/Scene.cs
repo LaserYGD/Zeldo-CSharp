@@ -9,6 +9,7 @@ using Engine.Utility;
 using Engine.View;
 using Jitter;
 using Newtonsoft.Json.Linq;
+using Zeldo.Physics._2D;
 using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Core
@@ -17,12 +18,18 @@ namespace Zeldo.Entities.Core
 	{
 		private Camera3D camera;
 		private ModelBatch batch;
-		private List<Entity> entities;
+		private List<Entity>[] entities;
 		private List<SceneFragment> fragments;
 
 		public Scene()
 		{
-			entities = new List<Entity>();
+			entities = new List<Entity>[Utilities.EnumCount<EntityGroups>()];
+
+			for (int i = 0; i < entities.Length; i++)
+			{
+				entities[i] = new List<Entity>();
+			}
+
 			fragments = new List<SceneFragment>();
 			UserData = new Dictionary<string, object>();
 		}
@@ -45,7 +52,8 @@ namespace Zeldo.Entities.Core
 
 		public Canvas Canvas { get; set; }
 		public Space Space { get; set; }
-		public World World { get; set; }
+		public World2D World2D { get; set; }
+		public World World3D { get; set; }
 		public ModelBatch ModelBatch => batch;
 
 		// In this context, "user data" means custom data optionally loaded with each fragment. Used as needed in order
@@ -63,19 +71,32 @@ namespace Zeldo.Entities.Core
 
 		public void Add(Entity entity)
 		{
-			entities.Add(entity);
+			entities[(int)entity.Group].Add(entity);
 			entity.Initialize(this);
 		}
 
 		public void Remove(Entity entity)
 		{
 			entity.Dispose();
-			entities.Remove(entity);
+			entities[(int)entity.Group].Remove(entity);
+		}
+
+		public List<Entity> GetEntities(EntityGroups group)
+		{
+			return entities[(int)group];
+		}
+
+		public List<T> GetEntities<T>(EntityGroups group) where T : Entity
+		{
+			return entities[(int)group].Cast<T>().ToList();
 		}
 
 		public void Update(float dt)
 		{
-			entities.ForEach(e => e.Update(dt));
+			foreach (var list in entities)
+			{
+				list.ForEach(e => e.Update(dt));
+			}
 		}
 
 		public void Draw(Camera3D camera)

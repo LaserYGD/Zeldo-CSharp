@@ -6,6 +6,7 @@ using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.Utility;
 using GlmSharp;
+using Jitter.Collision.Shapes;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Weapons;
 using Zeldo.Interfaces;
@@ -16,13 +17,12 @@ using Zeldo.UI.Hud;
 
 namespace Zeldo.Entities
 {
-	public class Player : Entity, IReceiver
+	public class Player : Actor, IReceiver
 	{
 		private const int DashIndex = (int)PlayerSkills.Dash;
 		private const int GrabIndex = (int)PlayerSkills.Grab;
 		private const int JumpIndex = (int)PlayerSkills.Jump;
-
-		private vec3 velocity;
+		
 		private Sensor sensor;
 		private InputBind jumpBindUsed;
 		private PlayerData playerData;
@@ -30,8 +30,7 @@ namespace Zeldo.Entities
 		private Model model;
 		private Sword sword;
 		private Bow bow;
-
-		private bool onGround;
+		
 		private bool[] skillsUnlocked;
 		private bool[] skillsEnabled;
 
@@ -39,7 +38,7 @@ namespace Zeldo.Entities
 		{
 			onGround = true;
 			sword = new Sword();
-			playerData = JsonUtilities.Deserialize<PlayerData>("PlayerData.json");
+			playerData = new PlayerData();
 			controls = new PlayerControls();
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
@@ -63,7 +62,12 @@ namespace Zeldo.Entities
 
 		public override void Initialize(Scene scene)
 		{
+			int height = Properties.GetInt("player.height");
+			float radius = Properties.GetFloat("player.ground.radius");
+
 			CreateModel(scene, "Player.obj");
+			CreateRigidBody(scene, new CylinderShape(height, radius));
+			CreateGroundBody(scene, radius);
 
 			base.Initialize(scene);
 		}
@@ -127,6 +131,8 @@ namespace Zeldo.Entities
 			bool runUp = data.Query(controls.RunUp, InputStates.Held);
 			bool runDown = data.Query(controls.RunDown, InputStates.Held);
 
+			vec2 velocity = groundBody.Velocity;
+
 			if (runLeft ^ runRight)
 			{
 				velocity.x = playerData.RunMaxSpeed * (runLeft ? -1 : 1);
@@ -138,12 +144,14 @@ namespace Zeldo.Entities
 
 			if (runUp ^ runDown)
 			{
-				velocity.z = playerData.RunMaxSpeed * (runUp ? -1 : 1);
+				velocity.y = playerData.RunMaxSpeed * (runUp ? -1 : 1);
 			}
 			else
 			{
-				velocity.z = 0;
+				velocity.y = 0;
 			}
+
+			groundBody.Velocity = velocity;
 		}
 
 		private void ProcessInteraction(FullInputData data)
@@ -192,18 +200,7 @@ namespace Zeldo.Entities
 
 		public override void Update(float dt)
 		{
-			Position += velocity * dt;
-
-			bow.Position = Position;
-			bow.Update(dt);
-
-			//sword.Position = Position;
-			//sword.Update(dt);
-
-			DebugView.Lines = new []
-			{
-				"Grab enabled: " + skillsEnabled[GrabIndex]
-			};
+			base.Update(dt);
 		}
 	}
 }

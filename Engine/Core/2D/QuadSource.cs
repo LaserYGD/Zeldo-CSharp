@@ -1,4 +1,5 @@
-﻿using static Engine.GL;
+﻿using GlmSharp;
+using static Engine.GL;
 
 namespace Engine.Core._2D
 {
@@ -22,6 +23,8 @@ namespace Engine.Core._2D
 		public uint Id { get; protected set; }
 		public int Width { get; protected set; }
 		public int Height { get; protected set; }
+
+		public ivec2 Dimensions => new ivec2(Width, Height);
 
 		public void Bind(uint index)
 		{

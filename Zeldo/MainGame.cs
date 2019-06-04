@@ -9,6 +9,7 @@ using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using Engine.Messaging;
 using Engine.Physics;
+using Engine.Shapes._2D;
 using Engine.UI;
 using Engine.Utility;
 using Engine.View;
@@ -22,6 +23,7 @@ using Zeldo.Entities.Enemies;
 using Zeldo.Entities.Objects;
 using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
+using Zeldo.Physics._2D;
 using Zeldo.Sensors;
 using Zeldo.UI;
 using Zeldo.UI.Hud;
@@ -34,6 +36,7 @@ namespace Zeldo
 	public class MainGame : Game, IReceiver
 	{
 		private const float PhysicsStep = 1 / 120f;
+		private const int PhysicsMaxSteps = 8;
 
 		private SpriteBatch sb;
 		private RenderTarget mainTarget;
@@ -42,8 +45,8 @@ namespace Zeldo
 		private Canvas canvas;
 		private Scene scene;
 		private Space space;
-		private World world;
-		private ShadowMapSizeTester shadowMapSizeTester;
+		private World world3D;
+		private World2D world2D;
 		private ScreenManager screenManager;
 		private List<IRenderTargetUser3D> renderTargetUsers;
 
@@ -54,7 +57,9 @@ namespace Zeldo
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glPrimitiveRestartIndex(Constants.RestartIndex);
 
+			Properties.Load("Enemy.properties");
 			Properties.Load("Entity.properties");
+			Properties.Load("Player.properties");
 			Properties.Load("UI.properties");
 			Properties.Load("View.properties");
 			Properties.Load("World.properties");
@@ -99,15 +104,19 @@ namespace Zeldo
 				entity2.OnCollision(entity1, p2, -n);
 			};
 			
-			world = new World(system);
+			world3D = new World(system);
+			world2D = new World2D();
 			space = new Space();
-			
+
+			canvas.Add(new GroundVisualizer(world2D));
+
 			scene = new Scene
 			{
 				Camera = camera,
 				Canvas = canvas,
 				Space = space,
-				World = world
+				World2D = world2D,
+				World3D = world3D
 			};
 
 			ModelBatch batch = scene.ModelBatch;
@@ -140,9 +149,8 @@ namespace Zeldo
             var body = new RigidBody(shape);
 		    body.IsStatic = true;
             
-            world.AddBody(body);
-
-			shadowMapSizeTester = new ShadowMapSizeTester(camera, scene.ModelBatch);
+			world2D.Add(new RigidBody2D(new Circle(2), true));
+            world3D.AddBody(body);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
@@ -168,7 +176,8 @@ namespace Zeldo
 
 		protected override void Update(float dt)
 		{
-			world.Step(dt, true, PhysicsStep, 8);
+			world2D.Step(dt, PhysicsStep, PhysicsMaxSteps);
+			world3D.Step(dt, true, PhysicsStep, PhysicsMaxSteps);
 			//space.Update();
 			scene.Update(dt);
 			camera.Update(dt);
@@ -183,26 +192,30 @@ namespace Zeldo
 
 		protected override void Draw()
 		{
+			// Render 3D targets.
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);
-			
+
 			renderTargetUsers.ForEach(u => u.DrawTargets());
-			shadowMapSizeTester.DrawTargets();
 			mainTarget.Apply();
 			scene.Draw(camera);
 
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glViewport(0, 0, (uint)Resolution.WindowWidth, (uint)Resolution.WindowHeight);
+			// Render 2D targets.
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
 			glDepthFunc(GL_NEVER);
 
+			canvas.DrawTargets(sb);
+
+			// Draw to the main screen.
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glViewport(0, 0, (uint)Resolution.WindowWidth, (uint)Resolution.WindowHeight);
+
+			sb.ApplyTarget(null);
 			mainSprite.Draw(sb);		
 			canvas.Draw(sb);
-			shadowMapSizeTester.Draw(sb);
-			
 			sb.Flush();
 		}
 	}
