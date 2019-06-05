@@ -62,11 +62,12 @@ namespace Zeldo.Entities
 
 		public override void Initialize(Scene scene)
 		{
-			int height = Properties.GetInt("player.height");
+			Height = Properties.GetInt("player.height");
+
 			float radius = Properties.GetFloat("player.ground.radius");
 
 			CreateModel(scene, "Player.obj");
-			CreateRigidBody(scene, new CylinderShape(height, radius));
+			CreateRigidBody(scene, new CylinderShape(Height, radius));
 			CreateGroundBody(scene, radius);
 
 			base.Initialize(scene);

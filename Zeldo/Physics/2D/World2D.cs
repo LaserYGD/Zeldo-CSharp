@@ -87,8 +87,11 @@ namespace Zeldo.Physics._2D
 				case ShapeTypes2D.Circle:
 					return ProcessCircle(dynamicCircle, (Circle)staticShape, ref v);
 
+				case ShapeTypes2D.Line:
+					return ProcessLine(dynamicCircle, (Line2D)staticShape, ref v);
+
 				case ShapeTypes2D.Rectangle:
-					return ProcessLine(dynamicCircle, (Rectangle)staticShape, ref v);
+					return ProcessRectangle(dynamicCircle, (Rectangle)staticShape, ref v);
 			}
 
 			return false;
@@ -117,9 +120,143 @@ namespace Zeldo.Physics._2D
 			return false;
 		}
 
-		private bool ProcessLine(Circle dynamicCircle, Rectangle staticRect, ref vec2 v)
+		private bool ProcessLine(Circle dynamicCircle, Line2D staticLine, ref vec2 v)
 		{
+			float d = Utilities.DistanceSquaredToLine(dynamicCircle.Position, staticLine);
+			float r = dynamicCircle.Radius;
+
+			if (d < r * r)
+			{
+				float penetration = r - (float)Math.Sqrt(d);
+
+				// This assumes that all static lines will be oriented such that the right-hand vector faces back into
+				// the stage (in order to be used as correction vector).
+				vec2 l = staticLine.P2 - staticLine.P1;
+				vec2 outVector = new vec2(-l.y, l.x);
+
+				v = Utilities.Normalize(outVector) * penetration;
+
+				return true;
+			}
+
+			v = vec2.Zero;
+
 			return false;
+		}
+
+		private bool ProcessRectangle(Circle dynamicCircle, Rectangle staticRect, ref vec2 v)
+		{
+			if (ProcessRectangleInternal(dynamicCircle, staticRect, ref v))
+			{
+				float rotation = staticRect.Rotation;
+
+				if (rotation != 0)
+				{
+					v = Utilities.Rotate(v, rotation);
+				}
+
+				return true;
+			}
+
+			return false;
+		}
+
+		private bool ProcessRectangleInternal(Circle dynamicCircle, Rectangle staticRect, ref vec2 v)
+		{
+			vec2 p1 = dynamicCircle.Position;
+			vec2 p2 = staticRect.Position;
+
+			float rotation = staticRect.Rotation;
+
+			if (rotation != 0)
+			{
+				p1 = Utilities.Rotate(p1 - p2, -rotation) + p2;
+			}
+
+			bool left = p1.x <= staticRect.Left;
+			bool right = p1.x >= staticRect.Right;
+			bool top = p1.y <= staticRect.Top;
+			bool bottom = p1.y >= staticRect.Bottom;
+
+			float radius = dynamicCircle.Radius;
+
+			bool ProcessCorner(vec2 p, ref vec2 result)
+			{
+				float squared = Utilities.DistanceSquared(p1, p);
+
+				if (squared <= radius * radius)
+				{
+					float distance = (float)Math.Sqrt(squared);
+
+					result = (p1 - p) / distance * (radius - distance);
+
+					return true;
+				}
+
+				return false;
+			}
+
+			bool ProcessHorizontal(ref vec2 result)
+			{
+				float dX = p1.x - p2.x;
+				float abs = Math.Abs(dX);
+				float halfWidth = staticRect.Width / 2;
+
+				if (abs <= radius + halfWidth)
+				{
+					result.x = (radius + halfWidth - abs) * Math.Sign(dX);
+
+					return true;
+				}
+
+				return false;
+			}
+
+			bool ProcessVertical(ref vec2 result)
+			{
+				float dY = p1.y - p2.y;
+				float abs = Math.Abs(dY);
+				float haflHeight = staticRect.Height / 2;
+
+				if (abs <= radius + haflHeight)
+				{
+					result.y = (radius + haflHeight - abs) * Math.Sign(dY);
+
+					return true;
+				}
+
+				return false;
+			}
+
+			// The logic here assumes that no dynamic circle will move fast enough over a single step for its center to
+			// be contained within the rectangle.
+			if (left)
+			{
+				if (top)
+				{
+					return ProcessCorner(new vec2(staticRect.Left, staticRect.Top), ref v);
+				}
+
+				return bottom
+					? ProcessCorner(new vec2(staticRect.Left, staticRect.Bottom), ref v)
+					: ProcessHorizontal(ref v);
+			}
+
+			if (right)
+			{
+				// Top-right corner.
+				if (top)
+				{
+					return ProcessCorner(new vec2(staticRect.Right, staticRect.Top), ref v);
+				}
+
+				// Bottom-right corner.
+				return bottom
+					? ProcessCorner(new vec2(staticRect.Right, staticRect.Bottom), ref v)
+					: ProcessHorizontal(ref v);
+			}
+
+			return ProcessVertical(ref v);
 		}
 
 		private vec2 MergeVectors(List<vec2> list)

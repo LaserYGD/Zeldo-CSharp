@@ -141,7 +141,7 @@ namespace Engine.Graphics._2D
 			DrawLine(line.P1, line.P2, color);
 		}
 
-		public void Draw(Circle circle, int segments, Color color, float scale = 1)
+		public void Draw(Circle circle, int segments, Color color)
 		{
 			Apply(primitiveShader, GL_LINE_LOOP);
 
@@ -151,8 +151,7 @@ namespace Engine.Graphics._2D
 
 			for (int i = 0; i < segments; i++)
 			{
-				vec2 p = (circle.Position + Utilities.Direction(increment * i + circle.Rotation) * circle.Radius) *
-					scale;
+				vec2 p = circle.Position + Utilities.Direction(increment * i + circle.Rotation) * circle.Radius;
 
 				int start = i * 3;
 
@@ -169,7 +168,7 @@ namespace Engine.Graphics._2D
 			Draw(bounds.ToRectangle(), color);
 		}
 
-		public void Draw(Rectangle rect, Color color, float scale = 1)
+		public void Draw(Rectangle rect, Color color)
 		{
 			Apply(primitiveShader, GL_LINE_LOOP);
 
@@ -180,7 +179,7 @@ namespace Engine.Graphics._2D
 
 			for (int i = 0; i < 4; i++)
 			{
-				vec2 p = corners[i] * scale;
+				vec2 p = corners[i];
 
 				int start = i * 3;
 

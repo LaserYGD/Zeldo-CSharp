@@ -7,12 +7,20 @@ namespace Zeldo.Entities.Core
 {
 	public abstract class Actor : LivingEntity
 	{
+		private float halfHeight;
+
 		protected bool onGround;
 
 		protected RigidBody2D groundBody;
 
 		protected Actor(EntityGroups group) : base(group)
 		{
+		}
+
+		protected float Height
+		{
+			get => halfHeight * 2;
+			set => halfHeight = value / 2;
 		}
 
 		protected RigidBody2D CreateGroundBody(Scene scene, float radius)
@@ -35,7 +43,7 @@ namespace Zeldo.Entities.Core
 			{
 				var p = groundBody.Position;
 
-				Position = new vec3(p.x, groundBody.Elevation, p.y);
+				Position = new vec3(p.x, groundBody.Elevation + halfHeight, p.y);
 			}
 			// It's assumed that all actors capable of going airborne have a controlling 3D body set.
 			else

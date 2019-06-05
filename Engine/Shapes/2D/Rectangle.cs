@@ -61,13 +61,39 @@ namespace Engine.Shapes._2D
 			set => position.y = value - Height / 2;
 		}
 
-		public vec2[] Corners => new []
+		public vec2[] Corners
 		{
-			new vec2(X, Y),
-			new vec2(Right, Y),
-			new vec2(Right, Bottom),
-			new vec2(X, Bottom)
-		};
+			get
+			{
+				float halfWidth = Width / 2;
+				float halfHeight = Height / 2;
+
+				var points = new []
+				{
+					new vec2(-halfWidth, -halfHeight),
+					new vec2(halfWidth, -halfHeight),
+					new vec2(halfWidth, halfHeight),
+					new vec2(-halfWidth, halfHeight)
+				};
+
+				if (Rotation != 0)
+				{
+					var matrix = Utilities.RotationMatrix2D(Rotation);
+
+					for (int i = 0; i < points.Length; i++)
+					{
+						points[i] = matrix * points[i];
+					}
+				}
+
+				for (int i = 0; i < points.Length; i++)
+				{
+					points[i] += position;
+				}
+
+				return points;
+			}
+		}
 
 		public override bool Contains(vec2 p)
 		{

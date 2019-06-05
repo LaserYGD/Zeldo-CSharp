@@ -139,7 +139,7 @@ namespace Zeldo
 			camera.Attach(new FollowCameraController(player));
 
 			scene.Add(player);
-			scene.ModelBatch.Add(new Model("WindowRoom.obj"));
+			scene.ModelBatch.Add(new Model("Map.obj"));
 			//scene.LoadFragment("WindmillRoom.json");
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
@@ -149,7 +149,16 @@ namespace Zeldo
             var body = new RigidBody(shape);
 		    body.IsStatic = true;
             
-			world2D.Add(new RigidBody2D(new Circle(2), true));
+			world2D.Add(new RigidBody2D(new Circle(2.5f) { Position = new vec2(-6, 6) }, true));
+			world2D.Add(new RigidBody2D(new Line2D(new vec2(-6, 3.5f), new vec2(-6, -2.5f)), true));
+			world2D.Add(new RigidBody2D(new Line2D(new vec2(-6, -2.5f), new vec2(-2.5f, -6)), true));
+			world2D.Add(new RigidBody2D(new Line2D(new vec2(-2.5f, -6), new vec2(3, -6)), true));
+			world2D.Add(new RigidBody2D(new Line2D(new vec2(3, -6), new vec2(3, -3)), true));
+			world2D.Add(new RigidBody2D(new Line2D(new vec2(3, -3), new vec2(6, -3)), true));
+			world2D.Add(new RigidBody2D(new Line2D(new vec2(6, -3), new vec2(6, 6)), true));
+			world2D.Add(new RigidBody2D(new Line2D(new vec2(6, 6), new vec2(-3.5f, 6)), true));
+			world2D.Add(new RigidBody2D(new Rectangle(0, 2, 2, 2), true));
+			world2D.Add(new RigidBody2D(new Rectangle(6, 1.5f, 2, 2) { Rotation = Constants.Pi / 4 }, true));
             world3D.AddBody(body);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
