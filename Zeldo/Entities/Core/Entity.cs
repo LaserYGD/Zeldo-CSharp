@@ -6,9 +6,11 @@ using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using Engine.Physics;
 using Engine.Shapes._2D;
+using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
+using Zeldo.Interfaces;
 using Zeldo.Physics._2D;
 using Zeldo.Sensors;
 
@@ -18,11 +20,11 @@ namespace Zeldo.Entities.Core
 	{
 		private vec3 position;
 		private quat orientation;
-		private List<Sensor> sensors;
-		private List<EntityAttachment> attachments;
+		private List<EntityAttachment2D> attachments2D;
+		private List<EntityAttachment3D> attachments3D;
 
 		// This body is also used by actors (entities that use the 2D movement system).
-		protected RigidBody controllingBody;
+		protected RigidBody controllingBody3D;
 
 		// The entity's transform properties (Position and Orientation) also update attachments. Since the controlling
         // physics body is itself an attachment, this would cause bodies to set their own transforms again (which is
@@ -33,29 +35,38 @@ namespace Zeldo.Entities.Core
 		{
 			Group = group;
 			orientation = quat.Identity;
-			attachments = new List<EntityAttachment>();
+			attachments2D = new List<EntityAttachment2D>();
+			attachments3D = new List<EntityAttachment3D>();
 			Components = new ComponentCollection();
 		}
-
-		protected List<Sensor> Sensors => sensors ?? (sensors = new List<Sensor>());
+		
 		protected ComponentCollection Components { get; }
 
 		public EntityGroups Group { get; }
 
 		public Scene Scene { get; protected set; }
 
-		public vec3 Position
+		public virtual vec3 Position
 		{
 			get => position;
 			set
 			{
 				position = value;
-				sensors?.ForEach(s => s.Position = value);
-				attachments.ForEach(a => a.Target.Position = value + a.Position);
 
-			    if (controllingBody != null && !selfUpdate)
+				foreach (var attachment in attachments2D)
+				{
+					var target = attachment.Target;
+
+					// TODO: Rotate position offset by the current orientation
+					target.Position = value.swizzle.xz + attachment.Position;
+					//target.Elevation = value.y;
+				}
+
+				attachments3D.ForEach(a => a.Target.Position = value + a.Position);
+
+			    if (controllingBody3D != null && !selfUpdate)
 			    {
-				    controllingBody.Position = value.ToJVector();
+				    controllingBody3D.Position = value.ToJVector();
 			    }
 			}
 		}
@@ -65,90 +76,143 @@ namespace Zeldo.Entities.Core
 			get => orientation;
 			set
 			{
+				// TODO: Rotating 2D attachments here as well.
 				orientation = value;
-				attachments.ForEach(a => a.Target.Orientation = value * a.Orientation);
+				attachments3D.ForEach(a => a.Target.Orientation = value * a.Orientation);
 
-			    if (controllingBody != null && !selfUpdate)
+			    if (controllingBody3D != null && !selfUpdate)
 			    {
-				    controllingBody.Orientation = value.ToJMatrix();
+				    controllingBody3D.Orientation = value.ToJMatrix();
 			    }
 			}
 		}
 
-		public RigidBody ControllingBody => controllingBody;
-
 		public virtual void Dispose()
 		{
-			sensors?.ForEach(Scene.Space.Remove);
-
-			foreach (var attachment in attachments)
+			foreach (var attachment in attachments2D)
 			{
 				var target = attachment.Target;
 
 				switch (attachment.AttachmentType)
 				{
-					case EntityAttachmentTypes.Model:
-						Scene.ModelBatch.Remove((Model)target);
+					case EntityAttachmentTypes2D.Body:
+						Scene.World2D.Remove((RigidBody2D)target);
+
+						break;
+
+					case EntityAttachmentTypes2D.Sensor:
+						Scene.Space.Remove((Sensor)target);
+
 						break;
 				}
 			}
 
-			if (controllingBody != null)
+			foreach (var attachment in attachments3D)
 			{
-				Scene.World3D.RemoveBody(controllingBody);
+				var target = attachment.Target;
+
+				switch (attachment.AttachmentType)
+				{
+					case EntityAttachmentTypes3D.Body:
+						Scene.World3D.RemoveBody(((TransformableBody)target).Body);
+
+						break;
+
+					case EntityAttachmentTypes3D.Model:
+						Scene.ModelBatch.Remove((Model)target);
+
+						break;
+				}
+			}
+
+			if (controllingBody3D != null)
+			{
+				Scene.World3D.RemoveBody(controllingBody3D);
 			}
 		}
 
-		protected void Attach(EntityAttachmentTypes attachmentType, ITransformable3D target)
+		private void Attach(EntityAttachmentTypes2D attachmentType, ITransformable2D target, vec2? nullablePosition,
+			float rotation)
 		{
-			Attach(attachmentType, target, vec3.Zero, quat.Identity);
+			vec2 aPosition = nullablePosition ?? vec2.Zero;
+
+			attachments2D.Add(new EntityAttachment2D(attachmentType, target, aPosition, rotation));
+
+			// TODO: Apply entity orientation to 2D attachments (i.e. extract flat rotation from the quaternion).
+			float effectiveRotation = rotation;
+
+			target.SetTransform(position.swizzle.xz + Utilities.Rotate(aPosition, effectiveRotation),
+				position.y, effectiveRotation);
 		}
 
-		protected void Attach(EntityAttachmentTypes attachmentType, ITransformable3D target, vec3 position,
-		    quat orientation)
+		private void Attach(EntityAttachmentTypes3D attachmentType, ITransformable3D target, vec3? nullablePosition,
+		    quat? nullableOrientation)
 		{
-			attachments.Add(new EntityAttachment(attachmentType, target, position, orientation));
+			// The "a" prefix stands for "attachment".
+			vec3 aPosition = nullablePosition ?? vec3.Zero;
+			quat aOrientation = nullableOrientation ?? quat.Identity;
+			quat effectiveOrientation = orientation * aOrientation;
+
+			attachments3D.Add(new EntityAttachment3D(attachmentType, target, aPosition, aOrientation));
+			target.SetTransform(position + aPosition * effectiveOrientation, effectiveOrientation);
 		}
 
-		protected Model CreateModel(Scene scene, string filename)
+		protected Model CreateModel(Scene scene, string filename, vec3? position = null, quat? orientation = null)
 		{
 			Model model = new Model(filename);
-			model.SetTransform(position, orientation);
-
-			Attach(EntityAttachmentTypes.Model, model);
+			
+			Attach(EntityAttachmentTypes3D.Model, model, position, orientation);
 			scene.ModelBatch.Add(model);
 
 			return model;
 		}
 
 		protected Sensor CreateSensor(Scene scene, Shape2D shape = null, bool enabled = true, int height = 1,
-			SensorTypes type = SensorTypes.Entity)
+			SensorTypes type = SensorTypes.Entity, vec2? position = null, float rotation = 0)
 		{
 			Sensor sensor = new Sensor(type, this, shape, height);
-			sensor.Position = position;
 			sensor.IsEnabled = enabled;
-
-			Sensors.Add(sensor);
+			
+			Attach(EntityAttachmentTypes2D.Sensor, sensor, position, rotation);
 			scene.Space.Add(sensor);
 
 			return sensor;
 		}
 
-		protected RigidBody CreateRigidBody(Scene scene, Shape shape, bool controlling = true)
+		protected RigidBody CreateRigidBody3D(Scene scene, Shape shape, bool isControlling = true,
+			bool isStatic = false, vec3? position = null, quat? orientation = null)
 		{
 			RigidBody body = new RigidBody(shape);
-		    body.Position = position.ToJVector();
-		    body.Orientation = orientation.ToJMatrix();
+			body.IsStatic = isStatic;
 			body.Tag = this;
 
             // Note that the contrlling body is intentionally not attached as a regular attachment. Doing so would
             // complicate transform sets by that body.
 			scene.World3D.AddBody(body);
 
-		    if (controlling)
+		    if (isControlling)
 		    {
-			    controllingBody = body;
+			    body.Position = this.position.ToJVector();
+			    body.Orientation = this.orientation.ToJMatrix();
+			    controllingBody3D = body;
 		    }
+		    else
+		    {
+			    Attach(EntityAttachmentTypes3D.Body, new TransformableBody(body), position, orientation);
+		    }
+
+			return body;
+		}
+
+		protected RigidBody2D CreateGroundBody(Scene scene, Shape2D shape, bool isStatic = false,
+			vec2? position = null, float rotation = 0)
+		{
+			var body = new RigidBody2D(shape, isStatic);
+			body.Position = Position.swizzle.xz;
+			body.Elevation = Position.z;
+
+			Attach(EntityAttachmentTypes2D.Body, body, position, rotation);
+			scene.World2D.Add(body);
 
 			return body;
 		}
@@ -176,11 +240,11 @@ namespace Zeldo.Entities.Core
 		{
 			Components.Update(dt);
 
-		    if (controllingBody != null)
+		    if (controllingBody3D != null)
 		    {
 		        selfUpdate = true;
-		        Position = controllingBody.Position.ToVec3();
-		        Orientation = controllingBody.Orientation.ToQuat();
+		        Position = controllingBody3D.Position.ToVec3();
+		        Orientation = controllingBody3D.Orientation.ToQuat();
 		        selfUpdate = false;
 		    }
 		}

@@ -79,15 +79,15 @@ namespace Zeldo.Sensors
 
 		private bool CheckIntersection(Sensor sensor1, Sensor sensor2)
 		{
-			int e1 = sensor1.Elevation;
-			int h1 = sensor1.Height;
+			float e1 = sensor1.Elevation;
+			float h1 = sensor1.Height;
 
-			int e2 = sensor2.Elevation;
-			int h2 = sensor2.Height;
+			float e2 = sensor2.Elevation;
+			float h2 = sensor2.Height;
 
 			if (e1 != e2)
 			{
-				int delta = Math.Abs(e1 - e2);
+				float delta = Math.Abs(e1 - e2);
 				float halfSum = (h1 + h2) / 2f;
 
 				if (delta > halfSum)

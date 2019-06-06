@@ -23,15 +23,31 @@ namespace Zeldo.Entities.Core
 			set => halfHeight = value / 2;
 		}
 
-		protected RigidBody2D CreateGroundBody(Scene scene, float radius)
+		public override vec3 Position
 		{
-			groundBody = new RigidBody2D(new Circle(radius));
-			groundBody.Position = Position.swizzle.xz;
-			groundBody.Elevation = Position.z;
+			get => base.Position;
+			set
+			{
+				if (onGround)
+				{
+					if (!selfUpdate)
+					{
+						groundBody.Position = value.swizzle.xz;
+						groundBody.Elevation = value.y;
+					}
 
-			scene.World2D.Add(groundBody);
+					controllingBody3D.Position = value.ToJVector();
+				}
 
-			return groundBody;
+				base.Position = value;
+			}
+		}
+
+		public override void Dispose()
+		{
+			Scene.World2D.Remove(groundBody);
+
+			base.Dispose();
 		}
 
 		public override void Update(float dt)
@@ -42,14 +58,14 @@ namespace Zeldo.Entities.Core
 			if (onGround)
 			{
 				var p = groundBody.Position;
-
+				
 				Position = new vec3(p.x, groundBody.Elevation + halfHeight, p.y);
 			}
 			// It's assumed that all actors capable of going airborne have a controlling 3D body set.
 			else
 			{
-				Position = controllingBody.Position.ToVec3();
-				Orientation = controllingBody.Orientation.ToQuat();
+				Position = controllingBody3D.Position.ToVec3();
+				Orientation = controllingBody3D.Orientation.ToQuat();
 			}
 
 			selfUpdate = false;

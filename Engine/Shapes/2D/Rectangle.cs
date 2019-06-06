@@ -95,6 +95,14 @@ namespace Engine.Shapes._2D
 			}
 		}
 
+		public Rectangle Clone(float scale)
+		{
+			var result = new Rectangle(X * scale, Y * scale, Width * scale, Height * scale);
+			result.Rotation = Rotation;
+
+			return result;
+		}
+
 		public override bool Contains(vec2 p)
 		{
 			if (Rotation != 0)

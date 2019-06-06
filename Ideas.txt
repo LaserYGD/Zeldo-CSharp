@@ -82,6 +82,22 @@
 
 - In dungeons, consider how individual rooms play into the flow of the entire dungeon (rather than just being isolated challenges unrelated to one another) => What's the over-arching objective of the dungeon? How does each isolated section help you progress towards it?
 
+- Giant (or bird/flying machine) that transports you over the world in real-time (with an option to skip to the other side) => Multiple forms of fast travel in general
+
+- Experiment with (and strongly consider) going for a seamless, interconnected world with unexpected shortcuts and loops (similar to the better parts of Dark Souls 1)
+
+- Dungeon that unexpectedly (and early) drops you through a breakable floor into an unknown area (to give the player a sense of unease since they no longer know where they are) => Could be used as a great opportunity to link back to an older, known area, or even allow a secret entrance into the dungeon by blowing up the ceiling (speedrunner trick?)
+
+
+
+
+
+
+
+
+
+
+
 
 
 

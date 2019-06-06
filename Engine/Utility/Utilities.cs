@@ -164,7 +164,7 @@ namespace Engine.Utility
 
 		public static vec2 Rotate(vec2 v, float rotation)
 		{
-			return RotationMatrix2D(rotation) * v;
+			return rotation == 0 ? v : RotationMatrix2D(rotation) * v;
 		}
 
 		public static mat2 RotationMatrix2D(float rotation)

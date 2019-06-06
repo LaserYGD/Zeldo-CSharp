@@ -1,7 +1,8 @@
 ﻿namespace Zeldo.Entities.Core
 {
-	public enum EntityAttachmentTypes
+	public enum EntityAttachmentTypes3D
 	{
+		Body,
 		Model
 	}
 }

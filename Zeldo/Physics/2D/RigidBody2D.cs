@@ -1,15 +1,16 @@
-﻿using Engine.Interfaces._2D;
-using Engine.Shapes._2D;
+﻿using Engine.Shapes._2D;
 using GlmSharp;
+using Zeldo.Interfaces;
 
 namespace Zeldo.Physics._2D
 {
-	public class RigidBody2D : IPositionable2D, IRotatable
+	public class RigidBody2D : ITransformable2D
 	{
 		public RigidBody2D(Shape2D shape, bool isStatic = false)
 		{
 			Shape = shape;
 			IsStatic = isStatic;
+			IsEnabled = true;
 		}
 
 		public vec2 Position
@@ -25,5 +26,13 @@ namespace Zeldo.Physics._2D
 		public float Rotation { get; set; }
 
 		public bool IsStatic { get; }
+		public bool IsEnabled { get; set; }
+
+		public void SetTransform(vec2 position, float elevation, float rotation)
+		{
+			Position = position;
+			Elevation = elevation;
+			Rotation = rotation;
+		}
 	}
 }

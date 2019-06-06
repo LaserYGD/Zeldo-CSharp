@@ -4,6 +4,7 @@ using Engine.Core._3D;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
+using Engine.Shapes._2D;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
@@ -27,7 +28,6 @@ namespace Zeldo.Entities
 		private InputBind jumpBindUsed;
 		private PlayerData playerData;
 		private PlayerControls controls;
-		private Model model;
 		private Sword sword;
 		private Bow bow;
 		
@@ -64,11 +64,13 @@ namespace Zeldo.Entities
 		{
 			Height = Properties.GetInt("player.height");
 
-			float radius = Properties.GetFloat("player.ground.radius");
+			var radius = Properties.GetFloat("player.ground.radius");
+			var groundShape = new Circle(radius);
 
 			CreateModel(scene, "Player.obj");
-			CreateRigidBody(scene, new CylinderShape(Height, radius));
-			CreateGroundBody(scene, radius);
+			CreateRigidBody3D(scene, new CylinderShape(Height, radius));
+			groundBody = CreateGroundBody(scene, groundShape);
+			sensor = CreateSensor(scene, groundShape);
 
 			base.Initialize(scene);
 		}

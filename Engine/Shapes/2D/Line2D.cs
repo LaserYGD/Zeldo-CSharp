@@ -22,6 +22,11 @@ namespace Engine.Shapes._2D
 
 		public vec2 P2 { get; set; }
 
+		public Line2D Clone(float scale)
+		{
+			return new Line2D(P1 * scale, P2 * scale);
+		}
+
 		public override bool Contains(vec2 p)
 		{
 			return false;

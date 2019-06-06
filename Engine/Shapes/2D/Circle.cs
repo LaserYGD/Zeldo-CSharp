@@ -16,6 +16,14 @@ namespace Engine.Shapes._2D
 
 		public float Radius { get; set; }
 
+		public Circle Clone(float scale)
+		{
+			var result = new Circle(Radius * scale);
+			result.Position = Position * scale;
+
+			return result;
+		}
+
 		public override bool Contains(vec2 p)
 		{
 			float squared = Utilities.DistanceSquared(p, Position);

@@ -27,6 +27,10 @@ namespace Zeldo.Physics._2D
 			(body.IsStatic ? staticBodies : dynamicBodies).Add(body);
 		}
 
+		public void Remove(RigidBody2D body)
+		{
+		}
+
 		public void Step(float dt, float step, int maxSteps)
 		{
 			accumulator += dt;
@@ -45,12 +49,22 @@ namespace Zeldo.Physics._2D
 		{
 			foreach (var dynamicBody in dynamicBodies)
 			{
+				if (!dynamicBody.IsEnabled)
+				{
+					continue;
+				}
+
 				dynamicBody.Position += dynamicBody.Velocity * step;
 
 				List<vec2> correctionList = new List<vec2>();
 
 				foreach (var staticBody in staticBodies)
 				{
+					if (!staticBody.IsEnabled)
+					{
+						continue;
+					}
+
 					if (ProcessBodies(dynamicBody, staticBody, out vec2 v))
 					{
 						correctionList.Add(v);
@@ -138,8 +152,6 @@ namespace Zeldo.Physics._2D
 
 				return true;
 			}
-
-			v = vec2.Zero;
 
 			return false;
 		}

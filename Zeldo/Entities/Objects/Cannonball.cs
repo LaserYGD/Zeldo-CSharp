@@ -1,7 +1,6 @@
 ﻿using Engine;
 using Engine.Shapes._2D;
 using Jitter.Collision.Shapes;
-using Jitter.LinearMath;
 using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
 
@@ -23,7 +22,7 @@ namespace Zeldo.Entities.Objects
 			CreateModel(scene, "Cannonball.obj");
 			CreateSensor(scene, new Circle(collisionRadius));
 			CreateSensor(scene, new Circle(pickupRadius));
-			CreateRigidBody(scene, new SphereShape(collisionRadius));
+			CreateRigidBody3D(scene, new SphereShape(collisionRadius));
 
 			base.Initialize(scene);
 		}

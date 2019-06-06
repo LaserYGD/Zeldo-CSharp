@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Engine;
 using Engine.Core;
 using Engine.Core._2D;
@@ -120,7 +121,8 @@ namespace Zeldo
 			};
 
 			ModelBatch batch = scene.ModelBatch;
-			batch.LightDirection = Utilities.Normalize(new vec3(1, -0.75f, -0.25f));
+			batch.Add(new Model("Map.obj"));
+			batch.LightDirection = Utilities.Normalize(new vec3(-1, -0.7f, -0.5f));
 
 			Bow bow = new Bow();
 			bow.Initialize(scene);
@@ -137,9 +139,20 @@ namespace Zeldo
 			player.Equip(bow);
 
 			camera.Attach(new FollowCameraController(player));
+			
+			for (int i = 0; i < 11; i++)
+			{
+				var cannonball = new Cannonball();
+				cannonball.Position = new vec3(-5 + i, 5, -5 + i);
+				
+				scene.Add(cannonball);
+			}
+
+			TreasureChest chest = new TreasureChest();
+			chest.Position = new vec3(-5.25f, 0, 0);
 
 			scene.Add(player);
-			scene.ModelBatch.Add(new Model("Map.obj"));
+			scene.Add(chest);
 			//scene.LoadFragment("WindmillRoom.json");
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
@@ -181,20 +194,13 @@ namespace Zeldo
 			MessageSystem.Unsubscribe(this);
 		}
 
-		private float rotation;
-
 		protected override void Update(float dt)
 		{
 			world2D.Step(dt, PhysicsStep, PhysicsMaxSteps);
 			world3D.Step(dt, true, PhysicsStep, PhysicsMaxSteps);
-			//space.Update();
+			space.Update();
 			scene.Update(dt);
 			camera.Update(dt);
-
-			vec2 v = Utilities.Direction(rotation);
-			rotation += dt / 4;
-
-			scene.ModelBatch.LightDirection = Utilities.Normalize(new vec3(v.x, -0.5f, v.y));
 
 			MessageSystem.ProcessChanges();
 		}
