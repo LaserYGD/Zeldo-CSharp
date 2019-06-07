@@ -156,7 +156,7 @@ namespace Zeldo.Entities.Core
 			attachments3D.Add(new EntityAttachment3D(attachmentType, target, aPosition, aOrientation));
 			target.SetTransform(position + aPosition * effectiveOrientation, effectiveOrientation);
 		}
-
+		
 		protected Model CreateModel(Scene scene, string filename, vec3? position = null, quat? orientation = null)
 		{
 			Model model = new Model(filename);
@@ -215,6 +215,42 @@ namespace Zeldo.Entities.Core
 			scene.World2D.Add(body);
 
 			return body;
+		}
+
+		protected void RemoveSensor(Sensor sensor = null)
+		{
+			var space = Scene.Space;
+
+			if (sensor != null)
+			{
+				space.Remove(sensor);
+
+				for (int i = attachments2D.Count - 1; i >= 0; i--)
+				{
+					if (attachments2D[i].Target == sensor)
+					{
+						attachments2D.RemoveAt(i);
+
+						return;
+					}
+				}
+
+				return;
+			}
+
+			// If no specific sensor is given, the first sensor in the attachment list is removed.
+			for (int i = attachments2D.Count - 1; i >= 0; i--)
+			{
+				var attachment = attachments2D[i];
+
+				if (attachment.AttachmentType == EntityAttachmentTypes2D.Sensor)
+				{
+					space.Remove((Sensor)attachment.Target);
+					attachments2D.RemoveAt(i);
+
+					return;
+				}
+			}
 		}
 
 		public virtual void Initialize(Scene scene)

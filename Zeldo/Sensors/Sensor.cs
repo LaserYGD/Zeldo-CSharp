@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using Engine.Interfaces;
 using Engine.Shapes._2D;
 using GlmSharp;
 using Zeldo.Interfaces;
 
 namespace Zeldo.Sensors
 {
-	public class Sensor : ITransformable2D, IDisposable
+	public class Sensor : ITransformable2D
 	{
-		private bool enabled;
-
 		public Sensor(SensorTypes type, object owner, Shape2D shape = null, int height = 1)
 		{
 			SensorType = type;
@@ -49,40 +48,26 @@ namespace Zeldo.Sensors
 		public Action<SensorTypes, object> OnSense { get; set; }
 		public Action<SensorTypes, object> OnSeparate { get; set; }
 
-		public bool IsEnabled
-		{
-			get => enabled;
-			set
-			{
-				if (enabled != value)
-				{
-					if (!value)
-					{
-						ClearContacts();
-					}
-
-					enabled = value;
-				}
-			}
-		}
+		public bool IsEnabled { get; set; }
+		public bool IsTogglePending { get; set; }
+		public bool IsMarkedForDestruction { get; set; }
 
 		public void SetTransform(vec2 position, float elevation, float rotation)
 		{
+			Position = position;
+			Elevation = elevation;
+			Rotation = rotation;
 		}
 
-		public void Dispose()
-		{
-			ClearContacts();
-			IsEnabled = false;
-		}
-
-	    private void ClearContacts()
+	    public void ClearContacts()
 	    {
-	        foreach (Sensor sensor in Contacts)
+	        foreach (Sensor other in Contacts)
 	        {
-	            sensor.Contacts.Remove(this);
-	            sensor.OnSeparate?.Invoke(SensorType, Owner);
-	        }
+				OnSeparate?.Invoke(other.SensorType, other.Owner);
+
+		        other.OnSeparate?.Invoke(SensorType, Owner);
+		        other.Contacts.Remove(this);
+			}
 
 	        Contacts.Clear();
         }

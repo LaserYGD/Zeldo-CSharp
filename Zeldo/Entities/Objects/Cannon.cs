@@ -23,7 +23,7 @@ namespace Zeldo.Entities.Objects
 	    {
 	    }
 
-	    public bool InteractionEnabled => true;
+	    public bool IsInteractionEnabled => true;
 
         public override void Initialize(Scene scene)
 	    {

@@ -8,6 +8,7 @@ using Engine.Graphics._2D;
 using Engine.Graphics._3D;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
+using Engine.Localization;
 using Engine.Messaging;
 using Engine.Physics;
 using Engine.Shapes._2D;
@@ -64,6 +65,8 @@ namespace Zeldo
 			Properties.Load("UI.properties");
 			Properties.Load("View.properties");
 			Properties.Load("World.properties");
+
+			Language.Reload(Languages.English);
 
 			camera = new Camera3D();
 			camera.IsOrthographic = true;

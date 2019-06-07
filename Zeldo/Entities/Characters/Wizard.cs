@@ -30,7 +30,7 @@ namespace Zeldo.Entities.Characters
 			};
 		}
 
-		public bool InteractionEnabled => true;
+		public bool IsInteractionEnabled => true;
 
 		public override void Initialize(Scene scene)
 		{

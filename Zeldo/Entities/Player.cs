@@ -85,6 +85,7 @@ namespace Zeldo.Entities
 			ProcessAttack(data);
 			ProcessJumping(data);
 			ProcessRunning(data);
+			ProcessInteraction(data);
 		}
 
 		private void ProcessAttack(FullInputData data)
@@ -164,11 +165,16 @@ namespace Zeldo.Entities
 				return;
 			}
 
-			foreach (Sensor contact in sensor.Contacts)
+			var contacts = sensor.Contacts;
+
+			for (int i = contacts.Count - 1; i >= 0; i--)
 			{
-				if (contact.Owner is IInteractive target && target.InteractionEnabled)
+				if (contacts[i].Owner is IInteractive target && target.IsInteractionEnabled)
 				{
 					target.OnInteract(this);
+
+					// Only one object can be interacted with each frame.
+					return;
 				}
 			}
 		}
@@ -199,11 +205,6 @@ namespace Zeldo.Entities
 
 		public void GiveItem(int id, int count = 1)
 		{
-		}
-
-		public override void Update(float dt)
-		{
-			base.Update(dt);
 		}
 	}
 }

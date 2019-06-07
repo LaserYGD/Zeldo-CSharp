@@ -88,10 +88,19 @@
 
 - Dungeon that unexpectedly (and early) drops you through a breakable floor into an unknown area (to give the player a sense of unease since they no longer know where they are) => Could be used as a great opportunity to link back to an older, known area, or even allow a secret entrance into the dungeon by blowing up the ceiling (speedrunner trick?)
 
+- Area with spooky fog (inspired by a Trials track [https://www.youtube.com/watch?v=XR1-OL8Ofrg, 1:26] that reminded me of the ghost houses from Super Mario World) => Lanterns
 
+- Could use a bunch of cool, different types of lanterns as a general theme throughout the game (forest, cobblestone streets, spooky, caves, etc.)
 
+- Lots of gears in the windmill (varying sizes with different mechanical effects)
 
+- A section in the underground caves where you need to trigger a large explosion to clear a path
 
+- Boss that uses a bow, foreshadowed by arrows deeply embedded into various objects (along with corpses) on the approach (inspired by a Trials track with a missile embedded in a cube)
+
+- In the area where you get the High Jump ability (the room itself or a nearby room), have a tall ladder that breaks when you try to climb it (or is breakable by sword) to entice a feeling of "Wait, what the fuck? How do I get out now?" => Could also have a ladder in the room itself, but then force jumps later (for a feeling of, oh shit, I could have been using this already)
+
+- A basic jump opportunity should be present in the first room (since some players will see a LTTP-style game and immediately assume you can't jump, only to later realize they could the whole time)
 
 
 

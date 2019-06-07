@@ -148,6 +148,8 @@
     <Compile Include="Interfaces\2D\IClickable.cs" />
     <Compile Include="Interfaces\2D\IRenderTargetUser2D.cs" />
     <Compile Include="Interfaces\3D\IRenderable3D.cs" />
+    <Compile Include="Localization\Language.cs" />
+    <Compile Include="Localization\Languages.cs" />
     <Compile Include="Networking\GamePeer.cs" />
     <Compile Include="Particles\Emitters\Emitter.cs" />
     <Compile Include="Particles\Particle.cs" />

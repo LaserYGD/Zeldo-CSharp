@@ -11,7 +11,7 @@ namespace Zeldo.Entities.Objects
 		{
 		}
 
-		public bool InteractionEnabled => true;
+		public bool IsInteractionEnabled => true;
 
 		public void OnInteract(Entity entity)
 		{

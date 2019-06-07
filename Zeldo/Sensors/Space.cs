@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Shapes._2D;
 
 namespace Zeldo.Sensors
 {
 	public class Space
 	{
 		private List<Sensor> sensors;
+
+		// The "main loop" refers to the first loop in the Update function that processes sensor intersection and
+		// separation. While that loop is active, sensors can't be removed directly, but are instead marked for
+		// destruction following the loop.
+		private bool mainLoopActive;
 
 		public Space()
 		{
@@ -23,14 +24,25 @@ namespace Zeldo.Sensors
 
 		public void Remove(Sensor sensor)
 		{
-			sensor.Dispose();
-			sensors.Remove(sensor);
+			if (mainLoopActive)
+			{
+				sensor.IsMarkedForDestruction = true;
+			}
+			else
+			{
+				sensor.ClearContacts();
+				sensors.Remove(sensor);
+			}
 		}
 
 		public void Update()
 		{
-			foreach (Sensor sensor1 in sensors)
+			mainLoopActive = true;
+
+			for (int i = 0; i < sensors.Count; i++)
 			{
+				var sensor1 = sensors[i];
+
 				if (!sensor1.IsEnabled)
 				{
 					continue;
@@ -38,9 +50,11 @@ namespace Zeldo.Sensors
 
 				var contacts1 = sensor1.Contacts;
 
-				foreach (Sensor sensor2 in sensors)
+				for (int j = i + 1; j < sensors.Count; j++)
 				{
-					if (sensor1 == sensor2 || !sensor2.IsEnabled)
+					var sensor2 = sensors[j];
+
+					if (!sensor2.IsEnabled)
 					{
 						continue;
 					}
@@ -72,6 +86,32 @@ namespace Zeldo.Sensors
 
 						sensor1.OnSense?.Invoke(sensor2.SensorType, sensor2.Owner);
 						sensor2.OnSense?.Invoke(sensor1.SensorType, sensor1.Owner);
+					}
+				}
+			}
+
+			mainLoopActive = false;
+
+			// Process changes (either from toggling the enabled flag or removing sensors marked for destruction).
+			for (int i = sensors.Count - 1; i >= 0; i--)
+			{
+				var sensor = sensors[i];
+
+				if (sensor.IsMarkedForDestruction)
+				{
+					sensor.ClearContacts();
+					sensors.RemoveAt(i);
+
+					continue;
+				}
+
+				if (sensor.IsTogglePending)
+				{
+					sensor.IsEnabled = !sensor.IsEnabled;
+
+					if (!sensor.IsEnabled)
+					{
+						sensor.ClearContacts();
 					}
 				}
 			}

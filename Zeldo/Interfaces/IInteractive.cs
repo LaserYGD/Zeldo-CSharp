@@ -4,7 +4,7 @@ namespace Zeldo.Interfaces
 {
 	public interface IInteractive
 	{
-		bool InteractionEnabled { get; }
+		bool IsInteractionEnabled { get; }
 
 		void OnInteract(Entity entity);
 	}

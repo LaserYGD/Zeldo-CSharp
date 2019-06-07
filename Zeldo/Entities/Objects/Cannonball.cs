@@ -12,7 +12,7 @@ namespace Zeldo.Entities.Objects
 		{
 		}
 
-		public bool InteractionEnabled => true;
+		public bool IsInteractionEnabled => true;
 
 		public override void Initialize(Scene scene)
 		{
@@ -20,7 +20,6 @@ namespace Zeldo.Entities.Objects
 			float pickupRadius = Properties.GetFloat("cannonball.pickup.radius");
 
 			CreateModel(scene, "Cannonball.obj");
-			CreateSensor(scene, new Circle(collisionRadius));
 			CreateSensor(scene, new Circle(pickupRadius));
 			CreateRigidBody3D(scene, new SphereShape(collisionRadius));
 
