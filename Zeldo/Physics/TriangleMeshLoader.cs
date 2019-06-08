@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Jitter.Collision;
 using Jitter.Collision.Shapes;
@@ -48,10 +49,14 @@ namespace Zeldo.Physics
 			}
 			while (lineIndex < lines.Length);
 
-			Octree octree = new Octree(points, tris);
+			var octree = new Octree(points, tris);
 			octree.BuildOctree();
 
-			return new TriangleMeshShape(octree);
+			// TODO: Lists are attached to the triangle mesh for debug rendering. They should be removed later.
+			var shape = new TriangleMeshShape(octree);
+			shape.Tag = new Tuple<List<JVector>, List<TriangleVertexIndices>>(points, tris);
+
+			return shape;
 		}
 		
 		public static JVector ParseJVector(string line)

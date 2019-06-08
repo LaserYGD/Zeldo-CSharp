@@ -64,6 +64,7 @@ namespace Engine.Graphics._3D
 			LightDirection = vec3.UnitX;
 			LightColor = Color.White;
 			AmbientIntensity = 0.1f;
+			IsEnabled = true;
 		}
 
 		public vec3 LightDirection { get; set; }
@@ -76,6 +77,8 @@ namespace Engine.Graphics._3D
 		public float ShadowNearPlane { get; set; }
 		public float ShadowFarPlane { get; set; }
 		public float AmbientIntensity { get; set; }
+
+		public bool IsEnabled { get; set; }
 
 		public unsafe void Add(Model model)
 		{
@@ -149,6 +152,11 @@ namespace Engine.Graphics._3D
 
 		public void DrawTargets()
 		{
+			if (!IsEnabled)
+			{
+				return;
+			}
+
 			glDisable(GL_CULL_FACE);
 
 			vec3 orthoHalfSize = ComputeShadowFrustum(out vec3 cameraCenter) / 2;
@@ -227,6 +235,11 @@ namespace Engine.Graphics._3D
 
 		public void Draw()
 		{
+			if (!IsEnabled)
+			{
+				return;
+			}
+
 			glEnable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
 			

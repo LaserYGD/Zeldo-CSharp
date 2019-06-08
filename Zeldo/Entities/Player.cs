@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Engine;
-using Engine.Core._3D;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
@@ -8,6 +7,8 @@ using Engine.Shapes._2D;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
+using Jitter.Dynamics;
+using Jitter.LinearMath;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Weapons;
 using Zeldo.Interfaces;
@@ -25,6 +26,7 @@ namespace Zeldo.Entities
 		private const int JumpIndex = (int)PlayerSkills.Jump;
 		
 		private Sensor sensor;
+		private RigidBody body3D;
 		private InputBind jumpBindUsed;
 		private PlayerData playerData;
 		private PlayerControls controls;
@@ -62,13 +64,14 @@ namespace Zeldo.Entities
 
 		public override void Initialize(Scene scene)
 		{
-			Height = Properties.GetInt("player.height");
+			Height = Properties.GetFloat("player.height");
 
 			var radius = Properties.GetFloat("player.ground.radius");
 			var groundShape = new Circle(radius);
 
 			CreateModel(scene, "Player.obj");
-			CreateRigidBody3D(scene, new CylinderShape(Height, radius));
+
+			body3D = CreateRigidBody3D(scene, new CylinderShape(Height, radius));
 			groundBody = CreateGroundBody(scene, groundShape);
 			sensor = CreateSensor(scene, groundShape);
 
@@ -205,6 +208,13 @@ namespace Zeldo.Entities
 
 		public void GiveItem(int id, int count = 1)
 		{
+		}
+
+		public override void Update(float dt)
+		{
+			body3D.Orientation = JMatrix.Identity;
+
+			base.Update(dt);
 		}
 	}
 }

@@ -20,16 +20,13 @@ namespace Engine.Graphics._3D
 		private uint indexId;
 		private uint mode;
 
-		public PrimitiveRenderer3D(Camera3D camera)
+		public PrimitiveRenderer3D(Camera3D camera, int bufferSize, int indexSize)
 		{
-			const int BufferCapacity = 10000;
-			const int IndexCapacity = 1000;
-
 			this.camera = camera;
 
-			buffer = new PrimitiveBuffer(BufferCapacity, IndexCapacity);
+			buffer = new PrimitiveBuffer(bufferSize, indexSize);
 
-			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexId, GL_DYNAMIC_DRAW);
+			GLUtilities.AllocateBuffers(bufferSize, indexSize, out bufferId, out indexId, GL_DYNAMIC_DRAW);
 
 			shader = new Shader();
 			shader.Attach(ShaderTypes.Vertex, "Primitives3D.vert");
@@ -105,17 +102,17 @@ namespace Engine.Graphics._3D
 			Buffer(points, color, GL_LINES, indices);
 		}
 
-		public void Draw(Circle circle, float y, Color color, int segments)
+		public void Draw(float radius, vec3 center, quat orientation, Color color, int segments)
 		{
 			vec3[] points = new vec3[segments];
 
 			float increment = Constants.TwoPi / segments;
 
-			for (int i = 0; i < segments; i++)
+			for (int i = 0; i < points.Length; i++)
 			{
-				vec2 p = circle.Position + Utilities.Direction(circle.Rotation + increment * i) * circle.Radius;
+				vec2 p = Utilities.Direction(increment * i) * radius;
 
-				points[i] = new vec3(p.x, y, p.y);
+				points[i] = orientation * new vec3(p.x, 0, p.y) + center;
 			}
 
 			Buffer(points, color, GL_LINE_LOOP);
@@ -131,6 +128,11 @@ namespace Engine.Graphics._3D
 			vec3[] points = { p1, p2 };
 
 			Buffer(points, color, GL_LINES);
+		}
+
+		public void DrawTriangle(vec3 p0, vec3 p1, vec3 p2, Color color)
+		{
+			DrawTriangle(new [] { p0, p1, p2 }, color);
 		}
 
 		public void DrawTriangle(vec3[] points, Color color)

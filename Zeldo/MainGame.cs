@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Engine;
-using Engine.Core;
 using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Graphics._2D;
 using Engine.Graphics._3D;
+using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using Engine.Localization;
@@ -21,7 +20,6 @@ using Jitter.Collision;
 using Jitter.Dynamics;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
-using Zeldo.Entities.Enemies;
 using Zeldo.Entities.Objects;
 using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
@@ -32,6 +30,7 @@ using Zeldo.UI.Hud;
 using Zeldo.UI.Screens;
 using Zeldo.View;
 using static Engine.GL;
+using static Engine.GLFW;
 
 namespace Zeldo
 {
@@ -50,6 +49,7 @@ namespace Zeldo
 		private World world3D;
 		private World2D world2D;
 		private ScreenManager screenManager;
+		private JitterVisualizer jitterVisualizer;
 		private List<IRenderTargetUser3D> renderTargetUsers;
 
 		public MainGame() : base("Zeldo")
@@ -177,6 +177,13 @@ namespace Zeldo
 			world2D.Add(new RigidBody2D(new Rectangle(6, 1.5f, 2, 2) { Rotation = Constants.Pi / 4 }, true));
             world3D.AddBody(body);
 
+			jitterVisualizer = new JitterVisualizer(camera, world3D);
+
+			MessageSystem.Subscribe(this, CoreMessageTypes.Keyboard, (messageType, data, dt) =>
+			{
+				ProcessKeyboard((KeyboardData)data);
+			});
+
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
 
 			// Calling this function here is required to ensure that all classes receive initial resize messages.
@@ -190,6 +197,27 @@ namespace Zeldo
 		private void OnResize()
 		{
 			mainSprite.ScaleTo(Resolution.WindowWidth, Resolution.WindowHeight);
+		}
+
+		private void ProcessKeyboard(KeyboardData data)
+		{
+			bool controlHeld = data.Query(GLFW_KEY_LEFT_CONTROL, InputStates.Held) ||
+				data.Query(GLFW_KEY_RIGHT_CONTROL, InputStates.Held);
+
+			if (!controlHeld)
+			{
+				return;
+			}
+
+			if (data.Query(GLFW_KEY_J, InputStates.PressedThisFrame))
+			{
+				jitterVisualizer.IsEnabled = !jitterVisualizer.IsEnabled;
+			}
+
+			if (data.Query(GLFW_KEY_M, InputStates.PressedThisFrame))
+			{
+				scene.ModelBatch.IsEnabled = !scene.ModelBatch.IsEnabled;
+			}
 		}
 
 		public void Dispose()
@@ -218,6 +246,7 @@ namespace Zeldo
 			renderTargetUsers.ForEach(u => u.DrawTargets());
 			mainTarget.Apply();
 			scene.Draw(camera);
+			jitterVisualizer.Draw(camera);
 
 			// Render 2D targets.
 			glDisable(GL_DEPTH_TEST);

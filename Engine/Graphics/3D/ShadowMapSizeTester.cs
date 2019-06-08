@@ -34,7 +34,7 @@ namespace Engine.Graphics._3D
 			localCamera.IsOrthographic = true;
 
 			renderTarget = new RenderTarget(300, 225, RenderTargetFlags.Color | RenderTargetFlags.Depth);
-			primitives = new PrimitiveRenderer3D(localCamera);
+			primitives = new PrimitiveRenderer3D(localCamera, 1000, 100);
 			sprite = new Sprite(renderTarget, null, Alignments.Left | Alignments.Top);
 			sprite.Mods = SpriteModifiers.FlipVertical;
 		}

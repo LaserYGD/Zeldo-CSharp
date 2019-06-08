@@ -153,6 +153,7 @@
     <Compile Include="Networking\GamePeer.cs" />
     <Compile Include="Particles\Emitters\Emitter.cs" />
     <Compile Include="Particles\Particle.cs" />
+    <Compile Include="Physics\JitterVisualizer.cs" />
     <Compile Include="Physics\PhysicsExtensions.cs" />
     <Compile Include="Physics\PhysicsUtilities.cs" />
     <Compile Include="Physics\RaycastResults.cs" />
