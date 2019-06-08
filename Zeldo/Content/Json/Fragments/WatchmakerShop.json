@@ -1,0 +1,14 @@
+﻿{
+	"Origin": "10, 20",
+	"Map": "WatchmakerShop.obj",
+	"Entities": [
+		{
+			"Type": "Watchmaker",
+			"Position": "0, 0"
+		},
+		{
+			"Type": "Door",
+			"Position": "8, 16"
+		}
+	]
+}

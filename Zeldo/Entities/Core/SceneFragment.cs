@@ -10,6 +10,9 @@ namespace Zeldo.Entities.Core
 		public static SceneFragment Load(string filename)
 		{
 			var json = JsonUtilities.Load("Fragments/" + filename);
+
+			string map = json["Map"].Value<string>();
+
 			var userData = json["UserData"];
 
 			if (userData != null)
@@ -27,7 +30,12 @@ namespace Zeldo.Entities.Core
 				}
 			}
 
-			return null;
+			return new SceneFragment(map);
+		}
+
+		private SceneFragment(string map)
+		{
+			MapModel = new Model("Maps/" + map);
 		}
 
 		public Model MapModel { get; }

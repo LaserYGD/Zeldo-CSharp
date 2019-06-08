@@ -1,4 +1,7 @@
-﻿using Zeldo.Entities.Core;
+﻿using Engine.Physics;
+using Engine.Shapes._2D;
+using Jitter.Collision.Shapes;
+using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
 
 namespace Zeldo.Entities.Objects
@@ -12,6 +15,16 @@ namespace Zeldo.Entities.Objects
 		}
 
 		public bool IsInteractionEnabled => true;
+
+		public override void Initialize(Scene scene)
+		{
+			var bounds = CreateModel(scene, "Door.obj").Mesh.Bounds;
+
+			CreateGroundBody(scene, new Rectangle(bounds.x, bounds.z), true);
+			CreateRigidBody3D(scene, new BoxShape(bounds.ToJVector()));
+
+			base.Initialize(scene);
+		}
 
 		public void OnInteract(Entity entity)
 		{

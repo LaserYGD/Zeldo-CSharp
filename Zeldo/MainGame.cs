@@ -59,6 +59,7 @@ namespace Zeldo
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glPrimitiveRestartIndex(Constants.RestartIndex);
 
+			Properties.Load("Character.properties");
 			Properties.Load("Enemy.properties");
 			Properties.Load("Entity.properties");
 			Properties.Load("Player.properties");
@@ -156,7 +157,7 @@ namespace Zeldo
 
 			scene.Add(player);
 			scene.Add(chest);
-			//scene.LoadFragment("WindmillRoom.json");
+			scene.LoadFragment("WatchmakerShop.json");
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
 			renderTargetUsers.Add(scene.ModelBatch);
