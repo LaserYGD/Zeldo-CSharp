@@ -209,20 +209,6 @@ namespace Engine.Utility
 			return closest;
 		}
 
-		public static string StripPath(string value)
-		{
-			int index = value.LastIndexOf('.');
-
-			return value.Substring(0, index);
-		}
-
-		public static string StripExtension(string value)
-		{
-			int index = value.LastIndexOf('.');
-
-			return value.Substring(0, index);
-		}
-
 		public static string[] WrapLines(string value, SpriteFont font, int width)
 		{
 			List<string> lines = new List<string>();

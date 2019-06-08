@@ -84,7 +84,7 @@
     </None>
     <None Include="Content\Fonts\Leviathon.fnt" />
     <None Include="Content\Json\Fragments\TestFragment.json" />
-    <None Include="Content\Json\Fragments\WindmillRoom.json">
+    <None Include="Content\Json\Fragments\Windmill\WindmillFloor8_0.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Json\Hud.json" />
@@ -135,7 +135,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Wall.obj" />
-    <None Include="Content\Meshes\WindowRoom.obj">
+    <None Include="Content\Meshes\Windmill\Physics\WindmillFloor8_0_Physics.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Meshes\Windmill\WindmillFloor8_0.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Properties\Character.properties">

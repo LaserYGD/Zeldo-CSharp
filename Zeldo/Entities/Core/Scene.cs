@@ -62,7 +62,10 @@ namespace Zeldo.Entities.Core
 
 		public void LoadFragment(string filename)
 		{
-			fragments.Add(SceneFragment.Load(filename));
+			var fragment = SceneFragment.Load(filename);
+			fragments.Add(fragment);
+			batch.Add(fragment.MapModel);
+			World3D.AddBody(fragment.MapBody);
 		}
 
 		public void UnloadFragment()

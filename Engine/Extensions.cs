@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GlmSharp;
 
 namespace Engine
@@ -29,6 +25,29 @@ namespace Engine
 			float[] values = quat.Values;
 
 			return new vec4(values[0], values[1], values[2], values[3]);
+		}
+
+		public static string StripPath(this string s)
+		{
+			int index = s.LastIndexOf('/');
+
+			return s.Substring(index + 1);
+		}
+
+		public static string StripPath(this string s, out string path)
+		{
+			int index = s.LastIndexOf('/');
+
+			path = s.Substring(0, index + 1);
+
+			return s.Substring(index + 1);
+		}
+
+		public static string StripExtension(this string s)
+		{
+			int index = s.LastIndexOf('.');
+
+			return s.Substring(0, index);
 		}
 	}
 }

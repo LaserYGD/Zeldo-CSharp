@@ -17,7 +17,7 @@ namespace Zeldo.Physics
 			// less data (fewer vertices and no texture coordinates). Physics meshes also aren't cached in the same way
 			// as regular models (since triangle meshes tend to be loaded in large chunks infrequently as the player
 			// moves around the world).
-			string[] lines = File.ReadAllLines("Content/Meshes/Physics/" + filename);
+			string[] lines = File.ReadAllLines("Content/Meshes/" + filename);
 			string line = lines[lineIndex];
 
 			// Parse points.

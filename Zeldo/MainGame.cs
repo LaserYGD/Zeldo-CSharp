@@ -125,8 +125,8 @@ namespace Zeldo
 			};
 
 			ModelBatch batch = scene.ModelBatch;
-			batch.Add(new Model("Map.obj"));
-			batch.LightDirection = Utilities.Normalize(new vec3(-1, -0.7f, -0.5f));
+			//batch.Add(new Model("Map.obj"));
+			batch.LightDirection = Utilities.Normalize(new vec3(-0.25f, -0.35f, -0.7f));
 
 			Bow bow = new Bow();
 			bow.Initialize(scene);
@@ -149,19 +149,20 @@ namespace Zeldo
 				var cannonball = new Cannonball();
 				cannonball.Position = new vec3(-5 + i, 5, -5 + i);
 				
-				scene.Add(cannonball);
+				//scene.Add(cannonball);
 			}
 
 			TreasureChest chest = new TreasureChest();
 			chest.Position = new vec3(-5.25f, 0, 0);
 
 			scene.Add(player);
-			scene.Add(chest);
-			scene.LoadFragment("WatchmakerShop.json");
+			//scene.Add(chest);
+			scene.LoadFragment("Windmill/WindmillFloor8_0.json");
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
 			renderTargetUsers.Add(scene.ModelBatch);
 
+			/*
 		    var shape = TriangleMeshLoader.Load("MapPhysics.obj");
             var body = new RigidBody(shape);
 		    body.IsStatic = true;
@@ -177,6 +178,7 @@ namespace Zeldo
 			world2D.Add(new RigidBody2D(new Rectangle(0, 2, 2, 2), true));
 			world2D.Add(new RigidBody2D(new Rectangle(6, 1.5f, 2, 2) { Rotation = Constants.Pi / 4 }, true));
             world3D.AddBody(body);
+			*/
 
 			jitterVisualizer = new JitterVisualizer(camera, world3D);
 

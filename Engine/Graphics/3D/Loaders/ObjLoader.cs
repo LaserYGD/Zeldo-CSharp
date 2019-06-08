@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Engine.Utility;
 using GlmSharp;
 
 namespace Engine.Graphics._3D.Loaders
@@ -106,7 +105,7 @@ namespace Engine.Graphics._3D.Loaders
 			while (lineIndex < lines.Length);
 
 			string texture = usesTexturing
-				? ParseTexture(Mesh.Path + Utilities.StripExtension(filename) + ".mtl")
+				? ParseTexture(Mesh.Path + filename.StripExtension() + ".mtl")
 				: null;
 
 			return new Mesh(points.ToArray(), source.ToArray(), normals.ToArray(), vertices.ToArray(),
@@ -144,7 +143,7 @@ namespace Engine.Graphics._3D.Loaders
 			string[] lines = File.ReadAllLines(filename);
 			string line = lines.First(l => l.StartsWith("map_Kd"));
 
-			return Utilities.StripPath(line);
+			return line.StripPath();
 		}
 	}
 }
