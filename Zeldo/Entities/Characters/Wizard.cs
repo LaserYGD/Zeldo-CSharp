@@ -15,19 +15,12 @@ namespace Zeldo.Entities.Characters
 	{
 		private Circle shape;
 		private Sensor sensor;
-		private SpeechBox speechBox;
-
-		private string[] lines;
+		private DialogueBox speechBox;
 
 		public Wizard() : base(EntityGroups.Character)
 		{
 			shape = new Circle(1);
 			sensor = new Sensor(SensorTypes.Entity, this, shape);
-
-			lines = new []
-			{
-				"You have your weapon drawn. Who are you and why did you break into my house?"
-			};
 		}
 
 		public bool IsInteractionEnabled => true;
@@ -35,14 +28,13 @@ namespace Zeldo.Entities.Characters
 		public override void Initialize(Scene scene)
 		{
 			sensor = CreateSensor(scene, shape);
-			speechBox = scene.Canvas.GetElement<SpeechBox>();
+			speechBox = scene.Canvas.GetElement<DialogueBox>();
 
 			base.Initialize(scene);
 		}
 
 		public void OnInteract(Entity entity)
 		{
-			speechBox.Refresh(lines[0]);
 		}
 	}
 }

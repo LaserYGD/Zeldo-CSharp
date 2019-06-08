@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Core;
+﻿using Engine.Core;
 using Engine.Interfaces;
 using Engine.Shaders;
-using GlmSharp;
 
 namespace Zeldo.Weather
 {
@@ -20,6 +14,8 @@ namespace Zeldo.Weather
 		{
 			dayNightCycle = new DayNightCycle();
 		}
+
+		public float TimeOfDay => dayNightCycle.TimeOfDay;
 
 		public void Update(float dt)
 		{

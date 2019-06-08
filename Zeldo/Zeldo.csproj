@@ -91,7 +91,7 @@
     <None Include="Content\Json\Items.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Json\Speech.json">
+    <None Include="Content\Json\Speech\Watchmaker_en.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Arrow.obj">
@@ -181,8 +181,10 @@
     <Compile Include="Data\SaveSlot.cs" />
     <Compile Include="Data\TileFlags.cs" />
     <Compile Include="Effects\Explosion.cs" />
+    <Compile Include="Entities\Characters\Character.cs" />
     <Compile Include="Entities\Characters\LeviathonHead.cs" />
     <Compile Include="Entities\Characters\LeviathonTentacle.cs" />
+    <Compile Include="Entities\Characters\Watchmaker.cs" />
     <Compile Include="Entities\Characters\Wizard.cs" />
     <Compile Include="Entities\Core\Actor.cs" />
     <Compile Include="Entities\Core\Entity.cs" />
@@ -252,6 +254,7 @@
     <Compile Include="UI\Hud\ItemShowcaseDisplay.cs" />
     <Compile Include="UI\Hud\PlayerHealthDisplay.cs" />
     <Compile Include="UI\Hud\PlayerManaDisplay.cs" />
+    <Compile Include="UI\Hud\WatchDisplay.cs" />
     <Compile Include="UI\Letterbox.cs" />
     <Compile Include="UI\PlayerDebugView.cs" />
     <Compile Include="UI\Screens\Settings\AudioScreen.cs" />
@@ -265,7 +268,11 @@
     <Compile Include="UI\Screens\MapScreen.cs" />
     <Compile Include="UI\Screens\ScreenControls.cs" />
     <Compile Include="UI\Screens\ScreenManager.cs" />
-    <Compile Include="UI\Speech\SpeechBox.cs" />
+    <Compile Include="UI\Speech\DialogueBox.cs" />
+    <Compile Include="UI\Speech\DialogueCondition.cs" />
+    <Compile Include="UI\Speech\DialogueConditionTypes.cs" />
+    <Compile Include="UI\Speech\DialogueToken.cs" />
+    <Compile Include="UI\Speech\DialogueTree.cs" />
     <Compile Include="UI\Subtitles.cs" />
     <Compile Include="View\FollowCameraController.cs" />
     <Compile Include="View\SpiralCameraController.cs" />

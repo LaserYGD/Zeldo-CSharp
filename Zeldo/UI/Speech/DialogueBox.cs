@@ -13,7 +13,7 @@ using static Engine.GL;
 
 namespace Zeldo.UI.Speech
 {
-	public class SpeechBox : CanvasElement, IRenderTargetUser2D
+	public class DialogueBox : CanvasElement, IRenderTargetUser2D
 	{
 		private const int Padding = 10;
 
@@ -27,7 +27,7 @@ namespace Zeldo.UI.Speech
 		private Shader glyphShader;
 		private Sprite fullSprite;
 
-		public SpeechBox()
+		public DialogueBox()
 		{
 			font = ContentCache.GetFont("Default");
 			lines = new List<SpriteText>();
@@ -60,14 +60,14 @@ namespace Zeldo.UI.Speech
 			renderTarget = new RenderTarget(Bounds.Dimensions, RenderTargetFlags.Color);
 		}
 
-		public void Refresh(string value)
+		public void Refresh(DialogueToken token)
 		{
 			if (!Visible)
 			{
 				Visible = true;
 			}
 
-			string[] wrapped = Utilities.WrapLines(value, font, Bounds.Width - Padding * 2);
+			string[] wrapped = Utilities.WrapLines(token.Value, font, Bounds.Width - Padding * 2);
 
 			lines.Clear();
 
