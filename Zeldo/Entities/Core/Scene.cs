@@ -66,6 +66,16 @@ namespace Zeldo.Entities.Core
 			fragments.Add(fragment);
 			batch.Add(fragment.MapModel);
 			World3D.AddBody(fragment.MapBody);
+
+			foreach (var entity in fragment.Entities)
+			{
+				Add(entity);
+			}
+
+			foreach (var body in fragment.GroundBodies)
+			{
+				World2D.Add(body);
+			}
 		}
 
 		public void UnloadFragment()

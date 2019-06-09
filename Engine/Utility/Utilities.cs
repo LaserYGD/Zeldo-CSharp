@@ -18,6 +18,11 @@ namespace Engine.Utility
 			return Enum.GetValues(typeof(T)).Length;
 		}
 
+		public static T EnumParse<T>(string value)
+		{
+			return (T)Enum.Parse(typeof(T), value);
+		}
+
 		public static byte Lerp(byte start, byte end, float t)
 		{
 			return (byte)((end - start) * t + start);
@@ -134,6 +139,29 @@ namespace Engine.Utility
 			int y = top ? 0 : (bottom ? height : height / 2);
 
 			return new ivec2(x, y);
+		}
+
+		public static vec2 ParseVec2(string value)
+		{
+			// The assumed format is "X|Y".
+			string[] tokens = value.Split('|');
+
+			float x = float.Parse(tokens[0]);
+			float y = float.Parse(tokens[1]);
+
+			return new vec2(x, y);
+		}
+
+		public static vec3 ParseVec3(string value)
+		{
+			// The assumed format is "X|Y|Z".
+			string[] tokens = value.Split('|');
+
+			float x = float.Parse(tokens[0]);
+			float y = float.Parse(tokens[1]);
+			float z = float.Parse(tokens[2]);
+
+			return new vec3(x, y, z);
 		}
 
 		public static vec2 Project(vec2 v, vec2 onto)

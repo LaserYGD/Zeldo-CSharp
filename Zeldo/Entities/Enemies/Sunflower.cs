@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Engine;
-using Engine.Shapes._2D;
-using Engine.Utility;
 using GlmSharp;
 using Zeldo.Entities.Core;
 
@@ -33,7 +31,7 @@ namespace Zeldo.Entities.Enemies
 
 		public override void Initialize(Scene scene)
 		{
-			CreateModel(scene, "Sunflower.dae");
+			CreateModel(scene, "Windmill/Sunflower.dae");
 
 			base.Initialize(scene);
 		}

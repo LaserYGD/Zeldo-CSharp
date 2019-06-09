@@ -1,6 +1,15 @@
 ﻿{
-	"Origin": "0, 0",
+	"Origin": "0, 0, 0",
 	"Entities": [
+		{
+			"Type": "Sunflower",
+			"Position": "-3, 0, -1"
+		}
+	],
+
+	"Ground": [
+		{
+		}
 	],
 
 	"UserData": {

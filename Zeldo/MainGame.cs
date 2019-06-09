@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Engine;
 using Engine.Core._2D;
 using Engine.Core._3D;
@@ -149,36 +150,15 @@ namespace Zeldo
 				var cannonball = new Cannonball();
 				cannonball.Position = new vec3(-5 + i, 5, -5 + i);
 				
-				//scene.Add(cannonball);
+				scene.Add(cannonball);
 			}
 
-			TreasureChest chest = new TreasureChest();
-			chest.Position = new vec3(-5.25f, 0, 0);
-
 			scene.Add(player);
-			//scene.Add(chest);
-			scene.LoadFragment("Windmill/WindmillFloor8_0.json");
+			scene.LoadFragment("Demo.json");
+			//scene.LoadFragment("Windmill/WindmillFloor8_0.json");
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
 			renderTargetUsers.Add(scene.ModelBatch);
-
-			/*
-		    var shape = TriangleMeshLoader.Load("MapPhysics.obj");
-            var body = new RigidBody(shape);
-		    body.IsStatic = true;
-            
-			world2D.Add(new RigidBody2D(new Circle(2.5f) { Position = new vec2(-6, 6) }, true));
-			world2D.Add(new RigidBody2D(new Line2D(new vec2(-6, 3.5f), new vec2(-6, -2.5f)), true));
-			world2D.Add(new RigidBody2D(new Line2D(new vec2(-6, -2.5f), new vec2(-2.5f, -6)), true));
-			world2D.Add(new RigidBody2D(new Line2D(new vec2(-2.5f, -6), new vec2(3, -6)), true));
-			world2D.Add(new RigidBody2D(new Line2D(new vec2(3, -6), new vec2(3, -3)), true));
-			world2D.Add(new RigidBody2D(new Line2D(new vec2(3, -3), new vec2(6, -3)), true));
-			world2D.Add(new RigidBody2D(new Line2D(new vec2(6, -3), new vec2(6, 6)), true));
-			world2D.Add(new RigidBody2D(new Line2D(new vec2(6, 6), new vec2(-3.5f, 6)), true));
-			world2D.Add(new RigidBody2D(new Rectangle(0, 2, 2, 2), true));
-			world2D.Add(new RigidBody2D(new Rectangle(6, 1.5f, 2, 2) { Rotation = Constants.Pi / 4 }, true));
-            world3D.AddBody(body);
-			*/
 
 			jitterVisualizer = new JitterVisualizer(camera, world3D);
 

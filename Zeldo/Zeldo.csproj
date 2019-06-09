@@ -83,7 +83,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Fonts\Leviathon.fnt" />
-    <None Include="Content\Json\Fragments\TestFragment.json" />
+    <None Include="Content\Json\Fragments\Demo.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Json\Fragments\Windmill\WindmillFloor8_0.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -109,16 +111,17 @@
     <None Include="Content\Meshes\Door.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Meshes\Map.obj">
+    <None Include="Content\Meshes\Demo.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Meshes\Physics\MapPhysics.obj">
+    <None Include="Content\Meshes\Physics\Demo_Physics.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Player.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Meshes\Sunflower.dae">
+    <None Include="Content\Meshes\Windmill\Groot.dae" />
+    <None Include="Content\Meshes\Windmill\Sunflower.dae">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\TreasureChest.obj">
@@ -213,6 +216,7 @@
     <Compile Include="Entities\Enemies\Sunflower.cs" />
     <Compile Include="Entities\Enemies\SunflowerHelper.cs" />
     <Compile Include="Entities\Enemies\SunflowerTendril.cs" />
+    <Compile Include="Entities\EntityFactory.cs" />
     <Compile Include="Entities\Hazards\PoisonBush.cs" />
     <Compile Include="Entities\JesterWall.cs" />
     <Compile Include="Entities\Mechanisms\Lever.cs" />

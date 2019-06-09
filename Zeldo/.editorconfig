@@ -32,6 +32,7 @@ dotnet_style_qualification_for_event = false:suggestion
 # Things I've added
 dotnet_style_prefer_auto_properties = false:silent
 dotnet_style_object_initializer = false:silent
+dotnet_style_collection_initializer = false:silent
 
 # Use language keywords instead of BCL types
 dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
