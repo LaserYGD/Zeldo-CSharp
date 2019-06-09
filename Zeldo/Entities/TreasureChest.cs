@@ -1,10 +1,13 @@
 ﻿using Engine;
 using Engine.Core._3D;
+using Engine.Physics;
 using Engine.Shapes._2D;
 using Engine.Smoothers._3D;
+using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
+using Jitter.Dynamics;
 using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
 
@@ -25,6 +28,8 @@ namespace Zeldo.Entities
 		private bool isOpened;
 
 		private Model lidModel;
+		private RigidBody lidBody;
+		private vec3 lidPivot;
 
 		public TreasureChest() : base(EntityGroups.Object)
 		{
@@ -55,7 +60,13 @@ namespace Zeldo.Entities
 			CreateGroundBody(scene, new Rectangle(bounds.x, bounds.z), true);
 			CreateSensor(scene, new Circle(interactionRadius));
 
-			lidModel = CreateModel(scene, "TreasureChestLid.obj", new vec3(-0.375f, bounds.y / 2, 0));
+			lidPivot = new vec3(-0.375f, bounds.y / 2, 0);
+			lidModel = CreateModel(scene, "TreasureChestLid.obj", lidPivot);
+
+			var lidBounds = lidModel.Mesh.Bounds;
+
+			lidBody = CreateRigidBody3D(scene, new BoxShape(lidBounds.ToJVector()), false, true,
+				new vec3(0, bounds.y / 2 + lidBounds.y / 2, 0));
 
 			base.Initialize(scene);
 		}
@@ -65,8 +76,21 @@ namespace Zeldo.Entities
 			Player player = (Player)entity;
 			player.GiveItem(itemId);
 
-			Components.Add(new OrientationSmoother(lidModel, quat.Identity, quat.FromAxisAngle(LidRange, vec3.UnitZ),
-				LidDuration, EaseTypes.Linear));
+			SingleTimer timer = new SingleTimer(time =>	{ }, LidDuration);
+			timer.Tick = progress =>
+			{
+				quat orientation = quat.SLerp(quat.Identity, quat.FromAxisAngle(LidRange, vec3.UnitZ), progress);
+				vec3 bodyPosition = Position + lidPivot + orientation * new vec3(lidModel.Mesh.Bounds.swizzle.xy / 2);
+
+				// Note that due to the way attachments work, the lid body won't be positioned properly if the chest is
+				// moved after (or while) being opened. This doesn't matter if treasure chests are fixed, but might
+				// need to be modified if chests can move after being spawned.
+				lidModel.Orientation = orientation;
+				lidBody.Orientation = orientation.ToJMatrix();
+				lidBody.Position = bodyPosition.ToJVector();
+			};
+
+			Components.Add(timer);
 
 			isOpened = true;
 			RemoveSensor();

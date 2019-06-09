@@ -32,6 +32,8 @@ namespace Engine.Timing
 
 			if (Elapsed >= Duration)
 			{
+				// Calling the tick function here allows tick logic to not be duplicated in the trigger function.
+				Tick?.Invoke(1);
 				trigger(Elapsed - Duration);
 
 				if (Repeatable)

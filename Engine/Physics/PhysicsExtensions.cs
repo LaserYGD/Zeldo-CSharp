@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GlmSharp;
+﻿using GlmSharp;
 using Jitter.LinearMath;
 
 namespace Engine.Physics
@@ -31,7 +26,7 @@ namespace Engine.Physics
 		{
 			mat3 m = new mat3(q);
 
-			return new JMatrix(m.m00, m.m10, m.m20, m.m01, m.m11, m.m21, m.m02, m.m12, m.m22);
+			return new JMatrix(m.m00, m.m01, m.m02, m.m10, m.m11, m.m12, m.m20, m.m21, m.m22);
 		}
 	}
 }

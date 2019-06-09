@@ -66,10 +66,9 @@ namespace Engine.Graphics._3D
 
 		public void Draw(Box box, Color color)
 		{
-			vec3 center = box.Position;
 			vec3 halfSize = new vec3(box.Width, box.Height, box.Depth) / 2;
-			vec3 min = center - halfSize;
-			vec3 max = center + halfSize;
+			vec3 min = -halfSize;
+			vec3 max = halfSize;
 			vec3[] points =
 			{
 				min,
@@ -88,8 +87,13 @@ namespace Engine.Graphics._3D
 			{
 				for (int i = 0; i < points.Length; i++)
 				{
-					points[i] *= orientation;
+					points[i] = orientation * points[i];
 				}
+			}
+
+			for (int i = 0; i < points.Length; i++)
+			{
+				points[i] += box.Position;
 			}
 
 			ushort[] indices =
