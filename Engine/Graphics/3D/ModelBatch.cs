@@ -19,10 +19,10 @@ namespace Engine.Graphics._3D
 		private Texture defaultTexture;
 		private mat4 lightMatrix;
 		private Camera3D camera;
-		private List<MeshHandle> handles;
+		private Dictionary<Mesh, MeshHandle> handles;
 
 		private uint bufferId;
-		private uint indexBufferId;
+		private uint indexId;
 
 		// These sizes are updated as data is buffered to the GPU. The data isn't actually stored here.
 		private int bufferSize;
@@ -35,7 +35,7 @@ namespace Engine.Graphics._3D
 
 			this.camera = camera;
 			
-			GLUtilities.AllocateBuffers(bufferSize, indexBufferSize, out bufferId, out indexBufferId, GL_STATIC_DRAW);
+			GLUtilities.AllocateBuffers(bufferSize, indexBufferSize, out bufferId, out indexId, GL_STATIC_DRAW);
 
 			modelShader = new Shader();
 			modelShader.Attach(ShaderTypes.Vertex, "ModelShadow.vert");
@@ -44,7 +44,7 @@ namespace Engine.Graphics._3D
 			modelShader.AddAttribute<float>(2, GL_FLOAT);
 			modelShader.AddAttribute<float>(3, GL_FLOAT);
 			modelShader.CreateProgram();
-			modelShader.Bind(bufferId, indexBufferId);
+			modelShader.Bind(bufferId, indexId);
 			modelShader.Use();
 			modelShader.SetUniform("shadowSampler", 0);
 			modelShader.SetUniform("textureSampler", 1);
@@ -54,11 +54,11 @@ namespace Engine.Graphics._3D
 			shadowMapShader.Attach(ShaderTypes.Fragment, "ShadowMap.frag");
 			shadowMapShader.AddAttribute<float>(3, GL_FLOAT, false, false, sizeof(float) * 5);
 			shadowMapShader.CreateProgram();
-			shadowMapShader.Bind(bufferId, indexBufferId);
+			shadowMapShader.Bind(bufferId, indexId);
 
 			shadowMapTarget = new RenderTarget(ShadowMapSize, ShadowMapSize, RenderTargetFlags.Depth);
 			defaultTexture = ContentCache.GetTexture("Grey.png");
-			handles = new List<MeshHandle>();
+			handles = new Dictionary<Mesh, MeshHandle>();
 
 			// These default values are arbitrary, just to make sure something shows up.
 			LightDirection = vec3.UnitX;
@@ -114,8 +114,22 @@ namespace Engine.Graphics._3D
 
 			int size = sizeof(float) * buffer.Length;
 			int indexSize = sizeof(ushort) * indices.Length;
-			
-			handles.Add(new MeshHandle(model, indices.Length, indexBufferSize, maxIndex););
+
+			bool meshExists = handles.TryGetValue(mesh, out var handle);
+
+			if (!meshExists)
+			{
+				handle = new MeshHandle(indices.Length, indexBufferSize, maxIndex);
+				handles.Add(mesh, handle);
+			}
+
+			handle.Models.Add(model);
+
+			if (meshExists)
+			{
+				return;
+			}
+
 			maxIndex += mesh.MaxIndex + 1;
 
 			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
@@ -127,7 +141,7 @@ namespace Engine.Graphics._3D
 
 			bufferSize += size;
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
 
 			fixed (ushort* address = &indices[0])
 			{
@@ -147,7 +161,7 @@ namespace Engine.Graphics._3D
 			shadowMapShader.Dispose();
 			shadowMapTarget.Dispose();
 
-			GLUtilities.DeleteBuffers(bufferId, indexBufferId);
+			GLUtilities.DeleteBuffers(bufferId, indexId);
 		}
 
 		public void DrawTargets()
@@ -176,13 +190,14 @@ namespace Engine.Graphics._3D
 			shadowMapTarget.Apply();
 			shadowMapShader.Apply();
 
-			foreach (MeshHandle handle in handles)
+			foreach (MeshHandle handle in handles.Values)
 			{
-				Model model = handle.Model;
-
-				model.RecomputeWorldMatrix();
-				shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix.Value);
-				Draw(handle);
+				foreach (Model model in handle.Models)
+				{
+					model.RecomputeWorldMatrix();
+					shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix.Value);
+					Draw(handle);
+				}
 			}
 		}
 
@@ -260,17 +275,19 @@ namespace Engine.Graphics._3D
 				0.5f, 0.5f, 0.5f, 1
 			);
 
-			foreach (MeshHandle handle in handles)
+			foreach (MeshHandle handle in handles.Values)
 			{
-				Model model = handle.Model;
-				mat4 world = model.WorldMatrix.Value;
-				quat orientation = model.Orientation;
+				foreach (Model model in handle.Models)
+				{
+					mat4 world = model.WorldMatrix.Value;
+					quat orientation = model.Orientation;
 
-				modelShader.SetUniform("orientation", orientation.ToMat4);
-				modelShader.SetUniform("mvp", ViewProjection * world);
-				modelShader.SetUniform("lightBiasMatrix", biasMatrix * lightMatrix * world);
+					modelShader.SetUniform("orientation", orientation.ToMat4);
+					modelShader.SetUniform("mvp", ViewProjection * world);
+					modelShader.SetUniform("lightBiasMatrix", biasMatrix * lightMatrix * world);
 
-				Draw(handle);
+					Draw(handle);
+				}
 			}
 		}
 

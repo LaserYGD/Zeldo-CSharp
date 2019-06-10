@@ -1,18 +1,19 @@
-﻿using Engine.Core._3D;
+﻿using System.Collections.Generic;
+using Engine.Core._3D;
 
 namespace Engine.Graphics._3D
 {
 	public class MeshHandle
 	{
-		public MeshHandle(Model model, int count, int offset, int baseVertex)
+		public MeshHandle(int count, int offset, int baseVertex)
 		{
-			Model = model;
 			Count = count;
 			Offset = offset;
 			BaseVertex = baseVertex;
+			Models = new List<Model>();
 		}
 
-		public Model Model { get; }
+		public List<Model> Models { get; }
 		
 		public int Count { get; }
 		public int Offset { get; }
