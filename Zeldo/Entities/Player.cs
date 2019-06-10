@@ -93,6 +93,8 @@ namespace Zeldo.Entities
 
 		private void ProcessAttack(FullInputData data)
 		{
+			return;
+
 			if (data.Query(controls.Attack, InputStates.PressedThisFrame, out InputBind bindUsed))
 			{
 				vec2 direction = vec2.Zero;

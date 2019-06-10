@@ -131,9 +131,10 @@
     <Compile Include="Core\DynamicComponent.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
+    <Compile Include="Graphics\3D\InstancedMeshHandle.cs" />
     <Compile Include="Graphics\3D\Loaders\DaeLoader.cs" />
     <Compile Include="Graphics\3D\ModelBatch.cs" />
-    <Compile Include="Graphics\3D\ModelHandle.cs" />
+    <Compile Include="Graphics\3D\MeshHandle.cs" />
     <Compile Include="Graphics\3D\Loaders\ObjLoader.cs" />
     <Compile Include="Graphics\3D\ShadowMapSizeTester.cs" />
     <Compile Include="Graphics\3D\ShadowMapVisualizer.cs" />
@@ -253,7 +254,11 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Content\Shaders\ModelShadowInstanced.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>xcopy /Y "$(SolutionDir)Engine\x86\glfw3.dll" "$(SolutionDir)Zeldo\bin\x86\Debug\x86\"

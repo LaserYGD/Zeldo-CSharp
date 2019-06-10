@@ -102,9 +102,9 @@
 
 - A basic jump opportunity should be present in the first room (since some players will see a LTTP-style game and immediately assume you can't jump, only to later realize they could the whole time)
 
+- Find creative ways for the player to use the environment to their advantage (rather than just swinging away with a weapon)
 
-
-
+- Try to build the game's difficulty curve to not just get harder by itself, but also start to encourage more creativity and usage of multiple skills and items together (along with the environment) => Players should grow to gain mastery over the world, not just get a bit better at one or two specific techniques => Should only push it to like 70%-80% on the main game though, and push the rest in secrets and the true ending (i.e. actual end of the story)
 
 
 

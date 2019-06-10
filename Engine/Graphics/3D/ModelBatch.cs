@@ -19,7 +19,7 @@ namespace Engine.Graphics._3D
 		private Texture defaultTexture;
 		private mat4 lightMatrix;
 		private Camera3D camera;
-		private List<ModelHandle> handles;
+		private List<MeshHandle> handles;
 
 		private uint bufferId;
 		private uint indexBufferId;
@@ -58,7 +58,7 @@ namespace Engine.Graphics._3D
 
 			shadowMapTarget = new RenderTarget(ShadowMapSize, ShadowMapSize, RenderTargetFlags.Depth);
 			defaultTexture = ContentCache.GetTexture("Grey.png");
-			handles = new List<ModelHandle>();
+			handles = new List<MeshHandle>();
 
 			// These default values are arbitrary, just to make sure something shows up.
 			LightDirection = vec3.UnitX;
@@ -114,8 +114,8 @@ namespace Engine.Graphics._3D
 
 			int size = sizeof(float) * buffer.Length;
 			int indexSize = sizeof(ushort) * indices.Length;
-
-			handles.Add(new ModelHandle(model, indices.Length, indexBufferSize, maxIndex));
+			
+			handles.Add(new MeshHandle(model, indices.Length, indexBufferSize, maxIndex););
 			maxIndex += mesh.MaxIndex + 1;
 
 			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
@@ -176,7 +176,7 @@ namespace Engine.Graphics._3D
 			shadowMapTarget.Apply();
 			shadowMapShader.Apply();
 
-			foreach (ModelHandle handle in handles)
+			foreach (MeshHandle handle in handles)
 			{
 				Model model = handle.Model;
 
@@ -260,7 +260,7 @@ namespace Engine.Graphics._3D
 				0.5f, 0.5f, 0.5f, 1
 			);
 
-			foreach (ModelHandle handle in handles)
+			foreach (MeshHandle handle in handles)
 			{
 				Model model = handle.Model;
 				mat4 world = model.WorldMatrix.Value;
@@ -274,7 +274,7 @@ namespace Engine.Graphics._3D
 			}
 		}
 
-		private unsafe void Draw(ModelHandle handle)
+		private unsafe void Draw(MeshHandle handle)
 		{
 			glDrawElementsBaseVertex(GL_TRIANGLES, (uint)handle.Count, GL_UNSIGNED_SHORT, (void*)handle.Offset,
 				handle.BaseVertex);

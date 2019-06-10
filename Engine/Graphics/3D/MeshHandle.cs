@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Core._3D;
+﻿using Engine.Core._3D;
 
 namespace Engine.Graphics._3D
 {
-	public class ModelHandle
+	public class MeshHandle
 	{
-		public ModelHandle(Model model, int count, int offset, int baseVertex)
+		public MeshHandle(Model model, int count, int offset, int baseVertex)
 		{
 			Model = model;
 			Count = count;
