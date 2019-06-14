@@ -13,6 +13,7 @@ namespace Engine.Input.Data
 		Xbox360,
 		Xbone,
 		DS3,
-		DS4
+		DS4,
+		Steam
 	}
 }

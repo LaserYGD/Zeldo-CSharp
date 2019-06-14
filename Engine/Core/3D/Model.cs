@@ -7,9 +7,13 @@ namespace Engine.Core._3D
 {
 	public class Model : ITransformable3D
 	{
-		public Model(string filename)
+		public Model(string filename) : this(ContentCache.GetMesh(filename))
 		{
-			Mesh = ContentCache.GetMesh(filename);
+		}
+
+		public Model(Mesh mesh)
+		{
+			Mesh = mesh;
 			Scale = vec3.Ones;
 			Orientation = quat.Identity;
 		}

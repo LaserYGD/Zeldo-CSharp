@@ -1,12 +1,15 @@
 ﻿using Engine.Physics;
 using Engine.Shapes._2D;
 using GlmSharp;
+using Zeldo.Controllers;
 using Zeldo.Physics._2D;
 
 namespace Zeldo.Entities.Core
 {
 	public abstract class Actor : LivingEntity
 	{
+		private CharacterController controller;
+
 		private float halfHeight;
 
 		protected bool onGround;
@@ -22,6 +25,12 @@ namespace Zeldo.Entities.Core
 			get => halfHeight * 2;
 			set => halfHeight = value / 2;
 		}
+
+		// This value is used to precisely control movement up and down spiral staircases (and maybe normal stairs
+		// too).
+		public float StairProgression { get; set; }
+
+		public RigidBody2D GroundBody => groundBody;
 
 		public override vec3 Position
 		{
@@ -50,10 +59,18 @@ namespace Zeldo.Entities.Core
 			base.Dispose();
 		}
 
+		public void Attach(CharacterController controller)
+		{
+			this.controller = controller;
+
+			controller.Attach(this);
+		}
+
 		public override void Update(float dt)
 		{
 			Components.Update(dt);
 			selfUpdate = true;
+			controller?.Update(dt);
 
 			if (onGround)
 			{

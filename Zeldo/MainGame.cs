@@ -21,6 +21,7 @@ using Jitter.Collision;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
+using Zeldo.Controllers;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Objects;
@@ -54,6 +55,7 @@ namespace Zeldo
 		private ScreenManager screenManager;
 		private JitterVisualizer jitterVisualizer;
 		private List<IRenderTargetUser3D> renderTargetUsers;
+		private StaircaseVisualizer staircaseVisualizer;
 
 		public MainGame() : base("Zeldo")
 		{
@@ -128,8 +130,10 @@ namespace Zeldo
 			};
 
 			ModelBatch batch = scene.ModelBatch;
-			//batch.Add(new Model("Map.obj"));
 			batch.LightDirection = Utilities.Normalize(new vec3(-0.25f, -0.35f, -0.7f));
+
+			//new SpiralStaircase(batch);
+			staircaseVisualizer = new StaircaseVisualizer(camera, 2, 5, 0.2f, 10, 0.4f);
 
 			Bow bow = new Bow();
 			bow.Initialize(scene);
@@ -141,11 +145,19 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
+			SpiralStaircase staircase = new SpiralStaircase(batch);
+			SpiralController controller = new SpiralController();
+			controller.Staircase = staircase;
+
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 			player.Equip(bow);
+			player.Attach(controller);
 
-			camera.Attach(new FollowCameraController(player));
+			var cameraController = new FollowCameraController(player);
+			cameraController.Staircase = staircase;
+
+			camera.Attach(cameraController);
 			
 			for (int i = 0; i < 11; i++)
 			{
@@ -156,8 +168,10 @@ namespace Zeldo
 			}
 
 			scene.Add(player);
-			scene.LoadFragment("Demo.json");
+			//scene.LoadFragment("Demo.json");
 			//scene.LoadFragment("Windmill/WindmillFloor8_0.json");
+
+			player.Position = new vec3(0, 0, 1);
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
 			renderTargetUsers.Add(scene.ModelBatch);
@@ -232,6 +246,7 @@ namespace Zeldo
 			mainTarget.Apply();
 			scene.Draw(camera);
 			jitterVisualizer.Draw(camera);
+			staircaseVisualizer.Draw();
 
 			// Render 2D targets.
 			glDisable(GL_DEPTH_TEST);
@@ -247,7 +262,7 @@ namespace Zeldo
 
 			sb.ApplyTarget(null);
 			mainSprite.Draw(sb);		
-			canvas.Draw(sb);
+			//canvas.Draw(sb);
 			sb.Flush();
 		}
 	}
