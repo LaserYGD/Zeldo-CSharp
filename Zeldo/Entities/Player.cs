@@ -85,6 +85,8 @@ namespace Zeldo.Entities
 
 		private void ProcessInput(FullInputData data)
 		{
+			return;
+
 			ProcessAttack(data);
 			ProcessJumping(data);
 			ProcessRunning(data);
@@ -93,8 +95,6 @@ namespace Zeldo.Entities
 
 		private void ProcessAttack(FullInputData data)
 		{
-			return;
-
 			if (data.Query(controls.Attack, InputStates.PressedThisFrame, out InputBind bindUsed))
 			{
 				vec2 direction = vec2.Zero;
@@ -215,6 +215,15 @@ namespace Zeldo.Entities
 		public override void Update(float dt)
 		{
 			body3D.Orientation = JMatrix.Identity;
+
+			var velocity = groundBody.Velocity;
+
+			DebugView.Lines = new []
+			{
+				$"Position: {Position.x}, {Position.y}, {Position.z}",
+				$"Stair position: {StairPosition.x}, {StairPosition.y}",
+				$"Velocity: {velocity.x}, {velocity.y}"
+			};
 
 			base.Update(dt);
 		}

@@ -118,7 +118,7 @@ namespace Zeldo
 			world2D = new World2D();
 			space = new Space();
 
-			canvas.Add(new GroundVisualizer(world2D));
+			//canvas.Add(new GroundVisualizer(world2D));
 
 			scene = new Scene
 			{
@@ -132,9 +132,6 @@ namespace Zeldo
 			ModelBatch batch = scene.ModelBatch;
 			batch.LightDirection = Utilities.Normalize(new vec3(-0.25f, -0.35f, -0.7f));
 
-			//new SpiralStaircase(batch);
-			staircaseVisualizer = new StaircaseVisualizer(camera, 2, 5, 0.2f, 10, 0.4f);
-
 			Bow bow = new Bow();
 			bow.Initialize(scene);
 
@@ -145,7 +142,23 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
-			SpiralStaircase staircase = new SpiralStaircase(batch);
+			const int StepCount = 10;
+
+			const float InnerRadius = 2;
+			const float OuterRadius = 5;
+			const float StepHeight = 0.2f;
+			const float StepSpread = Constants.Pi / StepCount;
+
+			staircaseVisualizer = new StaircaseVisualizer(camera, InnerRadius, OuterRadius, StepHeight, StepCount, StepSpread);
+
+			SpiralStaircase staircase = new SpiralStaircase(batch)
+			{
+				InnerRadius = InnerRadius,
+				OuterRadius = OuterRadius,
+				Height = StepHeight * StepCount,
+				Slope = (StepSpread * StepCount) / (StepHeight * StepCount)
+			};
+
 			SpiralController controller = new SpiralController();
 			controller.Staircase = staircase;
 
@@ -158,14 +171,6 @@ namespace Zeldo
 			cameraController.Staircase = staircase;
 
 			camera.Attach(cameraController);
-			
-			for (int i = 0; i < 11; i++)
-			{
-				var cannonball = new Cannonball();
-				cannonball.Position = new vec3(-5 + i, 5, -5 + i);
-				
-				scene.Add(cannonball);
-			}
 
 			scene.Add(player);
 			//scene.LoadFragment("Demo.json");
@@ -262,7 +267,7 @@ namespace Zeldo
 
 			sb.ApplyTarget(null);
 			mainSprite.Draw(sb);		
-			//canvas.Draw(sb);
+			canvas.Draw(sb);
 			sb.Flush();
 		}
 	}

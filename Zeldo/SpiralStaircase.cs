@@ -27,10 +27,11 @@ namespace Zeldo
 		// A spiral staircase's position is defined by its bottom-center.
 		public vec3 Position { get; set; }
 
-		public float InnerRadius { get; }
-		public float OuterRadius { get; }
+		public float InnerRadius { get; set; }
+		public float OuterRadius { get; set; }
+		public float Height { get; set; }
 
 		// In this context, slope is defined as height per full rotation around the central axis (two pi).
-		public float Slope { get; }
+		public float Slope { get; set; }
 	}
 }

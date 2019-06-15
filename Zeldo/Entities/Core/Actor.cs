@@ -27,8 +27,9 @@ namespace Zeldo.Entities.Core
 		}
 
 		// This value is used to precisely control movement up and down spiral staircases (and maybe normal stairs
-		// too).
-		public float StairProgression { get; set; }
+		// too). X represents progression up the staircase, while Y moves you forward and back within the staircases's
+		// inner and outer radii.
+		public vec2 StairPosition { get; set; }
 
 		public RigidBody2D GroundBody => groundBody;
 

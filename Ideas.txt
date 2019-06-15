@@ -106,6 +106,22 @@
 
 - Try to build the game's difficulty curve to not just get harder by itself, but also start to encourage more creativity and usage of multiple skills and items together (along with the environment) => Players should grow to gain mastery over the world, not just get a bit better at one or two specific techniques => Should only push it to like 70%-80% on the main game though, and push the rest in secrets and the true ending (i.e. actual end of the story)
 
+- Consider placing items (in the traditional Zelda sense) in more locations than just dungeons (such as the overworld or as a reward from an NPC questline)
+
+- Consider ways to remind the player of what they were doing if they walk away for a few days (or revisit an older area after being away for a while) => Could use a companion NPC who offers up lore and guidance on a second pass as a way to not only flesh out the zone, but re-orient the player's memory
+
+- Think about ways to make death meaningful without overaly inconveniencing the player (also worth asking whether death *should* be meaningful) => Ori accomplishes this by having you create your own save points, so death is impactful if you forgot to save for a while (but also forces repeated play)
+
+- Try to find ways to better weave the overworld and dungeons together (rather than a clean split when you walk through the door) => Subtle musical transitions could help make zones feel more distinct
+
+- What is the goal of each dungeon? Is there a single goal, or a few complimentary goals? Are you always trying to reach a boss? => Could add a dungeon where the boss guards the entrance, then you eventually "beat" the dungeon by leaving out another side and finding a hidden village
+
+- Brainstorm why various dungeons were built (need to balance gameplay with a rough idea of why something might exist) => For a dungeon filled with traps and riddles, could have a guidebook written by the creator that can be found
+
+- Area based on light and shadow => Could use colors as well, with distinct (artificial) patterns to accommodate colorblindness => If this is done, it'll be really important to test gameplay in black and white (with others playing)
+
+- Dungeon where someone else has already been there (you open a chest and are surprised to find nothing in it) => Is the thief a boss or a companion? Could even do this with a chest built up to contain an important item (via visual design and placement past a tough challenge) => How did the thief get there with the gauntlets intact?
+
 
 
 
