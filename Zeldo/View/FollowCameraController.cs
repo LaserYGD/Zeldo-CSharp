@@ -16,7 +16,7 @@ namespace Zeldo.View
 			this.player = player;
 		}
 
-		public SpiralStaircase Staircase { get; set; }
+		public vec2? Axis { get; set; }
 
 		public override void Initialize(Camera3D camera)
 		{
@@ -40,11 +40,9 @@ namespace Zeldo.View
 		{
 			vec3 p = player.Position;
 
-			if (Staircase != null)
+			if (Axis != null)
 			{
-				vec3 axis = Staircase.Position;
-
-				float rotation = Utilities.Angle(p.swizzle.xz, axis.swizzle.xz) + Constants.PiOverTwo;
+				float rotation = Utilities.Angle(p.swizzle.xz, Axis.Value) + Constants.PiOverTwo;
 
 				vec3 eye = p + quat.FromAxisAngle(-rotation, vec3.UnitY) * fixedOffset;
 

@@ -120,6 +120,17 @@ namespace Engine.Utility
 			return angle;
 		}
 
+		public static float Clamp(float v, float min, float max)
+		{
+			// Min and max are inclusive.
+			if (v < min)
+			{
+				return min;
+			}
+
+			return v > max ? max : v;
+		}
+
 		public static vec2 Direction(float angle)
 		{
 			float x = (float)Math.Cos(angle);

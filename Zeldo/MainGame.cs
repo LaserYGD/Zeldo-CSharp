@@ -142,21 +142,21 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
-			const int StepCount = 10;
+			const int StepCount = 50;
 
-			const float InnerRadius = 2;
-			const float OuterRadius = 5;
-			const float StepHeight = 0.2f;
-			const float StepSpread = Constants.Pi / StepCount;
+			const float InnerRadius = 3;
+			const float OuterRadius = 8;
+			const float StepHeight = 0.3f;
+			const float StepSpread = Constants.Pi * 4 / StepCount;
 
 			staircaseVisualizer = new StaircaseVisualizer(camera, InnerRadius, OuterRadius, StepHeight, StepCount, StepSpread);
 
-			SpiralStaircase staircase = new SpiralStaircase(batch)
+			SpiralStaircase staircase = new SpiralStaircase
 			{
 				InnerRadius = InnerRadius,
 				OuterRadius = OuterRadius,
-				Height = StepHeight * StepCount,
-				Slope = (StepSpread * StepCount) / (StepHeight * StepCount)
+				Slope =  StepHeight / StepSpread,
+				IsClockwise = true
 			};
 
 			SpiralController controller = new SpiralController();
@@ -168,7 +168,7 @@ namespace Zeldo
 			player.Attach(controller);
 
 			var cameraController = new FollowCameraController(player);
-			cameraController.Staircase = staircase;
+			cameraController.Axis = staircase.Position.swizzle.xz;
 
 			camera.Attach(cameraController);
 

@@ -1,4 +1,6 @@
-﻿using Engine.Shapes._2D;
+﻿using System;
+using Engine;
+using Engine.Shapes._2D;
 using Engine.Utility;
 using GlmSharp;
 
@@ -16,23 +18,26 @@ namespace Zeldo.Controllers
 			// used to control movement (velocity and radius specifically).
 			var body = Parent.GroundBody;
 
-			float bodyRadius = ((Circle)body.Shape).Radius;
-
 			vec2 velocity = body.Velocity;
 			vec2 stairPosition = Parent.StairPosition;
-			stairPosition += velocity * dt;
 
 			// The staircase position doesn't correspond to an actual world position directly. Instead, X represents
-			// progression up the staicase (between 0 and 1), while Y moves the actor forward and back (within the
-			// inner and outer radii).
+			// the radial distance around the central axis, while Y is the distance from that same axis.
+			float angle = stairPosition.x;
+			float radius = stairPosition.y;
+			float bodyRadius = ((Circle)body.Shape).Radius;
 
-			// X between 0 and 1
-			// Need base staircase lower position (just the stair's position), and top position
-			// Need to know total height in order to compute player height
-			// From that, can use slope to determine orientation
-			float y = Staircase.Position.y + Staircase.Height * stairPosition.x;
-			float angle = Staircase.Slope * y;
-			float radius = (Staircase.OuterRadius - Staircase.InnerRadius) * stairPosition.y + Staircase.InnerRadius;
+			// Y velocity needs to be applied before X (since radius affects how X velocity is converted to radians).
+			stairPosition.y += velocity.y * dt;
+			stairPosition.y = Utilities.Clamp(stairPosition.y, Staircase.InnerRadius + bodyRadius,
+				Staircase.OuterRadius - bodyRadius);
+
+			// The actor's X velocity needs to be converted to angular speed. Since arc distance = theta * radius,
+			// theta = arc distance (i.e. speed) / radius.
+			velocity.x /= radius * (Staircase.IsClockwise ? -1 : 1);
+			stairPosition.x += velocity.x * dt;
+
+			float y = Staircase.Position.y + Staircase.Slope * angle;
 
 			vec2 v = Utilities.Direction(angle) * radius;
 

@@ -295,7 +295,6 @@
     <Compile Include="UI\Speech\DialogueTree.cs" />
     <Compile Include="UI\Subtitles.cs" />
     <Compile Include="View\FollowCameraController.cs" />
-    <Compile Include="View\SpiralCameraController.cs" />
     <Compile Include="Weather\DayNightCycle.cs" />
     <Compile Include="Weather\Rain.cs" />
     <Compile Include="Weather\Snow.cs" />

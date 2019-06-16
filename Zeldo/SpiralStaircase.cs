@@ -1,15 +1,13 @@
-﻿using Engine;
-using Engine.Core._3D;
-using Engine.Graphics._3D;
-using Engine.Interfaces._3D;
+﻿using Engine.Interfaces._3D;
 using GlmSharp;
 
 namespace Zeldo
 {
 	public class SpiralStaircase : IPositionable3D
 	{
-		public SpiralStaircase(ModelBatch batch)
+		public SpiralStaircase()
 		{
+			/*
 			Mesh mesh = ContentCache.GetMesh("Castle/SpiralStep.obj");
 
 			float height = mesh.Bounds.y;
@@ -22,6 +20,7 @@ namespace Zeldo
 
 				batch.Add(model);
 			}
+			*/
 		}
 
 		// A spiral staircase's position is defined by its bottom-center.
@@ -29,9 +28,12 @@ namespace Zeldo
 
 		public float InnerRadius { get; set; }
 		public float OuterRadius { get; set; }
-		public float Height { get; set; }
 
-		// In this context, slope is defined as height per full rotation around the central axis (two pi).
+		// In this context, slope is defined as height per radian.
 		public float Slope { get; set; }
+
+		// Whether the staircase ascends clockwise or counter-clockwise affects how velocity is applied to actors on
+		// the staircase.
+		public bool IsClockwise { get; set; }
 	}
 }

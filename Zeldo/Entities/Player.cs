@@ -73,6 +73,7 @@ namespace Zeldo.Entities
 
 			body3D = CreateRigidBody3D(scene, new CylinderShape(Height, radius));
 			groundBody = CreateGroundBody(scene, groundShape);
+			StairPosition = new vec2(0, 5.5f);
 			sensor = CreateSensor(scene, groundShape);
 
 			base.Initialize(scene);
@@ -85,9 +86,7 @@ namespace Zeldo.Entities
 
 		private void ProcessInput(FullInputData data)
 		{
-			return;
-
-			ProcessAttack(data);
+			//ProcessAttack(data);
 			ProcessJumping(data);
 			ProcessRunning(data);
 			ProcessInteraction(data);
