@@ -12,8 +12,6 @@ namespace Zeldo.Controllers
 
 		public override void Update(float dt)
 		{
-			vec3 axis = Staircase.Position;
-
 			// Although the ground body isn't used in the same way on spiral staircases, some of its fields are still
 			// used to control movement (velocity and radius specifically).
 			var body = Parent.GroundBody;
