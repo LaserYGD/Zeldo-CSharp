@@ -8,7 +8,7 @@ namespace Engine.Shapes._3D
 {
 	public enum ShapeTypes3D
 	{
-		Cube,
+		Box,
 		Sphere
 	}
 }

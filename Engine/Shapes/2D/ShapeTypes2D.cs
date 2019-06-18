@@ -11,6 +11,7 @@ namespace Engine.Shapes._2D
 		Arc,
 		Circle,
 		Line,
+		Point,
 		Rectangle
 	}
 }

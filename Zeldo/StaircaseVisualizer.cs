@@ -12,17 +12,21 @@ namespace Zeldo
 		private PrimitiveRenderer3D primitives;
 		private List<vec3> points;
 
-		public StaircaseVisualizer(Camera3D camera, float innerRadius, float outerRadius, float stepHeight,
-			float stepCount, float stepSpread)
+		public StaircaseVisualizer(Camera3D camera, SpiralStaircase staircase, float stepHeight, float stepCount,
+			float stepSpread)
 		{
 			primitives = new PrimitiveRenderer3D(camera, 20000, 2000);
 			points = new List<vec3>();
 
+			float rotation = staircase.Rotation;
+
 			for (int i = 0; i < stepCount; i++)
 			{
-				float angle1 = stepSpread * i;
-				float angle2 = stepSpread * (i + 1);
+				float angle1 = stepSpread * i + rotation;
+				float angle2 = stepSpread * (i + 1) + rotation;
 				float baseY = stepHeight * i;
+				float innerRadius = staircase.InnerRadius;
+				float outerRadius = staircase.OuterRadius;
 
 				vec2 v1 = Utilities.Direction(angle1);
 				vec2 v2 = Utilities.Direction(angle2);
@@ -40,6 +44,11 @@ namespace Zeldo
 					d2 * innerRadius + top,
 					d2 * outerRadius + top
 				};
+
+				for (int j = 0; j < step.Length; j++)
+				{
+					step[j] += staircase.Position;
+				}
 
 				int[] indices = { 0, 1, 2, 3, 4, 5, 0, 2, 1, 3, 2, 4, 3, 5 };
 

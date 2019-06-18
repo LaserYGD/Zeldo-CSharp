@@ -40,7 +40,8 @@ namespace Zeldo.Entities.Weapons
 
 		public override void Initialize(Scene scene)
 		{
-			sensor = CreateSensor(scene, arc, false);
+			sensor = CreateSensor(scene, arc, SensorUsages.Hitbox);
+			sensor.IsEnabled = false;
 			sensor.OnSense = (sensorType, owner) =>
 			{
 				if (sensorType == SensorTypes.Entity && owner is ITargetable target)

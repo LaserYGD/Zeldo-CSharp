@@ -107,10 +107,10 @@ namespace Engine.Shapes._2D
 		{
 			if (Rotation != 0)
 			{
-				p = Utilities.Rotate(p, -Rotation);
+				p = Utilities.Rotate(p - Position, -Rotation);
 			}
 
-			return p.x >= Left && p.x <= Right && p.y >= Top && p.y <= Bottom;
+			return Math.Abs(p.x) <= Width / 2 && Math.Abs(p.y) <= Height / 2;
 		}
 	}
 }

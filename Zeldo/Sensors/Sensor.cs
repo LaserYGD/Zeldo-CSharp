@@ -9,10 +9,11 @@ namespace Zeldo.Sensors
 {
 	public class Sensor : ITransformable2D
 	{
-		public Sensor(SensorTypes type, object owner, Shape2D shape = null, int height = 1)
+		public Sensor(SensorTypes type, SensorUsages usage, object parent, Shape2D shape = null, float height = 1)
 		{
 			SensorType = type;
-			Owner = owner;
+			Usage = usage;
+			Parent = parent;
 			Shape = shape;
 			Height = height;
 			IsEnabled = true;
@@ -20,10 +21,11 @@ namespace Zeldo.Sensors
 		}
 
 		public SensorTypes SensorType { get; }
+		public SensorUsages Usage { get; set; }
 
-		public object Owner { get; }
+		public object Parent { get; }
 
-		public float Rotation
+		public virtual float Rotation
 		{
 			get => Shape.Rotation;
 			set => Shape.Rotation = value;
@@ -33,10 +35,11 @@ namespace Zeldo.Sensors
 		// vertically. Using an integer for elevation is sufficient for this purpose. Height allows certain sensors to
 		// catch collisions at any elevation (such as a cutscene trigger that should activate even if the player is
 		// airborne).
-		public float Elevation { get; set; }
+		public virtual float Elevation { get; set; }
+
 		public float Height { get; set; }
 
-		public vec2 Position
+		public virtual vec2 Position
 		{
 			get => Shape.Position;
 			set => Shape.Position = value;
@@ -51,8 +54,9 @@ namespace Zeldo.Sensors
 		public bool IsEnabled { get; set; }
 		public bool IsTogglePending { get; set; }
 		public bool IsMarkedForDestruction { get; set; }
+		public bool IsCompound { get; protected set; }
 
-		public void SetTransform(vec2 position, float elevation, float rotation)
+		public virtual void SetTransform(vec2 position, float elevation, float rotation)
 		{
 			Position = position;
 			Elevation = elevation;
@@ -63,9 +67,9 @@ namespace Zeldo.Sensors
 	    {
 	        foreach (Sensor other in Contacts)
 	        {
-				OnSeparate?.Invoke(other.SensorType, other.Owner);
+				OnSeparate?.Invoke(other.SensorType, other.Parent);
 
-		        other.OnSeparate?.Invoke(SensorType, Owner);
+		        other.OnSeparate?.Invoke(SensorType, Parent);
 		        other.Contacts.Remove(this);
 			}
 

@@ -6,11 +6,12 @@ namespace Zeldo.Entities.Core
 	public class EntityAttachment2D
 	{
 		public EntityAttachment2D(EntityAttachmentTypes2D attachmentType, ITransformable2D target, vec2 position,
-			float rotation)
+			float elevation, float rotation)
 		{
 			AttachmentType = attachmentType;
 			Target = target;
 			Position = position;
+			Elevation = elevation;
 			Rotation = rotation;
 		}
 
@@ -19,6 +20,7 @@ namespace Zeldo.Entities.Core
 
 		public vec2 Position { get; }
 
+		public float Elevation { get; }
 		public float Rotation { get; }
 	}
 }

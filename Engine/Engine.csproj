@@ -161,6 +161,7 @@
     <Compile Include="Physics\TransformableBody.cs" />
     <Compile Include="Properties.cs" />
     <Compile Include="Shapes\2D\Arc.cs" />
+    <Compile Include="Shapes\2D\Point.cs" />
     <Compile Include="Shapes\2D\Rectangle.cs" />
     <Compile Include="Shapes\2D\ShapeHelper2D.cs" />
     <Compile Include="Shapes\3D\Line3D.cs" />

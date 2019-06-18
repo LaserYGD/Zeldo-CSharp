@@ -57,9 +57,9 @@ namespace Zeldo.Entities.Core
 				{
 					var target = attachment.Target;
 
-					// TODO: Rotate position offset by the current orientation
+					// TODO: Rotate position offset by the current orientation.
 					target.Position = value.swizzle.xz + attachment.Position;
-					//target.Elevation = value.y;
+					target.Elevation = value.y + attachment.Elevation;
 				}
 
 				attachments3D.ForEach(a => a.Target.Position = value + a.Position);
@@ -132,11 +132,11 @@ namespace Zeldo.Entities.Core
 		}
 
 		private void Attach(EntityAttachmentTypes2D attachmentType, ITransformable2D target, vec2? nullablePosition,
-			float rotation)
+			float elevation, float rotation)
 		{
 			vec2 aPosition = nullablePosition ?? vec2.Zero;
 
-			attachments2D.Add(new EntityAttachment2D(attachmentType, target, aPosition, rotation));
+			attachments2D.Add(new EntityAttachment2D(attachmentType, target, aPosition, elevation, rotation));
 
 			// TODO: Apply entity orientation to 2D attachments (i.e. extract flat rotation from the quaternion).
 			float effectiveRotation = rotation;
@@ -167,13 +167,14 @@ namespace Zeldo.Entities.Core
 			return model;
 		}
 
-		protected Sensor CreateSensor(Scene scene, Shape2D shape = null, bool enabled = true, int height = 1,
-			SensorTypes type = SensorTypes.Entity, vec2? position = null, float rotation = 0)
+		protected Sensor CreateSensor(Scene scene, Shape2D shape = null, SensorUsages usage = SensorUsages.None,
+			float height = 1, vec2? position = null, float elevation = 0, float rotation = 0, bool enabled = true,
+			SensorTypes type = SensorTypes.Entity)
 		{
-			Sensor sensor = new Sensor(type, this, shape, height);
+			Sensor sensor = new Sensor(type, usage, this, shape, height);
 			sensor.IsEnabled = enabled;
 			
-			Attach(EntityAttachmentTypes2D.Sensor, sensor, position, rotation);
+			Attach(EntityAttachmentTypes2D.Sensor, sensor, position, elevation, rotation);
 			scene.Space.Add(sensor);
 
 			return sensor;
@@ -210,8 +211,9 @@ namespace Zeldo.Entities.Core
 			var body = new RigidBody2D(shape, isStatic);
 			body.Position = Position.swizzle.xz;
 			body.Elevation = Position.z;
-
-			Attach(EntityAttachmentTypes2D.Body, body, position, rotation);
+			
+			// Just like controlling 3D bodies, the ground body is intentionally not attached as a regular 2D
+			// attachment.
 			scene.World2D.Add(body);
 
 			return body;

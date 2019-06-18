@@ -53,8 +53,10 @@ namespace Zeldo
 		private World world3D;
 		private World2D world2D;
 		private ScreenManager screenManager;
-		private JitterVisualizer jitterVisualizer;
 		private List<IRenderTargetUser3D> renderTargetUsers;
+
+		private SpaceVisualizer spaceVisualizer;
+		private JitterVisualizer jitterVisualizer;
 		private StaircaseVisualizer staircaseVisualizer;
 
 		public MainGame() : base("Zeldo")
@@ -117,6 +119,7 @@ namespace Zeldo
 			world3D = new World(system);
 			world2D = new World2D();
 			space = new Space();
+			spaceVisualizer = new SpaceVisualizer(camera, space);
 
 			//canvas.Add(new GroundVisualizer(world2D));
 
@@ -142,39 +145,34 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
-			const int StepCount = 50;
+			const int StepCount = 25;
 
 			const float InnerRadius = 3;
 			const float OuterRadius = 8;
 			const float StepHeight = 0.3f;
-			const float StepSpread = Constants.Pi * 4 / StepCount;
+			const float StepSpread = Constants.Pi * 2 / StepCount;
+			const float Height = StepCount * StepHeight;
 
-			staircaseVisualizer = new StaircaseVisualizer(camera, InnerRadius, OuterRadius, StepHeight, StepCount, StepSpread);
-
-			SpiralStaircase staircase = new SpiralStaircase
+			SpiralStaircase staircase = new SpiralStaircase(Height)
 			{
 				InnerRadius = InnerRadius,
 				OuterRadius = OuterRadius,
 				Slope =  StepHeight / StepSpread,
-				IsClockwise = true
+				IsClockwise = true,
 			};
 
-			SpiralController controller = new SpiralController();
-			controller.Staircase = staircase;
+			staircase.Initialize(scene);
+			staircase.SetTransform(new vec3(11, -Height, -6), Constants.PiOverTwo);
+			staircaseVisualizer = new StaircaseVisualizer(camera, staircase, StepHeight, StepCount, StepSpread);
 
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 			player.Equip(bow);
-			player.Attach(controller);
 
-			var cameraController = new FollowCameraController(player);
-			cameraController.Axis = staircase.Position.swizzle.xz;
-
-			camera.Attach(cameraController);
+			camera.Attach(new FollowCameraController(player));
 
 			scene.Add(player);
-			//scene.LoadFragment("Demo.json");
-			//scene.LoadFragment("Windmill/WindmillFloor8_0.json");
+			scene.LoadFragment("Demo.json");
 
 			player.Position = new vec3(0, 0, 1);
 
@@ -252,6 +250,7 @@ namespace Zeldo
 			scene.Draw(camera);
 			jitterVisualizer.Draw(camera);
 			staircaseVisualizer.Draw();
+			spaceVisualizer.Draw();
 
 			// Render 2D targets.
 			glDisable(GL_DEPTH_TEST);

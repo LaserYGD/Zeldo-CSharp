@@ -31,9 +31,17 @@ namespace Zeldo.View
 			camera.OrthoHeight = Properties.GetFloat("camera.ortho.height");
 			camera.NearPlane = Properties.GetFloat("camera.near.plane");
 			camera.FarPlane = Properties.GetFloat("camera.far.plane");
-			camera.Orientation = new quat(mat4.LookAt(fixedOffset, vec3.Zero, vec3.UnitY));
 
 			base.Initialize(camera);
+
+			ResetOrientation();
+		}
+
+		// This function is used when leaving a spiral staircase to ensure the camera locks back into its default,
+		// axis-aligned orientation.
+		public void ResetOrientation()
+		{
+			Camera.Orientation = new quat(mat4.LookAt(fixedOffset, vec3.Zero, vec3.UnitY));
 		}
 
 		public override void Update()

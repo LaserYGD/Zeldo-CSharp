@@ -12,16 +12,29 @@ namespace Engine.Shapes._2D
 	{
 		public static bool CheckOverlap(Shape2D shape1, Shape2D shape2)
 		{
+			ShapeTypes2D type1 = shape1.ShapeType;
+			ShapeTypes2D type2 = shape2.ShapeType;
+
+			if (type1 == ShapeTypes2D.Point)
+			{
+				return shape2.Contains(shape1.Position);
+			}
+
+			if (type2 == ShapeTypes2D.Point)
+			{
+				return shape1.Contains(shape2.Position);
+			}
+
 			// By ensuring that the second shape sorts after the first (as far as shape type), the total number of
 			// switch cases can be lowered.
-			if ((int)shape1.ShapeType > (int)shape2.ShapeType)
+			if ((int)type1 > (int)type2)
 			{
 				Shape2D temp = shape1;
 				shape1 = shape2;
 				shape2 = temp;
 			}
 
-			switch (shape1.ShapeType)
+			switch (type1)
 			{
 				case ShapeTypes2D.Arc: return CheckOverlap((Arc)shape1, shape2);
 				case ShapeTypes2D.Circle: return CheckOverlap((Circle)shape1, shape2);

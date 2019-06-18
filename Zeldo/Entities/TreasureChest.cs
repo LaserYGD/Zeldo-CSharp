@@ -2,14 +2,13 @@
 using Engine.Core._3D;
 using Engine.Physics;
 using Engine.Shapes._2D;
-using Engine.Smoothers._3D;
 using Engine.Timing;
-using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
+using Zeldo.Sensors;
 
 namespace Zeldo.Entities
 {
@@ -58,7 +57,7 @@ namespace Zeldo.Entities
 			CreateRigidBody3D(scene, depthBox, false, true, new vec3(xOffset, 0, 0));
 			CreateRigidBody3D(scene, depthBox, false, true, new vec3(-xOffset, 0, 0));
 			CreateGroundBody(scene, new Rectangle(bounds.x, bounds.z), true);
-			CreateSensor(scene, new Circle(interactionRadius));
+			CreateSensor(scene, new Circle(interactionRadius), SensorUsages.Interaction);
 
 			lidPivot = new vec3(-0.375f, bounds.y / 2, 0);
 			lidModel = CreateModel(scene, "TreasureChestLid.obj", lidPivot);

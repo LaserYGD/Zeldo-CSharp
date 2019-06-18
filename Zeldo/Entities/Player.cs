@@ -9,6 +9,7 @@ using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
+using Zeldo.Controllers;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Weapons;
 using Zeldo.Interfaces;
@@ -16,6 +17,7 @@ using Zeldo.Items;
 using Zeldo.Sensors;
 using Zeldo.UI;
 using Zeldo.UI.Hud;
+using Zeldo.View;
 
 namespace Zeldo.Entities
 {
@@ -28,7 +30,6 @@ namespace Zeldo.Entities
 		private Sensor sensor;
 		private RigidBody body3D;
 		private InputBind jumpBindUsed;
-		private PlayerData playerData;
 		private PlayerControls controls;
 		private Sword sword;
 		private Bow bow;
@@ -40,13 +41,18 @@ namespace Zeldo.Entities
 		{
 			onGround = true;
 			sword = new Sword();
-			playerData = new PlayerData();
 			controls = new PlayerControls();
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 
 			skillsUnlocked = new bool[skillCount];
 			skillsEnabled = new bool[skillCount];
+
+			RunAcceleration = Properties.GetFloat("player.run.acceleration");
+			RunDeceleration = Properties.GetFloat("player.run.deceleration");
+			RunMaxSpeed = Properties.GetFloat("player.run.max.speed");
+
+			Add(new RunController(this));
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
@@ -73,8 +79,8 @@ namespace Zeldo.Entities
 
 			body3D = CreateRigidBody3D(scene, new CylinderShape(Height, radius));
 			groundBody = CreateGroundBody(scene, groundShape);
-			StairPosition = new vec2(0, 5.5f);
-			sensor = CreateSensor(scene, groundShape);
+			sensor = CreateSensor(scene, groundShape, SensorUsages.Hitbox | SensorUsages.Interaction, Height);
+			CreateSensor(scene, new Point(), SensorUsages.Control, 1, null, -0.75f);
 
 			base.Initialize(scene);
 		}
@@ -87,7 +93,7 @@ namespace Zeldo.Entities
 		private void ProcessInput(FullInputData data)
 		{
 			//ProcessAttack(data);
-			ProcessJumping(data);
+			//ProcessJumping(data);
 			ProcessRunning(data);
 			ProcessInteraction(data);
 		}
@@ -139,6 +145,26 @@ namespace Zeldo.Entities
 			bool runUp = data.Query(controls.RunUp, InputStates.Held);
 			bool runDown = data.Query(controls.RunDown, InputStates.Held);
 
+			vec2 direction = vec2.Zero;
+
+			if (runLeft ^ runRight)
+			{
+				direction.x = runLeft ? -1 : 1;
+			}
+
+			if (runUp ^ runDown)
+			{
+				direction.y = runUp ? -1 : 1;
+			}
+
+			if ((runLeft ^ runRight) && (runUp ^ runDown))
+			{
+				direction = Utilities.Normalize(direction);
+			}
+
+			RunDirection = direction;
+
+			/*
 			vec2 velocity = groundBody.Velocity;
 
 			if (runLeft ^ runRight)
@@ -160,6 +186,7 @@ namespace Zeldo.Entities
 			}
 
 			groundBody.Velocity = velocity;
+			*/
 		}
 
 		private void ProcessInteraction(FullInputData data)
@@ -173,7 +200,7 @@ namespace Zeldo.Entities
 
 			for (int i = contacts.Count - 1; i >= 0; i--)
 			{
-				if (contacts[i].Owner is IInteractive target && target.IsInteractionEnabled)
+				if (contacts[i].Parent is IInteractive target && target.IsInteractionEnabled)
 				{
 					target.OnInteract(this);
 
@@ -209,6 +236,23 @@ namespace Zeldo.Entities
 
 		public void GiveItem(int id, int count = 1)
 		{
+		}
+
+		public override void OnSpiralStaircaseEnter(SpiralStaircase staircase)
+		{
+			var controller = (FollowCameraController)Scene.Camera.Controller;
+			controller.Axis = staircase.Position.swizzle.xz;
+
+			base.OnSpiralStaircaseEnter(staircase);
+		}
+
+		public override void OnSpiralStaircaseLeave()
+		{
+			var controller = (FollowCameraController)Scene.Camera.Controller;
+			controller.Axis = null;
+			controller.ResetOrientation();
+
+			base.OnSpiralStaircaseLeave();
 		}
 
 		public override void Update(float dt)

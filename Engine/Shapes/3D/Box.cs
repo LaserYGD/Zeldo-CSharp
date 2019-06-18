@@ -17,7 +17,7 @@ namespace Engine.Shapes._3D
 		{
 		}
 
-		public Box(float width, float height, float depth) : base(ShapeTypes3D.Cube)
+		public Box(float width, float height, float depth) : base(ShapeTypes3D.Box)
 		{
 			Width = width;
 			Height = height;

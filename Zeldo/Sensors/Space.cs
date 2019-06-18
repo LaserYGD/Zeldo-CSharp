@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Engine.Shapes._2D;
 
 namespace Zeldo.Sensors
 {
@@ -16,6 +17,8 @@ namespace Zeldo.Sensors
 		{
 			sensors = new List<Sensor>();
 		}
+
+		public List<Sensor> Sensors => sensors;
 
 		public void Add(Sensor sensor)
 		{
@@ -48,13 +51,19 @@ namespace Zeldo.Sensors
 					continue;
 				}
 
+				var usage1 = sensor1.Usage;
 				var contacts1 = sensor1.Contacts;
+
+				bool isZone = sensor1.SensorType == SensorTypes.Zone;
 
 				for (int j = i + 1; j < sensors.Count; j++)
 				{
 					var sensor2 = sensors[j];
 
-					if (!sensor2.IsEnabled)
+					// By design, zone sensors are meant to never interact directly. Entities can interact with other
+					// entities, though.
+					if (!sensor2.IsEnabled || (isZone && sensor2.SensorType == SensorTypes.Zone) ||
+					    (usage1 & sensor2.Usage) == 0)
 					{
 						continue;
 					}
@@ -72,8 +81,8 @@ namespace Zeldo.Sensors
 							contacts1.Remove(sensor2);
 							contacts2.Remove(sensor1);
 
-							sensor1.OnSeparate?.Invoke(sensor2.SensorType, sensor2.Owner);
-							sensor2.OnSeparate?.Invoke(sensor1.SensorType, sensor1.Owner);
+							sensor1.OnSeparate?.Invoke(sensor2.SensorType, sensor2.Parent);
+							sensor2.OnSeparate?.Invoke(sensor1.SensorType, sensor1.Parent);
 						}
 
 						continue;
@@ -84,8 +93,8 @@ namespace Zeldo.Sensors
 						contacts1.Add(sensor2);
 						contacts2.Add(sensor1);
 
-						sensor1.OnSense?.Invoke(sensor2.SensorType, sensor2.Owner);
-						sensor2.OnSense?.Invoke(sensor1.SensorType, sensor1.Owner);
+						sensor1.OnSense?.Invoke(sensor2.SensorType, sensor2.Parent);
+						sensor2.OnSense?.Invoke(sensor1.SensorType, sensor1.Parent);
 					}
 				}
 			}
@@ -119,6 +128,17 @@ namespace Zeldo.Sensors
 
 		private bool CheckIntersection(Sensor sensor1, Sensor sensor2)
 		{
+			// For the time being, it's assumed that compound sensors will never interact.
+			if (sensor1.IsCompound)
+			{
+				return CheckCompoundIntersection((CompoundSensor)sensor1, sensor2);
+			}
+
+			if (sensor2.IsCompound)
+			{
+				return CheckCompoundIntersection((CompoundSensor)sensor2, sensor1);
+			}
+
 			float e1 = sensor1.Elevation;
 			float h1 = sensor1.Height;
 
@@ -128,7 +148,7 @@ namespace Zeldo.Sensors
 			if (e1 != e2)
 			{
 				float delta = Math.Abs(e1 - e2);
-				float halfSum = (h1 + h2) / 2f;
+				float halfSum = (h1 + h2) / 2;
 
 				if (delta > halfSum)
 				{
@@ -137,6 +157,28 @@ namespace Zeldo.Sensors
 			}
 
 			return sensor1.Shape.Overlaps(sensor2.Shape);
+		}
+
+		private bool CheckCompoundIntersection(CompoundSensor compound, Sensor other)
+		{
+			float baseElevation = compound.Elevation;
+			float h = other.Height;
+			float e = other.Elevation;
+
+			Shape2D shape = other.Shape;
+
+			foreach (var attachment in compound.Attachments)
+			{
+				float delta = Math.Abs(e - (baseElevation + attachment.Elevation));
+				float halfSum = (h + attachment.Height) / 2;
+
+				if (delta <= halfSum && shape.Overlaps(attachment.Shape))
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }

@@ -62,6 +62,8 @@ namespace Engine.View
 		public mat4 ViewProjection { get; private set; }
 		public mat4 ViewProjectionInverse { get; private set; }
 
+		public CameraController3D Controller => controller;
+
 		public void Dispose()
 		{
 			MessageSystem.Unsubscribe(this);

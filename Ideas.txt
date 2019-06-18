@@ -122,6 +122,7 @@
 
 - Dungeon where someone else has already been there (you open a chest and are surprised to find nothing in it) => Is the thief a boss or a companion? Could even do this with a chest built up to contain an important item (via visual design and placement past a tough challenge) => How did the thief get there with the gauntlets intact?
 
+- Giant's fortress, with enormous spiral steps that need to be climbed as if they were regular walls
 
 
 
