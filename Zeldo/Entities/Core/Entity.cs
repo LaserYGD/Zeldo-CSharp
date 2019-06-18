@@ -45,6 +45,7 @@ namespace Zeldo.Entities.Core
 		public EntityGroups Group { get; }
 
 		public Scene Scene { get; protected set; }
+		public RigidBody ControllingBody => controllingBody3D;
 
 		public virtual vec3 Position
 		{
@@ -187,7 +188,7 @@ namespace Zeldo.Entities.Core
 			body.IsStatic = isStatic;
 			body.Tag = this;
 
-            // Note that the contrlling body is intentionally not attached as a regular attachment. Doing so would
+            // Note that the controlling body is intentionally not attached as a regular attachment. Doing so would
             // complicate transform sets by that body.
 			scene.World3D.AddBody(body);
 

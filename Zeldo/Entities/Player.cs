@@ -30,18 +30,20 @@ namespace Zeldo.Entities
 		private Sensor sensor;
 		private RigidBody body3D;
 		private InputBind jumpBindUsed;
+		private PlayerData playerData;
 		private PlayerControls controls;
 		private Sword sword;
 		private Bow bow;
 		
 		private bool[] skillsUnlocked;
 		private bool[] skillsEnabled;
+		private bool jumpedThisFrame;
 
 		public Player() : base(EntityGroups.Player)
 		{
-			onGround = true;
 			sword = new Sword();
 			controls = new PlayerControls();
+			playerData = new PlayerData();
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 
@@ -52,7 +54,7 @@ namespace Zeldo.Entities
 			RunDeceleration = Properties.GetFloat("player.run.deceleration");
 			RunMaxSpeed = Properties.GetFloat("player.run.max.speed");
 
-			Add(new RunController(this));
+			Attach(new RunController(this));
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
@@ -93,7 +95,7 @@ namespace Zeldo.Entities
 		private void ProcessInput(FullInputData data)
 		{
 			//ProcessAttack(data);
-			//ProcessJumping(data);
+			ProcessJumping(data);
 			ProcessRunning(data);
 			ProcessInteraction(data);
 		}
@@ -132,10 +134,22 @@ namespace Zeldo.Entities
 
 		private void ProcessJumping(FullInputData data)
 		{
-			if (!skillsEnabled[JumpIndex])
+			if (skillsEnabled[JumpIndex] && data.Query(controls.Jump, InputStates.PressedThisFrame))
 			{
-				return;
+				Jump();
 			}
+		}
+
+		private void Jump()
+		{
+			skillsEnabled[JumpIndex] = false;
+			onGround = false;
+			jumpedThisFrame = true;
+
+			vec2 v = groundBody.Velocity;
+			controllingBody3D.LinearVelocity = new JVector(v.x, playerData.JumpSpeed, v.y);
+
+			Attach(new AirController(this));
 		}
 
 		private void ProcessRunning(FullInputData data)
@@ -255,9 +269,22 @@ namespace Zeldo.Entities
 			base.OnSpiralStaircaseLeave();
 		}
 
+		protected override void OnLand()
+		{
+			if (jumpedThisFrame)
+			{
+				return;
+			}
+
+			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
+
+			base.OnLand();
+		}
+
 		public override void Update(float dt)
 		{
 			body3D.Orientation = JMatrix.Identity;
+			jumpedThisFrame = false;
 
 			var velocity = groundBody.Velocity;
 
@@ -265,7 +292,9 @@ namespace Zeldo.Entities
 			{
 				$"Position: {Position.x}, {Position.y}, {Position.z}",
 				$"Stair position: {StairPosition.x}, {StairPosition.y}",
-				$"Velocity: {velocity.x}, {velocity.y}"
+				$"Velocity: {velocity.x}, {velocity.y}",
+				$"On ground: {onGround}",
+				$"Jump enabled: {skillsEnabled[JumpIndex]}"
 			};
 
 			base.Update(dt);

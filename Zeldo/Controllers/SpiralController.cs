@@ -30,6 +30,11 @@ namespace Zeldo.Controllers
 			float radius = stairPosition.y;
 			float bodyRadius = ((Circle)body.Shape).Radius;
 
+			velocity = ControlHelper.ApplyMovement(velocity, Parent, dt);
+
+			// Velocity is reassigned before being converted to radians.
+			body.Velocity = velocity;
+
 			// Y velocity needs to be applied before X (since radius affects how X velocity is converted to radians).
 			stairPosition.y += velocity.y * dt;
 			stairPosition.y = Utilities.Clamp(stairPosition.y, staircase.InnerRadius + bodyRadius,

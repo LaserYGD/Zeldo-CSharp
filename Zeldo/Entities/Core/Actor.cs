@@ -11,7 +11,7 @@ namespace Zeldo.Entities.Core
 {
 	public abstract class Actor : LivingEntity
 	{
-		private List<CharacterController> controllers;
+		private CharacterController controller;
 
 		private float halfHeight;
 
@@ -21,7 +21,6 @@ namespace Zeldo.Entities.Core
 
 		protected Actor(EntityGroups group) : base(group)
 		{
-			controllers = new List<CharacterController>();
 		}
 
 		protected float Height
@@ -71,9 +70,9 @@ namespace Zeldo.Entities.Core
 			base.Dispose();
 		}
 
-		public void Add(CharacterController controller, bool shouldComputeImmediately = false)
+		public void Attach(CharacterController controller, bool shouldComputeImmediately = false)
 		{
-			controllers.Add(controller);
+			this.controller = controller;
 
 			// Calling this function here ensures the actor will be positioned properly the moment it touches a new
 			// surface (which commonly causes the controller to change).
@@ -81,6 +80,28 @@ namespace Zeldo.Entities.Core
 			{
 				controller.Update(0);
 			}
+		}
+
+		public override void OnCollision(Entity entity, vec3 point, vec3 normal)
+		{
+			if (onGround)
+			{
+				return;
+			}
+
+			if (entity == null && normal.y == 1)
+			{
+				OnLand();
+			}
+		}
+
+		protected virtual void OnLand()
+		{
+			onGround = true;
+			groundBody.Elevation = 0;
+			groundBody.Velocity = controllingBody3D.LinearVelocity.ToVec3().swizzle.xz;
+
+			Attach(new RunController(this));
 		}
 
 		public virtual void OnSpiralStaircaseEnter(SpiralStaircase staircase)
@@ -91,19 +112,19 @@ namespace Zeldo.Entities.Core
 			float y = Utilities.Distance(Position.swizzle.xz, staircase.Position.swizzle.xz);
 
 			StairPosition = new vec2(x, y);
-			Add(new SpiralController(staircase, this), true);
+			Attach(new SpiralController(staircase, this), true);
 		}
 
 		public virtual void OnSpiralStaircaseLeave()
 		{
-			controllers.RemoveAt(1);
+			Attach(new RunController(this));
 		}
 
 		public override void Update(float dt)
 		{
 			Components.Update(dt);
 			selfUpdate = true;
-			controllers.ForEach(c => c.Update(dt));
+			controller?.Update(dt);
 
 			if (onGround)
 			{

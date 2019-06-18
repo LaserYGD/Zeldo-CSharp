@@ -102,18 +102,15 @@ namespace Zeldo
 			system.UseTriangleMeshNormal = true;
 			system.CollisionDetected += (body1, body2, point1, point2, normal, penetration) =>
 			{
-				return;
+				// Most physics bodies will have entities attached. If null, it's assumed that the body corresponds to
+				// a static part of the map.
+				Entity entity1 = body1.Tag as Entity;
+				Entity entity2 = body2.Tag as Entity;
 
-				// This assumes that all physics bodies will have entities attached.
-				Entity entity1 = (Entity)body1.Tag;
-				Entity entity2 = (Entity)body2.Tag;
+				vec3 n = Utilities.Normalize(normal.ToVec3());
 
-				vec3 p1 = point1.ToVec3();
-				vec3 p2 = point2.ToVec3();
-				vec3 n = normal.ToVec3();
-
-				entity1.OnCollision(entity2, p1, n);
-				entity2.OnCollision(entity1, p2, -n);
+				entity1?.OnCollision(entity2, point1.ToVec3(), n);
+				entity2?.OnCollision(entity1, point2.ToVec3(), -n);
 			};
 			
 			world3D = new World(system);
@@ -174,7 +171,7 @@ namespace Zeldo
 			scene.Add(player);
 			scene.LoadFragment("Demo.json");
 
-			player.Position = new vec3(0, 0, 1);
+			player.Position = new vec3(0, 20, 0);
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
 			renderTargetUsers.Add(scene.ModelBatch);
