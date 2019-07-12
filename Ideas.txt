@@ -106,7 +106,7 @@
 
 - Try to build the game's difficulty curve to not just get harder by itself, but also start to encourage more creativity and usage of multiple skills and items together (along with the environment) => Players should grow to gain mastery over the world, not just get a bit better at one or two specific techniques => Should only push it to like 70%-80% on the main game though, and push the rest in secrets and the true ending (i.e. actual end of the story)
 
-- Consider placing items (in the traditional Zelda sense) in more locations than just dungeons (such as the overworld or as a reward from an NPC questline)
+- Consider placing items (in the traditional Zelda sense) in more locations than just dungeons (such as the overworld or as a reward from an NPC questline)z
 
 - Consider ways to remind the player of what they were doing if they walk away for a few days (or revisit an older area after being away for a while) => Could use a companion NPC who offers up lore and guidance on a second pass as a way to not only flesh out the zone, but re-orient the player's memory
 
@@ -130,5 +130,34 @@
 
 - Living lava (creatures that rise from the lava with particular animations and patterns, with dripping lava) => Uses the essence of life, or maybe the essence of mind?
 
+- Consider fleshing out items you find as real things that exist (inspired by Joseph Anderson's video on Obra Dinn talking about how the surgeon used the magical pocket watch)
 
+- Try to make the player feel a sense of existing within the game's world (inspired by Mark Brown's video on Metro Exodus)
 
+- Make sure the world is calling out to be explored (inspired by Mark Brown's video on Halo: ODST, where he mentioned that the city largely looks the same, is too dark, and too heavily pushes you in a preset direction)
+
+- Health/energy that flies to you on proximity and can be outrun if you're fast enough (similar to Ori), but can be used in a hidden way to activate certain triggers in the world if you move in a way that causes the resource to fly into the object (secret speedrunning tech)
+
+- After you defeat a major boss, try to have the world change in some tangible, real way (this relates to the boss's role and purpose in the world)
+
+- Elevators (maybe wooden ones in the windmill?)
+
+- A researcher who builds (or is attempting to build) an automaton (i.e. an android-like creation) by attuning the essence of mind (leaning towards making this a friendly character rather than used for evil purposes)
+
+- Remember to make fights (especially boss fights) interesting, not just difficult for the sake of it (inspired by Matthewmatosis's video on Dark Souls 2)
+
+- Consider how encounters (and bosses) teach new players vs. how they challenge experienced players (inspired by Joseph Anderson's DS2 video, where he said that the Last Giant is neither a fun challenge for veteran players nor a good teaching tool)
+
+- Sword boomerang (inspired by a Slay the Spire card)
+
+- Consider giving the player a reason to catalog the enemies in the game (inspired by Yahtzee's video on Ritual of the Night)
+
+- Light sapping and replacement mechanic (like that magic tool Dumbledore uses in Harry Potter to steal light from street lights) => Could tie into the Essence of Light
+
+- Permanent (or semi-permanent) torches that can be lit in the caves (inspired by Dark Souls 2's removed lighting system) => Maybe something more creative than torches?
+
+- Brainstorm ways for enemies to work together (dynamically, such that placing different combinations of enemies in different locations automatically creates unique encounters and scalable difficulty)
+
+- Consider an inside area that opens up into an outside dungeon (inspired by Matthewmatosis's video on Mario 64 that mentions that many levels start outside and then go inside, such as LLL) => Would be interesting to have players kinda realize over several minutes that they've actually reached a new dungeon, even though it's outside (maybe in the mountain with bridges?)
+
+- In the forest, a giant tree whose roots you can traverse (might be too similar to the Ginso Tree, too vertical like the Windmill, or too cliched in general, since lots of games have magical trees) => Could also have the forest village surround the tree and have some kind of structures built from the roots, or some central chamber using the roots as entrances
