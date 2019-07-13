@@ -26,7 +26,7 @@ namespace Zeldo.Weather
 			if (activeFormation != null)
 			{
 				activeFormation.Update(dt);
-				lightColor = activeFormation.FilterLight(lightColor);
+				//lightColor = activeFormation.FilterLight(lightColor);
 			}
 
 			shader.SetUniform("lightColor", lightColor.ToVec3());

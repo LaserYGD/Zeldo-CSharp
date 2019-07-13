@@ -10,6 +10,7 @@ using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
+using Newtonsoft.Json.Linq;
 using Zeldo.Interfaces;
 using Zeldo.Physics._2D;
 using Zeldo.Sensors;
@@ -87,6 +88,10 @@ namespace Zeldo.Entities.Core
 			    }
 			}
 		}
+
+		// "Persistent" means that when the entity would normally be unloaded (via unloading its fragment), the entity
+		// instead remains loaded. This allows the entity to continue updating even when not visible and far away.
+		public bool IsPersistent { get; protected set; }
 
 		public virtual void Dispose()
 		{

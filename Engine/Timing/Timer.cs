@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Engine.Core;
 
 namespace Engine.Timing
 {
-	public abstract class Timer : DynamicComponent
+	public abstract class Timer : Component
 	{
 		protected Timer(float duration, float elapsed = 0)
 		{

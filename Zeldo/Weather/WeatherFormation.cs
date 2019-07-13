@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Core;
 using Engine.Interfaces;
 
 namespace Zeldo.Weather
 {
 	public abstract class WeatherFormation : IDynamic, IDisposable
 	{
-		public virtual Color FilterLight(Color color)
+		public float Intensity { get; set; }
+
+		public virtual void Dispose()
 		{
-			return color;
 		}
 
-		public abstract void Dispose();
 		public abstract void Update(float dt);
 	}
 }

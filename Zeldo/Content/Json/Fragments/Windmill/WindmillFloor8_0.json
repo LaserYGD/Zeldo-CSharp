@@ -4,6 +4,16 @@
 		{
 			"Type": "Sunflower",
 			"Position": "-3, 0, -1"
+		},
+		{
+			"Type": "Generic",
+			"Position": "0, 0, 0",
+			"Attachments": [
+				{
+					"Type": "Motor",
+					"Axis": "0, 0, 1"
+				}
+			]
 		}
 	],
 
@@ -12,7 +22,7 @@
 		}
 	],
 
-	"UserData": {
+	"Tag": {
 		"Windows": [
 			{
 				"Position": "1, 2, 3",

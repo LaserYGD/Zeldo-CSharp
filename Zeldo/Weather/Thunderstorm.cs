@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Core;
+﻿using Engine.Core;
 
 namespace Zeldo.Weather
 {
 	public class Thunderstorm : WeatherFormation
 	{
-		private bool lightningVisible;
+		private bool isLightningVisible;
 
-		public override Color FilterLight(Color color)
+		public Color FilterLight(Color color)
 		{
-			return lightningVisible ? Color.White : color;
+			return isLightningVisible ? Color.White : color;
 		}
 
 		public override void Dispose()

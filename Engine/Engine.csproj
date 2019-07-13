@@ -127,8 +127,9 @@
     <Compile Include="Animation\Transform.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Core\2D\SpriteModifiers.cs" />
+    <Compile Include="Core\3D\Motor.cs" />
     <Compile Include="Core\ComponentCollection.cs" />
-    <Compile Include="Core\DynamicComponent.cs" />
+    <Compile Include="Core\Component.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
     <Compile Include="Graphics\3D\InstancedMeshHandle.cs" />

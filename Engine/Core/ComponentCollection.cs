@@ -5,9 +5,9 @@ namespace Engine.Core
 {
 	public class ComponentCollection : IDynamic
 	{
-		private List<DynamicComponent> components = new List<DynamicComponent>();
+		private List<Component> components = new List<Component>();
 
-		public void Add(DynamicComponent component)
+		public void Add(Component component)
 		{
 			components.Add(component);
 		}
@@ -19,7 +19,7 @@ namespace Engine.Core
 				var component = components[i];
 				component.Update(dt);
 
-				if (component.Complete)
+				if (component.IsComplete)
 				{
 					components.RemoveAt(i);
 				}

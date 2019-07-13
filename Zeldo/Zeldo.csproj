@@ -238,6 +238,9 @@
     <Compile Include="Entities\Projectiles\Arrow.cs" />
     <Compile Include="Entities\TreasureChest.cs" />
     <Compile Include="Entities\Weapons\Bow.cs" />
+    <Compile Include="Entities\Windmill\MotorTree.cs" />
+    <Compile Include="Entities\Windmill\MotorNode.cs" />
+    <Compile Include="Entities\Windmill\WindmillBlades.cs" />
     <Compile Include="Interfaces\IInteractive.cs" />
     <Compile Include="Interfaces\IMechanical.cs" />
     <Compile Include="Interfaces\ITransformable2D.cs" />
@@ -305,6 +308,7 @@
     <Compile Include="Weather\Thunderstorm.cs" />
     <Compile Include="Weather\WeatherFormation.cs" />
     <Compile Include="Weather\WeatherManager.cs" />
+    <Compile Include="Weather\Wind.cs" />
     <Compile Include="ZeldoConstants.cs" />
   </ItemGroup>
   <ItemGroup>

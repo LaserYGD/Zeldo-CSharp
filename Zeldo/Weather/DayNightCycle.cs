@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using System;
+using Engine;
 using Engine.Core;
 using Engine.Interfaces;
 using Engine.Shaders;
@@ -7,7 +8,7 @@ using GlmSharp;
 
 namespace Zeldo.Weather
 {
-	public class DayNightCycle : IDynamic
+	public class DayNightCycle : IDynamic, IDisposable
 	{
 		private Shader shader;
 
@@ -26,6 +27,11 @@ namespace Zeldo.Weather
 
 		public Color LightColor { get; private set; }
 		public vec3 LightDirection { get; private set; }
+
+		public void Dispose()
+		{
+			shader.Dispose();
+		}
 
 		public void Update(float dt)
 		{

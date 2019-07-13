@@ -7,7 +7,7 @@ using Engine.Core;
 
 namespace Engine.Animation
 {
-	public class AnimationPlayer : DynamicComponent
+	public class AnimationPlayer : Component
 	{
 		private Skeleton skeleton;
 		private Animation animation;
@@ -18,8 +18,6 @@ namespace Engine.Animation
 		{
 			this.skeleton = skeleton;
 		}
-
-		public override bool Complete => false;
 
 		public void Play(Animation animation)
 		{

@@ -43,7 +43,7 @@ namespace Engine.Timing
 				}
 				else
 				{
-					Complete = true;
+					IsComplete = true;
 				}
 
 				return;

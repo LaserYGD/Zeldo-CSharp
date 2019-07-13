@@ -8,7 +8,7 @@ using Engine.Utility;
 
 namespace Engine.Smoothers
 {
-	public abstract class Smoother<T> : DynamicComponent
+	public abstract class Smoother<T> : Component
 	{
 		private float elapsed;
 		private float duration;
@@ -37,7 +37,7 @@ namespace Engine.Smoothers
 			{
 				// This ignores any leftover time (such that the end state is set exactly).
 				t = 1;
-				Complete = true;
+				IsComplete = true;
 			}
 			else
 			{
