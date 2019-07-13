@@ -295,6 +295,7 @@
     <Compile Include="UI\Screens\MapScreen.cs" />
     <Compile Include="UI\Screens\ScreenControls.cs" />
     <Compile Include="UI\Screens\ScreenManager.cs" />
+    <Compile Include="UI\Screens\ShopScreen.cs" />
     <Compile Include="UI\Speech\DialogueBox.cs" />
     <Compile Include="UI\Speech\DialogueCondition.cs" />
     <Compile Include="UI\Speech\DialogueConditionTypes.cs" />

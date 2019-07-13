@@ -32,6 +32,7 @@ dotnet_style_predefined_type_for_member_access = true:suggestion
 # Things I've added
 dotnet_style_prefer_auto_properties = false:silent
 dotnet_style_object_initializer = false:silent
+dotnet_style_readonly_field = false:silent
 
 # Naming conventions
 dotnet_naming_style.pascal_case_style.capitalization        = pascal_case
