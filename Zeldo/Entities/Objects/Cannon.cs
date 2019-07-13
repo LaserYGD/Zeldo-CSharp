@@ -1,6 +1,7 @@
 ﻿using Engine;
 using GlmSharp;
 using Jitter.LinearMath;
+using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
 
@@ -25,9 +26,9 @@ namespace Zeldo.Entities.Objects
 
 	    public bool IsInteractionEnabled => true;
 
-        public override void Initialize(Scene scene)
+        public override void Initialize(Scene scene, JToken data)
 	    {
-		    base.Initialize(scene);
+		    base.Initialize(scene, data);
 	    }
 
 	    public void OnInteract(Entity entity)

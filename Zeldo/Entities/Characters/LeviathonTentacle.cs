@@ -1,4 +1,5 @@
-﻿using Zeldo.Entities.Core;
+﻿using Newtonsoft.Json.Linq;
+using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities.Characters
 {
@@ -8,11 +9,11 @@ namespace Zeldo.Entities.Characters
 		{
 		}
 
-		public override void Initialize(Scene scene)
+		public override void Initialize(Scene scene, JToken data)
 		{
 			var model = CreateModel(scene, "LeviathonTentacle.dae");
 
-			base.Initialize(scene);
+			base.Initialize(scene, data);
 		}
 	}
 }

@@ -6,6 +6,7 @@ using Engine.Timing;
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
+using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
 using Zeldo.Sensors;
@@ -36,7 +37,7 @@ namespace Zeldo.Entities
 
 		public bool IsInteractionEnabled => !isOpened;
 
-		public override void Initialize(Scene scene)
+		public override void Initialize(Scene scene, JToken data)
 		{
 			float interactionRadius = Properties.GetFloat("treasure.chest.interaction.radius");
 			float thickness = Properties.GetFloat("treasure.chest.thickness");
@@ -67,7 +68,7 @@ namespace Zeldo.Entities
 			lidBody = CreateRigidBody3D(scene, new BoxShape(lidBounds.ToJVector()), false, true,
 				new vec3(0, bounds.y / 2 + lidBounds.y / 2, 0));
 
-			base.Initialize(scene);
+			base.Initialize(scene, data);
 		}
 
 		public void OnInteract(Entity entity)

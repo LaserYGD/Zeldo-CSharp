@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Engine;
 using GlmSharp;
+using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities.Enemies
@@ -29,11 +30,11 @@ namespace Zeldo.Entities.Enemies
 			linkedTrees = new List<Groot>();
 		}
 
-		public override void Initialize(Scene scene)
+		public override void Initialize(Scene scene, JToken data)
 		{
 			CreateModel(scene, "Windmill/Sunflower.dae");
 
-			base.Initialize(scene);
+			base.Initialize(scene, data);
 		}
 
 		public override void OnHit(int damage, int knockback, float angle, vec2 direction, object source)

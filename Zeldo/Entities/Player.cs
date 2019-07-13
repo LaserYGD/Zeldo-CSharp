@@ -9,6 +9,7 @@ using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
+using Newtonsoft.Json.Linq;
 using Zeldo.Controllers;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Weapons;
@@ -70,7 +71,7 @@ namespace Zeldo.Entities
 		// The player owns their own inventory.
 		public Inventory Inventory { get; }
 
-		public override void Initialize(Scene scene)
+		public override void Initialize(Scene scene, JToken data)
 		{
 			Height = Properties.GetFloat("player.height");
 
@@ -84,7 +85,7 @@ namespace Zeldo.Entities
 			sensor = CreateSensor(scene, groundShape, SensorUsages.Hitbox | SensorUsages.Interaction, Height);
 			CreateSensor(scene, new Point(), SensorUsages.Control, 1, null, -0.75f);
 
-			base.Initialize(scene);
+			base.Initialize(scene, data);
 		}
 
 		public override void Dispose()

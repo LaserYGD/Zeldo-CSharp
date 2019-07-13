@@ -7,6 +7,7 @@ using Engine.Shapes._2D;
 using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
+using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
 using Zeldo.Sensors;
@@ -38,7 +39,7 @@ namespace Zeldo.Entities.Weapons
 			Components.Add(timer);
 		}
 
-		public override void Initialize(Scene scene)
+		public override void Initialize(Scene scene, JToken data)
 		{
 			sensor = CreateSensor(scene, arc, SensorUsages.Hitbox);
 			sensor.IsEnabled = false;
@@ -50,7 +51,7 @@ namespace Zeldo.Entities.Weapons
 				}
 			};
 
-			base.Initialize(scene);
+			base.Initialize(scene, data);
 		}
 
 		private void ApplyDamage(ITargetable target)

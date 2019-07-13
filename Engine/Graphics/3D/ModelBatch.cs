@@ -194,7 +194,14 @@ namespace Engine.Graphics._3D
 			{
 				foreach (Model model in handle.Models)
 				{
+					// The world matrix needs to be recomputed regardless (for use when rendering the mesh normally).
 					model.RecomputeWorldMatrix();
+
+					if (!model.IsShadowCaster)
+					{
+						continue;
+					}
+
 					shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix.Value);
 					Draw(handle);
 				}

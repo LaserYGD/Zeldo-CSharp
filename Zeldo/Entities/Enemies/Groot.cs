@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities.Enemies
@@ -11,7 +12,7 @@ namespace Zeldo.Entities.Enemies
 	{
 		public bool PoweredBySunlight { get; set; }
 
-		public override void Initialize(Scene scene)
+		public override void Initialize(Scene scene, JToken data)
 		{
 		}
 

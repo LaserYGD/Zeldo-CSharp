@@ -16,6 +16,7 @@ namespace Engine.Core._3D
 			Mesh = mesh;
 			Scale = vec3.Ones;
 			Orientation = quat.Identity;
+			IsShadowCaster = true;
 		}
 
 		public vec3 Position { get; set; }
@@ -28,6 +29,10 @@ namespace Engine.Core._3D
 
 		// This matrix is only used for non-animated meshes.
 		public mat4? WorldMatrix { get; private set; }
+
+		// In some cases, models shouldn't cast shadows (such as windmill blades, whose shadows are handled by
+		// invisible 2D sprites instead).
+		public bool IsShadowCaster { get; set; }
 
 		public void SetTransform(vec3 position, quat orientation)
 		{

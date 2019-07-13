@@ -85,7 +85,7 @@ namespace Zeldo.Entities.Core
 		public void Add(Entity entity)
 		{
 			entities[(int)entity.Group].Add(entity);
-			entity.Initialize(this);
+			entity.Initialize(this, null);
 		}
 
 		public void Remove(Entity entity)

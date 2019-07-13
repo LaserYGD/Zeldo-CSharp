@@ -1,5 +1,6 @@
 ﻿using Engine;
 using Engine.Utility;
+using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities.Enemies
@@ -18,9 +19,9 @@ namespace Zeldo.Entities.Enemies
 			startleDistance = Properties.GetFloat("kitterket.startle.distance");
 		}
 
-		public override void Initialize(Scene scene)
+		public override void Initialize(Scene scene, JToken data)
 		{
-			base.Initialize(scene);
+			base.Initialize(scene, data);
 		}
 
 		/**

@@ -7,6 +7,7 @@ using Engine.Interfaces._2D;
 using Engine.Shapes._2D;
 using Engine.Shapes._3D;
 using GlmSharp;
+using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
 using Zeldo.Sensors;
@@ -29,12 +30,12 @@ namespace Zeldo.Entities.Enemies
 
 		public Box Box { get; }
 
-		public override void Initialize(Scene scene)
+		public override void Initialize(Scene scene, JToken data)
 		{
 			Circle circle = new Circle(0.4f);
 			sensor = CreateSensor(scene, circle);
 
-			base.Initialize(scene);
+			base.Initialize(scene, data);
 		}
 
 		public void OnHit(int damage, int power, float angle, vec2 direction, object source)

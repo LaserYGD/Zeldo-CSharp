@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Engine;
 using Engine.Core;
 using Engine.Core._3D;
+using Engine.Graphics._3D;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using Engine.Physics;
@@ -165,8 +167,13 @@ namespace Zeldo.Entities.Core
 		
 		protected Model CreateModel(Scene scene, string filename, vec3? position = null, quat? orientation = null)
 		{
-			Model model = new Model(filename);
-			
+			return CreateModel(scene, ContentCache.GetMesh(filename), position, orientation);
+		}
+
+		protected Model CreateModel(Scene scene, Mesh mesh, vec3? position = null, quat? orientation = null)
+		{
+			Model model = new Model(mesh);
+
 			Attach(EntityAttachmentTypes3D.Model, model, position, orientation);
 			scene.ModelBatch.Add(model);
 
@@ -261,7 +268,7 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
-		public virtual void Initialize(Scene scene)
+		public virtual void Initialize(Scene scene, JToken data)
 		{
 			Scene = scene;
 		}

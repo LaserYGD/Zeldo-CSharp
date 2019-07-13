@@ -133,7 +133,7 @@ namespace Zeldo
 			batch.LightDirection = Utilities.Normalize(new vec3(-0.25f, -0.35f, -0.7f));
 
 			Bow bow = new Bow();
-			bow.Initialize(scene);
+			bow.Initialize(scene, null);
 
 			Player player = new Player
 			{
