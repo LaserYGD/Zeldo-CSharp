@@ -176,7 +176,7 @@
     <None Include="Content\Properties\Entity.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Properties\View.properties">
+    <None Include="Content\Properties\Render.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Properties\World.properties">

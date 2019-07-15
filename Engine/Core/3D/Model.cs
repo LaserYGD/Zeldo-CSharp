@@ -5,7 +5,7 @@ using GlmSharp;
 
 namespace Engine.Core._3D
 {
-	public class Model : ITransformable3D
+	public class Model : IRenderable3D, IScalable3D
 	{
 		public Model(string filename) : this(ContentCache.GetMesh(filename))
 		{
@@ -19,19 +19,12 @@ namespace Engine.Core._3D
 			IsShadowCaster = true;
 		}
 
-		public vec3 Position { get; set; }
-		public vec3 Scale { get; set; }
-		public quat Orientation { get; set; }
 		public Mesh Mesh { get; }
+		public mat4 WorldMatrix { get; private set; }
+		public vec3 Position { get; set; }
+		public quat Orientation { get; set; }
+		public vec3 Scale { get; set; }		
 
-		// Attached skeletons are updated externally through animations.
-		public Skeleton Skeleton { get; set; }
-
-		// This matrix is only used for non-animated meshes.
-		public mat4? WorldMatrix { get; private set; }
-
-		// In some cases, models shouldn't cast shadows (such as windmill blades, whose shadows are handled by
-		// invisible 2D sprites instead).
 		public bool IsShadowCaster { get; set; }
 
 		public void SetTransform(vec3 position, quat orientation)

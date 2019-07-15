@@ -70,8 +70,8 @@ namespace Zeldo
 			Properties.Load("Enemy.properties");
 			Properties.Load("Entity.properties");
 			Properties.Load("Player.properties");
+			Properties.Load("Render.properties");
 			Properties.Load("UI.properties");
-			Properties.Load("View.properties");
 			Properties.Load("World.properties");
 
 			Language.Reload(Languages.English);
@@ -129,7 +129,7 @@ namespace Zeldo
 				World3D = world3D
 			};
 
-			ModelBatch batch = scene.ModelBatch;
+			MasterRenderer3D batch = scene.ModelBatch;
 			batch.LightDirection = Utilities.Normalize(new vec3(-0.25f, -0.35f, -0.7f));
 
 			Bow bow = new Bow();

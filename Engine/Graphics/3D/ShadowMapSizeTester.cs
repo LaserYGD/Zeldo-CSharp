@@ -14,12 +14,12 @@ namespace Engine.Graphics._3D
 	{
 		private Camera3D camera;
 		private Camera3D localCamera;
-		private ModelBatch batch;
+		private MasterRenderer3D batch;
 		private PrimitiveRenderer3D primitives;
 		private RenderTarget renderTarget;
 		private Sprite sprite;
 
-		public ShadowMapSizeTester(Camera3D camera, ModelBatch batch)
+		public ShadowMapSizeTester(Camera3D camera, MasterRenderer3D batch)
 		{
 			this.camera = camera;
 			this.batch = batch;

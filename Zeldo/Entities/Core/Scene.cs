@@ -17,7 +17,7 @@ namespace Zeldo.Entities.Core
 	public class Scene : IDynamic, IRenderable3D
 	{
 		private Camera3D camera;
-		private ModelBatch batch;
+		private MasterRenderer3D batch;
 		private List<Entity>[] entities;
 		private List<SceneFragment> fragments;
 
@@ -44,7 +44,7 @@ namespace Zeldo.Entities.Core
 				int bufferSize = Properties.GetInt("model.batch.buffer.size");
 				int indexSize = Properties.GetInt("model.batch.index.size");
 
-				batch = new ModelBatch(camera, bufferSize, indexSize);
+				batch = new MasterRenderer3D(camera, bufferSize, indexSize);
 				batch.ShadowNearPlane = Properties.GetFloat("shadow.near.plane");
 				batch.ShadowFarPlane = Properties.GetFloat("shadow.far.plane");
 			}
@@ -54,7 +54,7 @@ namespace Zeldo.Entities.Core
 		public Space Space { get; set; }
 		public World2D World2D { get; set; }
 		public World World3D { get; set; }
-		public ModelBatch ModelBatch => batch;
+		public MasterRenderer3D ModelBatch => batch;
 
 		// In this context, "user data" means custom data optionally loaded with each fragment. Used as needed in order
 		// to implement custom features for different kinds of locations.

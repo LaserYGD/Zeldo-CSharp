@@ -9,9 +9,9 @@ using Engine.View;
 using GlmSharp;
 using static Engine.GL;
 
-namespace Engine.Graphics._3D
+namespace Engine.Graphics._3D.Renderers
 {
-	public class ModelBatch : IRenderTargetUser3D
+	public class MasterRenderer3D : IRenderTargetUser3D
 	{
 		private Shader modelShader;
 		private Shader shadowMapShader;
@@ -21,6 +21,8 @@ namespace Engine.Graphics._3D
 		private Camera3D camera;
 		private Dictionary<Mesh, MeshHandle> handles;
 
+		private SpriteBatch3D sb;
+
 		private uint bufferId;
 		private uint indexId;
 
@@ -29,7 +31,7 @@ namespace Engine.Graphics._3D
 		private int indexBufferSize;
 		private int maxIndex;
 
-		public ModelBatch(Camera3D camera, int bufferSize, int indexBufferSize)
+		public MasterRenderer3D(Camera3D camera, int bufferSize, int indexBufferSize)
 		{
 			const int ShadowMapSize = 2048;
 
@@ -204,6 +206,28 @@ namespace Engine.Graphics._3D
 
 					shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix.Value);
 					Draw(handle);
+				}
+			}
+		}
+
+		private void DrawShadow<K, V>(AbstractRenderer3D<K, V> renderer) where V : IRenderable3D
+		{
+			renderer.PrepareShadow();
+
+			List<V> list;
+
+			while ((list = renderer.RetrieveNext()) != null)
+			{
+				foreach (V item in list)
+				{
+					item.RecomputeWorldMatrix();
+
+					if (!item.IsShadowCaster)
+					{
+						continue;
+					}
+
+					shadowMapShader.SetUniform("lightMatrix", lightMatrix * item.WorldMatrix);
 				}
 			}
 		}

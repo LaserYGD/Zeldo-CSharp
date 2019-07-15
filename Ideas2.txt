@@ -1,0 +1,54 @@
+- If energy is infinite, what effect does that have on the economy?
+
+- What if the races are attuned? (like the underground race being innately attuned to the essence of light)
+
+- If a powerful essence of water could flood a town, that's a huge risk, but if the characters in the world didn't behave as such, that would be pretty immersion-breaking
+
+- This stuff alleviates NPC fatigue by making you actually curious about who you're talking to
+
+- Anything with permanence in the world is super important
+
+- The game is non-linear (and characters should react appropriately), but make sure those reactions aren't too shallow
+
+- In Oblivion/Skyrim, you can ask NPCs for rumors (which might spawn side quests). In Essence, characters could largely keep to themselves (within their town/zone), but YOU could provide those rumors (since you're the adventurer), and have that information propagate and even spur action by the villagers => Should probably use a hybrid system here
+
+- If you go back and talk to an NPC who told you something, the dialogue should update to reflect what you've done/seen/learned since then
+
+- Should the player character in Essence be a silent protagonist?
+
+- I want the changes in the world to be based on choices the player makes through GAMEPLAY, not dialogue choices => Could still have NPCs react to the player implicitly (reacting to something you said, even though you never said it)
+
+- What's the targeted overall length for a playthrough? How much (in terms of percentage) is a "normal" playthrough vs. 100% completion and late-game secrets? => I want a hidden late-game dungeon
+
+- For the first game, what if we focused on only ONE essence? Would probably help massively in reducing the scope of the game, but would also set up a great foundation for future games or DLC => Would have to reduce the scope of the world as a result (and the number of races you meet)
+
+- If you see one or two other races (even if they don't play a major role in the game), it would (hopefully) pique player curiosity about those races (which puts you in a great spot for future content)
+
+- Could focus on one particular race's discovery of magic (but not necessarily the first race to EVER discover magic)
+
+- Skippy said that a strength of his is "troubleshooting", like big-picture concerns (such as the nature of the world's economy if infinite-energy objects exist, and how valuable those would be) => Obi probably is too (but also excels at the details of that stuff)
+
+- Could consider "tiers" of NPCs (main characters, secondary characters, and unnamed NPCs that largely don't speak or just provide flavor text) => Could help reduce NPC fatigue by reducing the number of characters to revisit
+
+- What does the map screen look like? => I want to encourage the player to explore and focus on the world (rather than a screen)
+
+- Can the player rotate the camera? If so, should the camera snap to four directions  Skippy mentioned he can't think of a single game with this style that can do that => With 3D, you kinda get this for free (and it'd be easy to experiment)
+
+- With snapping, players might forget they can rotate the camera, which could cause frustrating if secrets are hidden behind an object (especially since camera rotation isn't common in the genre)
+
+- Should the game just be a full 3D adventure?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
