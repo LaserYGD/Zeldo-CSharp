@@ -38,9 +38,13 @@
 
 - Should the game just be a full 3D adventure?
 
+- Secret "X marks the spot", an X formed by the environment that's visible from an elevated location (could lead to treasure or an optional upgrade)
 
+- City with a river passing through it (few bridges across) => If the river is large, could be like sister cities across the river, with some level of rivalry between them
 
+- Enemies who throw things at you (ranged attack), but they can be reflected back (maybe aimed, maybe automatically hit back?)
 
+- In some dungeon, you can hear a curious, slightly unsettling noise for a while (to various degrees as you explore the dungeon), with the source (likely a boss) only revealed late (inspired by watching early footage of The Surge 2) => Might be too dark and creepy for what I'm going for with the game?
 
 
 
