@@ -46,8 +46,11 @@
 
 - In some dungeon, you can hear a curious, slightly unsettling noise for a while (to various degrees as you explore the dungeon), with the source (likely a boss) only revealed late (inspired by watching early footage of The Surge 2) => Might be too dark and creepy for what I'm going for with the game?
 
+- Super, incredibly, unreasonably long ladder with epic music playing to emphasize how silly it is (maybe with a wisp-like companion character who comments while you're climbing) => Could play into the Ascend skill to really showcase how much more fluidly and quickly the character can move around
 
+- Area/city built for large creatures (some kind of giants) as a way to experiment with the player's movement options in large spaces (inspired by watching Joseph Anderson's video on Dark Souls and seeing the character run through these huge, flat areas with nothing to block you)
 
+- Make sure to include little things to reward the player's observation (inspired by a Dark Souls clip of shooting down a body hanging by a rope using a bow for a hidden item)
 
 
 
