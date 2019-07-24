@@ -1,20 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Engine;
-using Engine.Graphics._3D;
+using Engine.Graphics._3D.Renderers;
 using Engine.Interfaces;
-using Engine.Interfaces._3D;
 using Engine.UI;
 using Engine.Utility;
 using Engine.View;
 using Jitter;
-using Newtonsoft.Json.Linq;
 using Zeldo.Physics._2D;
 using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Core
 {
-	public class Scene : IDynamic, IRenderable3D
+	public class Scene : IDynamic
 	{
 		private Camera3D camera;
 		private MasterRenderer3D batch;

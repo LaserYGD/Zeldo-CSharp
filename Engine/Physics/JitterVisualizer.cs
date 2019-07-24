@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Engine.Core;
 using Engine.Graphics._3D;
-using Engine.Interfaces._3D;
 using Engine.Shapes._3D;
 using Engine.Utility;
 using Engine.View;
@@ -15,7 +14,7 @@ using Jitter.LinearMath;
 
 namespace Engine.Physics
 {
-	public class JitterVisualizer : IRenderable3D
+	public class JitterVisualizer
 	{
 		private World world;
 		private PrimitiveRenderer3D primitives;

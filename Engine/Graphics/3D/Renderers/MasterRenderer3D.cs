@@ -13,43 +13,17 @@ namespace Engine.Graphics._3D.Renderers
 {
 	public class MasterRenderer3D : IRenderTargetUser3D
 	{
-		private Shader modelShader;
 		private Shader shadowMapShader;
 		private RenderTarget shadowMapTarget;
-		private Texture defaultTexture;
 		private mat4 lightMatrix;
 		private Camera3D camera;
-		private Dictionary<Mesh, MeshHandle> handles;
 
-		private SpriteBatch3D sb;
+		private ModelRenderer modelRenderer;
+		private SpriteBatch3D spriteBatch3D;
 
-		private uint bufferId;
-		private uint indexId;
-
-		// These sizes are updated as data is buffered to the GPU. The data isn't actually stored here.
-		private int bufferSize;
-		private int indexBufferSize;
-		private int maxIndex;
-
-		public MasterRenderer3D(Camera3D camera, int bufferSize, int indexBufferSize)
+		public MasterRenderer3D(Camera3D camera)
 		{
-			const int ShadowMapSize = 2048;
-
 			this.camera = camera;
-			
-			GLUtilities.AllocateBuffers(bufferSize, indexBufferSize, out bufferId, out indexId, GL_STATIC_DRAW);
-
-			modelShader = new Shader();
-			modelShader.Attach(ShaderTypes.Vertex, "ModelShadow.vert");
-			modelShader.Attach(ShaderTypes.Fragment, "ModelShadow.frag");
-			modelShader.AddAttribute<float>(3, GL_FLOAT);
-			modelShader.AddAttribute<float>(2, GL_FLOAT);
-			modelShader.AddAttribute<float>(3, GL_FLOAT);
-			modelShader.CreateProgram();
-			modelShader.Bind(bufferId, indexId);
-			modelShader.Use();
-			modelShader.SetUniform("shadowSampler", 0);
-			modelShader.SetUniform("textureSampler", 1);
 
 			shadowMapShader = new Shader();
 			shadowMapShader.Attach(ShaderTypes.Vertex, "ShadowMap.vert");
@@ -58,9 +32,11 @@ namespace Engine.Graphics._3D.Renderers
 			shadowMapShader.CreateProgram();
 			shadowMapShader.Bind(bufferId, indexId);
 
-			shadowMapTarget = new RenderTarget(ShadowMapSize, ShadowMapSize, RenderTargetFlags.Depth);
-			defaultTexture = ContentCache.GetTexture("Grey.png");
-			handles = new Dictionary<Mesh, MeshHandle>();
+			int size = Properties.GetInt("shadow.map.size");
+
+			shadowMapTarget = new RenderTarget(size, size, RenderTargetFlags.Depth);
+			modelRenderer = new ModelRenderer();
+			spriteBatch3D = new SpriteBatch3D();
 
 			// These default values are arbitrary, just to make sure something shows up.
 			LightDirection = vec3.UnitX;
@@ -159,11 +135,10 @@ namespace Engine.Graphics._3D.Renderers
 
 		public void Dispose()
 		{
-			modelShader.Dispose();
 			shadowMapShader.Dispose();
 			shadowMapTarget.Dispose();
-
-			GLUtilities.DeleteBuffers(bufferId, indexId);
+			modelRenderer.Dispose();
+			spriteBatch3D.Dispose();
 		}
 
 		public void DrawTargets()
@@ -172,8 +147,6 @@ namespace Engine.Graphics._3D.Renderers
 			{
 				return;
 			}
-
-			glDisable(GL_CULL_FACE);
 
 			vec3 orthoHalfSize = ComputeShadowFrustum(out vec3 cameraCenter) / 2;
 
@@ -192,44 +165,8 @@ namespace Engine.Graphics._3D.Renderers
 			shadowMapTarget.Apply();
 			shadowMapShader.Apply();
 
-			foreach (MeshHandle handle in handles.Values)
-			{
-				foreach (Model model in handle.Models)
-				{
-					// The world matrix needs to be recomputed regardless (for use when rendering the mesh normally).
-					model.RecomputeWorldMatrix();
-
-					if (!model.IsShadowCaster)
-					{
-						continue;
-					}
-
-					shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix.Value);
-					Draw(handle);
-				}
-			}
-		}
-
-		private void DrawShadow<K, V>(AbstractRenderer3D<K, V> renderer) where V : IRenderable3D
-		{
-			renderer.PrepareShadow();
-
-			List<V> list;
-
-			while ((list = renderer.RetrieveNext()) != null)
-			{
-				foreach (V item in list)
-				{
-					item.RecomputeWorldMatrix();
-
-					if (!item.IsShadowCaster)
-					{
-						continue;
-					}
-
-					shadowMapShader.SetUniform("lightMatrix", lightMatrix * item.WorldMatrix);
-				}
-			}
+			DrawShadow(modelRenderer);
+			DrawShadow(spriteBatch3D);
 		}
 
 		private vec3 ComputeShadowFrustum(out vec3 cameraCenter)
@@ -279,6 +216,30 @@ namespace Engine.Graphics._3D.Renderers
 			return new vec3(right - left, top - bottom, far - near);
 		}
 
+		private void DrawShadow<K, V>(AbstractRenderer3D<K, V> renderer) where V : IRenderable3D
+		{
+			renderer.PrepareShadow();
+
+			List<V> list;
+
+			while ((list = renderer.RetrieveNext()) != null)
+			{
+				foreach (V item in list)
+				{
+					// Even if the object doesn't cast a shadow, its world matrix is recomputed here for use during
+					// normal rendering.
+					item.RecomputeWorldMatrix();
+
+					if (!item.IsShadowCaster)
+					{
+						continue;
+					}
+
+					shadowMapShader.SetUniform("lightMatrix", lightMatrix * item.WorldMatrix);
+				}
+			}
+		}
+
 		public void Draw()
 		{
 			if (!IsEnabled)
@@ -286,9 +247,6 @@ namespace Engine.Graphics._3D.Renderers
 				return;
 			}
 
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-			
 			shadowMapTarget.Bind(0);
 			defaultTexture.Bind(1);
 
@@ -310,7 +268,7 @@ namespace Engine.Graphics._3D.Renderers
 			{
 				foreach (Model model in handle.Models)
 				{
-					mat4 world = model.WorldMatrix.Value;
+					mat4 world = model.WorldMatrix;
 					quat orientation = model.Orientation;
 
 					modelShader.SetUniform("orientation", orientation.ToMat4);
@@ -318,6 +276,30 @@ namespace Engine.Graphics._3D.Renderers
 					modelShader.SetUniform("lightBiasMatrix", biasMatrix * lightMatrix * world);
 
 					Draw(handle);
+				}
+			}
+		}
+
+		private void Draw<K, V>(AbstractRenderer3D<K, V> renderer) where V : IRenderable3D
+		{
+			renderer.Prepare();
+
+			List<V> list;
+
+			while ((list = renderer.RetrieveNext()) != null)
+			{
+				foreach (V item in list)
+				{
+					// Even if the object doesn't cast a shadow, its world matrix is recomputed here for use during
+					// normal rendering.
+					item.RecomputeWorldMatrix();
+
+					if (!item.IsShadowCaster)
+					{
+						continue;
+					}
+
+					shadowMapShader.SetUniform("lightMatrix", lightMatrix * item.WorldMatrix);
 				}
 			}
 		}

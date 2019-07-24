@@ -30,18 +30,35 @@ namespace Engine.Graphics._3D.Renderers
 			list.Add(item);
 		}
 
+		protected void Remove(K key, V item)
+		{
+			Map[key].Remove(item);
+		}
+
 		public List<V> RetrieveNext()
 		{
 			if (nextIndex < keys.Count)
 			{
-				return Map[keys[nextIndex++]];
+				K key = keys[nextIndex++];
+
+				// In this context, "apply" means binding any relevant open GL state before draw calls begin.
+				Apply(key);
+
+				return Map[key];
 			}
 
+			// This resets the renderer for the next phase.
 			nextIndex = 0;
 
 			return null;
 		}
 
+		protected virtual void Apply(K key)
+		{
+		}
+
+		public abstract void Add(V item);
+		public abstract void Remove(V item);
 		public abstract void PrepareShadow();
 		public abstract void Prepare();
 		public abstract void Dispose();

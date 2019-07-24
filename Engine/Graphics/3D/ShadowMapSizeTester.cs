@@ -2,6 +2,7 @@
 using Engine.Core;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
+using Engine.Graphics._3D.Renderers;
 using Engine.Interfaces._2D;
 using Engine.Interfaces._3D;
 using Engine.Shapes._3D;

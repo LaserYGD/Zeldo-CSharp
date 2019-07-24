@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Engine.Core._3D;
+﻿using Engine.Core._3D;
 using Engine.Shaders;
 using GlmSharp;
 using static Engine.GL;
@@ -9,15 +7,11 @@ namespace Engine.Graphics._3D.Renderers
 {
 	public class SpriteBatch3D : AbstractRenderer3D<uint, Sprite3D>
 	{
-		// This maps source IDs (textures or render targets) to groups of sprites (for instancing).
-		private Dictionary<uint, List<Sprite3D>> map;
-		private List<uint> idList;
 		private Shader shader;
 
 		private uint bufferId;
-		private int nextIndex;
 
-		public unsafe SpriteBatch3D(MasterRenderer3D parent) : base(parent)
+		public unsafe SpriteBatch3D()
 		{
 			fixed (uint* address = &bufferId)
 			{
@@ -49,8 +43,6 @@ namespace Engine.Graphics._3D.Renderers
 			{
 				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, address, GL_STATIC_DRAW);
 			}
-
-			map = new Dictionary<uint, List<Sprite3D>>();
 		}
 
 		public override unsafe void Dispose()
@@ -63,14 +55,14 @@ namespace Engine.Graphics._3D.Renderers
 			}
 		}
 
-		public void Add(Sprite3D sprite)
+		public override void Add(Sprite3D sprite)
 		{
 			Add(sprite.Source.Id, sprite);
 		}
 
-		public void Remove(Sprite3D sprite)
+		public override void Remove(Sprite3D sprite)
 		{
-			Map[sprite.Source.Id].Remove(sprite);
+			Remove(sprite.Source.Id, sprite);
 		}
 
 		public override void PrepareShadow()
@@ -88,7 +80,7 @@ namespace Engine.Graphics._3D.Renderers
 			// For 3D sprites, the key is the source ID.
 			glBindTexture(GL_TEXTURE0, key);
 
-			foreach (var sprite in map[key])
+			foreach (var sprite in Map[key])
 			{
 			}
 		}
