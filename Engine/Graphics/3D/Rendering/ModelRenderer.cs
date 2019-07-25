@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Engine.Core._3D;
+﻿using Engine.Core._3D;
 using Engine.Lighting;
 using Engine.Shaders;
 using GlmSharp;
@@ -9,7 +8,6 @@ namespace Engine.Graphics._3D.Rendering
 {
 	public class ModelRenderer : MapRenderer3D<Mesh, Model>
 	{
-		private Shader shader;
 		private Texture defaultTexture;
 
 		private uint bufferId;
@@ -27,7 +25,7 @@ namespace Engine.Graphics._3D.Rendering
 
 			GLUtilities.AllocateBuffers(bufferCapacity, indexCapacity, out bufferId, out indexId, GL_STATIC_DRAW);
 
-			shader = new Shader();
+			var shader = new Shader();
 			shader.Attach(ShaderTypes.Vertex, "ModelShadow.vert");
 			shader.Attach(ShaderTypes.Fragment, "ModelShadow.frag");
 			shader.AddAttribute<float>(3, GL_FLOAT);
@@ -39,14 +37,10 @@ namespace Engine.Graphics._3D.Rendering
 			shader.SetUniform("shadowSampler", 0);
 			shader.SetUniform("textureSampler", 1);
 
+			Shader = shader;
+			GenerateShadowVao(bufferId, indexId);
+
 			defaultTexture = ContentCache.GetTexture("Grey.png");
-		}
-
-		public override void Dispose()
-		{
-			shader.Dispose();
-
-			GLUtilities.DeleteBuffers(bufferId, indexId);
 		}
 
 		public override unsafe void Add(Model item)
@@ -130,10 +124,10 @@ namespace Engine.Graphics._3D.Rendering
 			glEnable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
 
-			shader.Apply();
-			shader.SetUniform("lightDirection", Light.Direction);
-			shader.SetUniform("lightColor", Light.Color.ToVec3());
-			shader.SetUniform("ambientIntensity", Light.AmbientIntensity);
+			Shader.Apply();
+			Shader.SetUniform("lightDirection", Light.Direction);
+			Shader.SetUniform("lightColor", Light.Color.ToVec3());
+			Shader.SetUniform("ambientIntensity", Light.AmbientIntensity);
 		}
 
 		protected override void Apply(Mesh key)
@@ -150,9 +144,9 @@ namespace Engine.Graphics._3D.Rendering
 				mat4 world = item.WorldMatrix;
 				quat orientation = item.Orientation;
 
-				shader.SetUniform("orientation", orientation.ToMat4);
-				shader.SetUniform("mvp", vp.Value * world);
-				shader.SetUniform("lightBiasMatrix", Light.BiasMatrix * world);
+				Shader.SetUniform("orientation", orientation.ToMat4);
+				Shader.SetUniform("mvp", vp.Value * world);
+				Shader.SetUniform("lightBiasMatrix", Light.BiasMatrix * world);
 			}
 
 			glDrawElementsBaseVertex(GL_TRIANGLES, (uint)handle.Count, GL_UNSIGNED_SHORT, (void*)handle.Offset,

@@ -178,6 +178,7 @@
     <Compile Include="Physics\RaycastResults.cs" />
     <Compile Include="Physics\TransformableBody.cs" />
     <Compile Include="Properties.cs" />
+    <Compile Include="Shaders\ShaderAttributeFlags.cs" />
     <Compile Include="Shapes\2D\Arc.cs" />
     <Compile Include="Shapes\2D\Point.cs" />
     <Compile Include="Shapes\2D\Rectangle.cs" />

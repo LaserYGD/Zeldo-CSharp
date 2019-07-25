@@ -27,7 +27,7 @@ namespace Engine.Graphics._3D
 			shader.Attach(ShaderTypes.Fragment, "ShadowMapVisualization.frag");
 			shader.AddAttribute<float>(2, GL_FLOAT);
 			shader.AddAttribute<float>(2, GL_FLOAT);
-			shader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, true);
+			shader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, ShaderAttributeFlags.IsNormalized);
 			shader.CreateProgram();
 
 			sprite = new Sprite(shadowMapTarget, null, Alignments.Left | Alignments.Bottom);

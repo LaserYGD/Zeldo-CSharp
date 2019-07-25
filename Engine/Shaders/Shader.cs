@@ -13,8 +13,6 @@ namespace Engine.Shaders
 	{
 		private uint program;
 		private uint vao;
-		private uint bufferId;
-		private uint indexId;
 		private uint fragmentShader;
 		private uint geometryShader;
 		private uint vertexShader;
@@ -28,8 +26,8 @@ namespace Engine.Shaders
 			uniforms = new Dictionary<string, int>();
 		}
 
-		public bool BindingComplete { get; private set; }
-		public bool Disposed { get; private set; }
+		public bool IsBindingComplete { get; private set; }
+		public bool IsDisposed { get; private set; }
 
 		public uint Stride { get; private set; }
 
@@ -160,20 +158,17 @@ namespace Engine.Shaders
 			glDeleteShader(fragmentShader);
 		}
 
-		public void AddAttribute<T>(uint count, uint type, bool isInteger = false, bool isNormalized = false,
+		public void AddAttribute<T>(uint count, uint type, ShaderAttributeFlags flags = ShaderAttributeFlags.None,
 			uint padding = 0)
 		{
-			attributes.Add(new ShaderAttribute(count, type, Stride, isInteger, isNormalized));
+			attributes.Add(new ShaderAttribute(count, type, Stride, flags));
 
 			// Padding is given in bytes directly (so that the padding can encompass data of multiple types).
 			Stride += (uint)Marshal.SizeOf<T>() * count + padding;
 		}
 
-		public unsafe void Bind(uint bufferId, uint indexId)
+		public unsafe void Bind(uint bufferId, uint indexId = 0)
 		{
-			this.bufferId = bufferId;
-			this.indexId = indexId;
-
 			glBindVertexArray(vao);
 
 			// The index buffer ID can be zero when array rendering is being used.
@@ -206,14 +201,14 @@ namespace Engine.Shaders
 
 			// This assumes that shaders won't be bound twice.
 			attributes = null;
-			BindingComplete = true;
+			IsBindingComplete = true;
 		}
 
 		public unsafe void Dispose()
 		{
 			// Sprites can have shaders applied. Those sprites may or may not own the shader, though. This check
 			// prevents duplicate disposal if the shader is disposed from multiple places.
-			if (Disposed)
+			if (IsDisposed)
 			{
 				return;
 			}
@@ -225,7 +220,7 @@ namespace Engine.Shaders
 				glDeleteVertexArrays(1, address);
 			}
 
-			Disposed = true;
+			IsDisposed = true;
 		}
 
 		public void Use()
@@ -237,8 +232,6 @@ namespace Engine.Shaders
 		{
 			glUseProgram(program);
 			glBindVertexArray(vao);
-			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
 		}
 
 		public void SetUniform(string name, int value)

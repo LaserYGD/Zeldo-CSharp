@@ -41,7 +41,7 @@ namespace Engine.Graphics._2D
 			spriteShader.Attach(ShaderTypes.Fragment, "Sprite.frag");
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
-			spriteShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, false, true);
+			spriteShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, ShaderAttributeFlags.IsNormalized);
 			spriteShader.CreateProgram();
 			spriteShader.Bind(bufferId, indexId);
 
@@ -50,7 +50,7 @@ namespace Engine.Graphics._2D
 			primitiveShader.Attach(ShaderTypes.Fragment, "Primitives.frag");
 			primitiveShader.CreateProgram();
 			primitiveShader.AddAttribute<float>(2, GL_FLOAT);
-			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, false, true);
+			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, ShaderAttributeFlags.IsNormalized);
 			primitiveShader.Bind(bufferId, indexId);
 		}
 
@@ -109,7 +109,7 @@ namespace Engine.Graphics._2D
 			activeShader = shader;
 			Mode = mode;
 
-			if (!activeShader.BindingComplete)
+			if (!activeShader.IsBindingComplete)
 			{
 				activeShader.Bind(bufferId, indexId);
 			}

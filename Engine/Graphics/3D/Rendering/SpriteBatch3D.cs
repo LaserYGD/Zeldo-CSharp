@@ -9,8 +9,6 @@ namespace Engine.Graphics._3D.Rendering
 {
 	public class SpriteBatch3D : MapRenderer3D<uint, Sprite3D>
 	{
-		private Shader shader;
-
 		private uint bufferId;
 
 		public unsafe SpriteBatch3D(GlobalLight light) : base(light)
@@ -20,16 +18,19 @@ namespace Engine.Graphics._3D.Rendering
 				glGenBuffers(1, address);
 			}
 
-			shader = new Shader();
+			var shader = new Shader();
 			shader.Attach(ShaderTypes.Vertex, "Sprite3D.vert");
 			shader.Attach(ShaderTypes.Fragment, "Sprite3D.frag");
 			shader.AddAttribute<float>(3, GL_FLOAT);
 			shader.AddAttribute<float>(2, GL_FLOAT);
 			shader.CreateProgram();
-			//shader.Bind(bufferId, indexId);
+			shader.Bind(bufferId);
 			shader.Use();
 			shader.SetUniform("shadowSampler", 0);
 			shader.SetUniform("textureSampler", 1);
+
+			Shader = shader;
+			GenerateShadowVao(bufferId);
 
 			vec2[] points =
 			{
@@ -44,16 +45,6 @@ namespace Engine.Graphics._3D.Rendering
 			fixed (float* address = &points[0].x)
 			{
 				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, address, GL_STATIC_DRAW);
-			}
-		}
-
-		public override unsafe void Dispose()
-		{
-			shader.Dispose();
-
-			fixed (uint* address = &bufferId)
-			{
-				glDeleteBuffers(1, address);
 			}
 		}
 
