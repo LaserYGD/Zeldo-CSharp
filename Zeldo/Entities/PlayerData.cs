@@ -7,8 +7,10 @@ namespace Zeldo.Entities
 		public PlayerData()
 		{
 			JumpSpeed = Properties.GetFloat("player.jump.speed");
+			AerialAttackBoost = Properties.GetFloat("player.aerial.attack.boost");
 		}
 
 		public float JumpSpeed { get; }
+		public float AerialAttackBoost { get; }
 	}
 }

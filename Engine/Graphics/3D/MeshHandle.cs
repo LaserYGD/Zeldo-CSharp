@@ -10,11 +10,8 @@ namespace Engine.Graphics._3D
 			Count = count;
 			Offset = offset;
 			BaseVertex = baseVertex;
-			Models = new List<Model>();
 		}
 
-		public List<Model> Models { get; }
-		
 		public int Count { get; }
 		public int Offset { get; }
 		public int BaseVertex { get; }

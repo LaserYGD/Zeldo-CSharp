@@ -1,17 +1,19 @@
-﻿using Engine.Core._3D;
+﻿using System.Collections.Generic;
+using Engine.Core._3D;
+using Engine.Lighting;
 using Engine.Shaders;
 using GlmSharp;
 using static Engine.GL;
 
-namespace Engine.Graphics._3D.Renderers
+namespace Engine.Graphics._3D.Rendering
 {
-	public class SpriteBatch3D : AbstractRenderer3D<uint, Sprite3D>
+	public class SpriteBatch3D : MapRenderer3D<uint, Sprite3D>
 	{
 		private Shader shader;
 
 		private uint bufferId;
 
-		public unsafe SpriteBatch3D()
+		public unsafe SpriteBatch3D(GlobalLight light) : base(light)
 		{
 			fixed (uint* address = &bufferId)
 			{
@@ -24,7 +26,7 @@ namespace Engine.Graphics._3D.Renderers
 			shader.AddAttribute<float>(3, GL_FLOAT);
 			shader.AddAttribute<float>(2, GL_FLOAT);
 			shader.CreateProgram();
-			shader.Bind(bufferId, indexId);
+			//shader.Bind(bufferId, indexId);
 			shader.Use();
 			shader.SetUniform("shadowSampler", 0);
 			shader.SetUniform("textureSampler", 1);
@@ -75,14 +77,14 @@ namespace Engine.Graphics._3D.Renderers
 			glDisable(GL_CULL_FACE);
 		}
 
-		public override void Draw(uint key)
+		protected override void Apply(uint key)
 		{
 			// For 3D sprites, the key is the source ID.
 			glBindTexture(GL_TEXTURE0, key);
+		}
 
-			foreach (var sprite in Map[key])
-			{
-			}
+		public override void Draw(Sprite3D item, mat4? vp)
+		{
 		}
 	}
 }

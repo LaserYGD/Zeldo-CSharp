@@ -56,5 +56,6 @@ namespace Engine.Graphics._3D
 		public ushort MaxIndex { get; }
 
 		public Texture Texture { get; }
+		public MeshHandle Handle { get; set; }
 	}
 }

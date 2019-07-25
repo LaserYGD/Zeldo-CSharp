@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Engine.Interfaces._3D;
+using Engine.Lighting;
 
-namespace Engine.Graphics._3D.Renderers
+namespace Engine.Graphics._3D.Rendering
 {
-	public abstract class AbstractRenderer3D<K, V> : IDisposable where V : IRenderable3D
+	public abstract class MapRenderer3D<K, V> : AbstractRenderer3D<V> where V : IRenderable3D
 	{
 		private int nextIndex;
 
 		private List<K> keys;
 
-		protected AbstractRenderer3D()
+		protected MapRenderer3D(GlobalLight light) : base(light)
 		{
 			Map = new Dictionary<K, List<V>>();
 			keys = new List<K>();
@@ -35,7 +35,7 @@ namespace Engine.Graphics._3D.Renderers
 			Map[key].Remove(item);
 		}
 
-		public List<V> RetrieveNext()
+		public override List<V> RetrieveNext()
 		{
 			if (nextIndex < keys.Count)
 			{
@@ -56,12 +56,5 @@ namespace Engine.Graphics._3D.Renderers
 		protected virtual void Apply(K key)
 		{
 		}
-
-		public abstract void Add(V item);
-		public abstract void Remove(V item);
-		public abstract void PrepareShadow();
-		public abstract void Prepare();
-		public abstract void Dispose();
-		public abstract void Draw(K key);
 	}
 }

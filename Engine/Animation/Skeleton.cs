@@ -3,21 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Engine.Interfaces._3D;
+using GlmSharp;
 
 namespace Engine.Animation
 {
-	// Note that skeletons are intentionally not transformable themselves. The idea is that skeletons manage the local
-	// transforms of each bone (usually based off an animation player), while global transform is still controlled by
-	// the 3D model.
-	public class Skeleton
+	public class Skeleton : IRenderable3D
 	{
-		private Bone[] bones;
-
 		public Skeleton(Bone[] bones)
 		{
-			this.bones = bones;
+			Bones = bones;
 		}
 
 		public Bone[] Bones { get; }
+
+		public vec3 Position { get; set; }
+		public quat Orientation { get; set; }
+		public mat4 WorldMatrix { get; private set; }
+
+		public bool IsShadowCaster { get; set; }
+
+		public void SetTransform(vec3 position, quat orientation)
+		{
+			Position = position;
+			Orientation = orientation;
+		}
+
+		public void RecomputeWorldMatrix()
+		{
+			WorldMatrix = mat4.Translate(Position) * Orientation.ToMat4;
+		}
 	}
 }

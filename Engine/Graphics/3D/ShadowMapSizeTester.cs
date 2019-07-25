@@ -2,7 +2,7 @@
 using Engine.Core;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
-using Engine.Graphics._3D.Renderers;
+using Engine.Graphics._3D.Rendering;
 using Engine.Interfaces._2D;
 using Engine.Interfaces._3D;
 using Engine.Shapes._3D;
@@ -53,7 +53,7 @@ namespace Engine.Graphics._3D
 			vec3[] cameraBox = DrawViewBox(camera.OrthoWidth, camera.OrthoHeight, camera.NearPlane, camera.FarPlane,
 				vec3.Zero, camera.Orientation, Color.Green, out vec3 center);
 
-			vec3 light = batch.LightDirection;
+			vec3 light = batch.Light.Direction;
 			quat lightOrientation = new quat(mat4.LookAt(vec3.Zero, light, vec3.UnitY));
 			vec3[] transformed = cameraBox.Select(p => p * lightOrientation.Inverse).ToArray();
 
@@ -67,7 +67,7 @@ namespace Engine.Graphics._3D
 			float near = batch.ShadowNearPlane;
 			float far = batch.ShadowFarPlane;
 
-			vec3 shadowPosition = center - batch.LightDirection * (far - near) / 2;
+			vec3 shadowPosition = center - batch.Light.Direction * (far - near) / 2;
 
 			DrawViewBox(right - left, top - bottom, near, far, shadowPosition, lightOrientation, Color.Yellow,
 				out center);

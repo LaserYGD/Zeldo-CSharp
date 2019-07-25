@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Engine;
-using Engine.Graphics._3D.Renderers;
+using Engine.Graphics._3D.Rendering;
 using Engine.Interfaces;
 using Engine.UI;
 using Engine.Utility;
@@ -39,10 +39,7 @@ namespace Zeldo.Entities.Core
 			{
 				camera = value;
 
-				int bufferSize = Properties.GetInt("model.batch.buffer.size");
-				int indexSize = Properties.GetInt("model.batch.index.size");
-
-				batch = new MasterRenderer3D(camera, bufferSize, indexSize);
+				batch = new MasterRenderer3D();
 				batch.ShadowNearPlane = Properties.GetFloat("shadow.near.plane");
 				batch.ShadowFarPlane = Properties.GetFloat("shadow.far.plane");
 			}
@@ -112,7 +109,7 @@ namespace Zeldo.Entities.Core
 
 		public void Draw(Camera3D camera)
 		{
-			batch.ViewProjection = camera.ViewProjection;
+			batch.VpMatrix = camera.ViewProjection;
 			batch.Draw();
 		}
 	}
