@@ -8,8 +8,6 @@ namespace Engine.Graphics._3D.Rendering
 {
 	public class ModelRenderer : MapRenderer3D<Mesh, Model>
 	{
-		private Texture defaultTexture;
-
 		private uint bufferId;
 		private uint indexId;
 
@@ -31,18 +29,14 @@ namespace Engine.Graphics._3D.Rendering
 			shader.AddAttribute<float>(3, GL_FLOAT);
 			shader.AddAttribute<float>(2, GL_FLOAT);
 			shader.AddAttribute<float>(3, GL_FLOAT);
-			shader.CreateProgram();
-			shader.Bind(bufferId, indexId);
+			shader.Initialize();
 			shader.Use();
 			shader.SetUniform("shadowSampler", 0);
 			shader.SetUniform("textureSampler", 1);
 
-			Shader = shader;
-			GenerateShadowVao(bufferId, indexId);
-
-			defaultTexture = ContentCache.GetTexture("Grey.png");
+			Bind(shader, bufferId, indexId);
 		}
-
+		
 		public override unsafe void Add(Model item)
 		{
 			Add(item.Mesh, item);
@@ -117,6 +111,8 @@ namespace Engine.Graphics._3D.Rendering
 		{
 			glEnable(GL_CULL_FACE);
 			glCullFace(GL_FRONT);
+
+			base.PrepareShadow();
 		}
 
 		public override void Prepare()
@@ -132,12 +128,14 @@ namespace Engine.Graphics._3D.Rendering
 
 		protected override void Apply(Mesh key)
 		{
-			glBindTexture(GL_TEXTURE1, key.Texture?.Id ?? defaultTexture.Id);
+			glActiveTexture(GL_TEXTURE0 + 1);
+			glBindTexture(GL_TEXTURE0 + 1, key.Texture.Id);
 		}
 
 		public override unsafe void Draw(Model item, mat4? vp)
 		{
-			MeshHandle handle = item.Mesh.Handle;
+			var mesh = item.Mesh;
+			var handle = mesh.Handle;
 
 			if (vp.HasValue)
 			{

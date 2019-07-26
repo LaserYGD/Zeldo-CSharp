@@ -15,7 +15,7 @@ using static Engine.GL;
 
 namespace Zeldo
 {
-	public class SkeletalTester : IDynamic, IRenderTargetUser3D, IRenderable3D
+	public class SkeletalTester : IDynamic, IRenderTargetUser3D
 	{
 		private Model model;
 		private Shader skeletalShader;
@@ -38,30 +38,28 @@ namespace Zeldo
 
 			GLUtilities.AllocateBuffers(10000, 1000, out bufferId, out indexId, GL_STATIC_DRAW);
 
-			skeletalShader = new Shader();
+			skeletalShader = new Shader(bufferId, indexId);
 			skeletalShader.Attach(ShaderTypes.Vertex, "Skeletal.vert");
 			skeletalShader.Attach(ShaderTypes.Fragment, "ModelShadow.frag");
 			skeletalShader.AddAttribute<float>(3, GL_FLOAT);
 			skeletalShader.AddAttribute<float>(2, GL_FLOAT);
 			skeletalShader.AddAttribute<float>(3, GL_FLOAT);
 			skeletalShader.AddAttribute<float>(2, GL_FLOAT);
-			skeletalShader.AddAttribute<short>(2, GL_SHORT, true);
-			skeletalShader.AddAttribute<int>(1, GL_INT, true);
-			skeletalShader.CreateProgram();
-			skeletalShader.Bind(bufferId, indexId);
+			skeletalShader.AddAttribute<short>(2, GL_SHORT, ShaderAttributeFlags.IsInteger);
+			skeletalShader.AddAttribute<int>(1, GL_INT, ShaderAttributeFlags.IsInteger);
+			skeletalShader.Initialize();
 			skeletalShader.Use();
 			skeletalShader.SetUniform("shadowSampler", 0);
 			skeletalShader.SetUniform("textureSampler", 1);
 
-			shadowMapShader = new Shader();
+			shadowMapShader = new Shader(bufferId, indexId);
 			shadowMapShader.Attach(ShaderTypes.Vertex, "ShadowMapSkeletal.vert");
 			shadowMapShader.Attach(ShaderTypes.Fragment, "ShadowMap.frag");
-			shadowMapShader.AddAttribute<float>(3, GL_FLOAT, false, false, 20);
+			shadowMapShader.AddAttribute<float>(3, GL_FLOAT, ShaderAttributeFlags.None, 20);
 			shadowMapShader.AddAttribute<float>(2, GL_FLOAT);
-			shadowMapShader.AddAttribute<short>(2, GL_SHORT, true);
-			shadowMapShader.AddAttribute<int>(1, GL_INT, true);
-			shadowMapShader.CreateProgram();
-			shadowMapShader.Bind(bufferId, indexId);
+			shadowMapShader.AddAttribute<short>(2, GL_SHORT, ShaderAttributeFlags.IsInteger);
+			shadowMapShader.AddAttribute<int>(1, GL_INT, ShaderAttributeFlags.IsInteger);
+			shadowMapShader.Initialize();
 
 			shadowMapTarget = new RenderTarget(ShadowMapSize, ShadowMapSize, RenderTargetFlags.Depth);
 			defaultTexture = ContentCache.GetTexture("Grey.png");
@@ -182,7 +180,7 @@ namespace Zeldo
 			shadowMapShader.SetUniform("bones[0]", bones);
 
 			model.RecomputeWorldMatrix();
-			shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix.Value);
+			shadowMapShader.SetUniform("lightMatrix", lightMatrix * model.WorldMatrix);
 
 			Draw(model.Mesh);
 		}
@@ -218,7 +216,7 @@ namespace Zeldo
 			);
 
 			mat4 cameraMatrix = camera.ViewProjection;
-			mat4 world = model.WorldMatrix.Value;
+			mat4 world = model.WorldMatrix;
 			quat orientation = model.Orientation;
 
 			skeletalShader.SetUniform("orientation", orientation.ToMat4);

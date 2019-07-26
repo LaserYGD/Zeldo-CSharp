@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Engine.Core._3D;
+﻿using Engine.Core._3D;
 using Engine.Lighting;
 using Engine.Shaders;
 using GlmSharp;
@@ -9,28 +8,23 @@ namespace Engine.Graphics._3D.Rendering
 {
 	public class SpriteBatch3D : MapRenderer3D<uint, Sprite3D>
 	{
-		private uint bufferId;
-
 		public unsafe SpriteBatch3D(GlobalLight light) : base(light)
 		{
-			fixed (uint* address = &bufferId)
-			{
-				glGenBuffers(1, address);
-			}
+			uint bufferId;
+			
+			glGenBuffers(1, &bufferId);
 
 			var shader = new Shader();
 			shader.Attach(ShaderTypes.Vertex, "Sprite3D.vert");
 			shader.Attach(ShaderTypes.Fragment, "Sprite3D.frag");
 			shader.AddAttribute<float>(3, GL_FLOAT);
 			shader.AddAttribute<float>(2, GL_FLOAT);
-			shader.CreateProgram();
-			shader.Bind(bufferId);
+			shader.Initialize();
 			shader.Use();
 			shader.SetUniform("shadowSampler", 0);
 			shader.SetUniform("textureSampler", 1);
 
-			Shader = shader;
-			GenerateShadowVao(bufferId);
+			Bind(shader, bufferId);
 
 			vec2[] points =
 			{
@@ -61,6 +55,8 @@ namespace Engine.Graphics._3D.Rendering
 		public override void PrepareShadow()
 		{
 			glDisable(GL_CULL_FACE);
+
+			base.PrepareShadow();
 		}
 
 		public override void Prepare()

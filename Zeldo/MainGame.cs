@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Engine;
+using Engine.Core;
 using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Graphics._2D;
 using Engine.Graphics._3D;
+using Engine.Graphics._3D.Rendering;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
@@ -118,8 +120,6 @@ namespace Zeldo
 			space = new Space();
 			spaceVisualizer = new SpaceVisualizer(camera, space);
 
-			//canvas.Add(new GroundVisualizer(world2D));
-
 			scene = new Scene
 			{
 				Camera = camera,
@@ -129,8 +129,11 @@ namespace Zeldo
 				World3D = world3D
 			};
 
-			MasterRenderer3D batch = scene.ModelBatch;
-			batch.LightDirection = Utilities.Normalize(new vec3(-0.25f, -0.35f, -0.7f));
+			//canvas.Add(new GroundVisualizer(world2D));
+			canvas.Add(new ShadowMapVisualizer(scene.Renderer.ShadowTarget));
+
+			MasterRenderer3D renderer = scene.Renderer;
+			renderer.Light.Direction = Utilities.Normalize(new vec3(-0.25f, -0.35f, -0.7f));
 
 			Bow bow = new Bow();
 			bow.Initialize(scene, null);
@@ -174,7 +177,7 @@ namespace Zeldo
 			player.Position = new vec3(0, 20, 0);
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
-			renderTargetUsers.Add(scene.ModelBatch);
+			renderTargetUsers.Add(scene.Renderer);
 
 			jitterVisualizer = new JitterVisualizer(camera, world3D);
 
@@ -215,7 +218,7 @@ namespace Zeldo
 
 			if (data.Query(GLFW_KEY_M, InputStates.PressedThisFrame))
 			{
-				scene.ModelBatch.IsEnabled = !scene.ModelBatch.IsEnabled;
+				scene.Renderer.IsEnabled = !scene.Renderer.IsEnabled;
 			}
 		}
 

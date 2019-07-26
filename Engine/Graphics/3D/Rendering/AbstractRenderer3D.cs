@@ -10,6 +10,10 @@ namespace Engine.Graphics._3D.Rendering
 {
 	public abstract class AbstractRenderer3D<T> : IDisposable where T : IRenderable3D
 	{
+		private uint bufferId;
+		private uint indexId;
+		private uint shadowVao;
+
 		protected AbstractRenderer3D(GlobalLight light)
 		{
 			Light = light;
@@ -18,37 +22,60 @@ namespace Engine.Graphics._3D.Rendering
 		protected Shader Shader { get; set; }
 		protected GlobalLight Light { get; }
 
-		public uint ShadowVao { get; private set; }
-
-		protected unsafe void GenerateShadowVao(uint bufferId, uint indexId = 0)
+		protected unsafe void Bind(Shader shader, uint bufferId, uint indexId = 0)
 		{
-			uint vao;
+			this.bufferId = bufferId;
+			this.indexId = indexId;
+
+			shader.Bind(bufferId, indexId);
+			Shader = shader;
+			
 			uint stride = shader.Stride;
 
-			glGenVertexArrays(1, &vao);
-			glBindVertexArray(vao);
-			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-			glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, (void*)0);
-			glVertexAttribPointer(1, 2, GL_FLOAT, false, stride, (void*)(stride - sizeof(float) * 5));
-
-			if (indexId != 0)
+			fixed (uint* address = &shadowVao)
 			{
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
+				glGenVertexArrays(1, address);
 			}
 
+			glBindVertexArray(shadowVao);
+			glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, (void*)0);
+			//glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, (void*)0);
+			//glVertexAttribPointer(1, 2, GL_FLOAT, false, stride, (void*)(stride - sizeof(float) * 5));
+			glEnableVertexAttribArray(0);
+
+			/*
 			for (int i = 0; i <= 1; i++)
 			{
 				glEnableVertexAttribArray((uint)i);
 			}
-
-			ShadowVao = vao;
+			*/
 		}
 
-		public void Dispose()
+		public unsafe void Dispose()
 		{
 			Shader.Dispose();
 
-			// TODO: Delete buffers as well.
+			// The index buffer ID isn't bound for 3D sprites (which don't use indices for rendering).
+			if (indexId == 0)
+			{
+				fixed (uint* address = &bufferId)
+				{
+					glDeleteBuffers(1, address);
+				}
+
+				return;
+			}
+
+			uint[] buffers =
+			{
+				bufferId,
+				indexId
+			};
+
+			fixed (uint* address = &buffers[0])
+			{
+				glDeleteBuffers(2, address);
+			}
 		}
 
 		public abstract List<T> RetrieveNext();
@@ -56,7 +83,14 @@ namespace Engine.Graphics._3D.Rendering
 		public abstract void Add(T item);
 		public abstract void Remove(T item);
 		public abstract void Prepare();
-		public abstract void PrepareShadow();
+
+		public virtual void PrepareShadow()
+		{
+			glBindVertexArray(shadowVao);
+			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
+		}
+
 		public abstract void Draw(T item, mat4? vp);
 	}
 }

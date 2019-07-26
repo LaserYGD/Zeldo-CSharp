@@ -52,9 +52,11 @@
 
 - Make sure to include little things to reward the player's observation (inspired by a Dark Souls clip of shooting down a body hanging by a rope using a bow for a hidden item)
 
+- Consider pacing in the overall design of the game (inspired by Mark Brown's Boss Keys episode on Dark Souls, where he splits the game into five acts and mentions that 1, 3, and 5 are relatively short and linear, while 2 and 4 are longer and more complex and branching)
 
+- For fast travel, try to brainstorm ways to not ruin the player's sense of exploration and presence in the world (since, with something like a teleport, you don't need to think critically and understand how the world fits together)
 
-
+- Think about ways to give the player options in exploring the world while still maintaining an interesting challenge (likely by making each zone *different* rather than simply scaling difficulty, i.e. try to test different player skills)
 
 
 

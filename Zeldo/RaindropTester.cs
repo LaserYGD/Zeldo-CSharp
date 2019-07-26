@@ -30,8 +30,8 @@ namespace Zeldo
 			shader.Attach(ShaderTypes.Fragment, "Raindrops.frag");
 			shader.AddAttribute<float>(2, GL_FLOAT);
 			shader.AddAttribute<float>(2, GL_FLOAT);
-			shader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, false, true);
-			shader.CreateProgram();
+			shader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, ShaderAttributeFlags.IsNormalized);
+			shader.Initialize();
 		}
 
 		public void Update(float dt)

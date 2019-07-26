@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
 using Engine.Interfaces;
-using Engine.Interfaces._2D;
 using Engine.Messaging;
 using Engine.Shaders;
+using Engine.UI;
 using GlmSharp;
 using static Engine.GL;
 
 namespace Engine.Graphics._3D
 {
-	public class ShadowMapVisualizer : IReceiver, IRenderable2D, IDisposable
+	public class ShadowMapVisualizer : CanvasElement, IReceiver
 	{
 		private const int DefaultSize = 250;
 
@@ -28,7 +24,7 @@ namespace Engine.Graphics._3D
 			shader.AddAttribute<float>(2, GL_FLOAT);
 			shader.AddAttribute<float>(2, GL_FLOAT);
 			shader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, ShaderAttributeFlags.IsNormalized);
-			shader.CreateProgram();
+			shader.Initialize();
 
 			sprite = new Sprite(shadowMapTarget, null, Alignments.Left | Alignments.Bottom);
 			sprite.Shader = shader;
@@ -48,14 +44,14 @@ namespace Engine.Graphics._3D
 			set => sprite.ScaleTo(value, value);
 		}
 
-		public void Dispose()
+		public override void Dispose()
 		{
 			sprite.Dispose();
 
 			MessageSystem.Unsubscribe(this);
 		}
 
-		public void Draw(SpriteBatch sb)
+		public override void Draw(SpriteBatch sb)
 		{
 			sprite.Draw(sb);
 		}

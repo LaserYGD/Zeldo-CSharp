@@ -127,7 +127,7 @@ namespace Zeldo.Entities.Core
 						break;
 
 					case EntityAttachmentTypes3D.Model:
-						Scene.ModelBatch.Remove((Model)target);
+						Scene.Renderer.Remove((Model)target);
 
 						break;
 				}
@@ -175,7 +175,7 @@ namespace Zeldo.Entities.Core
 			Model model = new Model(mesh);
 
 			Attach(EntityAttachmentTypes3D.Model, model, position, orientation);
-			scene.ModelBatch.Add(model);
+			scene.Renderer.Add(model);
 
 			return model;
 		}

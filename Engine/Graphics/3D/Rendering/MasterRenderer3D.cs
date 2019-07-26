@@ -26,8 +26,7 @@ namespace Engine.Graphics._3D.Rendering
 			shadowMapShader = new Shader();
 			shadowMapShader.Attach(ShaderTypes.Vertex, "ShadowMap.vert");
 			shadowMapShader.Attach(ShaderTypes.Fragment, "ShadowMap.frag");
-			shadowMapShader.AddAttribute<float>(3, GL_FLOAT, ShaderAttributeFlags.None, sizeof(float) * 5);
-			shadowMapShader.CreateProgram();
+			shadowMapShader.Initialize();
 
 			// These default values are arbitrary, just to make sure something shows up.
 			Light = new GlobalLight();
@@ -46,6 +45,9 @@ namespace Engine.Graphics._3D.Rendering
 		}
 		
 		public GlobalLight Light { get; }
+
+		// Exposing this publicly is useful for shadow map visualization.
+		public RenderTarget ShadowTarget => shadowMapTarget;
 
 		// Setting the VP matrix externally allows the same batch of models to be rendered from different perspectives
 		// (e.g. reflections in puddles).
@@ -79,6 +81,21 @@ namespace Engine.Graphics._3D.Rendering
 			skeletonRenderer.Add(skeleton);
 		}
 
+		public void Remove(Model model)
+		{
+			modelRenderer.Remove(model);
+		}
+
+		public void Remove(Sprite3D sprite)
+		{
+			spriteBatch3D.Remove(sprite);
+		}
+
+		public void Remove(Skeleton skeleton)
+		{
+			skeletonRenderer.Remove(skeleton);
+		}
+
 		public void DrawTargets()
 		{
 			if (!IsEnabled)
@@ -97,19 +114,16 @@ namespace Engine.Graphics._3D.Rendering
 
 		private void DrawShadow<T>(AbstractRenderer3D<T> renderer) where T : IRenderable3D
 		{
-			glBindVertexArray(renderer.ShadowVao);
 			renderer.PrepareShadow();
 
 			List<T> items;
 
 			while ((items = renderer.RetrieveNext()) != null)
 			{
-				// Even if the object doesn't cast a shadow, its world matrix is recomputed here for use during
-				// normal rendering.
-				items.ForEach(i => i.RecomputeWorldMatrix());
-
 				foreach (T item in items)
 				{
+					// Even if the object doesn't cast a shadow, its world matrix is recomputed here for use during
+					// normal rendering.
 					item.RecomputeWorldMatrix();
 
 					if (!item.IsShadowCaster)

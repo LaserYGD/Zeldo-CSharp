@@ -23,7 +23,7 @@ namespace Zeldo.Weather
 			shader.Attach(ShaderTypes.Geometry, "Rain.geom");
 			shader.Attach(ShaderTypes.Fragment, "Rain.frag");
 			shader.AddAttribute<float>(3, GL_FLOAT);
-			shader.CreateProgram();
+			shader.Initialize();
 		}
 
 		public override void Dispose()

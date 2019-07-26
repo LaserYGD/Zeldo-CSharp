@@ -11,10 +11,6 @@ namespace Engine.Graphics._3D.Rendering
 		{
 		}
 
-		public override void Dispose()
-		{
-		}
-
 		public override List<Skeleton> RetrieveNext()
 		{
 			return null;

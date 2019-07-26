@@ -15,7 +15,7 @@ namespace Zeldo.Entities.Core
 	public class Scene : IDynamic
 	{
 		private Camera3D camera;
-		private MasterRenderer3D batch;
+		private MasterRenderer3D renderer;
 		private List<Entity>[] entities;
 		private List<SceneFragment> fragments;
 
@@ -39,9 +39,9 @@ namespace Zeldo.Entities.Core
 			{
 				camera = value;
 
-				batch = new MasterRenderer3D();
-				batch.ShadowNearPlane = Properties.GetFloat("shadow.near.plane");
-				batch.ShadowFarPlane = Properties.GetFloat("shadow.far.plane");
+				renderer = new MasterRenderer3D();
+				renderer.ShadowNearPlane = Properties.GetFloat("shadow.near.plane");
+				renderer.ShadowFarPlane = Properties.GetFloat("shadow.far.plane");
 			}
 		}
 
@@ -49,7 +49,7 @@ namespace Zeldo.Entities.Core
 		public Space Space { get; set; }
 		public World2D World2D { get; set; }
 		public World World3D { get; set; }
-		public MasterRenderer3D ModelBatch => batch;
+		public MasterRenderer3D Renderer => renderer;
 
 		// In this context, "user data" means custom data optionally loaded with each fragment. Used as needed in order
 		// to implement custom features for different kinds of locations.
@@ -59,7 +59,7 @@ namespace Zeldo.Entities.Core
 		{
 			var fragment = SceneFragment.Load(filename);
 			fragments.Add(fragment);
-			batch.Add(fragment.MapModel);
+			renderer.Add(fragment.MapModel);
 			World3D.AddBody(fragment.MapBody);
 
 			foreach (var entity in fragment.Entities)
@@ -109,8 +109,8 @@ namespace Zeldo.Entities.Core
 
 		public void Draw(Camera3D camera)
 		{
-			batch.VpMatrix = camera.ViewProjection;
-			batch.Draw();
+			renderer.VpMatrix = camera.ViewProjection;
+			renderer.Draw();
 		}
 	}
 }

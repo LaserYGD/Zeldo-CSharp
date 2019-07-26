@@ -26,32 +26,29 @@ namespace Engine.Graphics._2D
 
 		public SpriteBatch()
 		{
-			const int BufferCapacity = 30000;
-			const int IndexCapacity = 3000;
+			int bufferCapacity = Properties.GetInt("sprite.batch.buffer.capacity");
+			int indexCapacity = Properties.GetInt("sprite.batch.index.capacity"); ;
 
-			buffer = new PrimitiveBuffer(BufferCapacity, IndexCapacity);
+			buffer = new PrimitiveBuffer(bufferCapacity, indexCapacity);
 
-			GLUtilities.AllocateBuffers(BufferCapacity, IndexCapacity, out bufferId, out indexId,
-				GL_DYNAMIC_DRAW);
+			GLUtilities.AllocateBuffers(bufferCapacity, indexCapacity, out bufferId, out indexId, GL_DYNAMIC_DRAW);
 
 			// These two shaders (owned by the sprite batch) can be completed here (in terms of binding a buffer).
 			// External shaders are bound when first applied.
-			spriteShader = new Shader();
+			spriteShader = new Shader(bufferId, indexId);
 			spriteShader.Attach(ShaderTypes.Vertex, "Sprite.vert");
 			spriteShader.Attach(ShaderTypes.Fragment, "Sprite.frag");
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
 			spriteShader.AddAttribute<float>(2, GL_FLOAT);
 			spriteShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, ShaderAttributeFlags.IsNormalized);
-			spriteShader.CreateProgram();
-			spriteShader.Bind(bufferId, indexId);
+			spriteShader.Initialize();
 
-			primitiveShader = new Shader();
+			primitiveShader = new Shader(bufferId, indexId);
 			primitiveShader.Attach(ShaderTypes.Vertex, "Primitives2D.vert");
 			primitiveShader.Attach(ShaderTypes.Fragment, "Primitives.frag");
-			primitiveShader.CreateProgram();
 			primitiveShader.AddAttribute<float>(2, GL_FLOAT);
 			primitiveShader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, ShaderAttributeFlags.IsNormalized);
-			primitiveShader.Bind(bufferId, indexId);
+			primitiveShader.Initialize();
 		}
 
 		public uint Mode

@@ -9,6 +9,7 @@ namespace Engine.Shaders
 	public enum ShaderStages
 	{
 		Compile,
-		Link
+		Link,
+		Apply
 	}
 }

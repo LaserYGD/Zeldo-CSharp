@@ -28,13 +28,12 @@ namespace Engine.Graphics._3D
 
 			GLUtilities.AllocateBuffers(bufferSize, indexSize, out bufferId, out indexId, GL_DYNAMIC_DRAW);
 
-			shader = new Shader();
+			shader = new Shader(bufferId, indexId);
 			shader.Attach(ShaderTypes.Vertex, "Primitives3D.vert");
 			shader.Attach(ShaderTypes.Fragment, "Primitives.frag");
 			shader.AddAttribute<float>(3, GL_FLOAT);
 			shader.AddAttribute<byte>(4, GL_UNSIGNED_BYTE, ShaderAttributeFlags.IsNormalized);
-			shader.CreateProgram();
-			shader.Bind(bufferId, indexId);
+			shader.Initialize();
 		}
 
 		public void Dispose()

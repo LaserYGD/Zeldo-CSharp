@@ -9,7 +9,7 @@ using Zeldo.Entities.Core;
 
 namespace Zeldo
 {
-	public class PuddleTester : IDynamic, IRenderTargetUser3D, IRenderable3D
+	public class PuddleTester : IDynamic, IRenderTargetUser3D
 	{
 		private RenderTarget modelTarget;
 		private Shader shader;
@@ -24,7 +24,7 @@ namespace Zeldo
 			shader = new Shader();
 			shader.Attach(ShaderTypes.Vertex, "");
 			shader.Attach(ShaderTypes.Fragment, "Puddle.frag");
-			shader.CreateProgram();
+			shader.Initialize();
 			shader.Use();
 			shader.SetUniform("skyImage", 0);
 			shader.SetUniform("modelImage", 1);
@@ -58,9 +58,9 @@ namespace Zeldo
 			modelTarget.Apply();
 
 			// Note that by this point, the scene's shadow map should have already been computed.
-			var batch = Scene.ModelBatch;
-			batch.ViewProjection = viewOrientation;
-			batch.Draw();
+			var renderer = Scene.Renderer;
+			renderer.VpMatrix = viewOrientation;
+			renderer.Draw();
 			
 			shader.Apply();
 			Sky.Target.Bind(0);

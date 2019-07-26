@@ -17,11 +17,25 @@ namespace Engine.Shaders
 		private uint geometryShader;
 		private uint vertexShader;
 
+		private uint bufferId;
+		private uint indexId;
+
 		private List<ShaderAttribute> attributes;
 		private Dictionary<string, int> uniforms;
 
-		public Shader()
+		public Shader() : this(0, 0)
 		{
+		}
+
+		public Shader(uint bufferId) : this(bufferId, 0)
+		{
+		}
+
+		public Shader(uint bufferId, uint indexId)
+		{
+			this.bufferId = bufferId;
+			this.indexId = indexId;
+
 			attributes = new List<ShaderAttribute>();
 			uniforms = new Dictionary<string, int>();
 		}
@@ -77,7 +91,7 @@ namespace Engine.Shaders
 			return id;
 		}
 
-		public unsafe void CreateProgram()
+		public unsafe void Initialize()
 		{
 			program = glCreateProgram();
 
@@ -118,9 +132,9 @@ namespace Engine.Shaders
 			GetUniforms();
 			DeleteShaders();
 
-			fixed (uint* vaoAddress = &vao)
+			if (bufferId > 0)
 			{
-				glGenVertexArrays(1, vaoAddress);
+				GenerateVao();
 			}
 		}
 
@@ -167,17 +181,28 @@ namespace Engine.Shaders
 			Stride += (uint)Marshal.SizeOf<T>() * count + padding;
 		}
 
-		public unsafe void Bind(uint bufferId, uint indexId = 0)
+		public void Bind(uint bufferId, uint indexId)
 		{
-			glBindVertexArray(vao);
+			this.bufferId = bufferId;
+			this.indexId = indexId;
 
-			// The index buffer ID can be zero when array rendering is being used.
-			if (indexId != 0)
+			GenerateVao();
+		}
+
+		private unsafe void GenerateVao()
+		{
+			fixed (uint* address = &vao)
+			{
+				glGenVertexArrays(1, address);
+			}
+
+			glBindVertexArray(vao);
+			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
+
+			if (indexId > 0)
 			{
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
 			}
-
-			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
 
 			for (int i = 0; i < attributes.Count; i++)
 			{
@@ -230,8 +255,16 @@ namespace Engine.Shaders
 
 		public void Apply()
 		{
+			if (vao == 0)
+			{
+				throw new ShaderException(ShaderStages.Apply, "The shader's VAO was zero when applied. This likely " +
+					"means the shader was never bound.");
+			}
+
 			glUseProgram(program);
 			glBindVertexArray(vao);
+			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
 		}
 
 		public void SetUniform(string name, int value)
