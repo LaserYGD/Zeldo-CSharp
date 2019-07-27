@@ -10,6 +10,18 @@ uniform sampler2D shadowMap;
 void main()
 {
 	float depth = texture(shadowMap, fTexCoords).r;
-	
-	fragColor = fColor * vec4(vec3(depth), 1);
+	float t = 0.01;
+
+	if (depth > 0 && depth <= t)
+	{
+		fragColor = vec4(0, 1, 0, 1);
+	}
+	else if (depth < 1 && depth > t)
+	{
+		fragColor = vec4(1, 0, 0, 1);
+	}
+	else
+	{
+		fragColor = fColor * vec4(vec3(depth), 1);
+	}
 }

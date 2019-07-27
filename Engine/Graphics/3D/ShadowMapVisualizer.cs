@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Engine.Core;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
 using Engine.Interfaces;
@@ -28,6 +29,7 @@ namespace Engine.Graphics._3D
 
 			sprite = new Sprite(shadowMapTarget, null, Alignments.Left | Alignments.Bottom);
 			sprite.Shader = shader;
+			//sprite.Color = Color.Yellow;
 
 			DisplaySize = DefaultSize;
 
