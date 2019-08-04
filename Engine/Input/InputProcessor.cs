@@ -20,16 +20,16 @@ namespace Engine.Input
 		private ivec2 mouseLocation;
 		private ivec2 previousMouseLocation;
 
-		// On the first frame, the mouse's previous location is artificially set to the current location in order to
-		// avoid a false, large delta.
-		private bool firstFrame;
+		// On the first frame of mouse movement, the mouse's previous location is artificially set to the current
+		// location in order to avoid a large, false delta.
+		private bool firstMouseMovement;
 
 		public InputProcessor()
 		{
 			buttons = Enumerable.Repeat(InputStates.Released, GLFW_MOUSE_BUTTON_LAST).ToArray();
 			keys = Enumerable.Repeat(InputStates.Released, GLFW_KEY_LAST).ToArray();
 			keyPresses = new List<KeyPress>();
-			firstFrame = true;
+			firstMouseMovement = true;
 		}
 
 		public void KeyCallback(IntPtr window, int key, int scancode, int action, int mods)
@@ -107,14 +107,13 @@ namespace Engine.Input
 
 		private MouseData GetMouseData()
 		{
-			if (firstFrame)
+			if (firstMouseMovement && mouseLocation != ivec2.Zero)
 			{
 				previousMouseLocation = mouseLocation;
-				firstFrame = false;
+				firstMouseMovement = false;
 			}
 
 			MouseData data = new MouseData(mouseLocation, previousMouseLocation, (InputStates[])buttons.Clone());
-
 			previousMouseLocation = mouseLocation;
 
 			for (int i = 0; i < buttons.Length; i++)

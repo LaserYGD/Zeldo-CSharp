@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Messaging;
+﻿using Engine.Messaging;
 using GlmSharp;
 
 namespace Engine
@@ -11,8 +6,8 @@ namespace Engine
 	public static class Resolution
 	{
 		// These default settings are meant to be overridden by a config file on startup.
-		private static ivec2 renderDimensions = new ivec2(960, 540);
-		private static ivec2 windowDimensions = new ivec2(960, 540);
+		private static ivec2 renderDimensions = new ivec2(900, 506);
+		private static ivec2 windowDimensions = new ivec2(900, 506);
 
 		public static int RenderWidth => renderDimensions.x;
 		public static int RenderHeight => renderDimensions.y;

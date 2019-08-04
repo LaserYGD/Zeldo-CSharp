@@ -55,8 +55,19 @@ namespace Engine.Core._2D
 
 		protected override void RecomputePositionData()
 		{
-			int width = source.Width;
-			int height = source.Height;
+			int width;
+			int height;
+
+			if (sourceRect != null)
+			{
+				width = sourceRect.Width;
+				height = sourceRect.Height;
+			}
+			else
+			{
+				width = source.Width;
+				height = source.Height;
+			}
 
 			vec2[] points =
 			{

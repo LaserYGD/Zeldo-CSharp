@@ -31,6 +31,7 @@ using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
 using Zeldo.Physics._2D;
 using Zeldo.Sensors;
+using Zeldo.Settings;
 using Zeldo.UI;
 using Zeldo.UI.Hud;
 using Zeldo.UI.Screens;
@@ -67,14 +68,9 @@ namespace Zeldo
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			glPrimitiveRestartIndex(Constants.RestartIndex);
+			glfwSetInputMode(window.Address, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-			Properties.Load("Character.properties");
-			Properties.Load("Enemy.properties");
-			Properties.Load("Entity.properties");
-			Properties.Load("Player.properties");
-			Properties.Load("Render.properties");
-			Properties.Load("UI.properties");
-			Properties.Load("World.properties");
+			Properties.LoadAll();
 
 			Language.Reload(Languages.English);
 
@@ -129,9 +125,6 @@ namespace Zeldo
 				World3D = world3D
 			};
 
-			//canvas.Add(new GroundVisualizer(world2D));
-			canvas.Add(new ShadowMapVisualizer(scene.Renderer.ShadowTarget));
-
 			MasterRenderer3D renderer = scene.Renderer;
 			renderer.Light.Direction = Utilities.Normalize(new vec3(-0.25f, -0.35f, -0.7f));
 
@@ -169,7 +162,10 @@ namespace Zeldo
 			player.UnlockSkill(PlayerSkills.Jump);
 			player.Equip(bow);
 
-			camera.Attach(new FollowCameraController(player));
+			ControlSettings settings = new ControlSettings();
+			settings.MouseSensitivity = 50;
+
+			camera.Attach(new BasicCameraController(player, settings));
 
 			scene.Add(player);
 			scene.LoadFragment("Demo.json");
@@ -203,6 +199,11 @@ namespace Zeldo
 
 		private void ProcessKeyboard(KeyboardData data)
 		{
+			if (data.Query(GLFW_KEY_ESCAPE, InputStates.PressedThisFrame))
+			{
+				glfwSetWindowShouldClose(window.Address, 1);
+			}
+
 			bool controlHeld = data.Query(GLFW_KEY_LEFT_CONTROL, InputStates.Held) ||
 				data.Query(GLFW_KEY_RIGHT_CONTROL, InputStates.Held);
 

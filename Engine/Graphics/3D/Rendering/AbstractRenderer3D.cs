@@ -39,16 +39,12 @@ namespace Engine.Graphics._3D.Rendering
 
 			glBindVertexArray(shadowVao);
 			glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, (void*)0);
-			//glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, (void*)0);
-			//glVertexAttribPointer(1, 2, GL_FLOAT, false, stride, (void*)(stride - sizeof(float) * 5));
-			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(1, 2, GL_FLOAT, false, stride, (void*)(sizeof(float) * 3));
 
-			/*
 			for (int i = 0; i <= 1; i++)
 			{
 				glEnableVertexAttribArray((uint)i);
 			}
-			*/
 		}
 
 		public unsafe void Dispose()
@@ -82,13 +78,33 @@ namespace Engine.Graphics._3D.Rendering
 
 		public abstract void Add(T item);
 		public abstract void Remove(T item);
-		public abstract void Prepare();
 
 		public virtual void PrepareShadow()
 		{
 			glBindVertexArray(shadowVao);
 			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
+		}
+
+		public virtual void Prepare()
+		{
+			Shader.Apply();
+			Shader.SetUniform("lightDirection", Light.Direction);
+			Shader.SetUniform("lightColor", Light.Color.ToVec3());
+			Shader.SetUniform("ambientIntensity", Light.AmbientIntensity);
+		}
+
+		protected void PrepareShader(T item, mat4? vp)
+		{
+			if (vp.HasValue)
+			{
+				mat4 world = item.WorldMatrix;
+				quat orientation = item.Orientation;
+
+				Shader.SetUniform("orientation", orientation.ToMat4);
+				Shader.SetUniform("mvp", vp.Value * world);
+				Shader.SetUniform("lightBiasMatrix", Light.BiasMatrix * world);
+			}
 		}
 
 		public abstract void Draw(T item, mat4? vp);

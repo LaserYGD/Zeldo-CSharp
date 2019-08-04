@@ -12,6 +12,11 @@ namespace Engine.Core
 			components.Add(component);
 		}
 
+		public void Remove(Component component)
+		{
+			components.Remove(component);
+		}
+
 		public void Update(float dt)
 		{
 			for (int i = components.Count - 1; i >= 0; i--)

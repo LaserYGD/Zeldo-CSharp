@@ -17,7 +17,7 @@ namespace Engine.Graphics._2D
 		{
 			const string Path = "Content/Fonts/";
 
-			Texture texture = ContentCache.GetTexture(name + "_0.png", "Fonts/");
+			Texture texture = ContentCache.GetTexture(name + "_0.png", false, "Fonts/");
 
 			string[] lines = File.ReadAllLines(Path + name + ".fnt");
 			string first = lines[0];

@@ -43,6 +43,7 @@ namespace Engine
 			glClear = GetDelegate<Delegates.glClear>();
 			glClearColor = GetDelegate<Delegates.glClearColor>();
 			glDepthFunc = GetDelegate<Delegates.glDepthFunc>();
+			glDrawArrays = GetDelegate<Delegates.glDrawArrays>();
 			glDrawElements = GetDelegate<Delegates.glDrawElements>();
 			glDrawElementsBaseVertex = GetDelegate<Delegates.glDrawElementsBaseVertex>();
 			glDrawElementsInstanced = GetDelegate<Delegates.glDrawElementsInstanced>();
@@ -860,6 +861,7 @@ namespace Engine
 		public static Delegates.glClear glClear;
 		public static Delegates.glClearColor glClearColor;
 		public static Delegates.glDepthFunc glDepthFunc;
+		public static Delegates.glDrawArrays glDrawArrays;
 		public static Delegates.glDrawElements glDrawElements;
 		public static Delegates.glDrawElementsBaseVertex glDrawElementsBaseVertex;
 		public static Delegates.glDrawElementsInstanced glDrawElementsInstanced;
@@ -948,6 +950,7 @@ namespace Engine
 			public delegate void glClear(uint mask);
 			public delegate void glClearColor(float red, float green, float blue, float alpha);
 			public delegate void glDepthFunc(uint func);
+			public delegate void glDrawArrays(uint mode, int first, uint count);
 			public delegate void glDrawElements(uint mode, uint count, uint type, void* indices);
 			public delegate void glDrawElementsBaseVertex(uint mode, uint count, uint type, void* indices,
 				int baseVertex);

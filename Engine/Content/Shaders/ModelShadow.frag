@@ -9,35 +9,29 @@ out vec4 fragColor;
 uniform vec3 lightColor;
 uniform vec3 lightDirection;
 uniform float ambientIntensity;
-uniform sampler2D shadowSampler;
 uniform sampler2D textureSampler;
+uniform sampler2D shadowSampler;
 
 void main()
 {
-	float d = dot(-lightDirection, fNormal);
-	
 	vec4 color = texture(textureSampler, fSource);
 
-	fragColor = color * vec4(lightColor * d, 1);
+	float shadowValue = texture(shadowSampler, fShadowMapCoords.xy).r;
+	float d = dot(-lightDirection, fNormal);
+	float bias = 0.001;
+	float lightIntensity;
 
-//	vec4 color = texture(textureSampler, fSource);
-//
-//	float shadowValue = texture(shadowSampler, fShadowMapCoords.xy).r;
-//	float d = dot(-lightDirection, fNormal);
-//	float bias = 0.001;
-//	float lightIntensity;
-//
-//	if (fShadowMapCoords.z - bias > shadowValue)
-//	{
-//		lightIntensity = ambientIntensity;
-//	}
-//	else
-//	{
-//		float diffuse = clamp(d, 0, 1);
-//		float combined = clamp(ambientIntensity + diffuse, 0, 1);
-//
-//		lightIntensity = combined;
-//	}
-//
-//	fragColor = color * vec4(lightColor * lightIntensity, 1);
+	if (fShadowMapCoords.z - bias > shadowValue)
+	{
+		lightIntensity = ambientIntensity;
+	}
+	else
+	{
+		float diffuse = clamp(d, 0, 1);
+		float combined = clamp(ambientIntensity + diffuse, 0, 1);
+
+		lightIntensity = combined;
+	}
+
+	fragColor = color * vec4(lightColor * lightIntensity, 1);
 }

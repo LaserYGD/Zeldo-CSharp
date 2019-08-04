@@ -58,6 +58,9 @@
 
 - Think about ways to give the player options in exploring the world while still maintaining an interesting challenge (likely by making each zone *different* rather than simply scaling difficulty, i.e. try to test different player skills)
 
+- If you showcase a cool area, make sure the player is able to actually go there (or at least interact in some interesting way) => Inspired by Joseph Anderson's video on The Ringed City where he said he was disappointed he couldn't explore this huge city the game drew attention to
+
+- Sliding challenge section (inspired by watching a slide in that 3D Harry Potter and the Prisoner of Azkaban game) => Probably not an actual slide, but maybe a hilly section that accommodates multiple slides well
 
 
 

@@ -1,23 +1,21 @@
 ﻿#version 440 core
 
-//in vec2 fSource;
+in vec2 fSource;
 
 out float fragDepth;
 
-//uniform bool useTextures;
-//uniform sampler2D image;
+uniform sampler2D image;
 
 void main()
 {
-	//if (!useTextures)
-	//{
-		fragDepth = gl_FragCoord.z;
-
-	//	return;
-	//}
-
 	//vec4 color = texture(image, fSource);
+	if (gl_FragCoord.z == 0)
+	{
+		fragDepth = 0;
+	}
+
+	fragDepth = fSource.x;
 
 	// Only non-transparent pixels cast shadows.
-	//fragDepth = color == vec4(0, 0, 0, 0) ? 3.4e38 : gl_FragCoord.z;
+	//fragDepth = color.a == 0 ? 1000000000 : gl_FragCoord.z;
 }

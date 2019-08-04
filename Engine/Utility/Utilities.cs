@@ -33,6 +33,11 @@ namespace Engine.Utility
 			return (int)((end - start) * t) + start;
 		}
 
+		public static float Lerp(float start, float end, float t)
+		{
+			return (end - start) * t + start;
+		}
+
 		public static float Length(vec2 v)
 		{
 			return (float)Math.Sqrt(LengthSquared(v));
@@ -131,6 +136,16 @@ namespace Engine.Utility
 			return v > max ? max : v;
 		}
 
+		public static float Dot(vec2 v1, vec2 v2)
+		{
+			return vec2.Dot(v1, v2);
+		}
+
+		public static float Dot(vec3 v1, vec3 v2)
+		{
+			return vec3.Dot(v1, v2);
+		}
+
 		public static vec2 Direction(float angle)
 		{
 			float x = (float)Math.Cos(angle);
@@ -218,6 +233,11 @@ namespace Engine.Utility
 		{
 			// See https://math.stackexchange.com/a/13263.
 			return v - 2 * vec3.Dot(v, normal) * normal;
+		}
+
+		public static vec3 Cross(vec3 v1, vec3 v2)
+		{
+			return vec3.Cross(v1, v2);
 		}
 
 		public static void PositionItems(IPositionable2D[] items, vec2 start, vec2 spacing)

@@ -167,25 +167,7 @@ namespace Engine.Graphics._2D
 
 		public void Draw(Rectangle rect, Color color)
 		{
-			Apply(primitiveShader, GL_LINE_LOOP);
-
-			var corners = rect.Corners;
-
-			float f = color.ToFloat();
-			float[] data = new float[12];
-
-			for (int i = 0; i < 4; i++)
-			{
-				vec2 p = corners[i];
-
-				int start = i * 3;
-
-				data[start] = p.x;
-				data[start + 1] = p.y;
-				data[start + 2] = f;
-			}
-
-			Buffer(data);
+			RenderInternal(rect, color, GL_LINE_LOOP, null);
 		}
 
 		public void DrawLine(vec2 p1, vec2 p2, Color color)
@@ -204,6 +186,36 @@ namespace Engine.Graphics._2D
 			};
 
 			ushort[] indices = { 0, 1 };
+
+			Buffer(data, indices);
+		}
+
+		public void Fill(Rectangle rect, Color color)
+		{
+			ushort[] indices = { 0, 1, 3, 2 };
+
+			RenderInternal(rect, color, GL_TRIANGLE_STRIP, indices);
+		}
+
+		private void RenderInternal(Rectangle rect, Color color, uint mode, ushort[] indices)
+		{
+			Apply(primitiveShader, mode);
+
+			var corners = rect.Corners;
+
+			float f = color.ToFloat();
+			float[] data = new float[12];
+
+			for (int i = 0; i < 4; i++)
+			{
+				vec2 p = corners[i];
+
+				int start = i * 3;
+
+				data[start] = p.x;
+				data[start + 1] = p.y;
+				data[start + 2] = f;
+			}
 
 			Buffer(data, indices);
 		}

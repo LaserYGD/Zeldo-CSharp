@@ -159,6 +159,9 @@
     <None Include="Content\Properties\UI.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Properties\View.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Shaders\2D\LeviathonSpeech.frag" />
     <None Include="Content\Shaders\2D\Raindrops.frag" />
     <None Include="Content\Shaders\Puddle.frag">
@@ -229,6 +232,7 @@
     <Compile Include="Entities\Objects\Cannonball.cs" />
     <Compile Include="Entities\Objects\Crate.cs" />
     <Compile Include="Entities\Objects\Door.cs" />
+    <Compile Include="Entities\PlayerController.cs" />
     <Compile Include="Entities\PlayerData.cs" />
     <Compile Include="Entities\Weapons\Twinblade.cs" />
     <Compile Include="Entities\Player.cs" />
@@ -269,6 +273,7 @@
     <Compile Include="Sensors\SensorUsages.cs" />
     <Compile Include="Sensors\Space.cs" />
     <Compile Include="Sensors\SpaceVisualizer.cs" />
+    <Compile Include="Settings\ControlSettings.cs" />
     <Compile Include="Settings\VideoSettings.cs" />
     <Compile Include="Settings\AudioSettings.cs" />
     <Compile Include="SkeletalTester.cs" />
@@ -301,7 +306,7 @@
     <Compile Include="UI\Speech\DialogueToken.cs" />
     <Compile Include="UI\Speech\DialogueTree.cs" />
     <Compile Include="UI\Subtitles.cs" />
-    <Compile Include="View\FollowCameraController.cs" />
+    <Compile Include="View\BasicCameraController.cs" />
     <Compile Include="Weather\DayNightCycle.cs" />
     <Compile Include="Weather\Rain.cs" />
     <Compile Include="Weather\Snow.cs" />

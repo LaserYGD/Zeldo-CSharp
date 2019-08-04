@@ -27,6 +27,8 @@ namespace Engine.Graphics._3D.Rendering
 			shadowMapShader.Attach(ShaderTypes.Vertex, "ShadowMap.vert");
 			shadowMapShader.Attach(ShaderTypes.Fragment, "ShadowMap.frag");
 			shadowMapShader.Initialize();
+			shadowMapShader.Use();
+			//shadowMapShader.SetUniform("image", 0);
 
 			// These default values are arbitrary, just to make sure something shows up.
 			Light = new GlobalLight();
@@ -109,7 +111,7 @@ namespace Engine.Graphics._3D.Rendering
 			shadowMapShader.Use();
 
 			DrawShadow(modelRenderer);
-			//DrawShadow(spriteBatch3D);
+			DrawShadow(spriteBatch3D);
 		}
 
 		private void DrawShadow<T>(AbstractRenderer3D<T> renderer) where T : IRenderable3D
@@ -144,10 +146,10 @@ namespace Engine.Graphics._3D.Rendering
 				return;
 			}
 
-			shadowMapTarget.Bind(0);
+			shadowMapTarget.Bind(1);
 
 			Draw(modelRenderer);
-			//Draw(spriteBatch3D);
+			Draw(spriteBatch3D);
 		}
 
 		private void Draw<T>(AbstractRenderer3D<T> renderer) where T : IRenderable3D

@@ -104,22 +104,6 @@ namespace Zeldo.Entities.Core
 			Attach(new RunController(this));
 		}
 
-		public virtual void OnSpiralStaircaseEnter(SpiralStaircase staircase)
-		{
-			const float Nudge = 0.02f;
-
-			float x = Math.Abs(Position.y - staircase.Position.y) > 2 ? Constants.Pi * 2 - Nudge : Nudge;
-			float y = Utilities.Distance(Position.swizzle.xz, staircase.Position.swizzle.xz);
-
-			StairPosition = new vec2(x, y);
-			Attach(new SpiralController(staircase, this), true);
-		}
-
-		public virtual void OnSpiralStaircaseLeave()
-		{
-			Attach(new RunController(this));
-		}
-
 		public override void Update(float dt)
 		{
 			Components.Update(dt);

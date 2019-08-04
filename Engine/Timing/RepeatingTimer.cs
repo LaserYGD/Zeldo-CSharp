@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Timing
 {
@@ -31,7 +27,15 @@ namespace Engine.Timing
 
 				if (!trigger(Elapsed % Duration))
 				{
-					IsComplete = true;
+					if (Repeatable)
+					{
+						Elapsed = 0;
+						Paused = true;
+					}
+					else
+					{
+						IsComplete = true;
+					}
 
 					return;
 				}

@@ -6,7 +6,7 @@ namespace Engine.Graphics
 {
 	public class Texture : QuadSource
 	{
-		public static unsafe Texture Load(string filename, string folder)
+		public static unsafe Texture Load(string filename, string folder, bool storeData = false)
 		{
 			LoadData(folder + filename, out int width, out int height, out int[] data);
 
@@ -15,7 +15,7 @@ namespace Engine.Graphics
 			glGenTextures(1, &id);
 
 			// Setting the data also binds the texture.
-			Texture texture = new Texture(id, width, height);
+			Texture texture = new Texture(id, width, height, storeData ? data : null);
 			texture.Data = data;
 
 			SetDefaultParameters();
@@ -51,6 +51,10 @@ namespace Engine.Graphics
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		}
 
+		// Only some textures store their data in non-GPU memory (e.g. detecting hitscan collisions on enemies using
+		// their texture).
+		private int[] data;
+
 		// This constructor is useful when generating texture data dynamically at runtime.
 		public unsafe Texture()
 		{
@@ -62,12 +66,14 @@ namespace Engine.Graphics
 			Id = id;
 		}
 
-		private Texture(uint id, int width, int height) : base(id, width, height)
+		private Texture(uint id, int width, int height, int[] data) : base(id, width, height)
 		{
+			this.data = data;
 		}
 
 		public unsafe int[] Data
 		{
+			get => data;
 			set
 			{
 				glBindTexture(GL_TEXTURE_2D, Id);

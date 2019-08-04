@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using Engine.Messaging;
@@ -46,6 +42,7 @@ namespace Engine.View
 
 		public float NearPlane { get; set; }
 		public float FarPlane { get; set; }
+		public float PerspectiveFov { get; set; }
 
 		public bool IsOrthographic
 		{
@@ -81,7 +78,7 @@ namespace Engine.View
 
 			projection = isOrthographic
 				? mat4.Ortho(-orthoHalfWidth, orthoHalfWidth, -orthoHalfHeight, orthoHalfHeight, NearPlane, FarPlane)
-				: mat4.PerspectiveFov(90, dimensions.x, dimensions.y, NearPlane, FarPlane);
+				: mat4.PerspectiveFov(PerspectiveFov, dimensions.x, dimensions.y, NearPlane, FarPlane);
 		}
 
 		public void Attach(CameraController3D controller)

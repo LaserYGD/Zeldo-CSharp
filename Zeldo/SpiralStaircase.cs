@@ -54,13 +54,13 @@ namespace Zeldo
 			sensor.OnSense = (sensorType, parent) =>
 			{
 				Actor actor = (Actor)parent;
-				actor.OnSpiralStaircaseEnter(this);
+				//actor.OnSpiralStaircaseEnter(this);
 			};
 
 			sensor.OnSeparate = (sensorType, parent) =>
 			{
 				Actor actor = (Actor)parent;
-				actor.OnSpiralStaircaseLeave();
+				//actor.OnSpiralStaircaseLeave();
 			};
 
 			scene.Space.Add(sensor);

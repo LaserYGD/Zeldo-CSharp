@@ -15,6 +15,7 @@ namespace Engine.Timing
 		public float Duration { get; set; }
 
 		public bool Paused { get; set; }
+		public bool Repeatable { get; set; }
 
 		public Action<float> Tick { get; set; }
 	}

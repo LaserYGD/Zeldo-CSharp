@@ -44,11 +44,11 @@ namespace Engine
 			return font;
 		}
 
-		public static Texture GetTexture(string filename, string folder = "Textures/")
+		public static Texture GetTexture(string filename, bool storeData = false, string folder = "Textures/")
 		{
 			if (!textures.TryGetValue(filename, out Texture texture))
 			{
-				texture = Texture.Load(filename, folder);
+				texture = Texture.Load(filename, folder, storeData);
 				textures.Add(filename, texture);
 			}
 

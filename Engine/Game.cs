@@ -58,10 +58,10 @@ namespace Engine
 			}
 		}
 
-		private Window window;
-
 		private float previousTime;
 		private float accumulator;
+
+		protected Window window;
 
 		protected Game(string title)
 		{

@@ -4,7 +4,7 @@ namespace Engine
 {
 	public static class GLUtilities
 	{
-		public static unsafe void GenerateBuffers(out uint bufferId, out uint indexBufferId)
+		public static unsafe void GenerateBuffers(out uint bufferId, out uint indexId)
 		{
 			uint[] buffers = new uint[2];
 
@@ -14,7 +14,7 @@ namespace Engine
 			}
 
 			bufferId = buffers[0];
-			indexBufferId = buffers[1];
+			indexId = buffers[1];
 		}
 
 		public static unsafe void AllocateBuffers(int bufferSize, int indexSize, out uint bufferId,

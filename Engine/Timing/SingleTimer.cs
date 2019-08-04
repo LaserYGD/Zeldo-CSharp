@@ -16,11 +16,6 @@ namespace Engine.Timing
 			this.trigger = trigger;
 		}
 
-		// Even "single" timers can be repeated. The idea is that a repeating timer triggers an action multiple times
-		// in a row, whereas a single timer executes only a single callback, but can then be reset and paused
-		// automatically (in preparation for the next call).
-		public bool Repeatable { get; set; }
-
 		public override void Update(float dt)
 		{
 			if (Paused)

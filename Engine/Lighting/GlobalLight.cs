@@ -36,10 +36,9 @@ namespace Engine.Lighting
 			// The light matrix is positioned such that the far plane exactly hits the back side of the camera's view
 			// box (from the light's perspective). This allows off-screen objects between the light's origin and the
 			// screen to still cast shadows.
-			float range = ShadowFarPlane - ShadowNearPlane;
-			float offset = range / 2 - orthoHalfSize.z;
+			float halfRange = orthoHalfSize.z / 2;
 
-			mat4 lightView = mat4.LookAt(cameraCenter - Direction * offset, cameraCenter, vec3.UnitY);
+			mat4 lightView = mat4.LookAt(cameraCenter - Direction * halfRange, cameraCenter, vec3.UnitY);
 			mat4 lightProjection = mat4.Ortho(-orthoHalfSize.x, orthoHalfSize.x, -orthoHalfSize.y, orthoHalfSize.y,
 				ShadowNearPlane, ShadowFarPlane);
 

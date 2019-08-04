@@ -7,9 +7,17 @@ namespace Engine
 	{
 		private static Dictionary<string, string> map = new Dictionary<string, string>();
 
-		public static void Load(string filename)
+		public static void LoadAll()
 		{
-			string[] lines = File.ReadAllLines("Content/Properties/" + filename);
+			foreach (var file in Directory.GetFiles("Content/Properties"))
+			{
+				Load(file);
+			}
+		}
+
+		private static void Load(string filename)
+		{
+			string[] lines = File.ReadAllLines(filename);
 
 			foreach (string line in lines)
 			{
