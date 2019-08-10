@@ -2,7 +2,7 @@
 using Jitter.LinearMath;
 using Zeldo.Entities.Core;
 
-namespace Zeldo.Controllers
+namespace Zeldo.Control
 {
 	public class AirController : CharacterController
 	{

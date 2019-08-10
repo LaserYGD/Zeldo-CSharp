@@ -11,7 +11,7 @@ using Zeldo.Settings;
 
 namespace Zeldo.View
 {
-	public class BasicCameraController : CameraController3D, IReceiver
+	public class FollowController : CameraController3D, IReceiver
 	{
 		private const float AimDivisor = 10000f;
 
@@ -23,10 +23,12 @@ namespace Zeldo.View
 		private float yaw;
 		private float maxPitch;
 		
-		public BasicCameraController(Player player, ControlSettings settings)
+		public FollowController(Player player, ControlSettings settings)
 		{
 			this.player = player;
 			this.settings = settings;
+
+			player.FollowController = this;
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
@@ -34,11 +36,14 @@ namespace Zeldo.View
 			});
 		}
 
+		public float Pitch => pitch;
+		public float Yaw => yaw;
+
 		public List<MessageHandle> MessageHandles { get; set; }
 
 		public override void Initialize(Camera3D camera)
 		{
-			followDistance = Properties.GetFloat("camera.follow.distance");
+			followDistance = Properties.GetFloat("view.follow.distance");
 			maxPitch = Properties.GetFloat("view.max.pitch");
 
 			camera.OrthoWidth = Properties.GetFloat("camera.ortho.width");

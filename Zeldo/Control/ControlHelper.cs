@@ -3,7 +3,7 @@ using Engine.Utility;
 using GlmSharp;
 using Zeldo.Entities.Core;
 
-namespace Zeldo.Controllers
+namespace Zeldo.Control
 {
 	public static class ControlHelper
 	{

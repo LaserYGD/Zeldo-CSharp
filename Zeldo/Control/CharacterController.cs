@@ -1,16 +1,16 @@
 ﻿using Engine.Interfaces;
 using Zeldo.Entities.Core;
 
-namespace Zeldo.Controllers
+namespace Zeldo.Control
 {
 	public abstract class CharacterController : IDynamic
 	{
-		protected CharacterController(Actor parent)
+		protected CharacterController(Actor parent = null)
 		{
 			Parent = parent;
 		}
 
-		protected Actor Parent { get; }
+		public Actor Parent { get; set; }
 
 		public abstract void Update(float dt);
 	}

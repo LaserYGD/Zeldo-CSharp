@@ -62,5 +62,21 @@
 
 - Sliding challenge section (inspired by watching a slide in that 3D Harry Potter and the Prisoner of Azkaban game) => Probably not an actual slide, but maybe a hilly section that accommodates multiple slides well
 
+- Late-game puzzle inspired by that idea I had for the GMTK jam 2019: each version of the game has slightly different aspects in some key ways, and players need to work together as a community to solve the final puzzle (maybe contextualized as alternate realities?) => Probably not worth it, but who knows
+
+- Elevator system from the cave village to a surface city (maybe the capitol?) that's only built following certain world events that improve relations among the two cities (or maybe you discover them underground and then help to start forming a new relationship to stay more positive?) => Could take a bit of in-game time, advancing when you exit and reload? Might be too slow for speedrunning considerations
+
+- Spiral plant, like little springs (inspired by a picture on Reddit of a spiral pepper)
+
+
+
+
+
+
+
+
+
+
+
 
 

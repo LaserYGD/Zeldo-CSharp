@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using Engine;
+﻿using Engine;
 using Engine.Input.Data;
-using Engine.Interfaces;
-using Engine.Messaging;
 using Engine.Shapes._2D;
 using Engine.Utility;
 using GlmSharp;
@@ -10,7 +7,7 @@ using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;
-using Zeldo.Controllers;
+using Zeldo.Control;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Weapons;
 using Zeldo.Interfaces;
@@ -46,6 +43,7 @@ namespace Zeldo.Entities
 			sword = new Sword();
 			controls = new PlayerControls();
 			playerData = new PlayerData();
+			controller = new PlayerController(this, playerData, controls);
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 
@@ -62,6 +60,12 @@ namespace Zeldo.Entities
 		public PlayerHealthDisplay HealthDisplay { get; set; }
 		public PlayerManaDisplay ManaDisplay { get; set; }
 		public PlayerDebugView DebugView { get; set; }
+
+		// This is required to move in the direction of camera aim (passed through to the controller class).
+		public FollowController FollowController
+		{
+			set => controller.FollowController = value;
+		}
 
 		// The player owns their own inventory.
 		public Inventory Inventory { get; }
@@ -164,7 +168,6 @@ namespace Zeldo.Entities
 			DebugView.Lines = new []
 			{
 				$"Position: {Position.x}, {Position.y}, {Position.z}",
-				$"Stair position: {StairPosition.x}, {StairPosition.y}",
 				$"Velocity: {velocity.x}, {velocity.y}",
 				$"On ground: {onGround}",
 				$"Jump enabled: {skillsEnabled[JumpIndex]}"

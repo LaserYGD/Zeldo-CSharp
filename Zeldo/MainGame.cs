@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Engine;
-using Engine.Core;
 using Engine.Core._2D;
-using Engine.Core._3D;
 using Engine.Graphics._2D;
-using Engine.Graphics._3D;
 using Engine.Graphics._3D.Rendering;
 using Engine.Input.Data;
 using Engine.Interfaces;
@@ -13,22 +9,16 @@ using Engine.Interfaces._3D;
 using Engine.Localization;
 using Engine.Messaging;
 using Engine.Physics;
-using Engine.Shapes._2D;
 using Engine.UI;
 using Engine.Utility;
 using Engine.View;
 using GlmSharp;
 using Jitter;
 using Jitter.Collision;
-using Jitter.Collision.Shapes;
-using Jitter.Dynamics;
-using Jitter.LinearMath;
-using Zeldo.Controllers;
+using Zeldo.Control;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
-using Zeldo.Entities.Objects;
 using Zeldo.Entities.Weapons;
-using Zeldo.Physics;
 using Zeldo.Physics._2D;
 using Zeldo.Sensors;
 using Zeldo.Settings;
@@ -75,7 +65,6 @@ namespace Zeldo
 			Language.Reload(Languages.English);
 
 			camera = new Camera3D();
-			camera.IsOrthographic = true;
 
 			sb = new SpriteBatch();
 
@@ -138,6 +127,8 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
+			player.Attach(new RunController());
+
 			const int StepCount = 25;
 
 			const float InnerRadius = 3;
@@ -165,7 +156,7 @@ namespace Zeldo
 			ControlSettings settings = new ControlSettings();
 			settings.MouseSensitivity = 50;
 
-			camera.Attach(new BasicCameraController(player, settings));
+			camera.Attach(new FollowController(player, settings));
 
 			scene.Add(player);
 			scene.LoadFragment("Demo.json");

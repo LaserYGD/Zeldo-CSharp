@@ -195,11 +195,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterControlTester.cs" />
-    <Compile Include="Controllers\AirController.cs" />
-    <Compile Include="Controllers\CharacterController.cs" />
-    <Compile Include="Controllers\ControlHelper.cs" />
-    <Compile Include="Controllers\RunController.cs" />
-    <Compile Include="Controllers\SpiralController.cs" />
+    <Compile Include="Control\AirController.cs" />
+    <Compile Include="Control\CharacterController.cs" />
+    <Compile Include="Control\ControlHelper.cs" />
+    <Compile Include="Control\RunController.cs" />
     <Compile Include="Data\SaveSlot.cs" />
     <Compile Include="Data\TileFlags.cs" />
     <Compile Include="Entities\Characters\Character.cs" />
@@ -306,7 +305,7 @@
     <Compile Include="UI\Speech\DialogueToken.cs" />
     <Compile Include="UI\Speech\DialogueTree.cs" />
     <Compile Include="UI\Subtitles.cs" />
-    <Compile Include="View\BasicCameraController.cs" />
+    <Compile Include="View\FollowController.cs" />
     <Compile Include="Weather\DayNightCycle.cs" />
     <Compile Include="Weather\Rain.cs" />
     <Compile Include="Weather\Snow.cs" />

@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
-using Zeldo.Interfaces;
+using Engine.Utility;
+using Engine.View;
+using GlmSharp;
+using Zeldo.View;
 
 namespace Zeldo.Entities
 {
@@ -11,6 +15,10 @@ namespace Zeldo.Entities
 		private const int DashIndex = (int)PlayerSkills.Dash;
 		private const int GrabIndex = (int)PlayerSkills.Grab;
 		private const int JumpIndex = (int)PlayerSkills.Jump;
+
+		// When moving using the keyboard, diagonal directions can be normalized by pre-computing this value (avoiding
+		// an actual square root call at runtime).
+		private const float SqrtTwo = 1.41421356237f;
 
 		private Player player;
 		private PlayerData playerData;
@@ -28,6 +36,7 @@ namespace Zeldo.Entities
 			});
 		}
 
+		public FollowController FollowController { get; set; }
 		public List<MessageHandle> MessageHandles { get; set; }
 
 		public void Dispose()
@@ -77,6 +86,30 @@ namespace Zeldo.Entities
 
 		private void ProcessRunning(FullInputData data)
 		{
+			bool forward = data.Query(controls.RunForward, InputStates.Held);
+			bool back = data.Query(controls.RunBack, InputStates.Held);
+			bool left = data.Query(controls.RunLeft, InputStates.Held);
+			bool right = data.Query(controls.RunRight, InputStates.Held);
+
+			vec2 direction = vec2.Zero;
+
+			if (forward ^ back)
+			{
+				direction.y = forward ? 1 : -1;
+			}
+
+			if (left ^ right)
+			{
+				direction.x = left ? 1 : -1;
+			}
+
+			if ((forward ^ back) && (left ^ right))
+			{
+				direction *= SqrtTwo;
+			}
+
+			direction = Utilities.Rotate(direction, FollowController.Yaw);
+			player.RunDirection = direction;
 		}
 
 		private void ProcessJumping(FullInputData data)

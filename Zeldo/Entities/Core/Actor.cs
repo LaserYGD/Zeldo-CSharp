@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Engine;
-using Engine.Physics;
-using Engine.Utility;
+﻿using Engine.Physics;
 using GlmSharp;
-using Zeldo.Controllers;
+using Zeldo.Control;
 using Zeldo.Physics._2D;
 
 namespace Zeldo.Entities.Core
@@ -33,13 +29,8 @@ namespace Zeldo.Entities.Core
 		public float RunDeceleration { get; protected set; }
 		public float RunMaxSpeed { get; protected set; }
 
-		// This value is used to precisely control movement up and down spiral staircases (and maybe normal stairs
-		// too). X represents progression up the staircase, while Y moves you forward and back within the staircases's
-		// inner and outer radii.
-		public vec2 StairPosition { get; set; }
-
-		// This is used by external controller to accelerate the actor in a desired direction.
-		public vec2 RunDirection { get; protected set; }
+		// This is used by external controllers to accelerate the actor in a desired direction.
+		public vec2 RunDirection { get; set; }
 
 		public RigidBody2D GroundBody => groundBody;
 
@@ -73,6 +64,8 @@ namespace Zeldo.Entities.Core
 		public void Attach(CharacterController controller, bool shouldComputeImmediately = false)
 		{
 			this.controller = controller;
+
+			controller.Parent = this;
 
 			// Calling this function here ensures the actor will be positioned properly the moment it touches a new
 			// surface (which commonly causes the controller to change).
