@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Engine.Core;
+﻿using Engine.Core;
 using Engine.Interfaces;
 using GlmSharp;
 

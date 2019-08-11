@@ -3,7 +3,7 @@ using GlmSharp;
 
 namespace Engine.Lighting
 {
-	public class Spotlight : IOrientable
+	public class Spotlight : LightSource, IOrientable
 	{
 		public quat Orientation { get; set; }
 

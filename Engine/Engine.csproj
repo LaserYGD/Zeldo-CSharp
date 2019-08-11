@@ -115,6 +115,9 @@
     <None Include="Content\Shaders\Skeletal.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Shaders\Spotlight.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Shaders\Sprite.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
