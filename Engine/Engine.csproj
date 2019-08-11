@@ -185,6 +185,7 @@
     <Compile Include="Physics\PhysicsExtensions.cs" />
     <Compile Include="Physics\PhysicsUtilities.cs" />
     <Compile Include="Physics\RaycastResults.cs" />
+    <Compile Include="Physics\SurfaceTriangle.cs" />
     <Compile Include="Physics\TransformableBody.cs" />
     <Compile Include="Properties.cs" />
     <Compile Include="Shaders\ShaderAttributeFlags.cs" />

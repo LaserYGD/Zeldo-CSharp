@@ -1,5 +1,6 @@
 ﻿using Engine;
 using Engine.Input.Data;
+using Engine.Physics;
 using Engine.Shapes._2D;
 using Engine.Utility;
 using GlmSharp;
@@ -88,6 +89,10 @@ namespace Zeldo.Entities
 			CreateSensor(scene, new Point(), SensorUsages.Control, 1, null, -0.75f);
 
 			base.Initialize(scene, data);
+		}
+
+		public override void OnCollision(SurfaceTriangle surface, vec3 point, vec3 normal)
+		{
 		}
 
 		public void Jump()

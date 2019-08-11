@@ -115,6 +115,12 @@ namespace Engine.Utility
 			return (float)Math.Atan2(v.y, v.x);
 		}
 
+		public static float Angle(vec3 v1, vec3 v2)
+		{
+			// See https://www.analyzemath.com/stepbystep_mathworksheets/vectors/vector3D_angle.html.
+			return (float)Math.Acos(Dot(v1, v2) / (v1.Length * v2.Length));
+		}
+
 		public static float CorrectAngle(float angle)
 		{
 			if (angle > Constants.Pi)

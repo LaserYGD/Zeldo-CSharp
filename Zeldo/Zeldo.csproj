@@ -257,6 +257,8 @@
     <Compile Include="Physics\2D\GroundVisualizer.cs" />
     <Compile Include="Physics\2D\RigidBody2D.cs" />
     <Compile Include="Physics\2D\World2D.cs" />
+    <Compile Include="Physics\PhysicsConstants.cs" />
+    <Compile Include="Physics\SurfaceMaterials.cs" />
     <Compile Include="Physics\TriangleMeshLoader.cs" />
     <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
@@ -332,7 +334,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Content\Textures\Credits\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Fonts\Debug_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
