@@ -192,6 +192,10 @@
       <Project>{21d844c5-cd2e-48af-be78-01dc95db3d8f}</Project>
       <Name>Engine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Jitter\Jitter.csproj">
+      <Project>{aa03ef1a-94f7-4d30-ab14-2092863ff923}</Project>
+      <Name>Jitter</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterControlTester.cs" />
@@ -318,9 +322,6 @@
   <ItemGroup>
     <Reference Include="GlmSharp, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GlmSharp.0.9.8\lib\Net45\GlmSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Jitter, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\JitterPhysics.0.2.0.20\lib\net4\Jitter.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
