@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Engine.Interfaces;
 
 namespace Engine.Messaging
@@ -12,13 +9,50 @@ namespace Engine.Messaging
 	public static class MessageSystem
 	{
 		private static Dictionary<int, List<ReceiverFunction>> functionMap;
+		private static List<Tuple<IReceiver, int, ReceiverFunction>> addList;
+		private static List<Tuple<IReceiver, int>> removeList;
 
 		static MessageSystem()
 		{
 			functionMap = new Dictionary<int, List<ReceiverFunction>>();
+			addList = new List<Tuple<IReceiver, int, ReceiverFunction>>();
+			removeList = new List<Tuple<IReceiver, int>>();
 		}
 
 		public static void Subscribe(IReceiver receiver, int messageType, ReceiverFunction function)
+		{
+			addList.Add(new Tuple<IReceiver, int, ReceiverFunction>(receiver, messageType, function));
+		}
+
+		public static void Unsubscribe(IReceiver receiver, int messageType = -1)
+		{
+			removeList.Add(new Tuple<IReceiver, int>(receiver, messageType));
+		}
+
+		public static void ProcessChanges()
+		{
+			if (addList.Count > 0)
+			{
+				foreach (var triple in addList)
+				{
+					Add(triple.Item1, triple.Item2, triple.Item3);
+				}
+
+				addList.Clear();
+			}
+
+			if (removeList.Count > 0)
+			{
+				foreach (var tuple in removeList)
+				{
+					Remove(tuple.Item1, tuple.Item2);
+				}
+
+				removeList.Clear();
+			}
+		}
+
+		private static void Add(IReceiver receiver, int messageType, ReceiverFunction function)
 		{
 			// Initializing the handle list here simplifies contructors for receiving classes (since they don't all
 			// need to individually create those lists).
@@ -36,7 +70,7 @@ namespace Engine.Messaging
 			int index = -1;
 
 			// When a class subscribes to a message type, its callback is stored in the first open slot in the function
-			// list (or appended to the end if all slots are filled)
+			// list (or appended to the end if all slots are filled).
 			for (int i = 0; i < functions.Count; i++)
 			{
 				if (functions[i] == null)
@@ -56,24 +90,41 @@ namespace Engine.Messaging
 			{
 				functions[index] = function;
 			}
-			
-			// It's assumed that the same object won't subscribe to the same message type more than once. If multiple
-			// callbacks are needed, a single lambda can be used to call several functions.
+
+			// It's assumed that the same object won't subscribe to the same message type more than once.
 			receiver.MessageHandles.Add(new MessageHandle(messageType, index));
 		}
 
-		public static void Unsubscribe(IReceiver receiver, int messageType = -1)
+		private static void Remove(IReceiver receiver, int messageType)
 		{
+			var handles = receiver.MessageHandles;
+
 			// By default, the given receiver is unsubscribed from all message types. Passing a message type explicitly
 			// unsubscribes from only that type.
 			if (messageType != -1)
 			{
+				foreach (var handle in handles)
+				{
+					functionMap[handle.MessageType][handle.MessageIndex] = null;
+				}
 
+				handles.Clear();
+
+				return;
 			}
-		}
 
-		public static void ProcessChanges()
-		{
+			for (int i = 0; i < handles.Count; i++)
+			{
+				var handle = handles[i];
+
+				if (handle.MessageType == messageType)
+				{
+					functionMap[messageType][handle.MessageIndex] = null;
+					handles.RemoveAt(i);
+
+					return;
+				}
+			}
 		}
 
 		public static void Send(int messageType, object data, float dt = 0)

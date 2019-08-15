@@ -202,6 +202,7 @@
     <Compile Include="Sound\AutoDisposeFileReader.cs" />
     <Compile Include="Sound\CachedSound.cs" />
     <Compile Include="Sound\CachedSoundSampleProvider.cs" />
+    <Compile Include="Structures\SafeList.cs" />
     <Compile Include="Timing\RepeatingTimer.cs" />
     <Compile Include="Timing\SingleTimer.cs" />
     <Compile Include="Timing\Timer.cs" />

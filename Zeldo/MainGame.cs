@@ -22,6 +22,7 @@ using Zeldo.Entities.Weapons;
 using Zeldo.Physics._2D;
 using Zeldo.Sensors;
 using Zeldo.Settings;
+using Zeldo.State;
 using Zeldo.UI;
 using Zeldo.UI.Hud;
 using Zeldo.UI.Screens;
@@ -35,6 +36,9 @@ namespace Zeldo
 	{
 		private const float PhysicsStep = 1 / 120f;
 		private const int PhysicsMaxSteps = 8;
+
+		private Gamestates currentState;
+		private Gamestates nextState;
 
 		private SpriteBatch sb;
 		private RenderTarget mainTarget;
@@ -52,6 +56,8 @@ namespace Zeldo
 		private JitterVisualizer jitterVisualizer;
 		private StaircaseVisualizer staircaseVisualizer;
 
+		private GameLoop activeLoop;
+
 		public MainGame() : base("Zeldo")
 		{
 			glClearColor(0, 0, 0, 1);
@@ -60,8 +66,10 @@ namespace Zeldo
 			glPrimitiveRestartIndex(Constants.RestartIndex);
 			glfwSetInputMode(window.Address, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-			Properties.LoadAll();
+			currentState = Gamestates.Unassigned;
+			nextState = Gamestates.Splash;
 
+			Properties.LoadAll();
 			Language.Reload(Languages.English);
 
 			camera = new Camera3D();
@@ -173,7 +181,22 @@ namespace Zeldo
 				ProcessKeyboard((KeyboardData)data);
 			});
 
-			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) => { OnResize(); });
+			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) =>
+			{
+				mainSprite.ScaleTo(Resolution.WindowWidth, Resolution.WindowHeight);
+			});
+
+			MessageSystem.Subscribe(this, CustomMessageTypes.Gamestate, (messageType, data, dt) =>
+			{
+				var state = (Gamestates)data;
+
+				// This implementation means that if multiple gamestate messages are sent on a single frame, the last
+				// state will take priority (although that should never happen in practice).
+				if (state != currentState)
+				{
+					nextState = state;
+				}
+			});
 
 			// Calling this function here is required to ensure that all classes receive initial resize messages.
 			MessageSystem.ProcessChanges();
@@ -182,11 +205,6 @@ namespace Zeldo
 		}
 
 		public List<MessageHandle> MessageHandles { get; set; }
-
-		private void OnResize()
-		{
-			mainSprite.ScaleTo(Resolution.WindowWidth, Resolution.WindowHeight);
-		}
 
 		private void ProcessKeyboard(KeyboardData data)
 		{

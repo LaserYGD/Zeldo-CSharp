@@ -9,6 +9,7 @@ namespace Engine.Core._2D
 		private SpriteFont font;
 
 		private string value;
+		private bool useLiteralMeasuring;
 
 		public SpriteText(string font, string value = null, Alignments alignment = Alignments.Left | Alignments.Top) :
 			this(ContentCache.GetFont(font), value, alignment)
@@ -33,7 +34,7 @@ namespace Engine.Core._2D
 				if (!string.IsNullOrEmpty(value))
 				{
 					ivec2 offset = ivec2.Zero;
-					ivec2 dimensions = UseLiteralMeasuring
+					ivec2 dimensions = useLiteralMeasuring
 						? font.MeasureLiteral(value, out offset)
 						: font.Measure(value);
 
@@ -52,7 +53,20 @@ namespace Engine.Core._2D
 			}
 		}
 
-		public bool UseLiteralMeasuring { get; set; }
+		public bool UseLiteralMeasuring
+		{
+			get => useLiteralMeasuring;
+			set
+			{
+				if (value != useLiteralMeasuring)
+				{
+					useLiteralMeasuring = value;
+
+					// This causes position and origin to be recomputed.
+					Value = this.value;
+				}
+			}
+		}
 
 		protected override void RecomputePositionData()
 		{

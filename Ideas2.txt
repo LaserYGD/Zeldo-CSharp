@@ -68,8 +68,9 @@
 
 - Spiral plant, like little springs (inspired by a picture on Reddit of a spiral pepper)
 
+- Smooth transitions as the game starts up => Load a scene from the most recent save file, and start playing soft music and ambient noises during the splash screen and into the title, then, when the player selects Continue, briefly pan the camera down to the player's location (if another file is chosen, you can do a proper load with a quick screen transition through black)
 
-
+- Hydra-like boss that you slowly defeat over the course of probably three encounters (chipping away at it each time) => Lots of games do this already though, in the sense of a repeated boss fight (e.g. Klungo from Banjo Tooie)
 
 
 

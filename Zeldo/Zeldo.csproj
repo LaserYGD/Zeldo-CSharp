@@ -203,6 +203,7 @@
     <Compile Include="Control\CharacterController.cs" />
     <Compile Include="Control\ControlHelper.cs" />
     <Compile Include="Control\RunController.cs" />
+    <Compile Include="CustomMessageTypes.cs" />
     <Compile Include="Data\SaveSlot.cs" />
     <Compile Include="Data\TileFlags.cs" />
     <Compile Include="Entities\Characters\Character.cs" />
@@ -285,6 +286,10 @@
     <Compile Include="Sky.cs" />
     <Compile Include="SpiralStaircase.cs" />
     <Compile Include="StaircaseVisualizer.cs" />
+    <Compile Include="State\GameLoop.cs" />
+    <Compile Include="State\GameplayLoop.cs" />
+    <Compile Include="State\Gamestates.cs" />
+    <Compile Include="State\SplashLoop.cs" />
     <Compile Include="UI\Controls\ToggleButton.cs" />
     <Compile Include="UI\Controls\Slider.cs" />
     <Compile Include="UI\Hud\ItemShowcaseDisplay.cs" />
@@ -310,6 +315,7 @@
     <Compile Include="UI\Speech\DialogueConditionTypes.cs" />
     <Compile Include="UI\Speech\DialogueToken.cs" />
     <Compile Include="UI\Speech\DialogueTree.cs" />
+    <Compile Include="UI\SplashLogo.cs" />
     <Compile Include="UI\Subtitles.cs" />
     <Compile Include="View\FollowController.cs" />
     <Compile Include="Weather\DayNightCycle.cs" />

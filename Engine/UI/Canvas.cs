@@ -56,6 +56,12 @@ namespace Engine.UI
 			elements.Remove(element);
 		}
 
+		public void Clear()
+		{
+			elements.ForEach(e => e.Dispose());
+			elements.Clear();
+		}
+
 		public T GetElement<T>() where T : CanvasElement
 		{
 			return elements.OfType<T>().First();
