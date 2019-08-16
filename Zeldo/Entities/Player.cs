@@ -81,7 +81,7 @@ namespace Zeldo.Entities
 			var radius = Properties.GetFloat("player.ground.radius");
 			var groundShape = new Circle(radius);
 
-			CreateModel(scene, "Player.obj");
+			CreateModel(scene, "Capsule.obj");
 
 			body3D = CreateRigidBody3D(scene, new CylinderShape(Height, radius));
 			groundBody = CreateGroundBody(scene, groundShape);

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
+using Engine.Physics;
 using Engine.Utility;
-using Engine.View;
 using GlmSharp;
 using Zeldo.View;
 
@@ -19,6 +18,15 @@ namespace Zeldo.Entities
 		// When moving using the keyboard, diagonal directions can be normalized by pre-computing this value (avoiding
 		// an actual square root call at runtime).
 		private const float SqrtTwo = 1.41421356237f;
+
+		// This is temporary for run testing on arbitrary surfaces.
+		public static SurfaceTriangle Triangle { get; }
+
+		static PlayerController()
+		{
+			Triangle = new SurfaceTriangle(vec3.Zero, new vec3(0, 1.6f, -8), new vec3(8, 0.8f, 0), 0,
+				Windings.CounterClockwise);
+		}
 
 		private Player player;
 		private PlayerData playerData;

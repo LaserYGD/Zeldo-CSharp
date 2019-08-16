@@ -1,7 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Engine;
+using Engine.Core;
 using Engine.Core._2D;
+using Engine.Core._3D;
 using Engine.Graphics._2D;
+using Engine.Graphics._3D;
 using Engine.Graphics._3D.Rendering;
 using Engine.Input.Data;
 using Engine.Interfaces;
@@ -19,6 +23,7 @@ using Zeldo.Control;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Weapons;
+using Zeldo.Physics;
 using Zeldo.Physics._2D;
 using Zeldo.Sensors;
 using Zeldo.Settings;
@@ -51,6 +56,7 @@ namespace Zeldo
 		private World2D world2D;
 		private ScreenManager screenManager;
 		private List<IRenderTargetUser3D> renderTargetUsers;
+		private PrimitiveRenderer3D primitives;
 
 		private SpaceVisualizer spaceVisualizer;
 		private JitterVisualizer jitterVisualizer;
@@ -73,7 +79,7 @@ namespace Zeldo
 			Language.Reload(Languages.English);
 
 			camera = new Camera3D();
-
+			primitives = new PrimitiveRenderer3D(camera, 10000, 1000);
 			sb = new SpriteBatch();
 
 			mainTarget = new RenderTarget(Resolution.RenderWidth, Resolution.RenderHeight,
@@ -123,6 +129,7 @@ namespace Zeldo
 			};
 
 			MasterRenderer3D renderer = scene.Renderer;
+			renderer.Add(new Model("Triangle.obj"));
 			renderer.Light.Direction = Utilities.Normalize(new vec3(-0.25f, -0.35f, -0.7f));
 
 			Bow bow = new Bow();
@@ -167,9 +174,7 @@ namespace Zeldo
 			camera.Attach(new FollowController(player, settings));
 
 			scene.Add(player);
-			scene.LoadFragment("Demo.json");
-
-			player.Position = new vec3(0, 20, 0);
+			//scene.LoadFragment("Demo.json");
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
 			renderTargetUsers.Add(scene.Renderer);
@@ -239,8 +244,8 @@ namespace Zeldo
 
 		protected override void Update(float dt)
 		{
-			world2D.Step(dt, PhysicsStep, PhysicsMaxSteps);
-			world3D.Step(dt, true, PhysicsStep, PhysicsMaxSteps);
+			//world2D.Step(dt, PhysicsStep, PhysicsMaxSteps);
+			//world3D.Step(dt, true, PhysicsStep, PhysicsMaxSteps);
 			space.Update();
 			scene.Update(dt);
 			camera.Update(dt);
@@ -258,9 +263,28 @@ namespace Zeldo
 			renderTargetUsers.ForEach(u => u.DrawTargets());
 			mainTarget.Apply();
 			scene.Draw(camera);
-			jitterVisualizer.Draw(camera);
+			//jitterVisualizer.Draw(camera);
 			staircaseVisualizer.Draw();
-			spaceVisualizer.Draw();
+			//spaceVisualizer.Draw();
+
+			// This is temporary for run testing.
+			var triangle = PlayerController.Triangle;
+			var points = triangle.Points;
+
+			vec3 center = vec3.Zero;
+
+			for (int i = 0; i < 3; i++)
+			{
+				vec3 p1 = points[i];
+				vec3 p2 = points[(i + 1) % 3];
+
+				primitives.DrawLine(p1, p2, Color.Red);
+				center += p1;
+			}
+
+			center /= 3;
+			primitives.DrawLine(center, center + triangle.Normal, Color.Cyan);
+			primitives.Flush();
 
 			// Render 2D targets.
 			glDisable(GL_DEPTH_TEST);
