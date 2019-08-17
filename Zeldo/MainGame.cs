@@ -57,6 +57,7 @@ namespace Zeldo
 		private ScreenManager screenManager;
 		private List<IRenderTargetUser3D> renderTargetUsers;
 		private PrimitiveRenderer3D primitives;
+		private SpriteText spriteText;
 
 		private SpaceVisualizer spaceVisualizer;
 		private JitterVisualizer jitterVisualizer;
@@ -80,6 +81,8 @@ namespace Zeldo
 
 			camera = new Camera3D();
 			primitives = new PrimitiveRenderer3D(camera, 10000, 1000);
+			spriteText = new SpriteText("Debug");
+			spriteText.Position = new vec2(500, 20);
 			sb = new SpriteBatch();
 
 			mainTarget = new RenderTarget(Resolution.RenderWidth, Resolution.RenderHeight,
@@ -270,6 +273,7 @@ namespace Zeldo
 			// This is temporary for run testing.
 			var triangle = PlayerController.Triangle;
 			var points = triangle.Points;
+			var flatPoints = SurfaceTriangle.FlatPoints;
 
 			vec3 center = vec3.Zero;
 
@@ -277,13 +281,29 @@ namespace Zeldo
 			{
 				vec3 p1 = points[i];
 				vec3 p2 = points[(i + 1) % 3];
+				vec2 fp1 = flatPoints[i];
+				vec2 fp2 = flatPoints[(i + 1) % 3];
 
 				primitives.DrawLine(p1, p2, Color.Red);
+				primitives.DrawLine(new vec3(fp1.x, 0, fp1.y), new vec3(fp2.x, 0, fp2.y), Color.Magenta);
+
 				center += p1;
 			}
 
 			center /= 3;
-			primitives.DrawLine(center, center + triangle.Normal, Color.Cyan);
+
+			vec3 d1 = center + triangle.Normal;
+			vec3 d2 = d1 + PlayerController.SlopeDirection;
+
+			if (PlayerController.Triangle.Project(d2, out vec3 result))
+			{
+				primitives.DrawLine(d2, result, Color.Yellow);
+			}
+			
+			primitives.DrawLine(center, center + vec3.UnitY, Color.Blue);
+			primitives.DrawLine(center, d1, Color.Cyan);
+			primitives.DrawLine(d1, d1 + SurfaceTriangle.Axis, Color.Red);
+			primitives.DrawLine(d1, d2, Color.Green);
 			primitives.Flush();
 
 			// Render 2D targets.
@@ -301,6 +321,11 @@ namespace Zeldo
 			sb.ApplyTarget(null);
 			mainSprite.Draw(sb);		
 			canvas.Draw(sb);
+
+			// This is temporary for run testing.
+			spriteText.Value = $"Y: {PlayerController.Y:F3}";
+			spriteText.Draw(sb);
+
 			sb.Flush();
 		}
 	}

@@ -14,6 +14,7 @@ using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Newtonsoft.Json.Linq;
 using Zeldo.Interfaces;
+using Zeldo.Physics;
 using Zeldo.Physics._2D;
 using Zeldo.Sensors;
 
@@ -66,7 +67,8 @@ namespace Zeldo.Entities.Core
 					target.Elevation = value.y + attachment.Elevation;
 				}
 
-				attachments3D.ForEach(a => a.Target.Position = value + a.Position);
+				//attachments3D.ForEach(a => a.Target.Position = value + a.Position);
+				attachments3D.ForEach(a => a.Target.Position = value + a.Position + vec3.UnitY);
 
 			    if (controllingBody3D != null && !selfUpdate)
 			    {

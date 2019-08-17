@@ -1,5 +1,4 @@
-﻿using Engine.Animation;
-using Engine.Graphics._3D;
+﻿using Engine.Graphics._3D;
 using Engine.Interfaces._3D;
 using GlmSharp;
 

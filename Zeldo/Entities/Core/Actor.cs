@@ -54,6 +54,13 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
+		// The controlling body's velocity is reused while grounded to save memory.
+		public vec3 Velocity
+		{
+			get => controllingBody3D.LinearVelocity.ToVec3();
+			set => controllingBody3D.LinearVelocity = value.ToJVector();
+		}
+
 		public override void Dispose()
 		{
 			Scene.World2D.Remove(groundBody);
@@ -101,13 +108,13 @@ namespace Zeldo.Entities.Core
 		{
 			Components.Update(dt);
 			selfUpdate = true;
-			controller?.Update(dt);
+			//controller?.Update(dt);
 
 			if (onGround)
 			{
 				var p = groundBody.Position;
 				
-				Position = new vec3(p.x, groundBody.Elevation + halfHeight, p.y);
+				//Position = new vec3(p.x, groundBody.Elevation + halfHeight, p.y);
 			}
 			// It's assumed that all actors capable of going airborne have a controlling 3D body set.
 			else

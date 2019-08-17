@@ -266,7 +266,9 @@
     <Compile Include="Physics\2D\World2D.cs" />
     <Compile Include="Physics\PhysicsConstants.cs" />
     <Compile Include="Physics\SurfaceMaterials.cs" />
+    <Compile Include="Physics\SurfaceTriangle.cs" />
     <Compile Include="Physics\TriangleMeshLoader.cs" />
+    <Compile Include="Physics\Windings.cs" />
     <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
     <Compile Include="Interfaces\ITargetable.cs" />

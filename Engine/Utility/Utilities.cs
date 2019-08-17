@@ -105,14 +105,19 @@ namespace Engine.Utility
 			return DistanceSquared(p, projection);
 		}
 
+		public static float Angle(vec2 v)
+		{
+			return (float)Math.Atan2(v.y, v.x);
+		}
+
 		public static float Angle(vec2 p1, vec2 p2)
 		{
 			return Angle(p2 - p1);
 		}
 
-		public static float Angle(vec2 v)
+		public static float Angle(vec3 v)
 		{
-			return (float)Math.Atan2(v.y, v.x);
+			return Angle(vec3.Zero, v);
 		}
 
 		public static float Angle(vec3 v1, vec3 v2)

@@ -13,6 +13,7 @@ using Zeldo.Entities.Core;
 using Zeldo.Entities.Weapons;
 using Zeldo.Interfaces;
 using Zeldo.Items;
+using Zeldo.Physics;
 using Zeldo.Sensors;
 using Zeldo.UI;
 using Zeldo.UI.Hud;
@@ -45,6 +46,7 @@ namespace Zeldo.Entities
 			controls = new PlayerControls();
 			playerData = new PlayerData();
 			controller = new PlayerController(this, playerData, controls);
+			onGround = true;
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 

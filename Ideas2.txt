@@ -72,6 +72,7 @@
 
 - Hydra-like boss that you slowly defeat over the course of probably three encounters (chipping away at it each time) => Lots of games do this already though, in the sense of a repeated boss fight (e.g. Klungo from Banjo Tooie)
 
+- Make sure enemies are varied (in terms of playstyle, but also visually so you don't just have a bunch of humanoids)
 
 
 

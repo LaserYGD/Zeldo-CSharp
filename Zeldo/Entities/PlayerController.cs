@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Engine;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
+using Zeldo.Physics;
 using Zeldo.View;
 
 namespace Zeldo.Entities
@@ -21,10 +24,12 @@ namespace Zeldo.Entities
 
 		// This is temporary for run testing on arbitrary surfaces.
 		public static SurfaceTriangle Triangle { get; }
+		public static vec3 SlopeDirection { get; private set; }
+		public static float Y { get; private set; }
 
 		static PlayerController()
 		{
-			Triangle = new SurfaceTriangle(vec3.Zero, new vec3(0, 1.6f, -8), new vec3(8, 0.8f, 0), 0,
+			Triangle = new SurfaceTriangle(vec3.Zero, new vec3(0, -0.2f, -5), new vec3(8, 2, 0), 0,
 				Windings.CounterClockwise);
 		}
 
@@ -40,7 +45,7 @@ namespace Zeldo.Entities
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
-				ProcessInput((FullInputData)data);
+				ProcessInput((FullInputData)data, dt);
 			});
 		}
 
@@ -51,11 +56,11 @@ namespace Zeldo.Entities
 		{
 		}
 
-		private void ProcessInput(FullInputData data)
+		private void ProcessInput(FullInputData data, float dt)
 		{
-			ProcessRunning(data);
-			ProcessJumping(data);
-			ProcessInteraction(data);
+			ProcessRunning(data, dt);
+			//ProcessJumping(data);
+			//ProcessInteraction(data);
 		}
 
 		/*
@@ -92,32 +97,73 @@ namespace Zeldo.Entities
 		}
 		*/
 
-		private void ProcessRunning(FullInputData data)
+		private void ProcessRunning(FullInputData data, float dt)
 		{
 			bool forward = data.Query(controls.RunForward, InputStates.Held);
 			bool back = data.Query(controls.RunBack, InputStates.Held);
 			bool left = data.Query(controls.RunLeft, InputStates.Held);
 			bool right = data.Query(controls.RunRight, InputStates.Held);
 
-			vec2 direction = vec2.Zero;
+			// "Flat" direction means the direction the player would run on flat ground. The actual movement direction
+			// depends on the current surface (specifically the normal).
+			vec2 flatDirection = vec2.Zero;
 
 			if (forward ^ back)
 			{
-				direction.y = forward ? 1 : -1;
+				flatDirection.y = forward ? 1 : -1;
 			}
 
 			if (left ^ right)
 			{
-				direction.x = left ? 1 : -1;
+				flatDirection.x = left ? 1 : -1;
+			}
+
+			if (flatDirection == vec2.Zero)
+			{
+				player.Velocity = vec3.Zero;
 			}
 
 			if ((forward ^ back) && (left ^ right))
 			{
-				direction *= SqrtTwo;
+				flatDirection *= SqrtTwo;
 			}
 
-			direction = Utilities.Rotate(direction, FollowController.Yaw);
-			player.RunDirection = direction;
+			flatDirection = Utilities.Rotate(flatDirection, FollowController.Yaw);
+
+			var normal = Triangle.Normal;
+
+			// This means the ground is completely flat (meaning that the flat direction can be used for movement
+			// directly).
+			if (normal.y == 1)
+			{
+			}
+
+			vec2 flatNormal = Utilities.Normalize(normal.swizzle.xz);
+
+			float d = Utilities.Dot(flatDirection, flatNormal);
+
+			Y = -Triangle.Slope * d;
+			SlopeDirection = Utilities.Normalize(new vec3(flatDirection.x, Y, flatDirection.y));
+
+			vec3 v = player.Velocity;
+			v += SlopeDirection * player.RunAcceleration * dt;
+
+			float max = player.RunMaxSpeed;
+
+			if (Utilities.LengthSquared(v) > max * max)
+			{
+				v = Utilities.Normalize(v) * max;
+			}
+
+			player.Velocity = v;
+
+			vec3 p = player.Position + v * dt;
+
+			if (Triangle.Project(p, out vec3 result))
+			{
+				player.Position = result;
+			}
+			//player.RunDirection = direction;
 		}
 
 		private void ProcessJumping(FullInputData data)
