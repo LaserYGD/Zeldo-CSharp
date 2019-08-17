@@ -7,6 +7,7 @@ using Engine.Messaging;
 using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
+using Jitter.Collision.Shapes;
 using Zeldo.Physics;
 using Zeldo.View;
 
@@ -22,15 +23,21 @@ namespace Zeldo.Entities
 		// an actual square root call at runtime).
 		private const float SqrtTwo = 1.41421356237f;
 
+		private static SurfaceTriangle triangle1;
+		private static SurfaceTriangle triangle2;
+
 		// This is temporary for run testing on arbitrary surfaces.
-		public static SurfaceTriangle Triangle { get; }
+		public static SurfaceTriangle ActiveTriangle { get; private set; }
 		public static vec3 SlopeDirection { get; private set; }
 		public static float Y { get; private set; }
 
 		static PlayerController()
 		{
-			Triangle = new SurfaceTriangle(vec3.Zero, new vec3(0, -0.2f, -5), new vec3(8, 2, 0), 0,
+			triangle1 = new SurfaceTriangle(vec3.Zero, new vec3(0, 0.8f, -5), new vec3(5, 2, 0), 0,
 				Windings.CounterClockwise);
+			triangle2 = new SurfaceTriangle(new vec3(6, 1.5f, -4), new vec3(0, 0.8f, -5), new vec3(5, 2, 0), 0,
+				Windings.Clockwise);
+			ActiveTriangle = triangle1;
 		}
 
 		private Player player;
@@ -108,17 +115,21 @@ namespace Zeldo.Entities
 			// depends on the current surface (specifically the normal).
 			vec2 flatDirection = vec2.Zero;
 
+			bool isAccelerating = false;
+
 			if (forward ^ back)
 			{
 				flatDirection.y = forward ? 1 : -1;
+				isAccelerating = true;
 			}
 
 			if (left ^ right)
 			{
 				flatDirection.x = left ? 1 : -1;
+				isAccelerating = true;
 			}
 
-			if (flatDirection == vec2.Zero)
+			if (!isAccelerating)
 			{
 				player.Velocity = vec3.Zero;
 			}
@@ -130,7 +141,7 @@ namespace Zeldo.Entities
 
 			flatDirection = Utilities.Rotate(flatDirection, FollowController.Yaw);
 
-			var normal = Triangle.Normal;
+			var normal = ActiveTriangle.Normal;
 
 			// This means the ground is completely flat (meaning that the flat direction can be used for movement
 			// directly).
@@ -142,7 +153,7 @@ namespace Zeldo.Entities
 
 			float d = Utilities.Dot(flatDirection, flatNormal);
 
-			Y = -Triangle.Slope * d;
+			Y = -ActiveTriangle.Slope * d;
 			SlopeDirection = Utilities.Normalize(new vec3(flatDirection.x, Y, flatDirection.y));
 
 			vec3 v = player.Velocity;
@@ -159,11 +170,24 @@ namespace Zeldo.Entities
 
 			vec3 p = player.Position + v * dt;
 
-			if (Triangle.Project(p, out vec3 result))
+			if (ActiveTriangle.Project(p, out vec3 result))
 			{
 				player.Position = result;
+
+				return;
 			}
-			//player.RunDirection = direction;
+
+			var results = PhysicsUtilities.Raycast(player.Scene.World3D, p + normal * 0.01f, -normal, 1);
+
+			if (results?.Body.Shape is TriangleMeshShape)
+			{
+				vec3 hit = results.Position;
+
+				ActiveTriangle = hit.x - hit.z > 5 ? triangle2 : triangle1;
+				ActiveTriangle.Project(results.Position, out result);
+
+				player.Position = result;
+			}
 		}
 
 		private void ProcessJumping(FullInputData data)

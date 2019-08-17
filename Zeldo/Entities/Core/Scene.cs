@@ -62,15 +62,22 @@ namespace Zeldo.Entities.Core
 			renderer.Add(fragment.MapModel);
 			World3D.AddBody(fragment.MapBody);
 
-			foreach (var entity in fragment.Entities)
+			// This means that the fragment contains no entities (unlikely in the finished product, but possible during
+			// development).
+			if (fragment.Entities != null)
 			{
-				Add(entity);
+				foreach (var entity in fragment.Entities)
+				{
+					Add(entity);
+				}
 			}
 
+			/*
 			foreach (var body in fragment.GroundBodies)
 			{
 				World2D.Add(body);
 			}
+			*/
 		}
 
 		public void UnloadFragment()

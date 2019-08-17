@@ -19,6 +19,7 @@ using Engine.View;
 using GlmSharp;
 using Jitter;
 using Jitter.Collision;
+using Jitter.Collision.Shapes;
 using Zeldo.Control;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
@@ -131,8 +132,9 @@ namespace Zeldo
 				World3D = world3D
 			};
 
+			scene.LoadFragment("Triangle.json");
+
 			MasterRenderer3D renderer = scene.Renderer;
-			renderer.Add(new Model("Triangle.obj"));
 			renderer.Light.Direction = Utilities.Normalize(new vec3(-0.25f, -0.35f, -0.7f));
 
 			Bow bow = new Bow();
@@ -266,12 +268,12 @@ namespace Zeldo
 			renderTargetUsers.ForEach(u => u.DrawTargets());
 			mainTarget.Apply();
 			scene.Draw(camera);
-			//jitterVisualizer.Draw(camera);
+			jitterVisualizer.Draw(camera);
 			staircaseVisualizer.Draw();
 			//spaceVisualizer.Draw();
 
 			// This is temporary for run testing.
-			var triangle = PlayerController.Triangle;
+			var triangle = PlayerController.ActiveTriangle;
 			var points = triangle.Points;
 			var flatPoints = SurfaceTriangle.FlatPoints;
 
@@ -295,11 +297,11 @@ namespace Zeldo
 			vec3 d1 = center + triangle.Normal;
 			vec3 d2 = d1 + PlayerController.SlopeDirection;
 
-			if (PlayerController.Triangle.Project(d2, out vec3 result))
+			if (triangle.Project(d2, out vec3 result))
 			{
 				primitives.DrawLine(d2, result, Color.Yellow);
 			}
-			
+
 			primitives.DrawLine(center, center + vec3.UnitY, Color.Blue);
 			primitives.DrawLine(center, d1, Color.Cyan);
 			primitives.DrawLine(d1, d1 + SurfaceTriangle.Axis, Color.Red);
@@ -321,9 +323,8 @@ namespace Zeldo
 			sb.ApplyTarget(null);
 			mainSprite.Draw(sb);		
 			canvas.Draw(sb);
-
-			// This is temporary for run testing.
-			spriteText.Value = $"Y: {PlayerController.Y:F3}";
+			
+			// This is temporary.
 			spriteText.Draw(sb);
 
 			sb.Flush();

@@ -31,7 +31,7 @@ namespace Zeldo.Entities.Core
 			var mapToken = json["Map"];
 
 			// If a map isn't given explicitly, it's assumed to use the same name as the fragment file (with a .obj
-			// extension, obviously).
+			// extension).
 			string map = mapToken?.Value<string>() ?? filename.StripExtension() + ".obj";
 
 			/*
@@ -54,14 +54,20 @@ namespace Zeldo.Entities.Core
 			*/
 			
 			var entities = ParseEntities(json);
-			var groundBodies = ParseGround(json);
+			//var groundBodies = ParseGround(json);
 
-			return new SceneFragment(map, entities, groundBodies);
+			//return new SceneFragment(map, entities, groundBodies);
+			return new SceneFragment(map, entities, null);
 		}
 
 		private static Entity[] ParseEntities(JObject json)
 		{
 			JArray array = (JArray)json["Entities"];
+
+			if (array == null)
+			{
+				return null;
+			}
 
 			var entities = new Entity[array.Count];
 
