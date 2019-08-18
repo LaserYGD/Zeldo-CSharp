@@ -22,10 +22,22 @@ namespace Zeldo.Physics
 		// For projection purposes, the double area (2 * area) is what you want.
 		private float doubleArea;
 
-		public SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, int material, Windings winding)
+		public SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, int material, Windings winding) :
+			this(p0, p1, p2,
+				Utilities.Normalize(Utilities.Cross(p1 - p0, p2 - p0) * (winding == Windings.Clockwise ? 1 : -1)),
+				material)
 		{
-			Points = new [] { p0, p1, p2 };
-			Normal = Utilities.Normalize(Utilities.Cross(p1 - p0, p2 - p0) * (winding == Windings.Clockwise ? 1 : -1));
+		}
+
+		public SurfaceTriangle(vec3[] points, vec3 normal, int material) :
+			this(points[0], points[1], points[2], normal, material)
+		{
+		}
+
+		private SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, vec3 normal, int material)
+		{
+			Points = new[] { p0, p1, p2 };
+			Normal = normal;
 			Material = material;
 
 			var angle = Utilities.Angle(Normal, vec3.UnitY);
@@ -44,21 +56,14 @@ namespace Zeldo.Physics
 			fp0 = flatPoints[0];
 			fp1 = flatPoints[1];
 			fp2 = flatPoints[2];
-			FlatPoints = new [] { fp0, fp1, fp2 };
+			FlatPoints = new[] { fp0, fp1, fp2 };
 
 			// See https://stackoverflow.com/a/14382692/7281613.
 			doubleArea = -fp1.y * fp2.x + fp0.y * (-fp1.x + fp2.x) + fp0.x * (fp1.y - fp2.y) + fp1.x * fp2.y;
 
 			float theta = Constants.PiOverTwo - Utilities.Angle(new vec3(Normal.x, 0, Normal.z), Normal);
-			
-			Slope = (float)Math.Sin(theta);
-		}
 
-		public SurfaceTriangle(vec3[] points, vec3 normal, int material)
-		{
-			Points = points;
-			Normal = normal;
-			Material = material;
+			Slope = (float)Math.Sin(theta);
 		}
 
 		public vec3[] Points { get; }
@@ -79,16 +84,13 @@ namespace Zeldo.Physics
 			float t = 1 / doubleArea * (fp0.x * fp1.y - fp0.y * fp1.x + a.x * (fp0.y - fp1.y) + a.y * (fp1.x - fp0.x));
 			float u = 1 - s - t;
 
-			if (s < 0 || t < 0 || u < 0)
-			{
-				result = vec3.Zero;
-
-				return false;
-			}
-
+			// The projected point is computed regardless (to help account for weird behavior on the edges of
+			// triangles, where an actor could theoretically hit a seam and give a false negative). In those cases, the
+			// actor continues running past the triangle (which shouldn't be noticeable in practice, since this
+			// situation can only occur when you're extremely close to an edge).
 			result = Points[1] * s + Points[2] * t + Points[0] * u;
 
-			return true;
+			return !(s < 0) && !(t < 0) && !(u < 0);
 		}
 	}
 }

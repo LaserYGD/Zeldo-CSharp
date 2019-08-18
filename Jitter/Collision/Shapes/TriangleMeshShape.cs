@@ -137,6 +137,22 @@ namespace Jitter.Collision.Shapes
 
         JVector[] vecs = new JVector[3];
 
+	    /// <summary>
+	    /// CUSTOM: Returns the current triangle. Used during raycasts.
+	    /// </summary>
+	    public JVector[] CurrentTriangle
+	    {
+		    get
+		    {
+				// Without copying, the returned array would be overridden with each new triangle tested (regardless of
+				// whether the ray hits that triangle).
+				JVector[] copy = new JVector[3];
+				Array.Copy(vecs, copy, 3);
+
+			    return copy;
+		    }
+	    }
+
         /// <summary>
         /// SupportMapping. Finds the point in the shape furthest away from the given direction.
         /// Imagine a plane with a normal in the search direction. Now move the plane along the normal

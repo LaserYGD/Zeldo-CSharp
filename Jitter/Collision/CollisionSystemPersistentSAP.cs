@@ -334,118 +334,124 @@ namespace Jitter.Collision
             BroadphasePair.Pool.GiveBack(pair);
         }
 
-        // okay, people often say raycasting can be made faster using the sweep
-        // and prune data. (sorted axis lists). That's only partly correct,
-        // the method commented out below uses the non-uniform voxelgrid
-        // approach (best approach known so far). 
-        // but this is O(n) for long rays too and it even takes
-        // more time. Just for short rays it has a small benefit.
-        // it also gives the hits in order but the startposition problem
-        // is unsolved - so it starts from outside the broadphase.
+		// okay, people often say raycasting can be made faster using the sweep
+		// and prune data. (sorted axis lists). That's only partly correct,
+		// the method commented out below uses the non-uniform voxelgrid
+		// approach (best approach known so far). 
+		// but this is O(n) for long rays too and it even takes
+		// more time. Just for short rays it has a small benefit.
+		// it also gives the hits in order but the startposition problem
+		// is unsolved - so it starts from outside the broadphase.
 
-        #region Depricated
-        //public void QueryRay(HashSet<IBroadphaseEntity> entities,JVector rayOrigin, JVector rayDirection)
-        //{
-        //    rayDirection.Normalize();
+		#region Depricated
+		//public void QueryRay(HashSet<IBroadphaseEntity> entities,JVector rayOrigin, JVector rayDirection)
+		//{
+		//    rayDirection.Normalize();
 
-        //    int index1 = 0,index2 = 0,index3 = 0;
+		//    int index1 = 0,index2 = 0,index3 = 0;
 
-        //    if (rayDirection.X < 0.0f) index1 = axis1.Count - 1;
-        //    if (rayDirection.Y < 0.0f) index2 = axis2.Count - 1;
-        //    if (rayDirection.Z < 0.0f) index3 = axis3.Count - 1;
+		//    if (rayDirection.X < 0.0f) index1 = axis1.Count - 1;
+		//    if (rayDirection.Y < 0.0f) index2 = axis2.Count - 1;
+		//    if (rayDirection.Z < 0.0f) index3 = axis3.Count - 1;
 
-        //    int steps = 0;
+		//    int steps = 0;
 
-        //    while (true)
-        //    {
-        //        steps++;
-        //        float distance1 = (axis1[index1].Value - rayOrigin.X) / rayDirection.X;
-        //        float distance2 = (axis2[index2].Value - rayOrigin.Y) / rayDirection.Y;
-        //        float distance3 = (axis3[index3].Value - rayOrigin.Z) / rayDirection.Z;
-
-
-        //        float dist1 = Math.Abs(distance1);
-        //        float dist2 = Math.Abs(distance2);
-        //        float dist3 = Math.Abs(distance3);
-
-        //        if (dist1 < dist2)
-        //        {
-        //            if (dist3 < dist1)
-        //            {
-
-        //                if (axis3[index3].Begin)
-        //                {
-        //                    if (axis3[index3].Body.BoundingBox.RayIntersect(rayOrigin, rayDirection)) entities.Add(axis3[index3].Body);
-        //                }
-
-        //                rayOrigin = rayOrigin + distance3 * rayDirection;
-
-        //                index3 += (rayDirection.Z > 0.0f) ? 1 : -1;
-        //                if (index3 >= axis3.Count || index3 < 0) break;
-                       
-        //            }
-        //            else
-        //            {
-
-        //                if (axis1[index1].Begin)
-        //                {
-        //                    if (axis1[index1].Body.BoundingBox.RayIntersect(rayOrigin, rayDirection)) entities.Add(axis1[index1].Body);
-        //                }
-
-        //                rayOrigin = rayOrigin + distance1 * rayDirection;
-
-        //                index1 += (rayDirection.X > 0.0f) ? 1 : -1;
-        //                if (index1 >= axis1.Count || index1 < 0) break;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            if (dist2 < dist3)
-        //            {
-        //                if (axis2[index2].Begin)
-        //                {
-        //                    if (axis2[index2].Body.BoundingBox.RayIntersect(rayOrigin, rayDirection)) entities.Add(axis2[index2].Body);
-        //                }
-
-        //                rayOrigin = rayOrigin + distance2 * rayDirection;
-
-        //                index2 += (rayDirection.Y > 0.0f) ? 1 : -1;
-        //                if (index2 >= axis2.Count || index2 < 0) break;
-
-        //            }
-        //            else
-        //            {
-
-        //                if (axis3[index3].Begin)
-        //                {
-        //                    if (axis3[index3].Body.BoundingBox.RayIntersect(rayOrigin, rayDirection)) entities.Add(axis3[index3].Body);
-        //                }
-
-        //                rayOrigin = rayOrigin + distance3 * rayDirection;
-
-        //                index3 += (rayDirection.Z > 0.0f) ? 1 : -1;
-        //                if (index3 >= axis3.Count || index3 < 0) break;
-        //            }
-        //        }
-        //    }
-
-        //    System.Diagnostics.Debug.WriteLine(steps);
-        //}
-        #endregion
+		//    while (true)
+		//    {
+		//        steps++;
+		//        float distance1 = (axis1[index1].Value - rayOrigin.X) / rayDirection.X;
+		//        float distance2 = (axis2[index2].Value - rayOrigin.Y) / rayDirection.Y;
+		//        float distance3 = (axis3[index3].Value - rayOrigin.Z) / rayDirection.Z;
 
 
-        /// <summary>
-        /// Sends a ray (definied by start and direction) through the scene (all bodies added).
-        /// NOTE: For performance reasons terrain and trianglemeshshape aren't checked
-        /// against rays (rays are of infinite length). They are checked against segments
-        /// which start at rayOrigin and end in rayOrigin + rayDirection.
-        /// </summary>
-        #region public override bool Raycast(JVector rayOrigin, JVector rayDirection, out JVector normal,out float fraction)
-        public override bool Raycast(JVector rayOrigin, JVector rayDirection, RaycastCallback raycast, out RigidBody body, out JVector normal, out float fraction)
+		//        float dist1 = Math.Abs(distance1);
+		//        float dist2 = Math.Abs(distance2);
+		//        float dist3 = Math.Abs(distance3);
+
+		//        if (dist1 < dist2)
+		//        {
+		//            if (dist3 < dist1)
+		//            {
+
+		//                if (axis3[index3].Begin)
+		//                {
+		//                    if (axis3[index3].Body.BoundingBox.RayIntersect(rayOrigin, rayDirection)) entities.Add(axis3[index3].Body);
+		//                }
+
+		//                rayOrigin = rayOrigin + distance3 * rayDirection;
+
+		//                index3 += (rayDirection.Z > 0.0f) ? 1 : -1;
+		//                if (index3 >= axis3.Count || index3 < 0) break;
+
+		//            }
+		//            else
+		//            {
+
+		//                if (axis1[index1].Begin)
+		//                {
+		//                    if (axis1[index1].Body.BoundingBox.RayIntersect(rayOrigin, rayDirection)) entities.Add(axis1[index1].Body);
+		//                }
+
+		//                rayOrigin = rayOrigin + distance1 * rayDirection;
+
+		//                index1 += (rayDirection.X > 0.0f) ? 1 : -1;
+		//                if (index1 >= axis1.Count || index1 < 0) break;
+		//            }
+		//        }
+		//        else
+		//        {
+		//            if (dist2 < dist3)
+		//            {
+		//                if (axis2[index2].Begin)
+		//                {
+		//                    if (axis2[index2].Body.BoundingBox.RayIntersect(rayOrigin, rayDirection)) entities.Add(axis2[index2].Body);
+		//                }
+
+		//                rayOrigin = rayOrigin + distance2 * rayDirection;
+
+		//                index2 += (rayDirection.Y > 0.0f) ? 1 : -1;
+		//                if (index2 >= axis2.Count || index2 < 0) break;
+
+		//            }
+		//            else
+		//            {
+
+		//                if (axis3[index3].Begin)
+		//                {
+		//                    if (axis3[index3].Body.BoundingBox.RayIntersect(rayOrigin, rayDirection)) entities.Add(axis3[index3].Body);
+		//                }
+
+		//                rayOrigin = rayOrigin + distance3 * rayDirection;
+
+		//                index3 += (rayDirection.Z > 0.0f) ? 1 : -1;
+		//                if (index3 >= axis3.Count || index3 < 0) break;
+		//            }
+		//        }
+		//    }
+
+		//    System.Diagnostics.Debug.WriteLine(steps);
+		//}
+		#endregion
+
+
+		/// <summary>
+		/// Sends a ray (definied by start and direction) through the scene (all bodies added).
+		/// NOTE: For performance reasons terrain and trianglemeshshape aren't checked
+		/// against rays (rays are of infinite length). They are checked against segments
+		/// which start at rayOrigin and end in rayOrigin + rayDirection.
+		/// </summary>
+		// CUSTOM: Added triangle as an output parameter.
+		#region public override bool Raycast(JVector rayOrigin, JVector rayDirection, out JVector normal,out float fraction)
+		public override bool Raycast(JVector rayOrigin, JVector rayDirection, RaycastCallback raycast, out RigidBody body, out JVector normal, out float fraction, out JVector[] triangle)
         {
-            body = null; normal = JVector.Zero; fraction = float.MaxValue;
+            body = null;
+	        normal = JVector.Zero;
+	        triangle = null;
+	        fraction = float.MaxValue;
 
-            JVector tempNormal;float tempFraction;
+            JVector tempNormal;
+	        JVector[] tempTriangle;
+	        float tempFraction;
             bool result = false;
 
             // TODO: This can be done better in CollisionSystemPersistenSAP
@@ -456,12 +462,13 @@ namespace Jitter.Collision
                     SoftBody softBody = e as SoftBody;
                     foreach (RigidBody b in softBody.VertexBodies)
                     {
-                        if (this.Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction))
+                        if (this.Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction, out tempTriangle))
                         {
                             if (tempFraction < fraction && (raycast == null || raycast(b, tempNormal, tempFraction)))
                             {
                                 body = b;
                                 normal = tempNormal;
+	                            triangle = tempTriangle;
                                 fraction = tempFraction;
                                 result = true;
                             }
@@ -472,12 +479,13 @@ namespace Jitter.Collision
                 {
                     RigidBody b = e as RigidBody;
 
-                    if (this.Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction))
+                    if (this.Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction, out tempTriangle))
                     {
                         if (tempFraction < fraction && (raycast == null || raycast(b, tempNormal, tempFraction)))
                         {
                             body = b;
                             normal = tempNormal;
+	                        triangle = tempTriangle;
                             fraction = tempFraction;
                             result = true;
                         }
@@ -487,18 +495,21 @@ namespace Jitter.Collision
 
             return result;
         }
-        #endregion
+		#endregion
 
 
-        /// <summary>
-        /// Raycasts a single body. NOTE: For performance reasons terrain and trianglemeshshape aren't checked
-        /// against rays (rays are of infinite length). They are checked against segments
-        /// which start at rayOrigin and end in rayOrigin + rayDirection.
-        /// </summary>
-        #region public override bool Raycast(RigidBody body, JVector rayOrigin, JVector rayDirection, out JVector normal, out float fraction)
-        public override bool Raycast(RigidBody body, JVector rayOrigin, JVector rayDirection, out JVector normal, out float fraction)
+		/// <summary>
+		/// Raycasts a single body. NOTE: For performance reasons terrain and trianglemeshshape aren't checked
+		/// against rays (rays are of infinite length). They are checked against segments
+		/// which start at rayOrigin and end in rayOrigin + rayDirection.
+		/// </summary>
+		// CUSTOM: Added triangle as an output parameter.
+		#region public override bool Raycast(RigidBody body, JVector rayOrigin, JVector rayDirection, out JVector normal, out float fraction)
+		public override bool Raycast(RigidBody body, JVector rayOrigin, JVector rayDirection, out JVector normal, out float fraction, out JVector[] triangle)
         {
-            fraction = float.MaxValue; normal = JVector.Zero;
+            fraction = float.MaxValue;
+	        normal = JVector.Zero;
+	        triangle = null;
 
             if (!body.BoundingBox.RayIntersect(ref rayOrigin, ref rayDirection)) return false;
 
@@ -530,9 +541,10 @@ namespace Jitter.Collision
                                 JVector.Transform(ref tempNormal, ref body.orientation, out tempNormal);
                                 tempNormal.Negate();
                             }
-                            else if (useTriangleMeshNormal && ms is TriangleMeshShape)
+                            else if (useTriangleMeshNormal && ms is TriangleMeshShape tMesh)
                             {
-                                (ms as TriangleMeshShape).CollisionNormal(out tempNormal);
+	                            triangle = tMesh.CurrentTriangle;
+	                            tMesh.CollisionNormal(out tempNormal);
                                 JVector.Transform(ref tempNormal, ref body.orientation, out tempNormal);
                                 tempNormal.Negate();
                             }

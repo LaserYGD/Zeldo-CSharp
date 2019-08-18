@@ -13,8 +13,6 @@ namespace Zeldo.Entities.Core
 
 		protected bool onGround;
 
-		protected RigidBody2D groundBody;
-
 		protected Actor(EntityGroups group) : base(group)
 		{
 		}
@@ -32,8 +30,6 @@ namespace Zeldo.Entities.Core
 		// This is used by external controllers to accelerate the actor in a desired direction.
 		public vec2 RunDirection { get; set; }
 
-		public RigidBody2D GroundBody => groundBody;
-
 		public override vec3 Position
 		{
 			get => base.Position;
@@ -41,13 +37,10 @@ namespace Zeldo.Entities.Core
 			{
 				if (onGround)
 				{
-					if (!selfUpdate)
+					if (!selfUpdate && controllingBody3D != null)
 					{
-						groundBody.Position = value.swizzle.xz;
-						groundBody.Elevation = value.y;
+						controllingBody3D.Position = value.ToJVector();
 					}
-
-					controllingBody3D.Position = value.ToJVector();
 				}
 
 				base.Position = value;
@@ -59,13 +52,6 @@ namespace Zeldo.Entities.Core
 		{
 			get => controllingBody3D.LinearVelocity.ToVec3();
 			set => controllingBody3D.LinearVelocity = value.ToJVector();
-		}
-
-		public override void Dispose()
-		{
-			Scene.World2D.Remove(groundBody);
-
-			base.Dispose();
 		}
 
 		public void Attach(CharacterController controller, bool shouldComputeImmediately = false)
@@ -98,8 +84,6 @@ namespace Zeldo.Entities.Core
 		protected virtual void OnLand()
 		{
 			onGround = true;
-			groundBody.Elevation = 0;
-			groundBody.Velocity = controllingBody3D.LinearVelocity.ToVec3().swizzle.xz;
 
 			Attach(new RunController(this));
 		}
@@ -112,8 +96,6 @@ namespace Zeldo.Entities.Core
 
 			if (onGround)
 			{
-				var p = groundBody.Position;
-				
 				//Position = new vec3(p.x, groundBody.Elevation + halfHeight, p.y);
 			}
 			// It's assumed that all actors capable of going airborne have a controlling 3D body set.

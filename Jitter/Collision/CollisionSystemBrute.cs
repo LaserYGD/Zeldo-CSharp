@@ -139,18 +139,24 @@ namespace Jitter.Collision
             BroadphasePair.Pool.GiveBack(pair);
         }
 
-        /// <summary>
-        /// Sends a ray (definied by start and direction) through the scene (all bodies added).
-        /// NOTE: For performance reasons terrain and trianglemeshshape aren't checked
-        /// against rays (rays are of infinite length). They are checked against segments
-        /// which start at rayOrigin and end in rayOrigin + rayDirection.
-        /// </summary>
-        #region public override bool Raycast(JVector rayOrigin, JVector rayDirection, out JVector normal,out float fraction)
-        public override bool Raycast(JVector rayOrigin, JVector rayDirection, RaycastCallback raycast, out RigidBody body, out JVector normal, out float fraction)
+		/// <summary>
+		/// Sends a ray (definied by start and direction) through the scene (all bodies added).
+		/// NOTE: For performance reasons terrain and trianglemeshshape aren't checked
+		/// against rays (rays are of infinite length). They are checked against segments
+		/// which start at rayOrigin and end in rayOrigin + rayDirection.
+		/// </summary>
+		// CUSTOM: Added triangle as an output parameter.
+		#region public override bool Raycast(JVector rayOrigin, JVector rayDirection, out JVector normal,out float fraction)
+		public override bool Raycast(JVector rayOrigin, JVector rayDirection, RaycastCallback raycast, out RigidBody body, out JVector normal, out float fraction, out JVector[] triangle)
         {
-            body = null; normal = JVector.Zero; fraction = float.MaxValue;
+            body = null;
+	        normal = JVector.Zero;
+	        triangle = null;
+	        fraction = float.MaxValue;
 
-            JVector tempNormal; float tempFraction;
+            JVector tempNormal;
+	        JVector[] tempTriangle;
+	        float tempFraction;
             bool result = false;
 
             // TODO: This can be done better in CollisionSystemPersistenSAP
@@ -161,12 +167,13 @@ namespace Jitter.Collision
                     SoftBody softBody = e as SoftBody;
                     foreach (RigidBody b in softBody.VertexBodies)
                     {
-                        if (this.Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction))
+                        if (this.Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction, out tempTriangle))
                         {
                             if (tempFraction < fraction && (raycast == null || raycast(b, tempNormal, tempFraction)))
                             {
                                 body = b;
                                 normal = tempNormal;
+	                            triangle = tempTriangle;
                                 fraction = tempFraction;
                                 result = true;
                             }
@@ -177,12 +184,13 @@ namespace Jitter.Collision
                 {
                     RigidBody b = e as RigidBody;
 
-                    if (this.Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction))
+                    if (this.Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction, out tempTriangle))
                     {
                         if (tempFraction < fraction && (raycast == null || raycast(b, tempNormal, tempFraction)))
                         {
                             body = b;
                             normal = tempNormal;
+	                        triangle = tempTriangle;
                             fraction = tempFraction;
                             result = true;
                         }
@@ -201,9 +209,11 @@ namespace Jitter.Collision
         /// which start at rayOrigin and end in rayOrigin + rayDirection.
         /// </summary>
         #region public override bool Raycast(RigidBody body, JVector rayOrigin, JVector rayDirection, out JVector normal, out float fraction)
-        public override bool Raycast(RigidBody body, JVector rayOrigin, JVector rayDirection, out JVector normal, out float fraction)
+        public override bool Raycast(RigidBody body, JVector rayOrigin, JVector rayDirection, out JVector normal, out float fraction, out JVector[] triangle)
         {
-            fraction = float.MaxValue; normal = JVector.Zero;
+            fraction = float.MaxValue;
+	        normal = JVector.Zero;
+	        triangle = null;
 
             if (!body.BoundingBox.RayIntersect(ref rayOrigin, ref rayDirection)) return false;
 
@@ -235,9 +245,10 @@ namespace Jitter.Collision
                                 JVector.Transform(ref tempNormal, ref body.orientation, out tempNormal);
                                 tempNormal.Negate();
                             }
-                            else if (useTriangleMeshNormal && ms is TriangleMeshShape)
+                            else if (useTriangleMeshNormal && ms is TriangleMeshShape tMesh)
                             {
-                                (ms as TriangleMeshShape).CollisionNormal(out tempNormal);
+	                            triangle = tMesh.CurrentTriangle;
+	                            tMesh.CollisionNormal(out tempNormal);
                                 JVector.Transform(ref tempNormal, ref body.orientation, out tempNormal);
                                 tempNormal.Negate();
                             }

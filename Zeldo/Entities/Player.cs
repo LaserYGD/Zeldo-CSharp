@@ -86,7 +86,6 @@ namespace Zeldo.Entities
 			CreateModel(scene, "Capsule.obj");
 
 			body3D = CreateRigidBody3D(scene, new CylinderShape(Height, radius));
-			groundBody = CreateGroundBody(scene, groundShape);
 			sensor = CreateSensor(scene, groundShape, SensorUsages.Hitbox | SensorUsages.Interaction, Height);
 			CreateSensor(scene, new Point(), SensorUsages.Control, 1, null, -0.75f);
 
@@ -102,9 +101,8 @@ namespace Zeldo.Entities
 			skillsEnabled[JumpIndex] = false;
 			onGround = false;
 			jumpedThisFrame = true;
-
-			vec2 v = groundBody.Velocity;
-			controllingBody3D.LinearVelocity = new JVector(v.x, playerData.JumpSpeed, v.y);
+			
+			//controllingBody3D.LinearVelocity = new JVector(v.x, playerData.JumpSpeed, v.y);
 
 			Attach(new AirController(this));
 		}
@@ -170,7 +168,7 @@ namespace Zeldo.Entities
 			body3D.Orientation = JMatrix.Identity;
 			jumpedThisFrame = false;
 
-			var velocity = groundBody.Velocity;
+			var velocity = controllingBody3D.LinearVelocity.ToVec3();
 
 			DebugView.Lines = new []
 			{

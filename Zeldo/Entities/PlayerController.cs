@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Engine;
 using Engine.Input.Data;
 using Engine.Interfaces;
@@ -23,21 +24,19 @@ namespace Zeldo.Entities
 		// an actual square root call at runtime).
 		private const float SqrtTwo = 1.41421356237f;
 
-		private static SurfaceTriangle triangle1;
-		private static SurfaceTriangle triangle2;
-
 		// This is temporary for run testing on arbitrary surfaces.
 		public static SurfaceTriangle ActiveTriangle { get; private set; }
 		public static vec3 SlopeDirection { get; private set; }
-		public static float Y { get; private set; }
 
 		static PlayerController()
 		{
+			/*
 			triangle1 = new SurfaceTriangle(vec3.Zero, new vec3(0, 0.8f, -5), new vec3(5, 2, 0), 0,
 				Windings.CounterClockwise);
 			triangle2 = new SurfaceTriangle(new vec3(6, 1.5f, -4), new vec3(0, 0.8f, -5), new vec3(5, 2, 0), 0,
 				Windings.Clockwise);
 			ActiveTriangle = triangle1;
+			*/
 		}
 
 		private Player player;
@@ -61,6 +60,7 @@ namespace Zeldo.Entities
 
 		public void Dispose()
 		{
+			MessageSystem.Unsubscribe(this);
 		}
 
 		private void ProcessInput(FullInputData data, float dt)
@@ -106,58 +106,74 @@ namespace Zeldo.Entities
 
 		private void ProcessRunning(FullInputData data, float dt)
 		{
+			RaycastResults results;
+
+			var world = player.Scene.World3D;
+			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
+
+			vec3 p = player.Position;
+
+			if (ActiveTriangle == null)
+			{
+				results = PhysicsUtilities.Raycast(world, map, player.Position, -vec3.UnitY, 10);
+				ActiveTriangle = new SurfaceTriangle(results.Triangle, results.Normal, 0);
+				p = results.Position;
+			}
+
 			bool forward = data.Query(controls.RunForward, InputStates.Held);
 			bool back = data.Query(controls.RunBack, InputStates.Held);
 			bool left = data.Query(controls.RunLeft, InputStates.Held);
 			bool right = data.Query(controls.RunRight, InputStates.Held);
 
 			// "Flat" direction means the direction the player would run on flat ground. The actual movement direction
-			// depends on the current surface (specifically the normal).
+			// depends on the current surface.
 			vec2 flatDirection = vec2.Zero;
-
-			bool isAccelerating = false;
 
 			if (forward ^ back)
 			{
 				flatDirection.y = forward ? 1 : -1;
-				isAccelerating = true;
 			}
 
 			if (left ^ right)
 			{
 				flatDirection.x = left ? 1 : -1;
-				isAccelerating = true;
 			}
 
-			if (!isAccelerating)
+			if (flatDirection == vec2.Zero)
 			{
 				player.Velocity = vec3.Zero;
 			}
-
-			if ((forward ^ back) && (left ^ right))
+			else if ((forward ^ back) && (left ^ right))
 			{
 				flatDirection *= SqrtTwo;
 			}
 
 			flatDirection = Utilities.Rotate(flatDirection, FollowController.Yaw);
 
-			var normal = ActiveTriangle.Normal;
+			vec3 normal = ActiveTriangle.Normal;
+			vec3 sloped;
 
 			// This means the ground is completely flat (meaning that the flat direction can be used for movement
 			// directly).
 			if (normal.y == 1)
 			{
+				sloped = new vec3(flatDirection.x, 0, flatDirection.y);
+			}
+			else
+			{
+				vec2 flatNormal = Utilities.Normalize(normal.swizzle.xz);
+
+				float d = Utilities.Dot(flatDirection, flatNormal);
+				float y = -ActiveTriangle.Slope * d;
+
+				sloped = Utilities.Normalize(new vec3(flatDirection.x, y, flatDirection.y));
 			}
 
-			vec2 flatNormal = Utilities.Normalize(normal.swizzle.xz);
-
-			float d = Utilities.Dot(flatDirection, flatNormal);
-
-			Y = -ActiveTriangle.Slope * d;
-			SlopeDirection = Utilities.Normalize(new vec3(flatDirection.x, Y, flatDirection.y));
-
 			vec3 v = player.Velocity;
-			v += SlopeDirection * player.RunAcceleration * dt;
+			v += sloped * player.RunAcceleration * dt;
+
+			// This is temporary (for visual debugging).
+			SlopeDirection = sloped;
 
 			float max = player.RunMaxSpeed;
 
@@ -167,9 +183,9 @@ namespace Zeldo.Entities
 			}
 
 			player.Velocity = v;
+			p += v * dt;
 
-			vec3 p = player.Position + v * dt;
-
+			// This player is still within the triangle.
 			if (ActiveTriangle.Project(p, out vec3 result))
 			{
 				player.Position = result;
@@ -177,15 +193,19 @@ namespace Zeldo.Entities
 				return;
 			}
 
-			var results = PhysicsUtilities.Raycast(player.Scene.World3D, p + normal * 0.01f, -normal, 1);
+			results = PhysicsUtilities.Raycast(world, map, p + normal * 0.2f, -normal, 1);
 
-			if (results?.Body.Shape is TriangleMeshShape)
+			if (results?.Triangle != null)
 			{
-				vec3 hit = results.Position;
-
-				ActiveTriangle = hit.x - hit.z > 5 ? triangle2 : triangle1;
+				ActiveTriangle = new SurfaceTriangle(results.Triangle, results.Normal, 0);
 				ActiveTriangle.Project(results.Position, out result);
 
+				player.Position = result;
+			}
+			else
+			{
+				// This is a failsafe to account for potential weird behavior when very close to a triangle's edge. In
+				// theory, this case shouldn't be hit very often.
 				player.Position = result;
 			}
 		}

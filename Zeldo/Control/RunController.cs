@@ -13,6 +13,7 @@ namespace Zeldo.Control
 
 		public override void Update(float dt)
 		{
+			/*
 			var body = Parent.GroundBody;
 			var velocity = body.Velocity;
 
@@ -44,6 +45,7 @@ namespace Zeldo.Control
 			}
 
 			body.Velocity = velocity;
+			*/
 		}
 	}
 }

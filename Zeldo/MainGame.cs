@@ -135,7 +135,7 @@ namespace Zeldo
 			scene.LoadFragment("Triangle.json");
 
 			MasterRenderer3D renderer = scene.Renderer;
-			renderer.Light.Direction = Utilities.Normalize(new vec3(-0.25f, -0.35f, -0.7f));
+			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.35f, -0.7f));
 
 			Bow bow = new Bow();
 			bow.Initialize(scene, null);
@@ -147,6 +147,7 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
+			player.Position = new vec3(1, 2, -1);
 			player.Attach(new RunController());
 
 			const int StepCount = 25;
