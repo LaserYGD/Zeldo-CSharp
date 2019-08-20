@@ -3,9 +3,9 @@ using GlmSharp;
 
 namespace Zeldo.Entities.Core
 {
-	public class EntityAttachment3D
+	public class EntityAttachment
 	{
-		public EntityAttachment3D(EntityAttachmentTypes3D attachmentType, ITransformable3D target, vec3 position,
+		public EntityAttachment(EntityAttachmentTypes attachmentType, ITransformable3D target, vec3 position,
 			quat orientation)
 		{
 			AttachmentType = attachmentType;
@@ -14,7 +14,7 @@ namespace Zeldo.Entities.Core
 			Orientation = orientation;
 		}
 
-		public EntityAttachmentTypes3D AttachmentType { get; }
+		public EntityAttachmentTypes AttachmentType { get; }
 		public ITransformable3D Target { get; }
 
 		public vec3 Position { get; }

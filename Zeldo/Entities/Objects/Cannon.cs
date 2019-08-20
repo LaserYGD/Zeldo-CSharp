@@ -51,7 +51,7 @@ namespace Zeldo.Entities.Objects
 			Cannonball cannonball = new Cannonball();
 		    cannonball.Position = vec3.Zero;
 
-		    var body = controllingBody3D;
+		    var body = controllingBody;
 		    body.LinearVelocity = JVector.Zero * muzzleVelocity;
 		    body.AngularVelocity = JVector.Zero;
 

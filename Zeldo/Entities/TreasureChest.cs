@@ -39,6 +39,7 @@ namespace Zeldo.Entities
 
 		public override void Initialize(Scene scene, JToken data)
 		{
+			/*
 			float interactionRadius = Properties.GetFloat("treasure.chest.interaction.radius");
 			float thickness = Properties.GetFloat("treasure.chest.thickness");
 
@@ -53,10 +54,10 @@ namespace Zeldo.Entities
 			BoxShape depthBox = new BoxShape(thickness, bounds.y, bounds.z);
 
 			//CreateRigidBody3D(scene, new BoxShape(bounds.z, bounds.y, bounds.x), false, true);
-			CreateRigidBody3D(scene, widthBox, false, true, new vec3(0, 0, zOffset));
-			CreateRigidBody3D(scene, widthBox, false, true, new vec3(0, 0, -zOffset));
-			CreateRigidBody3D(scene, depthBox, false, true, new vec3(xOffset, 0, 0));
-			CreateRigidBody3D(scene, depthBox, false, true, new vec3(-xOffset, 0, 0));
+			CreateRigidBody(scene, widthBox, false, true, new vec3(0, 0, zOffset));
+			CreateRigidBody(scene, widthBox, false, true, new vec3(0, 0, -zOffset));
+			CreateRigidBody(scene, depthBox, false, true, new vec3(xOffset, 0, 0));
+			CreateRigidBody(scene, depthBox, false, true, new vec3(-xOffset, 0, 0));
 			CreateGroundBody(scene, new Rectangle(bounds.x, bounds.z), true);
 			CreateSensor(scene, new Circle(interactionRadius), SensorUsages.Interaction);
 
@@ -67,6 +68,7 @@ namespace Zeldo.Entities
 
 			lidBody = CreateRigidBody3D(scene, new BoxShape(lidBounds.ToJVector()), false, true,
 				new vec3(0, bounds.y / 2 + lidBounds.y / 2, 0));
+			*/
 
 			base.Initialize(scene, data);
 		}

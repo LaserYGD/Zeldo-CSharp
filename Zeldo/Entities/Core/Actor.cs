@@ -1,7 +1,6 @@
 ﻿using Engine.Physics;
 using GlmSharp;
 using Zeldo.Control;
-using Zeldo.Physics._2D;
 
 namespace Zeldo.Entities.Core
 {
@@ -37,9 +36,12 @@ namespace Zeldo.Entities.Core
 			{
 				if (onGround)
 				{
-					if (!selfUpdate && controllingBody3D != null)
+					// TODO: Is this redundant with the same code in Entity?
+					// The controlling body will probably always exist once the actor is finished, but it might not
+					// exist during development.
+					if (!selfUpdate && controllingBody != null)
 					{
-						controllingBody3D.Position = value.ToJVector();
+						controllingBody.Position = value.ToJVector();
 					}
 				}
 
@@ -47,12 +49,9 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
-		// The controlling body's velocity is reused while grounded to save memory.
-		public vec3 Velocity
-		{
-			get => controllingBody3D.LinearVelocity.ToVec3();
-			set => controllingBody3D.LinearVelocity = value.ToJVector();
-		}
+		// A separate velocity is used for controlled movement along a surface (such as the ground). The controlling
+		// body's velocity can't be easily reused because it'd constantly be affected by the physics engine.
+		public vec3 SurfaceVelocity { get; set; }
 
 		public void Attach(CharacterController controller, bool shouldComputeImmediately = false)
 		{
@@ -68,31 +67,11 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
-		public override void OnCollision(Entity entity, vec3 point, vec3 normal)
-		{
-			if (onGround)
-			{
-				return;
-			}
-
-			if (entity == null && normal.y == 1)
-			{
-				OnLand();
-			}
-		}
-
-		protected virtual void OnLand()
-		{
-			onGround = true;
-
-			Attach(new RunController(this));
-		}
-
 		public override void Update(float dt)
 		{
 			Components.Update(dt);
 			selfUpdate = true;
-			//controller?.Update(dt);
+			controller?.Update(dt);
 
 			if (onGround)
 			{
@@ -101,8 +80,8 @@ namespace Zeldo.Entities.Core
 			// It's assumed that all actors capable of going airborne have a controlling 3D body set.
 			else
 			{
-				Position = controllingBody3D.Position.ToVec3();
-				Orientation = controllingBody3D.Orientation.ToQuat();
+				Position = controllingBody.Position.ToVec3();
+				Orientation = controllingBody.Orientation.ToQuat();
 			}
 
 			selfUpdate = false;

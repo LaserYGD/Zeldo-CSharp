@@ -7,7 +7,6 @@ using Engine.UI;
 using Engine.Utility;
 using Engine.View;
 using Jitter;
-using Zeldo.Physics._2D;
 using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Core
@@ -47,8 +46,7 @@ namespace Zeldo.Entities.Core
 
 		public Canvas Canvas { get; set; }
 		public Space Space { get; set; }
-		public World2D World2D { get; set; }
-		public World World3D { get; set; }
+		public World World { get; set; }
 		public MasterRenderer3D Renderer => renderer;
 
 		// In this context, "user data" means custom data optionally loaded with each fragment. Used as needed in order
@@ -60,7 +58,7 @@ namespace Zeldo.Entities.Core
 			var fragment = SceneFragment.Load(filename);
 			fragments.Add(fragment);
 			renderer.Add(fragment.MapModel);
-			World3D.AddBody(fragment.MapBody);
+			World.AddBody(fragment.MapBody);
 
 			// This means that the fragment contains no entities (unlikely in the finished product, but possible during
 			// development).
@@ -71,13 +69,6 @@ namespace Zeldo.Entities.Core
 					Add(entity);
 				}
 			}
-
-			/*
-			foreach (var body in fragment.GroundBodies)
-			{
-				World2D.Add(body);
-			}
-			*/
 		}
 
 		public void UnloadFragment()

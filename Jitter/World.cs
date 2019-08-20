@@ -885,7 +885,8 @@ namespace Jitter
             }
         }
 
-        private void CollisionDetected(RigidBody body1, RigidBody body2, JVector point1, JVector point2, JVector normal, float penetration)
+		// CUSTOM: Added triangle as an argument.
+        private void CollisionDetected(RigidBody body1, RigidBody body2, JVector point1, JVector point2, JVector normal, JVector[] triangle, float penetration)
         {
             Arbiter arbiter = null;
 

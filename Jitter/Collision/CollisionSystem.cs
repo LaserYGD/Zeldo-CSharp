@@ -50,8 +50,9 @@ namespace Jitter.Collision
     /// <param name="penetration">Estimated penetration depth of the collision.</param>
     /// <seealso cref="CollisionSystem.Detect(bool)"/>
     /// <seealso cref="CollisionSystem.Detect(RigidBody,RigidBody)"/>
+    // CUSTOM: Added triangle as an argument.
     public delegate void CollisionDetectedHandler(RigidBody body1,RigidBody body2, 
-                    JVector point1, JVector point2, JVector normal,float penetration);
+                    JVector point1, JVector point2, JVector normal, JVector[] triangle, float penetration);
 
     /// <summary>
     /// A delegate to inform the user that a pair of bodies passed the broadsphase
@@ -396,6 +397,7 @@ namespace Jitter.Collision
                         out point, out normal, out penetration))
                     {
                         JVector point1, point2;
+	                    JVector[] triangle = null;
                         FindSupportPoints(b1, b2, ms, b2.Shape, ref point, ref normal, out point1, out point2);
 
                         if (useTerrainNormal && ms is TerrainShape)
@@ -403,13 +405,14 @@ namespace Jitter.Collision
                             (ms as TerrainShape).CollisionNormal(out normal);
                             JVector.Transform(ref normal, ref b1.orientation, out normal);
                         }
-                        else if (useTriangleMeshNormal && ms is TriangleMeshShape)
+                        else if (useTriangleMeshNormal && ms is TriangleMeshShape tMesh)
                         {
-                            (ms as TriangleMeshShape).CollisionNormal(out normal);
+	                        triangle = tMesh.CurrentTriangle;
+	                        tMesh.CollisionNormal(out normal);
                             JVector.Transform(ref normal, ref b1.orientation, out normal);
                         }
 
-                        RaiseCollisionDetected(b1, b2, ref point1, ref point2, ref normal, penetration);
+                        RaiseCollisionDetected(b1, b2, ref point1, ref point2, ref normal, triangle, penetration);
                     }
                     else if (speculative)
                     {
@@ -637,21 +640,27 @@ namespace Jitter.Collision
             return true;
         }
 
+	    protected void RaiseCollisionDetected(RigidBody body1, RigidBody body2,
+		    ref JVector point1, ref JVector point2,
+		    ref JVector normal, float penetration)
+	    {
+		    CollisionDetected?.Invoke(body1, body2, point1, point2, normal, null, penetration);
+		}
 
-        /// <summary>
-        /// Raises the CollisionDetected event.
-        /// </summary>
-        /// <param name="body1">The first body involved in the collision.</param>
-        /// <param name="body2">The second body involved in the collision.</param>
-        /// <param name="point">The collision point.</param>
-        /// <param name="normal">The normal pointing to body1.</param>
-        /// <param name="penetration">The penetration depth.</param>
-        protected void RaiseCollisionDetected(RigidBody body1, RigidBody body2,
+		/// <summary>
+		/// Raises the CollisionDetected event.
+		/// </summary>
+		/// <param name="body1">The first body involved in the collision.</param>
+		/// <param name="body2">The second body involved in the collision.</param>
+		/// <param name="point">The collision point.</param>
+		/// <param name="normal">The normal pointing to body1.</param>
+		/// <param name="penetration">The penetration depth.</param>
+		// CUSTOM: Added triangle as an out parameter.
+		protected void RaiseCollisionDetected(RigidBody body1, RigidBody body2,
                                             ref JVector point1, ref JVector point2,
-                                            ref JVector normal, float penetration)
+                                            ref JVector normal, JVector[] triangle, float penetration)
         {
-            if (this.CollisionDetected != null)
-                this.CollisionDetected(body1, body2, point1, point2, normal, penetration);
+	        CollisionDetected?.Invoke(body1, body2, point1, point2, normal, triangle, penetration);
         }
 
         /// <summary>

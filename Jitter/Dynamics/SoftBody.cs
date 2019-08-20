@@ -579,7 +579,7 @@ namespace Jitter.Dynamics
                         {
                             int nearest = CollisionSystem.FindNearestTrianglePoint(this, queryList[e], ref point);
 
-                            collision(points[i], points[nearest], point, point, normal, penetration);
+                            collision(points[i], points[nearest], point, point, normal, null, penetration);
                      
                         }
                     }

@@ -23,6 +23,7 @@ namespace Zeldo.Sensors
 
 		public void Draw()
 		{
+			/*
 			foreach (var sensor in space.Sensors)
 			{
 				if (sensor.IsCompound)
@@ -36,16 +37,19 @@ namespace Zeldo.Sensors
 			}
 
 			primitives.Flush();
+			*/
 		}
 
 		private void Draw(CompoundSensor compound)
 		{
+			/*
 			float e = compound.Elevation;
 
 			foreach (var attachment in compound.Attachments)
 			{
 				Draw(attachment.Shape, attachment.Height, e + attachment.Elevation);
 			}
+			*/
 		}
 
 		private void Draw(Shape2D shape, float height, float elevation)

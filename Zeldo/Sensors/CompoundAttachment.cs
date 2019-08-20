@@ -1,24 +1,19 @@
-﻿using Engine.Shapes._2D;
+﻿using Engine.Shapes._3D;
 using GlmSharp;
 
 namespace Zeldo.Sensors
 {
 	public class CompoundAttachment
 	{
-		public CompoundAttachment(Shape2D shape, float height, vec2 position, float elevation, float rotation)
+		public CompoundAttachment(Shape3D shape, vec3 position, quat orientation)
 		{
 			Shape = shape;
 			Position = position;
-			Height = height;
-			Elevation = elevation;
-			Rotation = rotation;
+			Orientation = orientation;
 		}
 
-		public Shape2D Shape { get; }
-		public vec2 Position { get; }
-
-		public float Height { get; }
-		public float Elevation { get; }
-		public float Rotation { get; }
+		public Shape3D Shape { get; }
+		public vec3 Position { get; }
+		public quat Orientation { get; }
 	}
 }

@@ -1,5 +1,5 @@
 ﻿using Engine;
-using Engine.Shapes._2D;
+using Engine.Shapes._3D;
 using Jitter.Collision.Shapes;
 using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
@@ -21,8 +21,8 @@ namespace Zeldo.Entities.Objects
 			float pickupRadius = Properties.GetFloat("cannonball.pickup.radius");
 
 			CreateModel(scene, "Cannonball.obj");
-			CreateSensor(scene, new Circle(pickupRadius));
-			CreateRigidBody3D(scene, new SphereShape(collisionRadius));
+			CreateSensor(scene, new Sphere(pickupRadius));
+			CreateRigidBody(scene, new SphereShape(collisionRadius));
 
 			base.Initialize(scene, data);
 		}

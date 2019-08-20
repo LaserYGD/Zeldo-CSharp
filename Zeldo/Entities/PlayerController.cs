@@ -63,6 +63,15 @@ namespace Zeldo.Entities
 			MessageSystem.Unsubscribe(this);
 		}
 
+		public void OnLanding(vec3 p, vec3 normal, vec3[] triangle)
+		{
+			ActiveTriangle = new SurfaceTriangle(triangle, normal, 0);
+			ActiveTriangle.Project(p, out vec3 result);
+
+			// The player's onGround flag is set to true before this function is called.
+			player.Position = result;
+		}
+
 		private void ProcessInput(FullInputData data, float dt)
 		{
 			ProcessRunning(data, dt);
@@ -106,19 +115,16 @@ namespace Zeldo.Entities
 
 		private void ProcessRunning(FullInputData data, float dt)
 		{
-			RaycastResults results;
+			// TODO: While airborne, a different controller should be used, meaning that this check shouldn't be needed (since the controller will only be enabled while the player is grounded).
+			if (ActiveTriangle == null)
+			{
+				return;
+			}
 
-			var world = player.Scene.World3D;
+			var world = player.Scene.World;
 			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
 
 			vec3 p = player.Position;
-
-			if (ActiveTriangle == null)
-			{
-				results = PhysicsUtilities.Raycast(world, map, player.Position, -vec3.UnitY, 10);
-				ActiveTriangle = new SurfaceTriangle(results.Triangle, results.Normal, 0);
-				p = results.Position;
-			}
 
 			bool forward = data.Query(controls.RunForward, InputStates.Held);
 			bool back = data.Query(controls.RunBack, InputStates.Held);
@@ -139,9 +145,11 @@ namespace Zeldo.Entities
 				flatDirection.x = left ? 1 : -1;
 			}
 
+			vec3 v = player.SurfaceVelocity;
+
 			if (flatDirection == vec2.Zero)
 			{
-				player.Velocity = vec3.Zero;
+				v = vec3.Zero;
 			}
 			else if ((forward ^ back) && (left ^ right))
 			{
@@ -168,8 +176,7 @@ namespace Zeldo.Entities
 
 				sloped = Utilities.Normalize(new vec3(flatDirection.x, y, flatDirection.y));
 			}
-
-			vec3 v = player.Velocity;
+			
 			v += sloped * player.RunAcceleration * dt;
 
 			// This is temporary (for visual debugging).
@@ -182,7 +189,7 @@ namespace Zeldo.Entities
 				v = Utilities.Normalize(v) * max;
 			}
 
-			player.Velocity = v;
+			player.SurfaceVelocity = v;
 			p += v * dt;
 
 			// This player is still within the triangle.
@@ -193,7 +200,7 @@ namespace Zeldo.Entities
 				return;
 			}
 
-			results = PhysicsUtilities.Raycast(world, map, p + normal * 0.2f, -normal, 1);
+			var results = PhysicsUtilities.Raycast(world, map, p + normal * 0.2f, -normal, 1);
 
 			if (results?.Triangle != null)
 			{

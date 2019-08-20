@@ -70,7 +70,7 @@ namespace Zeldo.Sensors
 
 					var contacts2 = sensor2.Contacts;
 
-					bool intersects = CheckIntersection(sensor1, sensor2);
+					bool intersects = false;//CheckIntersection(sensor1, sensor2);
 
 					// This contact relationship is always symmetric (i.e. if sensor A contains sensor B, then B also
 					// contains A).
@@ -126,6 +126,7 @@ namespace Zeldo.Sensors
 			}
 		}
 
+		/*
 		private bool CheckIntersection(Sensor sensor1, Sensor sensor2)
 		{
 			// For the time being, it's assumed that compound sensors will never interact.
@@ -180,5 +181,6 @@ namespace Zeldo.Sensors
 
 			return false;
 		}
+		*/
 	}
 }

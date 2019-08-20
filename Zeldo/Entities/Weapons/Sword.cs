@@ -41,7 +41,7 @@ namespace Zeldo.Entities.Weapons
 
 		public override void Initialize(Scene scene, JToken data)
 		{
-			sensor = CreateSensor(scene, arc, SensorUsages.Hitbox);
+			sensor = null;//CreateSensor(scene, arc, SensorUsages.Hitbox);
 			sensor.IsEnabled = false;
 			sensor.OnSense = (sensorType, owner) =>
 			{

@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
-using Engine.Shapes._2D;
-using Engine.Utility;
+using Engine.Shapes._3D;
 using GlmSharp;
 
 namespace Zeldo.Sensors
 {
 	public class CompoundSensor : Sensor
 	{
-		private float rotation;
-
-		private vec2 position;
+		private vec3 position;
+		private quat orientation;
 
 		public CompoundSensor(SensorTypes type, SensorUsages usage, object parent) : base(type, usage, parent)
 		{
@@ -18,20 +16,8 @@ namespace Zeldo.Sensors
 		}
 
 		public List<CompoundAttachment> Attachments { get; }
-
-		public override float Rotation
-		{
-			get => rotation;
-			set
-			{
-				rotation = value;
-				RecomputeAttachments();
-			}
-		}
-
-		public override float Elevation { get; set; }
-
-		public override vec2 Position
+		
+		public override vec3 Position
 		{
 			get => position;
 			set
@@ -41,18 +27,27 @@ namespace Zeldo.Sensors
 			}
 		}
 
-		public override void SetTransform(vec2 position, float elevation, float rotation)
+		public override quat Orientation
+		{
+			get => orientation;
+			set
+			{
+				orientation = value;
+				RecomputeAttachments();
+			}
+		}
+
+		public override void SetTransform(vec3 position, quat orientation)
 		{
 			this.position = position;
-			this.rotation = rotation;
+			this.orientation = orientation;
 
-			Elevation = elevation;
 			RecomputeAttachments();
 		}
 
-		public void Attach(Shape2D shape, float height, vec2 position, float elevation, float rotation = 0)
+		public void Attach(Shape3D shape, vec3 position, quat orientation)
 		{
-			Attachments.Add(new CompoundAttachment(shape, height, position, elevation, rotation));
+			Attachments.Add(new CompoundAttachment(shape, position, orientation));
 		}
 
 		private void RecomputeAttachments()
@@ -60,8 +55,10 @@ namespace Zeldo.Sensors
 			foreach (var attachment in Attachments)
 			{
 				var shape = attachment.Shape;
-				shape.Position = position + Utilities.Rotate(attachment.Position, rotation);
-				shape.Rotation = attachment.Rotation + rotation;
+				var localOrientation = attachment.Orientation;
+
+				shape.Position = position + attachment.Position * localOrientation;
+				shape.Orientation = orientation * localOrientation;
 			}
 		}
 	}

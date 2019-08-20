@@ -27,7 +27,7 @@ namespace Zeldo.Entities.Characters
 		public override void Initialize(Scene scene, JToken data)
 		{
 			dialogueBox = dialogueBox ?? scene.Canvas.GetElement<DialogueBox>();
-			CreateSensor(scene, new Circle(InteractionRadius));
+			//CreateSensor(scene, new Circle(InteractionRadius));
 
 			base.Initialize(scene, data);
 		}

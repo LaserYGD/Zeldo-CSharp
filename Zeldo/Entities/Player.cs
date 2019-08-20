@@ -28,7 +28,6 @@ namespace Zeldo.Entities
 		private const int JumpIndex = (int)PlayerSkills.Jump;
 		
 		private Sensor sensor;
-		private RigidBody body3D;
 		private InputBind jumpBindUsed;
 		private PlayerData playerData;
 		private PlayerControls controls;
@@ -46,7 +45,6 @@ namespace Zeldo.Entities
 			controls = new PlayerControls();
 			playerData = new PlayerData();
 			controller = new PlayerController(this, playerData, controls);
-			onGround = true;
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 
@@ -80,20 +78,29 @@ namespace Zeldo.Entities
 		{
 			Height = Properties.GetFloat("player.height");
 
-			var radius = Properties.GetFloat("player.ground.radius");
-			var groundShape = new Circle(radius);
+			var radius = Properties.GetFloat("player.radius");
 
 			CreateModel(scene, "Capsule.obj");
+			CreateRigidBody(scene, new CylinderShape(Height, radius));
 
-			body3D = CreateRigidBody3D(scene, new CylinderShape(Height, radius));
-			sensor = CreateSensor(scene, groundShape, SensorUsages.Hitbox | SensorUsages.Interaction, Height);
-			CreateSensor(scene, new Point(), SensorUsages.Control, 1, null, -0.75f);
+			//sensor = CreateSensor(scene, groundShape, SensorUsages.Hitbox | SensorUsages.Interaction, Height);
+			//CreateSensor(scene, new Point(), SensorUsages.Control, 1, null, -0.75f);
 
 			base.Initialize(scene, data);
 		}
 
-		public override void OnCollision(SurfaceTriangle surface, vec3 point, vec3 normal)
+		public override void OnCollision(vec3 p, vec3 normal, vec3[] triangle)
 		{
+			// TODO: Check surface normal and uncomment the OnLanding function below (possibly extending from Actor).
+			// TODO: Set ground velocity from aerial velocity on landing.
+			if (onGround)
+			{
+				return;
+			}
+
+			onGround = true;
+			tempOnGround = true;
+			controller.OnLanding(p, normal, triangle);
 		}
 
 		public void Jump()
@@ -151,7 +158,8 @@ namespace Zeldo.Entities
 		{
 		}
 
-		protected override void OnLand()
+		/*
+		private void OnLanding()
 		{
 			if (jumpedThisFrame)
 			{
@@ -159,16 +167,16 @@ namespace Zeldo.Entities
 			}
 
 			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
-
-			base.OnLand();
 		}
+		*/
 
 		public override void Update(float dt)
 		{
-			body3D.Orientation = JMatrix.Identity;
+			// TODO: Add an isOrientationFixed boolean to rigid bodies and use that instead.
+			controllingBody.Orientation = JMatrix.Identity;
 			jumpedThisFrame = false;
 
-			var velocity = controllingBody3D.LinearVelocity.ToVec3();
+			var velocity = onGround ? SurfaceVelocity : controllingBody.LinearVelocity.ToVec3();
 
 			DebugView.Lines = new []
 			{

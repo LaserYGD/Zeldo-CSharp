@@ -3,7 +3,6 @@ using System.Linq;
 using Engine;
 using Engine.Core;
 using Engine.Core._2D;
-using Engine.Core._3D;
 using Engine.Graphics._2D;
 using Engine.Graphics._3D;
 using Engine.Graphics._3D.Rendering;
@@ -19,13 +18,12 @@ using Engine.View;
 using GlmSharp;
 using Jitter;
 using Jitter.Collision;
-using Jitter.Collision.Shapes;
+using Jitter.LinearMath;
 using Zeldo.Control;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
-using Zeldo.Physics._2D;
 using Zeldo.Sensors;
 using Zeldo.Settings;
 using Zeldo.State;
@@ -53,8 +51,7 @@ namespace Zeldo
 		private Canvas canvas;
 		private Scene scene;
 		private Space space;
-		private World world3D;
-		private World2D world2D;
+		private World world;
 		private ScreenManager screenManager;
 		private List<IRenderTargetUser3D> renderTargetUsers;
 		private PrimitiveRenderer3D primitives;
@@ -62,7 +59,6 @@ namespace Zeldo
 
 		private SpaceVisualizer spaceVisualizer;
 		private JitterVisualizer jitterVisualizer;
-		private StaircaseVisualizer staircaseVisualizer;
 
 		private GameLoop activeLoop;
 
@@ -105,21 +101,35 @@ namespace Zeldo
 
 			CollisionSystem system = new CollisionSystemSAP();
 			system.UseTriangleMeshNormal = true;
-			system.CollisionDetected += (body1, body2, point1, point2, normal, penetration) =>
+			system.CollisionDetected += (body1, body2, point1, point2, normal, triangle, penetration) =>
 			{
-				// Most physics bodies will have entities attached. If null, it's assumed that the body corresponds to
-				// a static part of the map.
+				// By design, all physics objects have entities attached, with the exception of static parts of the
+				// map. In the case of map collisions, it's unknown which body comes first as an argument (as of
+				// writing this comment, anyway), which is why both entities are checked for null.
 				Entity entity1 = body1.Tag as Entity;
 				Entity entity2 = body2.Tag as Entity;
 
+				vec3 p1 = point1.ToVec3();
+				vec3 p2 = point2.ToVec3();
 				vec3 n = Utilities.Normalize(normal.ToVec3());
 
-				entity1?.OnCollision(entity2, point1.ToVec3(), n);
-				entity2?.OnCollision(entity1, point2.ToVec3(), -n);
+				// A triangle will only be given in the case of collisions with the map.
+				if (triangle != null)
+				{
+					var entity = entity1 ?? entity2;
+					var point = entity1 != null ? p2 : p1;
+					var tArray = triangle.Select(t => t.ToVec3()).ToArray();
+
+					entity.OnCollision(point, n, tArray);
+
+					return;
+				}
+
+				entity1?.OnCollision(entity2, p1, n);
+				entity2?.OnCollision(entity1, p2, -n);
 			};
 			
-			world3D = new World(system);
-			world2D = new World2D();
+			world = new World(system);
 			space = new Space();
 			spaceVisualizer = new SpaceVisualizer(camera, space);
 
@@ -128,8 +138,7 @@ namespace Zeldo
 				Camera = camera,
 				Canvas = canvas,
 				Space = space,
-				World2D = world2D,
-				World3D = world3D
+				World = world
 			};
 
 			scene.LoadFragment("Triangle.json");
@@ -147,28 +156,8 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
-			player.Position = new vec3(1, 2, -1);
-			player.Attach(new RunController());
-
-			const int StepCount = 25;
-
-			const float InnerRadius = 3;
-			const float OuterRadius = 8;
-			const float StepHeight = 0.3f;
-			const float StepSpread = Constants.Pi * 2 / StepCount;
-			const float Height = StepCount * StepHeight;
-
-			SpiralStaircase staircase = new SpiralStaircase(Height)
-			{
-				InnerRadius = InnerRadius,
-				OuterRadius = OuterRadius,
-				Slope =  StepHeight / StepSpread,
-				IsClockwise = true,
-			};
-
-			staircase.Initialize(scene);
-			staircase.SetTransform(new vec3(11, -Height, -6), Constants.PiOverTwo);
-			staircaseVisualizer = new StaircaseVisualizer(camera, staircase, StepHeight, StepCount, StepSpread);
+			player.Position = new vec3(2, 20, -2);
+			//player.Attach(new RunController());
 
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
@@ -185,7 +174,8 @@ namespace Zeldo
 			renderTargetUsers = new List<IRenderTargetUser3D>();
 			renderTargetUsers.Add(scene.Renderer);
 
-			jitterVisualizer = new JitterVisualizer(camera, world3D);
+			jitterVisualizer = new JitterVisualizer(camera, world);
+			jitterVisualizer.IsEnabled = true;
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Keyboard, (messageType, data, dt) =>
 			{
@@ -250,8 +240,7 @@ namespace Zeldo
 
 		protected override void Update(float dt)
 		{
-			//world2D.Step(dt, PhysicsStep, PhysicsMaxSteps);
-			//world3D.Step(dt, true, PhysicsStep, PhysicsMaxSteps);
+			world.Step(dt, true, PhysicsStep, PhysicsMaxSteps);
 			space.Update();
 			scene.Update(dt);
 			camera.Update(dt);
@@ -270,10 +259,10 @@ namespace Zeldo
 			mainTarget.Apply();
 			scene.Draw(camera);
 			jitterVisualizer.Draw(camera);
-			staircaseVisualizer.Draw();
 			//spaceVisualizer.Draw();
 
 			// This is temporary for run testing.
+			/*
 			var triangle = PlayerController.ActiveTriangle;
 			var points = triangle.Points;
 			var flatPoints = SurfaceTriangle.FlatPoints;
@@ -308,6 +297,7 @@ namespace Zeldo
 			primitives.DrawLine(d1, d1 + SurfaceTriangle.Axis, Color.Red);
 			primitives.DrawLine(d1, d2, Color.Green);
 			primitives.Flush();
+			*/
 
 			// Render 2D targets.
 			glDisable(GL_DEPTH_TEST);
