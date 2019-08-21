@@ -111,7 +111,9 @@ namespace Zeldo
 
 				vec3 p1 = point1.ToVec3();
 				vec3 p2 = point2.ToVec3();
-				vec3 n = Utilities.Normalize(normal.ToVec3());
+
+				// The normal needs to be flipped based on how Jitter handles triangle winding.
+				vec3 n = Utilities.Normalize(-normal.ToVec3());
 
 				// A triangle will only be given in the case of collisions with the map.
 				if (triangle != null)

@@ -71,7 +71,9 @@ namespace Zeldo.Physics
 
 		public int Material { get; }
 
-		// This value is used to aid ground movement.
+		// This value (used primarily to aid ground movement) is between 0 and 1, with 0 representing a completely flat
+		// surface and 1 representing a completely vertical one.
+		// TODO: Can (or should) this value become negative for over-hanging triangles whose normal points downward?
 		public float Slope { get; }
 
 		public bool Project(vec3 p, out vec3 result)

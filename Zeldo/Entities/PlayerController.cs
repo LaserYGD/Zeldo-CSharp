@@ -63,9 +63,9 @@ namespace Zeldo.Entities
 			MessageSystem.Unsubscribe(this);
 		}
 
-		public void OnLanding(vec3 p, vec3 normal, vec3[] triangle)
+		public void OnLanding(vec3 p, SurfaceTriangle triangle)
 		{
-			ActiveTriangle = new SurfaceTriangle(triangle, normal, 0);
+			ActiveTriangle = triangle;
 			ActiveTriangle.Project(p, out vec3 result);
 
 			// The player's onGround flag is set to true before this function is called.

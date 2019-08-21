@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using System;
+using Engine;
 using Engine.Input.Data;
 using Engine.Physics;
 using Engine.Shapes._2D;
@@ -39,12 +40,15 @@ namespace Zeldo.Entities
 		private bool[] skillsEnabled;
 		private bool jumpedThisFrame;
 
+		private PlayerStates state;
+
 		public Player() : base(EntityGroups.Player)
 		{
 			sword = new Sword();
 			controls = new PlayerControls();
 			playerData = new PlayerData();
 			controller = new PlayerController(this, playerData, controls);
+			state = PlayerStates.Idle;
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 
@@ -91,16 +95,54 @@ namespace Zeldo.Entities
 
 		public override void OnCollision(vec3 p, vec3 normal, vec3[] triangle)
 		{
-			// TODO: Check surface normal and uncomment the OnLanding function below (possibly extending from Actor).
-			// TODO: Set ground velocity from aerial velocity on landing.
+			var surface = new SurfaceTriangle(triangle, normal, 0);
+
+			// TODO: Process running into walls while grounded.
 			if (onGround)
 			{
 				return;
 			}
 
+			// While the sliding threshold represents a lower bound (the shallowest slope on which the player will
+			// begin to slide), the wall thresholds are small and represent the maximum delta against a perfectly
+			// vertical wall where the surface still counts as a wall. The upper threshold allows wall jumps off
+			// surfaces that very slightly overhang, while the lower limit is a bit more generous and allows wall
+			// interaction with very steep, but still upward-facing triangles.
+			float slope = surface.Slope;
+
+			// TODO: This assumes that slope is always positive (between 0 and 1). This needs to be verified on downward-facing triangles.
+			bool isUpward = normal.y > 0;
+
+			// The collision is against a wall.
+			// TODO: Set ground velocity from aerial velocity on landing.
+			if (slope == 0 || (isUpward && slope >= 1 - playerData.LowerWallThreshold) || (!isUpward &&
+				slope <= 1 - playerData.UpperWallThreshold))
+			{
+				return;
+			}
+
+			// The collision is a landing on a surface flat enough to run or slide.
+			if (isUpward)
+			{
+				OnLanding(p, surface);
+			}
+		}
+
+		private void OnLanding(vec3 p, SurfaceTriangle surface)
+		{
 			onGround = true;
 			tempOnGround = true;
-			controller.OnLanding(p, normal, triangle);
+			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
+			controller.OnLanding(p, surface);
+
+			// Landing on a surface flat enough for normal running.
+			if (surface.Slope < playerData.SlideThreshold)
+			{
+				return;
+			}
+
+			// Landing on a surface steep enough to cause sliding.
+			state = PlayerStates.Sliding;
 		}
 
 		public void Jump()
@@ -157,18 +199,6 @@ namespace Zeldo.Entities
 		public void GiveItem(int id, int count = 1)
 		{
 		}
-
-		/*
-		private void OnLanding()
-		{
-			if (jumpedThisFrame)
-			{
-				return;
-			}
-
-			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
-		}
-		*/
 
 		public override void Update(float dt)
 		{
