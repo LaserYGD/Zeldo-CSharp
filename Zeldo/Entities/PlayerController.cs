@@ -18,6 +18,7 @@ namespace Zeldo.Entities
 {
 	public class PlayerController : IReceiver
 	{
+		private const int AscendIndex = (int)PlayerSkills.Ascend;
 		private const int DashIndex = (int)PlayerSkills.Dash;
 		private const int GrabIndex = (int)PlayerSkills.Grab;
 		private const int JumpIndex = (int)PlayerSkills.Jump;
@@ -36,6 +37,10 @@ namespace Zeldo.Entities
 
 		// Attacks use a short input buffering window in order to make chained attacks easier to execute.
 		private SingleTimer attackBuffer;
+
+		// Player jumping has variable height, meaning that releasing the bind early cuts your jump short. Since the
+		// player can have multiple jump binds, though, this limit should only apply if the SAME bind was released.
+		private InputBind jumpBindUsed;
 
 		public PlayerController(Player player, PlayerData playerData, PlayerControls controls)
 		{
@@ -68,12 +73,20 @@ namespace Zeldo.Entities
 
 			// The player's onGround flag is set to true before this function is called.
 			player.Position = result;
+			jumpBindUsed = null;
 		}
 
 		private void ProcessInput(FullInputData data, float dt)
 		{
 			ProcessRunning(data, dt);
-			//ProcessJumping(data);
+
+			// Ascension reuses the jump bind (since it's conceptually also an "up" action). That means that if an
+			// ascend was
+			if (!ProcessAscend(data))
+			{
+				ProcessJumping(data);
+			}
+
 			ProcessAttack(data, dt);
 			//ProcessInteraction(data);
 		}
@@ -147,7 +160,7 @@ namespace Zeldo.Entities
 				flatDirection *= SqrtTwo;
 			}
 
-			vec3 v = player.IsSliding
+			vec3 v = player.State == PlayerStates.Sliding
 				? AdjustSlidingVelocity(flatDirection, dt)
 				: AdjustRunningVelocity(flatDirection, dt);
 
@@ -254,9 +267,56 @@ namespace Zeldo.Entities
 			return v;
 		}
 
+		private bool ProcessAscend(FullInputData data)
+		{
+			// There are two ascend-based actions the player can take: 1) starting an ascend (by holding the relevant
+			// button and pressing jump), or 2) breaking out of an ongoing ascend (by pressing jump mid-ascend). Also
+			// note that ascension is only enabled when the player is currently close enough to an ascend target (such
+			// as a ladder or rope).
+			if (!player.SkillsEnabled[AscendIndex] && player.State != PlayerStates.Ascending)
+			{
+				return false;
+			}
+
+			if (!data.Query(controls.Jump, InputStates.PressedThisFrame, out jumpBindUsed))
+			{
+				return false;
+			}
+
+			if (player.State != PlayerStates.Ascending)
+			{
+				player.Ascend();
+			}
+			else
+			{
+				player.BreakAscend();
+			}
+
+			return true;
+		}
+
 		private void ProcessJumping(FullInputData data)
 		{
-			if (player.SkillsEnabled[JumpIndex] && data.Query(controls.Jump, InputStates.PressedThisFrame))
+			if (!player.SkillsEnabled[JumpIndex])
+			{
+				return;
+			}
+
+			// If this is true, it's assumed that the jump bind must have been populated. Note that this case also
+			// handles breaking from an ascend via a jump.
+			if (player.State == PlayerStates.Jumping)
+			{
+				if (data.Query(jumpBindUsed, InputStates.ReleasedThisFrame))
+				{
+					player.LimitJump();
+					jumpBindUsed = null;
+				}
+
+				return;
+			}
+
+			// The jump bind might have already been set while processing ascension input.
+			if (jumpBindUsed != null || data.Query(controls.Jump, InputStates.PressedThisFrame, out jumpBindUsed))
 			{
 				player.Jump();
 			}

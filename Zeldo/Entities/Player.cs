@@ -39,9 +39,6 @@ namespace Zeldo.Entities
 		
 		private bool[] skillsUnlocked;
 		private bool[] skillsEnabled;
-		private bool jumpedThisFrame;
-
-		private bool isSliding;
 
 		public Player() : base(EntityGroups.Player)
 		{
@@ -76,9 +73,11 @@ namespace Zeldo.Entities
 		public Inventory Inventory { get; }
 		public Weapon Weapon => null;
 
+		// States are used by the controller class to more easily determine when to apply certain actions.
+		public PlayerStates State { get; private set; }
+
 		// This is used by the player controller.
 		public bool[] SkillsEnabled => skillsEnabled;
-		public bool IsSliding => isSliding;
 
 		public override void Initialize(Scene scene, JToken data)
 		{
@@ -144,25 +143,42 @@ namespace Zeldo.Entities
 			// Moving to a surface flat enough for normal running.
 			if (surface.Slope < playerData.SlideThreshold)
 			{
-				isSliding = false;
+				State = PlayerStates.Running;
 
 				return;
 			}
 
 			// Moving to a surface steep enough to cause sliding.
-			isSliding = true;
+			State = PlayerStates.Sliding;
 		}
 
 		public void Jump()
 		{
 			onGround = false;
-			jumpedThisFrame = true;
 			skillsEnabled[JumpIndex] = false;
+			State = PlayerStates.Jumping;
 
 			var v = controllingBody.LinearVelocity;
 			controllingBody.LinearVelocity = new JVector(v.X, playerData.JumpSpeed, v.Y);
 
 			Attach(new AirController(this));
+		}
+
+		public void LimitJump()
+		{
+			State = PlayerStates.Airborne;
+		}
+
+		public void Ascend()
+		{
+			// TODO: Attach to the ascension target and begin climbing.
+			State = PlayerStates.Ascending;
+		}
+
+		public void BreakAscend()
+		{
+			// Breaking out of an ascend uses variable height as well, meaning that similar jump logic can be reused.
+			State = PlayerStates.Jumping;
 		}
 
 		public void Interact()
@@ -213,7 +229,6 @@ namespace Zeldo.Entities
 		{
 			// TODO: Add an isOrientationFixed boolean to rigid bodies and use that instead.
 			controllingBody.Orientation = JMatrix.Identity;
-			jumpedThisFrame = false;
 
 			var velocity = onGround ? SurfaceVelocity : controllingBody.LinearVelocity.ToVec3();
 
@@ -223,7 +238,7 @@ namespace Zeldo.Entities
 				$"Velocity: {velocity.x}, {velocity.y}",
 				$"On ground: {onGround}",
 				$"Jump enabled: {skillsEnabled[JumpIndex]}",
-				$"Sliding: {isSliding}"
+				$"State: {State}"
 			};
 
 			base.Update(dt);

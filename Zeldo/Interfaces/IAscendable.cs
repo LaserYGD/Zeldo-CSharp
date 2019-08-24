@@ -4,13 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.Entities
+namespace Zeldo.Interfaces
 {
-	public enum PlayerSkills
+	public interface IAscendable
 	{
-		Ascend,
-		Dash,
-		Grab,
-		Jump
+
 	}
 }

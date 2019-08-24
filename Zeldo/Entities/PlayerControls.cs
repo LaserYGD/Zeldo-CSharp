@@ -15,6 +15,7 @@ namespace Zeldo.Entities
 			Attack = new List<InputBind> { new InputBind(InputTypes.Mouse, GLFW_MOUSE_BUTTON_LEFT) };
 			Jump = new List<InputBind> { new InputBind(InputTypes.Keyboard, GLFW_KEY_SPACE) };
 			Grab = new List<InputBind> { new InputBind(InputTypes.Keyboard, GLFW_KEY_LEFT_SHIFT) };
+			Ascend = new List<InputBind> { new InputBind(InputTypes.Keyboard, GLFW_KEY_LEFT_SHIFT) };
 			Interact = new List<InputBind> { new InputBind(InputTypes.Keyboard, GLFW_KEY_E) };
 		}
 
@@ -25,6 +26,7 @@ namespace Zeldo.Entities
 		public List<InputBind> Attack { get; }
 		public List<InputBind> Jump { get; }
 		public List<InputBind> Grab { get; }
+		public List<InputBind> Ascend { get; }
 		public List<InputBind> Interact { get; }
 	}
 }
