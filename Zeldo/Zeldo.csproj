@@ -248,7 +248,6 @@
     <Compile Include="Entities\Objects\Door.cs" />
     <Compile Include="Entities\PlayerController.cs" />
     <Compile Include="Entities\PlayerData.cs" />
-    <Compile Include="Entities\PlayerStates.cs" />
     <Compile Include="Entities\Weapons\Twinblade.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerControls.cs" />
@@ -256,6 +255,7 @@
     <Compile Include="Entities\Projectiles\Arrow.cs" />
     <Compile Include="Entities\TreasureChest.cs" />
     <Compile Include="Entities\Weapons\Bow.cs" />
+    <Compile Include="Entities\Weapons\Weapon.cs" />
     <Compile Include="Entities\Windmill\MotorTree.cs" />
     <Compile Include="Entities\Windmill\MotorNode.cs" />
     <Compile Include="Entities\Windmill\WindmillBlades.cs" />

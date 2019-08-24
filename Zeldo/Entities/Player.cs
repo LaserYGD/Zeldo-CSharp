@@ -33,6 +33,7 @@ namespace Zeldo.Entities
 		private PlayerData playerData;
 		private PlayerControls controls;
 		private PlayerController controller;
+		private Weapon weapon;
 		private Sword sword;
 		private Bow bow;
 		
@@ -40,7 +41,7 @@ namespace Zeldo.Entities
 		private bool[] skillsEnabled;
 		private bool jumpedThisFrame;
 
-		private PlayerStates state;
+		private bool isSliding;
 
 		public Player() : base(EntityGroups.Player)
 		{
@@ -48,7 +49,6 @@ namespace Zeldo.Entities
 			controls = new PlayerControls();
 			playerData = new PlayerData();
 			controller = new PlayerController(this, playerData, controls);
-			state = PlayerStates.Idle;
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 
@@ -74,9 +74,11 @@ namespace Zeldo.Entities
 
 		// The player owns their own inventory.
 		public Inventory Inventory { get; }
+		public Weapon Weapon => null;
 
 		// This is used by the player controller.
 		public bool[] SkillsEnabled => skillsEnabled;
+		public bool IsSliding => isSliding;
 
 		public override void Initialize(Scene scene, JToken data)
 		{
@@ -134,24 +136,31 @@ namespace Zeldo.Entities
 			tempOnGround = true;
 			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
 			controller.OnLanding(p, surface);
+			OnSurfaceTransition(surface);
+		}
 
-			// Landing on a surface flat enough for normal running.
+		public void OnSurfaceTransition(SurfaceTriangle surface)
+		{
+			// Moving to a surface flat enough for normal running.
 			if (surface.Slope < playerData.SlideThreshold)
 			{
+				isSliding = false;
+
 				return;
 			}
 
-			// Landing on a surface steep enough to cause sliding.
-			state = PlayerStates.Sliding;
+			// Moving to a surface steep enough to cause sliding.
+			isSliding = true;
 		}
 
 		public void Jump()
 		{
-			skillsEnabled[JumpIndex] = false;
 			onGround = false;
 			jumpedThisFrame = true;
-			
-			//controllingBody3D.LinearVelocity = new JVector(v.x, playerData.JumpSpeed, v.y);
+			skillsEnabled[JumpIndex] = false;
+
+			var v = controllingBody.LinearVelocity;
+			controllingBody.LinearVelocity = new JVector(v.X, playerData.JumpSpeed, v.Y);
 
 			Attach(new AirController(this));
 		}
@@ -213,7 +222,8 @@ namespace Zeldo.Entities
 				$"Position: {Position.x}, {Position.y}, {Position.z}",
 				$"Velocity: {velocity.x}, {velocity.y}",
 				$"On ground: {onGround}",
-				$"Jump enabled: {skillsEnabled[JumpIndex]}"
+				$"Jump enabled: {skillsEnabled[JumpIndex]}",
+				$"Sliding: {isSliding}"
 			};
 
 			base.Update(dt);

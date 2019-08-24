@@ -74,6 +74,7 @@
 
 - Make sure enemies are varied (in terms of playstyle, but also visually so you don't just have a bunch of humanoids)
 
+- Minor tech to quickly increase downward movement (inspired by Dead Cell's quick downward stomp mechanic, but also Ori's stomp. Could get boring to just walk off a ledge and wait to fall without any means to better control your movement) => If it's a stomp, the transition from hitting the ground to regular movement needs to be smooth (maybe a button press just after the stomp that gives a quick boost in some direction?)
 
 
 

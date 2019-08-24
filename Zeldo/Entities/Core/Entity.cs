@@ -237,10 +237,6 @@ namespace Zeldo.Entities.Core
 		{
 		}
 
-		public void PlayAnimation(string animation)
-		{
-		}
-
 		public virtual void Update(float dt)
 		{
 			Components.Update(dt);

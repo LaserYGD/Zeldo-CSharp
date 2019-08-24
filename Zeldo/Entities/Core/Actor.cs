@@ -67,6 +67,10 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
+		public void PlayAnimation(string animation)
+		{
+		}
+
 		public override void Update(float dt)
 		{
 			Components.Update(dt);
