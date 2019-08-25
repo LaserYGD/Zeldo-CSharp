@@ -232,12 +232,13 @@ namespace Zeldo.Entities
 			// TODO: Add an isOrientationFixed boolean to rigid bodies and use that instead.
 			controllingBody.Orientation = JMatrix.Identity;
 
-			var velocity = onGround ? SurfaceVelocity : controllingBody.LinearVelocity.ToVec3();
+			var v = controllingBody.LinearVelocity.ToVec3();
 
 			DebugView.Lines = new []
 			{
 				$"Position: {Position.x}, {Position.y}, {Position.z}",
-				$"Velocity: {velocity.x}, {velocity.y}",
+				$"Surface velocity: {SurfaceVelocity.x}, {SurfaceVelocity.y}",
+				$"Body velocity: {v.x}, {v.y}, {v.z}",
 				$"On ground: {onGround}",
 				$"Jump enabled: {skillsEnabled[JumpIndex]}",
 				$"State: {State}"

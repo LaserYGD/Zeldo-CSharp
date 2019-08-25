@@ -1,5 +1,6 @@
 ﻿using Engine.Physics;
 using GlmSharp;
+using Jitter.LinearMath;
 using Zeldo.Control;
 
 namespace Zeldo.Entities.Core
