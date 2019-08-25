@@ -146,12 +146,13 @@ namespace Jitter.Dynamics
 
                     bias = deltaLength * biasFactor * (1.0f / timestep);
 
-                    if (!body1.isStatic)
+					// CUSTOM: Modified to use the IsStatic property (plus the condition below).
+                    if (!body1.IsStatic)
                     {
                         body1.linearVelocity += body1.inverseMass * accumulatedImpulse * jacobian[0];
                     }
 
-                    if (!body2.isStatic)
+                    if (!body2.IsStatic)
                     {
                         body2.linearVelocity += body2.inverseMass * accumulatedImpulse * jacobian[1];
                     }
@@ -192,13 +193,14 @@ namespace Jitter.Dynamics
 
                 JVector temp;
 
-                if (!body1.isStatic)
+				// CUSTOM: Modifed to use the IsStatic property (plus the condition below).
+                if (!body1.IsStatic)
                 {
                     JVector.Multiply(ref jacobian[0], lambda * body1.inverseMass, out temp);
                     JVector.Add(ref temp, ref body1.linearVelocity, out body1.linearVelocity);
                 }
 
-                if (!body2.isStatic)
+                if (!body2.IsStatic)
                 {
                     JVector.Multiply(ref jacobian[1], lambda * body2.inverseMass, out temp);
                     JVector.Add(ref temp, ref body2.linearVelocity, out body2.linearVelocity);
@@ -657,7 +659,8 @@ namespace Jitter.Dynamics
 
             foreach (MassPoint point in points)
             {
-                if (point.isActive && !point.isStatic) { active = true; break; }
+				// CUSTOM: Modified to use the IsStatic property.
+                if (point.isActive && !point.IsStatic) { active = true; break; }
             }
 
             if(!active) return;

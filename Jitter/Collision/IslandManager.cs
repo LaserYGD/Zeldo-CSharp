@@ -164,10 +164,31 @@ namespace Jitter.Collision
 
         private void AddConnection(RigidBody body1, RigidBody body2)
         {
-            System.Diagnostics.Debug.Assert(!(body1.isStatic && body2.isStatic),
-                "IslandManager Inconsistency: Arbiter detected between two static objects.");
+			// CUSTOM: Modified to account for kinematic bodies.
+	        var type1 = body1.BodyType;
+	        var type2 = body2.BodyType;
 
-            if (body1.isStatic) // <- only body1 is static
+	        bool isBody1Movable;
+	        bool isBody2Movable;
+
+	        if (type1 == type2 && type1 == RigidBodyTypes.Dynamic)
+	        {
+		        isBody1Movable = true;
+		        isBody2Movable = true;
+	        }
+	        else
+	        {
+		        isBody1Movable = type1 < type2;
+		        isBody2Movable = type2 < type1;
+	        }
+
+	        if (!(isBody1Movable || isBody2Movable))
+	        {
+		        return;
+	        }
+
+			// Only body 2 is movable.
+            if (isBody2Movable && !isBody1Movable)
             {
                 if (body2.island == null)
                 {
@@ -179,7 +200,8 @@ namespace Jitter.Collision
                     islands.Add(newIsland);
                 }
             }
-            else if (body2 == null || body2.isStatic) // <- only body2 is static
+			// Only body 1 is movable.
+            else if (!isBody2Movable)
             {
                 if (body1.island == null)
                 {
@@ -191,7 +213,8 @@ namespace Jitter.Collision
                     islands.Add(newIsland);
                 }
             }
-            else // both are !static
+			// Both are movable.
+            else
             {
                 MergeIslands(body1, body2);
 
@@ -201,11 +224,32 @@ namespace Jitter.Collision
         }
 
         private void RemoveConnection(RigidBody body1, RigidBody body2)
-        {
-            System.Diagnostics.Debug.Assert(!(body1.isStatic && body2.isStatic),
-                "IslandManager Inconsistency: Arbiter detected between two static objects.");
+		{
+			// CUSTOM: Modified to account for kinematic bodies.
+			var type1 = body1.BodyType;
+			var type2 = body2.BodyType;
 
-            if (body1.isStatic) // <- only body1 is static
+			bool isBody1Movable;
+			bool isBody2Movable;
+
+			if (type1 == type2 && type1 == RigidBodyTypes.Dynamic)
+			{
+				isBody1Movable = true;
+				isBody2Movable = true;
+			}
+			else
+			{
+				isBody1Movable = type1 < type2;
+				isBody2Movable = type2 < type1;
+			}
+
+			if (!(isBody1Movable || isBody2Movable))
+			{
+				return;
+			}
+
+			// Only body 2 is movable.
+			if (isBody2Movable && !isBody1Movable)
             {
                 // if (!body2.connections.Contains(body1)) throw new Exception();
                 //System.Diagnostics.Debug.Assert(body2.connections.Contains(body1),
@@ -214,7 +258,8 @@ namespace Jitter.Collision
 
                 body2.connections.Remove(body1);
             }
-            else if (body2 == null || body2.isStatic) // <- only body2 is static
+			// Only body 1 is movable.
+            else if (!isBody2Movable)
             {
                 //System.Diagnostics.Debug.Assert(body1.connections.Contains(body2),
                 //    "IslandManager Inconsistency.",
@@ -222,7 +267,8 @@ namespace Jitter.Collision
 
                 body1.connections.Remove(body2);
             }
-            else // <- both are !static
+			// Both are movable.
+            else
             {
                 System.Diagnostics.Debug.Assert(body1.island == body2.island,
                     "IslandManager Inconsistency: Removing arbiter with different islands.");
@@ -258,7 +304,9 @@ namespace Jitter.Collision
             while (leftSearchQueue.Count > 0 && rightSearchQueue.Count > 0)
             {
                 RigidBody currentNode = leftSearchQueue.Dequeue();
-                if (!currentNode.isStatic)
+
+	            // CUSTOM: Modifed to use the IsStatic property.
+				if (!currentNode.IsStatic)
                 {
                     for (int i = 0; i < currentNode.connections.Count; i++)
                     {
@@ -280,7 +328,9 @@ namespace Jitter.Collision
                 }
 
                 currentNode = rightSearchQueue.Dequeue();
-                if (!currentNode.isStatic)
+
+				// CUSTOM: Modifed to use the IsStatic property.
+                if (!currentNode.IsStatic)
                 {
 
                     for (int i = 0; i < currentNode.connections.Count; i++)

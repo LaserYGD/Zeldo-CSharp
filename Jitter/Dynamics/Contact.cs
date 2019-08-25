@@ -86,8 +86,9 @@ namespace Jitter.Dynamics
 
         private bool newContact = false;
 
-        private bool treatBody1AsStatic = false;
-        private bool treatBody2AsStatic = false;
+		// CUSTOM: Updated to account for kinematic body types.
+        private bool isBody1Movable;
+        private bool isBody2Movable;
 
 
         bool body1IsMassPoint; bool body2IsMassPoint;
@@ -183,11 +184,12 @@ namespace Jitter.Dynamics
         /// </summary>
         public void Iterate()
         {
-            //body1.linearVelocity = JVector.Zero;
-            //body2.linearVelocity = JVector.Zero;
-            //return;
+			//body1.linearVelocity = JVector.Zero;
+			//body2.linearVelocity = JVector.Zero;
+			//return;
 
-            if (treatBody1AsStatic && treatBody2AsStatic) return;
+			// CUSTOM: Updated to account for kinematic body types.
+			if (!(isBody1Movable || isBody2Movable)) return;
 
             float dvx, dvy, dvz;
 
@@ -238,7 +240,8 @@ namespace Jitter.Dynamics
             impulse.Y = normal.Y * normalImpulse + tangent.Y * tangentImpulse;
             impulse.Z = normal.Z * normalImpulse + tangent.Z * tangentImpulse;
 
-            if (!treatBody1AsStatic)
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (isBody1Movable)
             {
                 body1.linearVelocity.X -= (impulse.X * body1.inverseMass);
                 body1.linearVelocity.Y -= (impulse.Y * body1.inverseMass);
@@ -270,7 +273,8 @@ namespace Jitter.Dynamics
                 }
             }
 
-            if (!treatBody2AsStatic)
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (isBody2Movable)
             {
 
                 body2.linearVelocity.X += (impulse.X * body2.inverseMass);
@@ -347,10 +351,11 @@ namespace Jitter.Dynamics
         /// <param name="impulse">The impulse to apply.</param>
         public void ApplyImpulse(ref JVector impulse)
         {
-            #region INLINE - HighFrequency
-            //JVector temp;
+			#region INLINE - HighFrequency
+			//JVector temp;
 
-            if (!treatBody1AsStatic)
+			// CUSTOM: Updated to account for kinematic body types.
+			if (isBody1Movable)
             {
                 body1.linearVelocity.X -= (impulse.X * body1.inverseMass);
                 body1.linearVelocity.Y -= (impulse.Y * body1.inverseMass);
@@ -379,7 +384,8 @@ namespace Jitter.Dynamics
                 body1.angularVelocity.Z -= num5;
             }
 
-            if (!treatBody2AsStatic)
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (isBody2Movable)
             {
 
                 body2.linearVelocity.X += (impulse.X * body2.inverseMass);
@@ -415,10 +421,11 @@ namespace Jitter.Dynamics
 
         public void ApplyImpulse(JVector impulse)
         {
-            #region INLINE - HighFrequency
-            //JVector temp;
+			#region INLINE - HighFrequency
+			//JVector temp;
 
-            if (!treatBody1AsStatic)
+			// CUSTOM: Updated to account for kinematic body types.
+			if (isBody1Movable)
             {
                 body1.linearVelocity.X -= (impulse.X * body1.inverseMass);
                 body1.linearVelocity.Y -= (impulse.Y * body1.inverseMass);
@@ -447,7 +454,8 @@ namespace Jitter.Dynamics
                 body1.angularVelocity.Z -= num5;
             }
 
-            if (!treatBody2AsStatic)
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (isBody2Movable)
             {
 
                 body2.linearVelocity.X += (impulse.X * body2.inverseMass);
@@ -500,7 +508,9 @@ namespace Jitter.Dynamics
             float kNormal = 0.0f;
 
             JVector rantra = JVector.Zero;
-            if (!treatBody1AsStatic)
+
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (isBody1Movable)
             {
                 kNormal += body1.inverseMass;
 
@@ -529,7 +539,9 @@ namespace Jitter.Dynamics
             }
 
             JVector rbntrb = JVector.Zero;
-            if (!treatBody2AsStatic)
+
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (isBody2Movable)
             {
                 kNormal += body2.inverseMass;
 
@@ -557,8 +569,9 @@ namespace Jitter.Dynamics
                 }
             }
 
-            if (!treatBody1AsStatic) kNormal += rantra.X * normal.X + rantra.Y * normal.Y + rantra.Z * normal.Z;
-            if (!treatBody2AsStatic) kNormal += rbntrb.X * normal.X + rbntrb.Y * normal.Y + rbntrb.Z * normal.Z;
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (isBody1Movable) kNormal += rantra.X * normal.X + rantra.Y * normal.Y + rantra.Z * normal.Z;
+            if (isBody2Movable) kNormal += rbntrb.X * normal.X + rbntrb.Y * normal.Y + rbntrb.Z * normal.Z;
 
             massNormal = 1.0f / kNormal;
 
@@ -580,7 +593,8 @@ namespace Jitter.Dynamics
 
             float kTangent = 0.0f;
 
-            if (treatBody1AsStatic) rantra.MakeZero();
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (!isBody1Movable) rantra.MakeZero();
             else
             {
                 kTangent += body1.inverseMass;
@@ -609,7 +623,8 @@ namespace Jitter.Dynamics
 
             }
 
-            if (treatBody2AsStatic) rbntrb.MakeZero();
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (!isBody2Movable) rbntrb.MakeZero();
             else
             {
                 kTangent += body2.inverseMass;
@@ -637,8 +652,9 @@ namespace Jitter.Dynamics
                 }
             }
 
-            if (!treatBody1AsStatic) kTangent += JVector.Dot(ref rantra, ref tangent);
-            if (!treatBody2AsStatic) kTangent += JVector.Dot(ref rbntrb, ref tangent);
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (isBody1Movable) kTangent += JVector.Dot(ref rantra, ref tangent);
+            if (isBody2Movable) kTangent += JVector.Dot(ref rbntrb, ref tangent);
             massTangent = 1.0f / kTangent;
 
             restitutionBias = lostSpeculativeBounce;
@@ -699,7 +715,8 @@ namespace Jitter.Dynamics
             impulse.Y = normal.Y * accumulatedNormalImpulse + tangent.Y * accumulatedTangentImpulse;
             impulse.Z = normal.Z * accumulatedNormalImpulse + tangent.Z * accumulatedTangentImpulse;
 
-            if (!treatBody1AsStatic)
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (isBody1Movable)
             {
                 body1.linearVelocity.X -= (impulse.X * body1.inverseMass);
                 body1.linearVelocity.Y -= (impulse.Y * body1.inverseMass);
@@ -732,7 +749,8 @@ namespace Jitter.Dynamics
                 }
             }
 
-            if (!treatBody2AsStatic)
+	        // CUSTOM: Updated to account for kinematic body types.
+			if (isBody2Movable)
             {
 
                 body2.linearVelocity.X += (impulse.X * body2.inverseMass);
@@ -771,12 +789,14 @@ namespace Jitter.Dynamics
             newContact = false;
         }
 
+		// CUSTOM: Commented out this function (since it caused errors and didn't seem to be used).
+		/*
         public void TreatBodyAsStatic(RigidBodyIndex index)
         {
             if (index == RigidBodyIndex.RigidBody1) treatBody1AsStatic = true;
             else treatBody2AsStatic = true;
         }
-
+		*/
 
         /// <summary>
         /// Initializes a contact.
@@ -810,8 +830,20 @@ namespace Jitter.Dynamics
             // Material Properties
             if (newContact)
             {
-                treatBody1AsStatic = body1.isStatic;
-                treatBody2AsStatic = body2.isStatic;
+				// CUSTOM: Modified to account for kinematic bodies.
+	            var type1 = body1.BodyType;
+	            var type2 = body2.BodyType;
+
+	            if (type1 == type2 && type1 == RigidBodyTypes.Dynamic)
+	            {
+		            isBody1Movable = true;
+		            isBody2Movable = true;
+	            }
+	            else
+	            {
+		            isBody1Movable = type1 < type2;
+		            isBody2Movable = type2 < type1;
+	            }
 
                 accumulatedNormalImpulse = 0.0f;
                 accumulatedTangentImpulse = 0.0f;

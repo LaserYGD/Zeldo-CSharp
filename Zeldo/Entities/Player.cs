@@ -34,15 +34,12 @@ namespace Zeldo.Entities
 		private PlayerControls controls;
 		private PlayerController controller;
 		private Weapon weapon;
-		private Sword sword;
-		private Bow bow;
 		
 		private bool[] skillsUnlocked;
 		private bool[] skillsEnabled;
 
 		public Player() : base(EntityGroups.Player)
 		{
-			sword = new Sword();
 			controls = new PlayerControls();
 			playerData = new PlayerData();
 			controller = new PlayerController(this, playerData, controls);
@@ -71,7 +68,7 @@ namespace Zeldo.Entities
 
 		// The player owns their own inventory.
 		public Inventory Inventory { get; }
-		public Weapon Weapon => null;
+		public Weapon Weapon => weapon;
 
 		// States are used by the controller class to more easily determine when to apply certain actions.
 		public PlayerStates State { get; private set; }
@@ -81,12 +78,14 @@ namespace Zeldo.Entities
 
 		public override void Initialize(Scene scene, JToken data)
 		{
-			Height = Properties.GetFloat("player.height");
+			// The height here is the height of the cylinder (excluding the two rounded caps).
+			var capsuleHeight = Properties.GetFloat("player.capsule.height");
+			var capsuleRadius = Properties.GetFloat("player.capsule.radius");
 
-			var radius = Properties.GetFloat("player.radius");
+			Height = capsuleHeight + capsuleRadius * 2;
 
 			CreateModel(scene, "Capsule.obj");
-			CreateRigidBody(scene, new CylinderShape(Height, radius));
+			CreateRigidBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius), RigidBodyTypes.Kinematic);
 
 			//sensor = CreateSensor(scene, groundShape, SensorUsages.Hitbox | SensorUsages.Interaction, Height);
 			//CreateSensor(scene, new Point(), SensorUsages.Control, 1, null, -0.75f);
@@ -135,6 +134,7 @@ namespace Zeldo.Entities
 			tempOnGround = true;
 			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
 			controller.OnLanding(p, surface);
+			controllingBody.AffectedByGravity = false;
 			OnSurfaceTransition(surface);
 		}
 
@@ -197,9 +197,11 @@ namespace Zeldo.Entities
 			}
 		}
 
-		public void Equip(Bow bow)
+		public void Equip(Weapon weapon)
 		{
-			this.bow = bow;
+			this.weapon = weapon;
+
+			weapon.Owner = this;
 		}
 
 		public void UnlockSkill(PlayerSkills skill)

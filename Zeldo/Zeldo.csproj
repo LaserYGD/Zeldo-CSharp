@@ -229,6 +229,7 @@
     <Compile Include="Entities\Core\LivingEntity.cs" />
     <Compile Include="Entities\Core\Scene.cs" />
     <Compile Include="Entities\Core\SceneFragment.cs" />
+    <Compile Include="Entities\DummyCube.cs" />
     <Compile Include="Entities\Enemies\Enemy.cs" />
     <Compile Include="Entities\Enemies\Groot.cs" />
     <Compile Include="Entities\Enemies\Kitterket.cs" />

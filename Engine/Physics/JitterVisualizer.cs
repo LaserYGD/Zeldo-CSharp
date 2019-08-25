@@ -41,16 +41,19 @@ namespace Engine.Physics
 
 				switch (shape.GetType().Name)
 				{
-					case "BoxShape": DrawBox((BoxShape)shape, body);
+					case "BoxShape": Draw((BoxShape)shape, body);
 						break;
 
-					case "CylinderShape": DrawCylinder((CylinderShape)shape, body);
+					case "CapsuleShape": Draw((CapsuleShape)shape, body);
 						break;
 
-					case "SphereShape": DrawSphere((SphereShape)shape, body);
+					case "CylinderShape": Draw((CylinderShape)shape, body);
 						break;
 
-					case "TriangleMeshShape": DrawTriangleMesh((TriangleMeshShape)shape, body);
+					case "SphereShape": Draw((SphereShape)shape, body);
+						break;
+
+					case "TriangleMeshShape": Draw((TriangleMeshShape)shape, body);
 						break;
 				}
 			}
@@ -58,17 +61,62 @@ namespace Engine.Physics
 			primitives.Flush();
 		}
 
-		private void DrawBox(BoxShape shape, RigidBody body)
+		private void Draw(BoxShape shape, RigidBody body)
 		{
 			var size = shape.Size;
 			var box = new Box(size.X, size.Y, size.Z);
 			box.Position = body.Position.ToVec3();
 			box.Orientation = body.Orientation.ToQuat();
 
-			primitives.Draw(box, Color.Cyan);
+			Color color = Color.White;
+
+			switch (body.BodyType)
+			{
+				case RigidBodyTypes.Dynamic: color = Color.Red;
+					break;
+
+				case RigidBodyTypes.Kinematic: color = Color.Green;
+					break;
+
+				case RigidBodyTypes.Static: color = Color.Yellow;
+					break;
+			}
+
+			primitives.Draw(box, color);
 		}
 
-		private void DrawCylinder(CylinderShape shape, RigidBody body)
+		private void Draw(CapsuleShape shape, RigidBody body)
+		{
+			const int Segments = 16;
+			const int Rings = 5;
+
+			float l = shape.Length / 2;
+			float r = shape.Radius;
+
+			quat orientation = body.Orientation.ToQuat();
+			vec3 p = body.Position.ToVec3();
+			vec3 v = vec3.UnitY * orientation;
+			Color color = Color.Green;
+
+			for (int i = 0; i < Rings; i++)
+			{
+				float radius = (float)Math.Cos(Constants.PiOverTwo / Rings * i) * r;
+				float offset = r / Rings * i;
+
+				primitives.DrawCircle(radius, p + v * (l + offset), orientation, color, Segments);
+				primitives.DrawCircle(radius, p - v * (l + offset), orientation, color, Segments);
+			}
+
+			for (int i = 0; i < Segments; i++)
+			{
+				vec2 d = Utilities.Direction(Constants.TwoPi / Segments * i) * r;
+				vec3 point = new vec3(d.x, 0, d.y) * orientation + p;
+
+				primitives.DrawLine(point + v * l, point - v * l, color);
+			}
+		}
+
+		private void Draw(CylinderShape shape, RigidBody body)
 		{
 			const int Segments = 16;
 			const float Increment = Constants.TwoPi / Segments;
@@ -80,8 +128,8 @@ namespace Engine.Physics
 
 			float radius = shape.Radius;
 
-			primitives.Draw(radius, c0, orientation, Color.Magenta, Segments);
-			primitives.Draw(radius, center + v / 2, orientation, Color.Magenta, Segments);
+			primitives.DrawCircle(radius, c0, orientation, Color.Magenta, Segments);
+			primitives.DrawCircle(radius, center + v / 2, orientation, Color.Magenta, Segments);
 
 			vec3[] points = new vec3[Segments];
 
@@ -100,7 +148,7 @@ namespace Engine.Physics
 			}
 		}
 
-		private void DrawSphere(SphereShape shape, RigidBody body)
+		private void Draw(SphereShape shape, RigidBody body)
 		{
 			const int Segments = 16;
 
@@ -112,12 +160,12 @@ namespace Engine.Physics
 			quat q1 = orientation * quat.FromAxisAngle(Constants.PiOverTwo, vec3.UnitX);
 			quat q2 = orientation * quat.FromAxisAngle(Constants.PiOverTwo, vec3.UnitZ);
 
-			primitives.Draw(radius, center, orientation, Color.Green, Segments);
-			primitives.Draw(radius, center, q1, Color.Green, Segments);
-			primitives.Draw(radius, center, q2, Color.Green, Segments);
+			primitives.DrawCircle(radius, center, orientation, Color.Green, Segments);
+			primitives.DrawCircle(radius, center, q1, Color.Green, Segments);
+			primitives.DrawCircle(radius, center, q2, Color.Green, Segments);
 		}
 
-		private void DrawTriangleMesh(TriangleMeshShape shape, RigidBody body)
+		private void Draw(TriangleMeshShape shape, RigidBody body)
 		{
 			var tuple = (Tuple<List<JVector>, List<TriangleVertexIndices>>)shape.Tag;
 			var points = tuple.Item1;

@@ -18,6 +18,7 @@ using Engine.View;
 using GlmSharp;
 using Jitter;
 using Jitter.Collision;
+using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Control;
 using Zeldo.Entities;
@@ -130,10 +131,48 @@ namespace Zeldo
 				entity1?.OnCollision(entity2, p1, n);
 				entity2?.OnCollision(entity1, p2, -n);
 			};
-			
+
 			world = new World(system);
+			world.SetDampingFactors(1, 1);
 			space = new Space();
 			spaceVisualizer = new SpaceVisualizer(camera, space);
+			
+			// Create testing cubes.
+			var dTarget1 = new DummyCube(RigidBodyTypes.Dynamic);
+			dTarget1.Position = new vec3(0, 2.5f, 6.0f);
+
+			var dTarget2 = new DummyCube(RigidBodyTypes.Dynamic);
+			dTarget2.Position = new vec3(0, 2.5f, 4.5f);
+
+			var kTarget1 = new DummyCube(RigidBodyTypes.Kinematic);
+			kTarget1.Position = new vec3(0, 2.5f, 3.0f);
+
+			var kTarget2 = new DummyCube(RigidBodyTypes.Kinematic);
+			kTarget2.Position = new vec3(0, 2.5f, 1.5f);
+
+			var sTarget1 = new DummyCube(RigidBodyTypes.Static);
+			sTarget1.Position = new vec3(0, 2.5f, 0.0f);
+
+			var sTarget2 = new DummyCube(RigidBodyTypes.Static);
+			sTarget2.Position = new vec3(0, 2.5f, -1.5f);
+
+			var dSeeker1 = new DummyCube(RigidBodyTypes.Dynamic);
+			dSeeker1.Position = new vec3(8, 3.0f, 6.0f);
+
+			var kSeeker1 = new DummyCube(RigidBodyTypes.Kinematic);
+			kSeeker1.Position = new vec3(9, 3.0f, 4.5f);
+
+			var dSeeker2 = new DummyCube(RigidBodyTypes.Dynamic);
+			dSeeker2.Position = new vec3(10, 3.0f, 3.0f);
+
+			var kSeeker2 = new DummyCube(RigidBodyTypes.Kinematic);
+			kSeeker2.Position = new vec3(11, 3.0f, 1.5f);
+
+			var dSeeker3 = new DummyCube(RigidBodyTypes.Dynamic);
+			dSeeker3.Position = new vec3(12, 3.0f, 0.0f);
+
+			var kSeeker3 = new DummyCube(RigidBodyTypes.Kinematic);
+			kSeeker3.Position = new vec3(13, 3.0f, -1.5f);
 
 			scene = new Scene
 			{
@@ -145,11 +184,24 @@ namespace Zeldo
 
 			scene.LoadFragment("Triangle.json");
 
+			// Add target cubes.
+			scene.Add(dTarget1);
+			scene.Add(dTarget2);
+			scene.Add(kTarget1);
+			scene.Add(kTarget2);
+			scene.Add(sTarget1);
+			scene.Add(sTarget2);
+
+			// Add seeker cubes.
+			scene.Add(dSeeker1);
+			scene.Add(kSeeker1);
+			scene.Add(dSeeker2);
+			scene.Add(kSeeker2);
+			scene.Add(dSeeker3);
+			scene.Add(kSeeker3);
+
 			MasterRenderer3D renderer = scene.Renderer;
 			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.35f, -0.7f));
-
-			Bow bow = new Bow();
-			bow.Initialize(scene, null);
 
 			Player player = new Player
 			{
@@ -158,12 +210,10 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
-			player.Position = new vec3(2, 20, -2);
-			//player.Attach(new RunController());
+			player.Position = new vec3(1.5f, 3.0f, -3.5f);
 
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
-			player.Equip(bow);
 
 			ControlSettings settings = new ControlSettings();
 			settings.MouseSensitivity = 50;
@@ -171,6 +221,7 @@ namespace Zeldo
 			camera.Attach(new FollowController(player, settings));
 
 			scene.Add(player);
+			player.ControllingBody.AffectedByGravity = false;
 			//scene.LoadFragment("Demo.json");
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
@@ -182,6 +233,21 @@ namespace Zeldo
 			MessageSystem.Subscribe(this, CoreMessageTypes.Keyboard, (messageType, data, dt) =>
 			{
 				ProcessKeyboard((KeyboardData)data);
+
+				var kbData = (KeyboardData)data;
+
+				if (kbData.Query(GLFW_KEY_P, InputStates.PressedThisFrame))
+				{
+					// Apply velocities to seeker cubes.
+					var v = new JVector(-2.5f, 0, 0);
+
+					dSeeker1.ControllingBody.LinearVelocity = v;
+					kSeeker1.ControllingBody.LinearVelocity = v;
+					dSeeker2.ControllingBody.LinearVelocity = v;
+					kSeeker2.ControllingBody.LinearVelocity = v;
+					dSeeker3.ControllingBody.LinearVelocity = v;
+					kSeeker3.ControllingBody.LinearVelocity = v;
+				}
 			});
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) =>

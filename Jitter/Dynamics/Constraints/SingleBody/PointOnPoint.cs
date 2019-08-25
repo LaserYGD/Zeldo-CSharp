@@ -109,7 +109,8 @@ namespace Jitter.Dynamics.Constraints.SingleBody
 
             bias = deltaLength * biasFactor * (1.0f / timestep);
 
-            if (!body1.isStatic)
+	        // CUSTOM: Modified to use the IsStatic property (plus the condition below).
+			if (!body1.IsStatic)
             {
                 body1.linearVelocity += body1.inverseMass * accumulatedImpulse * jacobian[0];
                 body1.angularVelocity += JVector.Transform(accumulatedImpulse * jacobian[1], body1.invInertiaWorld);
@@ -131,7 +132,8 @@ namespace Jitter.Dynamics.Constraints.SingleBody
 
             accumulatedImpulse += lambda;
 
-            if (!body1.isStatic)
+	        // CUSTOM: Modified to use the IsStatic property (plus the condition below).
+			if (!body1.IsStatic)
             {
                 body1.linearVelocity += body1.inverseMass * lambda * jacobian[0];
                 body1.angularVelocity += JVector.Transform(lambda * jacobian[1], body1.invInertiaWorld);

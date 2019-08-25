@@ -105,7 +105,7 @@ namespace Engine.Graphics._3D
 			Buffer(points, color, GL_LINES, indices);
 		}
 
-		public void Draw(float radius, vec3 center, quat orientation, Color color, int segments)
+		public void DrawCircle(float radius, vec3 center, quat orientation, Color color, int segments)
 		{
 			vec3[] points = new vec3[segments];
 

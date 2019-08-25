@@ -82,6 +82,7 @@
     <Compile Include="Dynamics\Material.cs" />
     <Compile Include="Dynamics\RigidBody.cs" />
     <Compile Include="Collision\DynamicTree.cs" />
+    <Compile Include="Dynamics\RigidBodyTypes.cs" />
     <Compile Include="IDebugDraw.cs" />
     <Compile Include="LinearMath\JBBox.cs" />
     <Compile Include="LinearMath\JConvexHull.cs" />

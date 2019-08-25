@@ -622,7 +622,7 @@ namespace Jitter
             sw.Stop(); debugTimes[(int)DebugType.Integrate] = sw.Elapsed.TotalMilliseconds;
 
             sw.Reset(); sw.Start();
-            foreach (RigidBody body in rigidBodies) body.PostStep(timestep);
+	        foreach (RigidBody body in rigidBodies) body.PostStep(timestep);
             events.RaiseWorldPostStep(timestep);
             sw.Stop(); debugTimes[(int)DebugType.PostStep] = sw.Elapsed.TotalMilliseconds;
 #endif
@@ -786,7 +786,7 @@ namespace Jitter
         {
             foreach (RigidBody body in rigidBodies)
             {
-                if (!body.isStatic && body.IsActive)
+                if (!body.IsStatic && body.IsActive)
                 {
                     JVector temp;
                     JVector.Multiply(ref body.force, body.inverseMass * timestep, out temp);
@@ -869,7 +869,12 @@ namespace Jitter
             {
                 foreach (RigidBody body in rigidBodies)
                 {
-                    if (body.isStatic || !body.IsActive) continue;
+					// CUSTOM: Modified to use the IsStatic property.
+	                if (body.IsStatic || !body.IsActive)
+	                {
+		                continue;
+	                }
+
                     threadManager.AddTask(integrateCallback, body);
                 }
 
@@ -878,8 +883,13 @@ namespace Jitter
             else
             {
                 foreach (RigidBody body in rigidBodies)
-                {
-                    if (body.isStatic || !body.IsActive) continue;
+				{
+					// CUSTOM: Modified to use the IsStatic property.
+					if (body.IsStatic || !body.IsActive)
+	                {
+		                continue;
+	                }
+
                     integrateCallback(body);
                 }
             }

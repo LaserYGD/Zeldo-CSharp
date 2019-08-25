@@ -156,11 +156,11 @@ namespace Zeldo.Entities.Core
 			return sensor;
 		}
 
-		protected RigidBody CreateRigidBody(Scene scene, Shape shape, bool isControlling = true, bool isStatic = false,
-			vec3? position = null, quat? orientation = null)
+		protected RigidBody CreateRigidBody(Scene scene, Shape shape, RigidBodyTypes bodyType = RigidBodyTypes.Dynamic,
+			bool isControlling = true, vec3? position = null, quat? orientation = null)
 		{
 			RigidBody body = new RigidBody(shape);
-			body.IsStatic = isStatic;
+			body.BodyType = bodyType;
 			body.Tag = this;
 
             // Note that the controlling body is intentionally not attached as a regular attachment. Doing so would

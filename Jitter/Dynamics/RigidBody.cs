@@ -64,7 +64,6 @@ namespace Jitter.Dynamics
         internal float inactiveTime = 0.0f;
 
         internal bool isActive = true;
-        internal bool isStatic = false;
         internal bool affectedByGravity = true;
 
         internal CollisionIsland island;
@@ -73,6 +72,9 @@ namespace Jitter.Dynamics
         internal JVector force, torque;
 
         private int hashCode;
+
+		// CUSTOM: Added to support kinematic bodies.
+	    private RigidBodyTypes bodyType;
 
         internal int internalIndex = 0;
 
@@ -258,8 +260,11 @@ namespace Jitter.Dynamics
         /// <param name="impulse">Impulse direction and magnitude.</param>
         public void ApplyImpulse(JVector impulse)
         {
-            if (this.isStatic)
-                throw new InvalidOperationException("Can't apply an impulse to a static body.");
+			// CUSTOM: Modified to use body type.
+	        if (bodyType == RigidBodyTypes.Static)
+	        {
+		        throw new InvalidOperationException("Can't apply an impulse to a static body.");
+			}
 
             JVector temp;
             JVector.Multiply(ref impulse, inverseMass, out temp);
@@ -275,8 +280,11 @@ namespace Jitter.Dynamics
         /// in Body coordinate frame.</param>
         public void ApplyImpulse(JVector impulse, JVector relativePosition)
         {
-            if (this.isStatic)
-                throw new InvalidOperationException("Can't apply an impulse to a static body.");
+			// CUSTOM: Modified to use body type.
+	        if (bodyType == RigidBodyTypes.Static)
+	        {
+		        throw new InvalidOperationException("Can't apply an impulse to a static body.");
+			}
 
             JVector temp;
             JVector.Multiply(ref impulse, inverseMass, out temp);
@@ -437,12 +445,16 @@ namespace Jitter.Dynamics
         /// </summary>
         public JVector LinearVelocity
         {
-            get { return linearVelocity; }
-            set 
-            { 
-                if (this.isStatic) 
-                    throw new InvalidOperationException("Can't set a velocity to a static body.");
-                linearVelocity = value;
+			// CUSTOM: Modified to use body type.
+            get => linearVelocity;
+	        set 
+            {
+	            if (bodyType == RigidBodyTypes.Static)
+	            {
+		            throw new InvalidOperationException("Can't set a velocity to a static body.");
+				}
+
+	            linearVelocity = value;
             }
         }
 
@@ -452,12 +464,16 @@ namespace Jitter.Dynamics
         /// </summary>
         public JVector AngularVelocity
         {
-            get { return angularVelocity; }
-            set
+            get => angularVelocity;
+	        set
             {
-                if (this.isStatic)
-                    throw new InvalidOperationException("Can't set a velocity to a static body.");
-                angularVelocity = value;
+				// CUSTOM: Modified to use body type.
+	            if (bodyType == RigidBodyTypes.Static)
+	            {
+		            throw new InvalidOperationException("Can't set a velocity to a static body.");
+				}
+
+	            angularVelocity = value;
             }
         }
 
@@ -484,25 +500,45 @@ namespace Jitter.Dynamics
         /// </summary>
         public bool IsStatic
         {
-            get
+			// CUSTOM: Modified to use body type.
+            get => bodyType == RigidBodyTypes.Static;
+	        set
             {
-                return isStatic;
-            }
-            set
-            {
-                if (value && !isStatic)
+                if (value && bodyType != RigidBodyTypes.Static)
                 {
-                    if(island != null)
-                    island.islandManager.MakeBodyStatic(this);
+	                island?.islandManager.MakeBodyStatic(this);
 
-                    this.angularVelocity.MakeZero();
-                    this.linearVelocity.MakeZero();
+	                angularVelocity.MakeZero();
+                    linearVelocity.MakeZero();
                 }
-                isStatic = value;
+
+	            bodyType = RigidBodyTypes.Static;
             }
         }
 
+		// CUSTOM: Added to accommodate kinematic bodies.
+	    public bool IsDynamic
+	    {
+		    get => bodyType == RigidBodyTypes.Dynamic;
+		    set
+			{
+				// TODO: Finish this block (since changing body type affects other things).
+				bodyType = RigidBodyTypes.Dynamic;
+		    }
+	    }
+
         public bool AffectedByGravity { get { return affectedByGravity; } set { affectedByGravity = value; } }
+
+	    // CUSTOM: Added to accommodate kinematic bodies.
+		public RigidBodyTypes BodyType
+	    {
+		    get => bodyType;
+		    set
+		    {
+				// TODO: Finish this block (since changing body type affects other things).
+			    bodyType = value;
+		    }
+	    }
 
         /// <summary>
         /// The inverse inertia tensor in world space.
@@ -599,8 +635,8 @@ namespace Jitter.Dynamics
                 JVector.Add(ref boundingBox.Min, ref this.position, out boundingBox.Min);
                 JVector.Add(ref boundingBox.Max, ref this.position, out boundingBox.Max);
 
-
-                if (!isStatic)
+				// CUSTOM: Modified to use body type.
+                if (bodyType != RigidBodyTypes.Static)
                 {
                     JMatrix.Multiply(ref invOrientation, ref invInertia, out invInertiaWorld);
                     JMatrix.Multiply(ref invInertiaWorld, ref orientation, out invInertiaWorld);
@@ -622,24 +658,18 @@ namespace Jitter.Dynamics
 
         public int BroadphaseTag { get; set; }
 
-
         public virtual void PreStep(float timestep)
         {
-            //
         }
 
-        public virtual void PostStep(float timestep)
-        {
-            //
-        }
+	    public virtual void PostStep(float timestep)
+	    {
+	    }
 
+		// CUSTOM: Modified to use body type.
+		public bool IsStaticOrInactive => !isActive || bodyType == RigidBodyTypes.Static;
 
-        public bool IsStaticOrInactive
-        {
-            get { return (!this.isActive || this.isStatic); }
-        }
-
-        private bool enableDebugDraw = false;
+	    private bool enableDebugDraw = false;
         public bool EnableDebugDraw
         {
             get { return enableDebugDraw; }
