@@ -85,7 +85,7 @@ namespace Zeldo.Entities
 			Height = capsuleHeight + capsuleRadius * 2;
 
 			CreateModel(scene, "Capsule.obj");
-			CreateRigidBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius), RigidBodyTypes.Kinematic);
+			CreateKinematicBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius));
 
 			//sensor = CreateSensor(scene, groundShape, SensorUsages.Hitbox | SensorUsages.Interaction, Height);
 			//CreateSensor(scene, new Point(), SensorUsages.Control, 1, null, -0.75f);
@@ -95,6 +95,14 @@ namespace Zeldo.Entities
 
 		public override void OnCollision(vec3 p, vec3 normal, vec3[] triangle)
 		{
+			// This fixes a "fake" collision that occurs when the player jumps and separates from a surface.
+			// TODO: If the surface is a moving platform, the body's Y velocity will need to be compared against the platform.
+			// TODO: This fake collision might be due to using capsules on a slope (such that it technically intersects the surface a bit when set by bottom point).
+			if (!onGround && Utilities.Dot(normal, vec3.UnitY) > 0 && controllingBody.LinearVelocity.Y > 0)
+			{
+				return;
+			}
+
 			var surface = new SurfaceTriangle(triangle, normal, 0);
 
 			// TODO: Process running into walls while grounded.
@@ -135,7 +143,6 @@ namespace Zeldo.Entities
 			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
 			controller.OnLanding(p, surface);
 			controllingBody.AffectedByGravity = false;
-			controllingBody.IgnoreTriangleMeshCollisions = true;
 
 			OnSurfaceTransition(surface);
 		}
@@ -159,13 +166,12 @@ namespace Zeldo.Entities
 			onGround = false;
 			skillsEnabled[JumpIndex] = false;
 			State = PlayerStates.Jumping;
-
-			var v = controllingBody.LinearVelocity;
-			controllingBody.LinearVelocity = new JVector(v.X, playerData.JumpSpeed, v.Y);
+			
+			// On jump, the controlling body inherits surface velocity.
+			controllingBody.LinearVelocity = new JVector(SurfaceVelocity.x, playerData.JumpSpeed, SurfaceVelocity.z);
 			controllingBody.AffectedByGravity = true;
-			controllingBody.IgnoreTriangleMeshCollisions = true;
 
-			Attach(new AirController(this));
+			// TODO: Consider attaching a new controller here (might be better to keep both aerial and ground movement in the same class).
 		}
 
 		public void LimitJump()

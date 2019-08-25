@@ -22,6 +22,7 @@ using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
+using Zeldo.Physics;
 using Zeldo.Sensors;
 using Zeldo.Settings;
 using Zeldo.State;
@@ -36,9 +37,6 @@ namespace Zeldo
 {
 	public class MainGame : Game, IReceiver
 	{
-		private const float PhysicsStep = 1 / 120f;
-		private const int PhysicsMaxSteps = 8;
-
 		// This is temporary for kinematic physics testing.
 		private const bool CreateDemoCubes = false;
 
@@ -133,6 +131,8 @@ namespace Zeldo
 			};
 
 			world = new World(system);
+			
+			// TODO: Should damping factors be left in their default states? (they were changed while adding kinematic bodies)
 			world.SetDampingFactors(1, 1);
 			space = new Space();
 			spaceVisualizer = new SpaceVisualizer(camera, space);
@@ -337,7 +337,7 @@ namespace Zeldo
 
 		protected override void Update(float dt)
 		{
-			world.Step(dt, true, PhysicsStep, PhysicsMaxSteps);
+			world.Step(dt, true, PhysicsConstants.Step, PhysicsConstants.MaxSteps);
 			space.Update();
 			scene.Update(dt);
 			camera.Update(dt);

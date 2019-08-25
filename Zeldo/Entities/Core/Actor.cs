@@ -1,5 +1,7 @@
 ﻿using Engine.Physics;
 using GlmSharp;
+using Jitter.Collision.Shapes;
+using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Control;
 
@@ -16,8 +18,8 @@ namespace Zeldo.Entities.Core
 		protected Actor(EntityGroups group) : base(group)
 		{
 		}
-
-		// This value is accessed by the ground surface controller.
+		
+		// TODO: This could probably be protected rather than public.
 		public float Height
 		{
 			get => halfHeight * 2;
@@ -55,17 +57,38 @@ namespace Zeldo.Entities.Core
 		// body's velocity can't be easily reused because it'd constantly be affected by the physics engine.
 		public vec3 SurfaceVelocity { get; set; }
 
+		// This is used by external controllers.
+		public bool OnGround => onGround;
+
+		protected void CreateKinematicBody(Scene scene, Shape shape)
+		{
+			var body = CreateRigidBody(scene, shape, RigidBodyTypes.Kinematic);
+			body.ShouldIgnore = ShouldIgnore;
+		}
+
+		protected virtual bool ShouldIgnore(RigidBody other)
+		{
+			// TODO: Handle other surfaces as well (i.e. walls rather than just the ground).
+			// Actors ignore collisions with the static world mesh while grounded (or otherwise on a surface).
+			return onGround && other.Shape is TriangleMeshShape;
+		}
+
 		// This function should be used when the actor is on a controlled surface (such as the ground or a wall).
 		// While on a surface, the kinematic body is controlled using computed velocity rather than a direct position
 		// set.
-		public void SetSurfacePosition(vec3 p, float dt)
+		// TODO: If delta time isn't needed, this could be merged back into the main Position property.
+		public void SetSurfacePosition(vec3 p)
 		{
-			// Using the base version ensures that the body's position isn't set directly.
-			base.Position = p;
+			vec3 midPosition = p + new vec3(0, Height / 2, 0);
 
-			// JVector doesn't have a divide function (which is why conversions happen both ways here)
-			//controllingBody.LinearVelocity = ((p - controllingBody.Position.ToVec3()) / dt).ToJVector();
-			controllingBody.LinearVelocity = (p - controllingBody.Position.ToVec3()).ToJVector();
+			// Using the base version ensures that the body's position isn't set directly.
+			// TODO: Consider using an epsilon to determine whether the new position is different from the old one (optimization to avoid recomputing attachments).
+			base.Position = midPosition;
+
+			// JVector doesn't have a divide function (which is why conversions happen both ways here).
+			// TODO: Is a divide by dt needed here? With that division, velocities felt wrong.
+			//controllingBody.LinearVelocity = ((midPosition - controllingBody.Position.ToVec3()) / dt).ToJVector();
+			controllingBody.LinearVelocity = (midPosition - controllingBody.Position.ToVec3()).ToJVector();
 		}
 
 		public void Attach(CharacterController controller, bool shouldComputeImmediately = false)

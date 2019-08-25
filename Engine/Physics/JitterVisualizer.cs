@@ -23,7 +23,7 @@ namespace Engine.Physics
 		{
 			this.world = world;
 
-			primitives = new PrimitiveRenderer3D(camera, 10000, 1000);
+			primitives = new PrimitiveRenderer3D(camera, 30000, 3000);
 		}
 
 		public bool IsEnabled { get; set; }

@@ -10,6 +10,7 @@ using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
+using Jitter.LinearMath;
 using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
 using Zeldo.View;
@@ -72,7 +73,9 @@ namespace Zeldo.Entities
 			ActiveSurface.Project(p, out vec3 result);
 
 			// The player's onGround flag is set to true before this function is called.
-			player.Position = result;
+			// TODO: Consider using the SetSurfacePosition function instead (would require passing delta time) to make sure the kinematic body always works.
+			player.Position = result + new vec3(0, player.Height / 2, 0);
+			//player.SetSurfacePosition(result);
 			jumpBindUsed = null;
 		}
 
@@ -93,8 +96,8 @@ namespace Zeldo.Entities
 
 		private void ProcessRunning(FullInputData data, float dt)
 		{
-			// TODO: While airborne, a different controller should be used, meaning that this check shouldn't be needed (since the controller will only be enabled while the player is grounded).
-			if (ActiveSurface == null)
+			// This assumes that if the player is grounded, an active surface will be set.
+			if (!player.OnGround)
 			{
 				return;
 			}
@@ -135,8 +138,16 @@ namespace Zeldo.Entities
 			*/
 
 			vec3 v = AdjustRunningVelocity(flatDirection, dt);
-
 			player.SurfaceVelocity = v;
+
+			if (v == vec3.Zero)
+			{
+				player.SetSurfacePosition(p);
+
+				// This prevents very slow drift when standing still on sloped surfaces.
+				return;
+			}
+
 			p += v * dt;
 
 			// The player's position is always set at the bottom of this function. If this function return true, that
@@ -163,7 +174,7 @@ namespace Zeldo.Entities
 			// behavior when very close to a triangle's edge. In theory, this failsafe shouldn't be needed (assuming a
 			// seamlessly interconnected map without gaps in the geometry), but it's safer to keep it (plus the fix
 			// shouldn't be tiny and unnoticeable anyway).
-			player.SetSurfacePosition(result + halfHeight, dt);
+			player.SetSurfacePosition(result);
 		}
 
 		private vec3 AdjustRunningVelocity(vec2 flatDirection, float dt)
@@ -173,6 +184,12 @@ namespace Zeldo.Entities
 			// Decleration.
 			if (flatDirection == vec2.Zero)
 			{
+				// The player is already stopped (and not accelerating).
+				if (v == vec3.Zero)
+				{
+					return v;
+				}
+
 				// This assumes the player isn't moving exactly vertically (which shouldn't be possible since the
 				// player can't run on walls).
 				int oldSign = Math.Sign(v.x != 0 ? v.x : v.y);

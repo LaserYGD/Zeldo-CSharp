@@ -8,11 +8,7 @@ namespace Zeldo.Physics
 {
 	public static class PhysicsConstants
 	{
-		static PhysicsConstants()
-		{
-			WallRange = 0.2f;
-		}
-
-		public static float WallRange { get; }
+		public const float Step = 1f / 120;
+		public const int MaxSteps = 8;
 	}
 }

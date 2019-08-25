@@ -516,8 +516,8 @@ namespace Jitter.Dynamics
             }
         }
 
-		// CUSTOM: Added to accommodate actor movement using kinematic bodies.
-	    public bool IgnoreTriangleMeshCollisions { get; set; }
+		// CUSTOM: Added to accommodate actor movement using kinematic bodies. Returning true negates the collision.
+	    public Func<RigidBody, bool> ShouldIgnore { get; set; }
 
         public bool AffectedByGravity { get { return affectedByGravity; } set { affectedByGravity = value; } }
 
