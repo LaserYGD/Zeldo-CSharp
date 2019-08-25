@@ -160,9 +160,14 @@ namespace Zeldo.Entities
 				flatDirection *= SqrtTwo;
 			}
 
+			// TODO: Make a decision about whether to keep sliding in the game in some form.
+			/*
 			vec3 v = player.State == PlayerStates.Sliding
 				? AdjustSlidingVelocity(flatDirection, dt)
 				: AdjustRunningVelocity(flatDirection, dt);
+			*/
+
+			vec3 v = AdjustRunningVelocity(flatDirection, dt);
 
 			player.SurfaceVelocity = v;
 			p += v * dt;
@@ -170,7 +175,7 @@ namespace Zeldo.Entities
 			// This player is still within the triangle.
 			if (ActiveSurface.Project(p, out vec3 result))
 			{
-				player.Position = result;
+				player.SetSurfacePosition(result, dt);
 
 				return;
 			}
@@ -186,7 +191,7 @@ namespace Zeldo.Entities
 				ActiveSurface = new SurfaceTriangle(results.Triangle, results.Normal, 0);
 				ActiveSurface.Project(results.Position, out result);
 
-				player.Position = result;
+				player.SetSurfacePosition(result, dt);
 				player.OnSurfaceTransition(ActiveSurface);
 			}
 			else
@@ -194,7 +199,7 @@ namespace Zeldo.Entities
 				// This is a failsafe to account for potential weird behavior when very close to a triangle's edge. In
 				// theory, this case shouldn't be hit very often (assuming a seamlessly interconnected map without gaps
 				// in the geometry).
-				player.Position = result;
+				player.SetSurfacePosition(result, dt);
 			}
 		}
 

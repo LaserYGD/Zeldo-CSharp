@@ -25,7 +25,7 @@ namespace Zeldo.Entities
 			CreateModel(scene, "Cube.obj");
 
 			var body = CreateRigidBody(scene, new BoxShape(new JVector(1)), bodyType);
-			body.AffectedByGravity = false;
+			//body.AffectedByGravity = false;
 		}
 	}
 }

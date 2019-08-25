@@ -70,16 +70,27 @@ namespace Engine.Physics
 
 			Color color = Color.White;
 
-			switch (body.BodyType)
+			// This helps with visually debugging code related to kinematic bodies.
+			if (!body.IsActive)
 			{
-				case RigidBodyTypes.Dynamic: color = Color.Red;
-					break;
+				color = new Color(150);
+			}
+			else
+			{
+				switch (body.BodyType)
+				{
+					case RigidBodyTypes.Dynamic:
+						color = Color.Red;
+						break;
 
-				case RigidBodyTypes.Kinematic: color = Color.Green;
-					break;
+					case RigidBodyTypes.Kinematic:
+						color = Color.Green;
+						break;
 
-				case RigidBodyTypes.Static: color = Color.Yellow;
-					break;
+					case RigidBodyTypes.Static:
+						color = Color.Yellow;
+						break;
+				}
 			}
 
 			primitives.Draw(box, color);

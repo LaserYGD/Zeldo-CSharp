@@ -53,6 +53,18 @@ namespace Zeldo.Entities.Core
 		// body's velocity can't be easily reused because it'd constantly be affected by the physics engine.
 		public vec3 SurfaceVelocity { get; set; }
 
+		// This function should be used when the actor is on a controlled surface (such as the ground or a wall).
+		// While on a surface, the kinematic body is controlled using computed velocity rather than a direct position
+		// set.
+		public void SetSurfacePosition(vec3 p, float dt)
+		{
+			// Using the base version ensures that the body's position isn't set directly.
+			base.Position = p;
+
+			// JVector doesn't have a divide function (which is why conversions happen both ways here)
+			controllingBody.LinearVelocity = ((p - controllingBody.Position.ToVec3()) / dt).ToJVector();
+		}
+
 		public void Attach(CharacterController controller, bool shouldComputeImmediately = false)
 		{
 			this.controller = controller;

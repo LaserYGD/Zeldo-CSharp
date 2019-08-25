@@ -138,6 +138,7 @@ namespace Zeldo
 			spaceVisualizer = new SpaceVisualizer(camera, space);
 			
 			// Create testing cubes.
+			/*
 			var dTarget1 = new DummyCube(RigidBodyTypes.Dynamic);
 			dTarget1.Position = new vec3(0, 2.5f, 6.0f);
 
@@ -173,6 +174,7 @@ namespace Zeldo
 
 			var kSeeker3 = new DummyCube(RigidBodyTypes.Kinematic);
 			kSeeker3.Position = new vec3(13, 3.0f, -1.5f);
+			*/
 
 			scene = new Scene
 			{
@@ -185,6 +187,7 @@ namespace Zeldo
 			scene.LoadFragment("Triangle.json");
 
 			// Add target cubes.
+			/*
 			scene.Add(dTarget1);
 			scene.Add(dTarget2);
 			scene.Add(kTarget1);
@@ -199,6 +202,12 @@ namespace Zeldo
 			scene.Add(kSeeker2);
 			scene.Add(dSeeker3);
 			scene.Add(kSeeker3);
+			*/
+
+			var cube = new DummyCube(RigidBodyTypes.Dynamic);
+			cube.Position = new vec3(0, 2, 0);
+
+			scene.Add(cube);
 
 			MasterRenderer3D renderer = scene.Renderer;
 			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.35f, -0.7f));
@@ -210,8 +219,7 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
-			player.Position = new vec3(1.5f, 3.0f, -3.5f);
-
+			player.Position = new vec3(2, 1.5f, -2);
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 
@@ -221,7 +229,6 @@ namespace Zeldo
 			camera.Attach(new FollowController(player, settings));
 
 			scene.Add(player);
-			player.ControllingBody.AffectedByGravity = false;
 			//scene.LoadFragment("Demo.json");
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
@@ -234,6 +241,7 @@ namespace Zeldo
 			{
 				ProcessKeyboard((KeyboardData)data);
 
+				/*
 				var kbData = (KeyboardData)data;
 
 				if (kbData.Query(GLFW_KEY_P, InputStates.PressedThisFrame))
@@ -248,6 +256,7 @@ namespace Zeldo
 					dSeeker3.ControllingBody.LinearVelocity = v;
 					kSeeker3.ControllingBody.LinearVelocity = v;
 				}
+				*/
 			});
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) =>
