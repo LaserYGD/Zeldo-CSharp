@@ -516,16 +516,8 @@ namespace Jitter.Dynamics
             }
         }
 
-		// CUSTOM: Added to accommodate kinematic bodies.
-	    public bool IsDynamic
-	    {
-		    get => bodyType == RigidBodyTypes.Dynamic;
-		    set
-			{
-				// TODO: Finish this block (since changing body type affects other things).
-				bodyType = RigidBodyTypes.Dynamic;
-		    }
-	    }
+		// CUSTOM: Added to accommodate actor movement using kinematic bodies.
+	    public bool IgnoreTriangleMeshCollisions { get; set; }
 
         public bool AffectedByGravity { get { return affectedByGravity; } set { affectedByGravity = value; } }
 

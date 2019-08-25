@@ -373,6 +373,12 @@ namespace Jitter.Collision
                 if (body2.Shape is Multishape) { b1 = body2; b2 = body1; }
                 else { b2 = body2; b1 = body1; }
 
+				// CUSTOM: Added to help with actor movement on mesh surfaces.
+	            if (b1.Shape is TriangleMeshShape && b2.IgnoreTriangleMeshCollisions)
+	            {
+		            return;
+	            }
+
                 Multishape ms = (b1.Shape as Multishape);
 
                 ms = ms.RequestWorkingClone();

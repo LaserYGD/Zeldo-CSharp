@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Jitter.Collision.Shapes;
+﻿using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;

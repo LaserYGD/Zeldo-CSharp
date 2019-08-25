@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Engine;
-using Engine.Core;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
 using Engine.Graphics._3D;
@@ -20,11 +20,8 @@ using Jitter;
 using Jitter.Collision;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
-using Zeldo.Control;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
-using Zeldo.Entities.Weapons;
-using Zeldo.Physics;
 using Zeldo.Sensors;
 using Zeldo.Settings;
 using Zeldo.State;
@@ -43,7 +40,7 @@ namespace Zeldo
 		private const int PhysicsMaxSteps = 8;
 
 		// This is temporary for kinematic physics testing.
-		private const bool CreateDebugCubes = false;
+		private const bool CreateDemoCubes = false;
 
 		private Gamestates currentState;
 		private Gamestates nextState;
@@ -139,11 +136,21 @@ namespace Zeldo
 			world.SetDampingFactors(1, 1);
 			space = new Space();
 			spaceVisualizer = new SpaceVisualizer(camera, space);
-			
+
+			scene = new Scene
+			{
+				Camera = camera,
+				Canvas = canvas,
+				Space = space,
+				World = world
+			};
+
+			scene.LoadFragment("Triangle.json");
+
 			// Create testing cubes.
 			var seekers = new List<DummyCube>();
 
-			if (CreateDebugCubes)
+			if (CreateDemoCubes)
 			{
 				var dTarget1 = new DummyCube(RigidBodyTypes.Dynamic);
 				dTarget1.Position = new vec3(0, 2.5f, 6.0f);
@@ -205,23 +212,25 @@ namespace Zeldo
 				seekers.Add(dSeeker3);
 				seekers.Add(kSeeker3);
 			}
-
-			scene = new Scene
+			else
 			{
-				Camera = camera,
-				Canvas = canvas,
-				Space = space,
-				World = world
-			};
+				const float XRange = 8;
+				const float YRange = 4;
+				const float ZRange = 8;
 
-			scene.LoadFragment("Triangle.json");
+				Random random = new Random();
 
-			if (!CreateDebugCubes)
-			{
-				var cube = new DummyCube(RigidBodyTypes.Dynamic);
-				cube.Position = new vec3(0, 2, 0);
+				for (int i = 0; i < 10; i++)
+				{
+					float x = (float)random.NextDouble() * XRange - XRange / 2;
+					float y = (float)random.NextDouble() * YRange + 2;
+					float z = (float)random.NextDouble() * ZRange - ZRange / 2;
 
-				scene.Add(cube);
+					var cube = new DummyCube(RigidBodyTypes.Dynamic);
+					cube.Position = new vec3(x, y, z);
+
+					scene.Add(cube);
+				}
 			}
 
 			MasterRenderer3D renderer = scene.Renderer;
@@ -234,7 +243,7 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
-			player.Position = new vec3(2, 1.5f, -2);
+			player.Position = CreateDemoCubes ? new vec3(2, 3, -3.5f) : new vec3(2, 30, -2);
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 
@@ -256,7 +265,7 @@ namespace Zeldo
 			{
 				ProcessKeyboard((KeyboardData)data);
 
-				if (CreateDebugCubes)
+				if (CreateDemoCubes)
 				{
 					var kbData = (KeyboardData)data;
 

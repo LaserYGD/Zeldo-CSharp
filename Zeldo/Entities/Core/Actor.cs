@@ -17,7 +17,8 @@ namespace Zeldo.Entities.Core
 		{
 		}
 
-		protected float Height
+		// This value is accessed by the ground surface controller.
+		public float Height
 		{
 			get => halfHeight * 2;
 			set => halfHeight = value / 2;
@@ -63,7 +64,8 @@ namespace Zeldo.Entities.Core
 			base.Position = p;
 
 			// JVector doesn't have a divide function (which is why conversions happen both ways here)
-			controllingBody.LinearVelocity = ((p - controllingBody.Position.ToVec3()) / dt).ToJVector();
+			//controllingBody.LinearVelocity = ((p - controllingBody.Position.ToVec3()) / dt).ToJVector();
+			controllingBody.LinearVelocity = (p - controllingBody.Position.ToVec3()).ToJVector();
 		}
 
 		public void Attach(CharacterController controller, bool shouldComputeImmediately = false)

@@ -213,9 +213,13 @@ namespace Jitter.Collision
                     islands.Add(newIsland);
                 }
             }
+
+			// CUSTOM: Modified this as well (to ensure that kinematic bodies can properly wake up dynamic bodies).
+	        bool shouldMerge = (isBody1Movable && isBody2Movable) || (int)type1 + (int)type2 == 1;
+
 			// Both are movable.
-            else
-            {
+            if (shouldMerge)
+			{
                 MergeIslands(body1, body2);
 
                 body1.connections.Add(body2);

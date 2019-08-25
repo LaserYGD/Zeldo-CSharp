@@ -135,6 +135,8 @@ namespace Zeldo.Entities
 			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
 			controller.OnLanding(p, surface);
 			controllingBody.AffectedByGravity = false;
+			controllingBody.IgnoreTriangleMeshCollisions = true;
+
 			OnSurfaceTransition(surface);
 		}
 
@@ -160,6 +162,8 @@ namespace Zeldo.Entities
 
 			var v = controllingBody.LinearVelocity;
 			controllingBody.LinearVelocity = new JVector(v.X, playerData.JumpSpeed, v.Y);
+			controllingBody.AffectedByGravity = true;
+			controllingBody.IgnoreTriangleMeshCollisions = true;
 
 			Attach(new AirController(this));
 		}

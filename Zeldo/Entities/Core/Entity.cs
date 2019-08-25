@@ -56,13 +56,13 @@ namespace Zeldo.Entities.Core
 				position = value;
 
 				// TODO: Adding unit Y is temporary for run testing (to render the model at a better position). Same applies to the body below. This should be handled properly later.
-				//attachments.ForEach(a => a.Target.Position = value + a.Position);
-				attachments.ForEach(a => a.Target.Position = value + a.Position + (tempOnGround ? vec3.UnitY : vec3.Zero));
+				attachments.ForEach(a => a.Target.Position = value + a.Position);
+				//attachments.ForEach(a => a.Target.Position = value + a.Position + (tempOnGround ? vec3.UnitY : vec3.Zero));
 
 			    if (controllingBody != null && !selfUpdate)
 			    {
-				   // controllingBody.Position = value.ToJVector();
-				    controllingBody.Position = (value + vec3.UnitY).ToJVector();
+					controllingBody.Position = value.ToJVector();
+				    //controllingBody.Position = (value + vec3.UnitY).ToJVector();
 			    }
 			}
 		}

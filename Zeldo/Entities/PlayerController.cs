@@ -91,40 +91,6 @@ namespace Zeldo.Entities
 			//ProcessInteraction(data);
 		}
 
-		/*
-		private void ProcessAttack(FullInputData data)
-		{
-			if (data.Query(controls.Attack, InputStates.PressedThisFrame, out InputBind bindUsed))
-			{
-				vec2 direction = vec2.Zero;
-
-				switch (bindUsed.InputType)
-				{
-					case InputTypes.Keyboard:
-						break;
-
-					case InputTypes.Mouse:
-						MouseData mouseData = (MouseData)data.GetData(InputTypes.Mouse);
-
-						vec4 projected = Scene.Camera.ViewProjection * new vec4(Position, 1);
-						vec2 halfWindow = Resolution.WindowDimensions / 2;
-						vec2 screenPosition = projected.swizzle.xy * halfWindow;
-
-						screenPosition.y *= -1;
-						screenPosition += halfWindow;
-						direction = (mouseData.Location - screenPosition).Normalized;
-
-						break;
-				}
-
-				float angle = Utilities.Angle(direction);
-
-				//sword.Attack(direction);
-				bow.PrimaryAttack(direction, angle);
-			}
-		}
-		*/
-
 		private void ProcessRunning(FullInputData data, float dt)
 		{
 			// TODO: While airborne, a different controller should be used, meaning that this check shouldn't be needed (since the controller will only be enabled while the player is grounded).
@@ -133,7 +99,8 @@ namespace Zeldo.Entities
 				return;
 			}
 
-			vec3 p = player.Position;
+			vec3 halfHeight = new vec3(0, player.Height / 2, 0);
+			vec3 p = player.Position - halfHeight;
 
 			bool forward = data.Query(controls.RunForward, InputStates.Held);
 			bool back = data.Query(controls.RunBack, InputStates.Held);
@@ -172,35 +139,31 @@ namespace Zeldo.Entities
 			player.SurfaceVelocity = v;
 			p += v * dt;
 
-			// This player is still within the triangle.
-			if (ActiveSurface.Project(p, out vec3 result))
+			// The player's position is always set at the bottom of this function. If this function return true, that
+			// means the player is still within the current triangle.
+			if (!ActiveSurface.Project(p, out vec3 result))
 			{
-				player.SetSurfacePosition(result, dt);
+				// TODO: Store a reference to the physics map separate (rather than querying the world every frame).
+				var world = player.Scene.World;
+				var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
+				var normal = ActiveSurface.Normal;
+				var results = PhysicsUtilities.Raycast(world, map, p + normal * 0.2f, -normal, 1);
 
-				return;
+				if (results?.Triangle != null)
+				{
+					ActiveSurface = new SurfaceTriangle(results.Triangle, results.Normal, 0);
+					ActiveSurface.Project(results.Position, out result);
+					
+					player.OnSurfaceTransition(ActiveSurface);
+				}
 			}
 
-			// TODO: Store a reference to the physics map separate (rather than querying the world every frame).
-			var world = player.Scene.World;
-			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
-			var normal = ActiveSurface.Normal;
-			var results = PhysicsUtilities.Raycast(world, map, p + normal * 0.2f, -normal, 1);
-
-			if (results?.Triangle != null)
-			{
-				ActiveSurface = new SurfaceTriangle(results.Triangle, results.Normal, 0);
-				ActiveSurface.Project(results.Position, out result);
-
-				player.SetSurfacePosition(result, dt);
-				player.OnSurfaceTransition(ActiveSurface);
-			}
-			else
-			{
-				// This is a failsafe to account for potential weird behavior when very close to a triangle's edge. In
-				// theory, this case shouldn't be hit very often (assuming a seamlessly interconnected map without gaps
-				// in the geometry).
-				player.SetSurfacePosition(result, dt);
-			}
+			// Note that this behavior can result in the player's position being set just outside the current triangle
+			// (even if the raycast didn't return another one). This is a failsafe to account for potential weird
+			// behavior when very close to a triangle's edge. In theory, this failsafe shouldn't be needed (assuming a
+			// seamlessly interconnected map without gaps in the geometry), but it's safer to keep it (plus the fix
+			// shouldn't be tiny and unnoticeable anyway).
+			player.SetSurfacePosition(result + halfHeight, dt);
 		}
 
 		private vec3 AdjustRunningVelocity(vec2 flatDirection, float dt)
