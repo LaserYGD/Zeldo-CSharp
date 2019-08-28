@@ -3,14 +3,14 @@ using Zeldo.Entities.Core;
 
 namespace Zeldo.Control
 {
-	public abstract class CharacterController : IDynamic
+	public abstract class AbstractController : IDynamic
 	{
-		protected CharacterController(Actor parent = null)
+		protected AbstractController(Actor parent)
 		{
 			Parent = parent;
 		}
 
-		public Actor Parent { get; set; }
+		protected Actor Parent { get;}
 
 		public abstract void Update(float dt);
 	}

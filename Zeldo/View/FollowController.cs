@@ -41,6 +41,11 @@ namespace Zeldo.View
 
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		public void Dispose()
+		{
+			MessageSystem.Unsubscribe(this);
+		}
+
 		public override void Initialize(Camera3D camera)
 		{
 			followDistance = Properties.GetFloat("view.follow.distance");
@@ -53,11 +58,6 @@ namespace Zeldo.View
 			camera.PerspectiveFov = Properties.GetFloat("camera.fov");
 
 			base.Initialize(camera);
-		}
-
-		public void Dispose()
-		{
-			MessageSystem.Unsubscribe(this);
 		}
 
 		private void ProcessInput(FullInputData data)
@@ -93,7 +93,10 @@ namespace Zeldo.View
 			{
 				yaw += Constants.TwoPi;
 			}
+		}
 
+		public override void Update()
+		{
 			quat aim = quat.FromAxisAngle(pitch, vec3.UnitX) * quat.FromAxisAngle(yaw, vec3.UnitY);
 			vec3 eye = player.Position + new vec3(0, 0, -followDistance) * aim;
 

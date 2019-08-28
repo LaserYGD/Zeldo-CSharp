@@ -74,11 +74,15 @@
 
 - Make sure enemies are varied (in terms of playstyle, but also visually so you don't just have a bunch of humanoids)
 
-- Minor tech to quickly increase downward movement (inspired by Dead Cell's quick downward stomp mechanic, but also Ori's stomp. Could get boring to just walk off a ledge and wait to fall without any means to better control your movement) => If it's a stomp, the transition from hitting the ground to regular movement needs to be smooth (maybe a button press just after the stomp that gives a quick boost in some direction?)
+- Minor tech to quickly increase downward movement (inspired by Dead Cell's quick downward stomp mechanic, but also Ori's stomp. Could get boring to just walk off a ledge and wait to fall without any means to better control your movement) => If it's a stomp, the transition from hitting the ground to regular movement needs to be smooth (maybe a button press just after the stomp that gives a quick boost in some direction?) => Feels un-smooth to have a stomp kill your horizontal momentum most of the time
 
+- Make sure the player can level up outside of the game as well as powering up in game (inspired by Joseph Anderson's video on Dragon's Dogma) => In other words, skills need depth and precision (including how they're chained together) so that, with practice, players can get better and faster and more efficient with damage
 
+- How are mistakes punished in various areas? (primarly platforming mistakes and combat mistakes, but also maybe inventory mistakes, like selling an important piece of gear) => Needs to be balanced properly to make the game challenging, but not ultra hard
 
+- Make sure that players, in addition to locations they're guided to by the main quest, can explore and discover cool places for themselves (and actually progress without too many locked doors punishing their curiosity) => Also inspired by Dragon's Dogma (where Joseph Anderson said he found cool places, but the front door was always locked until he reached the appropriate quest)
 
+- For AOE attacks (like boss explosions after a charge time), should display a dim circle (or sphere) that subtly shows its range
 
 
 

@@ -1,13 +1,10 @@
-﻿using System;
-using Engine.Utility;
-using GlmSharp;
-using Zeldo.Entities.Core;
+﻿using Zeldo.Entities.Core;
 
 namespace Zeldo.Control
 {
-	public class RunController : CharacterController
+	public class SurfaceController : AbstractController
 	{
-		public RunController(Actor parent = null) : base(parent)
+		public SurfaceController(Actor parent) : base(parent)
 		{
 		}
 

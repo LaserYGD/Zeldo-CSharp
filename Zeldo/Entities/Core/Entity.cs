@@ -46,8 +46,6 @@ namespace Zeldo.Entities.Core
 		public Scene Scene { get; protected set; }
 		public RigidBody ControllingBody => controllingBody;
 
-		protected bool tempOnGround;
-
 		public virtual vec3 Position
 		{
 			get => position;

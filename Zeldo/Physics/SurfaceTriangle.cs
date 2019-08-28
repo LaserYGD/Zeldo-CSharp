@@ -40,8 +40,12 @@ namespace Zeldo.Physics
 			Normal = normal;
 			Material = material;
 
+			// If the normal is exactly unit Y (i.e. the triangle is exactly flat), some computations below would
+			// result in NaN without correction.
+			bool isNormalUnitY = Normal == vec3.UnitY;
+
 			var angle = Utilities.Angle(Normal, vec3.UnitY);
-			var axis = Utilities.Cross(vec3.UnitY, Normal);
+			var axis = isNormalUnitY ? vec3.UnitY : Utilities.Cross(vec3.UnitY, Normal);
 			Axis = axis;
 
 			projectionQuat = quat.FromAxisAngle(angle, axis);
@@ -61,7 +65,9 @@ namespace Zeldo.Physics
 			// See https://stackoverflow.com/a/14382692/7281613.
 			doubleArea = -fp1.y * fp2.x + fp0.y * (-fp1.x + fp2.x) + fp0.x * (fp1.y - fp2.y) + fp1.x * fp2.y;
 
-			float theta = Constants.PiOverTwo - Utilities.Angle(new vec3(Normal.x, 0, Normal.z), Normal);
+			float theta = isNormalUnitY
+				? 0
+				: Constants.PiOverTwo - Utilities.Angle(new vec3(Normal.x, 0, Normal.z), Normal);
 
 			Slope = (float)Math.Sin(theta);
 		}

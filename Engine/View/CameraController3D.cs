@@ -15,8 +15,6 @@ namespace Engine.View
 			Camera = camera;
 		}
 
-		public virtual void Update()
-		{
-		}
+		public abstract void Update();
 	}
 }

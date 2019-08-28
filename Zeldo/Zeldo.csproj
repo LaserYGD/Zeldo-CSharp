@@ -211,10 +211,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterControlTester.cs" />
-    <Compile Include="Control\AirController.cs" />
-    <Compile Include="Control\CharacterController.cs" />
-    <Compile Include="Control\ControlHelper.cs" />
-    <Compile Include="Control\RunController.cs" />
+    <Compile Include="Control\AerialController.cs" />
+    <Compile Include="Control\AbstractController.cs" />
+    <Compile Include="Control\SurfaceController.cs" />
     <Compile Include="CustomMessageTypes.cs" />
     <Compile Include="Data\SaveSlot.cs" />
     <Compile Include="Data\TileFlags.cs" />

@@ -11,6 +11,7 @@ using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.LinearMath;
+using Zeldo.Control;
 using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
 using Zeldo.View;
@@ -36,6 +37,9 @@ namespace Zeldo.Entities
 		private PlayerData playerData;
 		private PlayerControls controls;
 
+		// Passing an array of controllers is easier than passing each one as a separate constructor argument.
+		private AbstractController[] controllers;
+
 		// Attacks use a short input buffering window in order to make chained attacks easier to execute.
 		private SingleTimer attackBuffer;
 
@@ -43,11 +47,13 @@ namespace Zeldo.Entities
 		// player can have multiple jump binds, though, this limit should only apply if the SAME bind was released.
 		private InputBind jumpBindUsed;
 
-		public PlayerController(Player player, PlayerData playerData, PlayerControls controls)
+		public PlayerController(Player player, PlayerData playerData, PlayerControls controls,
+			AbstractController[] controllers)
 		{
 			this.player = player;
 			this.playerData = playerData;
 			this.controls = controls;
+			this.controllers = controllers;
 
 			attackBuffer = new SingleTimer(time => { });
 			attackBuffer.Repeatable = true;
@@ -73,27 +79,66 @@ namespace Zeldo.Entities
 			ActiveSurface.Project(p, out vec3 result);
 
 			// The player's onGround flag is set to true before this function is called.
-			// TODO: Consider using the SetSurfacePosition function instead (would require passing delta time) to make sure the kinematic body always works.
-			player.Position = result + new vec3(0, player.Height / 2, 0);
-			//player.SetSurfacePosition(result);
+			player.SetSurfacePosition(result);
 			jumpBindUsed = null;
 		}
 
 		private void ProcessInput(FullInputData data, float dt)
 		{
-			ProcessRunning(data, dt);
+			vec2 flatDirection = ComputeFlatDirection(data);
 
-			// Ascension reuses the jump bind (since it's conceptually also an "up" action). That means that if an
-			// ascend was
+			if (player.OnGround)
+			{
+				// TODO: Replace this with usage of the surface controller.
+				ProcessRunning(data, dt);
+			}
+			else
+			{
+				((AerialController)controllers[Player.ControllerIndexes.Aerial]).FlatDirection = flatDirection;
+			}
+
+			// Ascension reuses the jump bind (since it's conceptually also an "up" action), but requires an additional
+			// button to be held. By checking for ascension first, the jump input can be stored and reused for jump
+			// processing even if that additional bind isn't held.
 			if (!ProcessAscend(data))
 			{
-				ProcessJumping(data);
+				ProcessJumping(data, dt);
 			}
 
 			ProcessAttack(data, dt);
 			//ProcessInteraction(data);
 		}
 
+		private vec2 ComputeFlatDirection(FullInputData data)
+		{
+			bool forward = data.Query(controls.RunForward, InputStates.Held);
+			bool back = data.Query(controls.RunBack, InputStates.Held);
+			bool left = data.Query(controls.RunLeft, InputStates.Held);
+			bool right = data.Query(controls.RunRight, InputStates.Held);
+
+			// "Flat" direction means the direction the player would run on flat ground. The actual movement direction
+			// depends on the current surface.
+			vec2 flatDirection = vec2.Zero;
+
+			if (forward ^ back)
+			{
+				flatDirection.y = forward ? 1 : -1;
+			}
+
+			if (left ^ right)
+			{
+				flatDirection.x = left ? 1 : -1;
+			}
+
+			// This normalizes the velocity when moving diagonally using a keyboard.
+			if ((forward ^ back) && (left ^ right))
+			{
+				flatDirection *= SqrtTwo;
+			}
+			
+			return Utilities.Rotate(flatDirection, FollowController.Yaw);
+		}
+		
 		private void ProcessRunning(FullInputData data, float dt)
 		{
 			// This assumes that if the player is grounded, an active surface will be set.
@@ -194,7 +239,7 @@ namespace Zeldo.Entities
 				// player can't run on walls).
 				int oldSign = Math.Sign(v.x != 0 ? v.x : v.y);
 
-				v -= Utilities.Normalize(v) * player.RunDeceleration * dt;
+				v -= Utilities.Normalize(v) * /*player.RunDeceleration*/ 50 * dt;
 
 				int newSign = Math.Sign(v.x != 0 ? v.x : v.y);
 
@@ -228,12 +273,12 @@ namespace Zeldo.Entities
 				sloped = Utilities.Normalize(new vec3(flatDirection.x, y, flatDirection.y));
 			}
 
-			v += sloped * player.RunAcceleration * dt;
+			v += sloped * /*player.RunAcceleration*/ 60 * dt;
 
 			// This is temporary (for visual debugging).
 			SlopeDirection = sloped;
 
-			float max = player.RunMaxSpeed;
+			float max = 4.5f;//player.RunMaxSpeed;
 
 			if (Utilities.LengthSquared(v) > max * max)
 			{
@@ -241,6 +286,8 @@ namespace Zeldo.Entities
 			}
 
 			return v;
+
+			return vec3.Zero;
 		}
 
 		private vec3 AdjustSlidingVelocity(vec2 flatDirection, float dt)
@@ -251,7 +298,7 @@ namespace Zeldo.Entities
 
 			return v;
 		}
-
+		
 		private bool ProcessAscend(FullInputData data)
 		{
 			// There are two ascend-based actions the player can take: 1) starting an ascend (by holding the relevant
@@ -280,23 +327,24 @@ namespace Zeldo.Entities
 			return true;
 		}
 
-		private void ProcessJumping(FullInputData data)
+		private void ProcessJumping(FullInputData data, float dt)
 		{
-			if (!player.SkillsEnabled[JumpIndex])
-			{
-				return;
-			}
-
 			// If this is true, it's assumed that the jump bind must have been populated. Note that this case also
 			// handles breaking from an ascend via a jump.
 			if (player.State == PlayerStates.Jumping)
 			{
-				if (data.Query(jumpBindUsed, InputStates.ReleasedThisFrame))
+				if (data.Query(jumpBindUsed, InputStates.ReleasedThisFrame) &&
+				    player.ControllingBody.LinearVelocity.Y > playerData.JumpLimit)
 				{
-					player.LimitJump();
+					player.LimitJump(dt);
 					jumpBindUsed = null;
 				}
 
+				return;
+			}
+
+			if (!player.SkillsEnabled[JumpIndex])
+			{
 				return;
 			}
 

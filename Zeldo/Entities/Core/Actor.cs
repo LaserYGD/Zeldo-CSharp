@@ -2,14 +2,13 @@
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
-using Jitter.LinearMath;
 using Zeldo.Control;
 
 namespace Zeldo.Entities.Core
 {
 	public abstract class Actor : LivingEntity
 	{
-		private CharacterController controller;
+		private AbstractController activeController;
 
 		private float halfHeight;
 
@@ -25,13 +24,6 @@ namespace Zeldo.Entities.Core
 			get => halfHeight * 2;
 			set => halfHeight = value / 2;
 		}
-
-		public float RunAcceleration { get; protected set; }
-		public float RunDeceleration { get; protected set; }
-		public float RunMaxSpeed { get; protected set; }
-
-		// This is used by external controllers to accelerate the actor in a desired direction.
-		public vec2 RunDirection { get; set; }
 
 		public override vec3 Position
 		{
@@ -60,17 +52,46 @@ namespace Zeldo.Entities.Core
 		// This is used by external controllers.
 		public bool OnGround => onGround;
 
-		protected void CreateKinematicBody(Scene scene, Shape shape)
+		protected RigidBody CreateKinematicBody(Scene scene, Shape shape)
 		{
 			var body = CreateRigidBody(scene, shape, RigidBodyTypes.Kinematic);
 			body.ShouldIgnore = ShouldIgnore;
+
+			return body;
 		}
 
 		protected virtual bool ShouldIgnore(RigidBody other)
 		{
+			// TODO: Should all actors use capsules?
+			bool isMesh = other.Shape is TriangleMeshShape;
+
+			if (!isMesh)
+			{
+				return false;
+			}
+
+			if (onGround)
+			{
+				return true;
+			}
+
+
+
 			// TODO: Handle other surfaces as well (i.e. walls rather than just the ground).
 			// Actors ignore collisions with the static world mesh while grounded (or otherwise on a surface).
 			return onGround && other.Shape is TriangleMeshShape;
+		}
+
+		protected void Swap(AbstractController controller, bool shouldComputeImmediately = false)
+		{
+			activeController = controller;
+
+			// Calling this function here ensures the actor will be positioned properly the moment the controller
+			// changes (if needed).
+			if (shouldComputeImmediately)
+			{
+				controller.Update(0);
+			}
 		}
 
 		// This function should be used when the actor is on a controlled surface (such as the ground or a wall).
@@ -91,20 +112,6 @@ namespace Zeldo.Entities.Core
 			controllingBody.LinearVelocity = (midPosition - controllingBody.Position.ToVec3()).ToJVector();
 		}
 
-		public void Attach(CharacterController controller, bool shouldComputeImmediately = false)
-		{
-			this.controller = controller;
-
-			controller.Parent = this;
-
-			// Calling this function here ensures the actor will be positioned properly the moment it touches a new
-			// surface (which commonly causes the controller to change).
-			if (shouldComputeImmediately)
-			{
-				controller.Update(0);
-			}
-		}
-
 		public void PlayAnimation(string animation)
 		{
 		}
@@ -113,7 +120,7 @@ namespace Zeldo.Entities.Core
 		{
 			Components.Update(dt);
 			selfUpdate = true;
-			controller?.Update(dt);
+			activeController?.Update(dt);
 
 			if (onGround)
 			{

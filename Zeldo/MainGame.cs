@@ -20,6 +20,7 @@ using Jitter;
 using Jitter.Collision;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
+using Zeldo.Control;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
 using Zeldo.Physics;
@@ -131,6 +132,7 @@ namespace Zeldo
 			};
 
 			world = new World(system);
+			world.Gravity = new JVector(0, -18, 0);
 			
 			// TODO: Should damping factors be left in their default states? (they were changed while adding kinematic bodies)
 			world.SetDampingFactors(1, 1);
@@ -243,7 +245,7 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
-			player.Position = CreateDemoCubes ? new vec3(2, 3, -3.5f) : new vec3(2, 30, -2);
+			player.Position = CreateDemoCubes ? new vec3(2, 3, -3.5f) : new vec3(2, 25, -2);
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 
