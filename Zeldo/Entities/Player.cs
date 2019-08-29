@@ -110,6 +110,16 @@ namespace Zeldo.Entities
 			base.Initialize(scene, data);
 		}
 
+		// TODO: Move some of this code to the base Actor class as well.
+		public override void OnCollision(Entity entity, vec3 point, vec3 normal, float penetration)
+		{
+			if (onGround && entity.IsStatic)
+			{
+				Position += normal * penetration;
+			}
+		}
+
+		// TODO: Move some of this code down to the base Actor class (so that other actors can properly traverse the environment too).
 		public override void OnCollision(vec3 p, vec3 normal, vec3[] triangle)
 		{
 			// This fixes a "fake" collision that occurs when the player jumps and separates from a surface.
@@ -135,7 +145,6 @@ namespace Zeldo.Entities
 			// interaction with very steep, but still upward-facing triangles.
 			float slope = surface.Slope;
 
-			// TODO: This assumes that slope is always positive (between 0 and 1). This needs to be verified on downward-facing triangles.
 			bool isUpward = normal.y > 0;
 
 			// The collision is against a wall.

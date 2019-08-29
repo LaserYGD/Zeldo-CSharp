@@ -127,8 +127,8 @@ namespace Zeldo
 					return;
 				}
 
-				entity1?.OnCollision(entity2, p1, n);
-				entity2?.OnCollision(entity1, p2, -n);
+				entity1?.OnCollision(entity2, p1, -n, penetration);
+				entity2?.OnCollision(entity1, p2, n, penetration);
 			};
 
 			world = new World(system);
@@ -231,7 +231,11 @@ namespace Zeldo
 					var cube = new DummyCube(RigidBodyTypes.Dynamic);
 					cube.Position = new vec3(x, y, z);
 
+					var staticCube = new DummyCube(RigidBodyTypes.Static);
+					staticCube.Position = new vec3(-1, 1.5f, 1);
+
 					scene.Add(cube);
+					scene.Add(staticCube);
 				}
 			}
 

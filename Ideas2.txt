@@ -84,6 +84,11 @@
 
 - For AOE attacks (like boss explosions after a charge time), should display a dim circle (or sphere) that subtly shows its range
 
+- Parry mechanic (in some form, and ideally different skills can parry/reflect different kinds of attacks in different ways, such as knocking a thrusting, fast enemy off center, making them vulnerable to attack)
 
+- After watching Spike struggle with the Broken Vessel in Hollow Knight for a while, I hate contact damage with enemies and almost certainly won't implement it in Essence (with the exception of, for example, an enemy clearly covered in spikes or spewing toxic gas or something) => Could also experiment with reversing the system and damaging enemies when they touch you, IF you're wearing appropriate gear
 
+- Being stunned in place temporarily following a long fall never feels good (since it interrupts the flow of movement and might expose you to damage) => Inspired by HK, but Odyssey does the same thing
+
+- If there's a dash, dashing into a wall should allow an immediate, smooth wall jump (likely with a small amount of input buffering) => Inspired by watching Spike play the forced aerial section of the HK arena and dashing into nearby walls, but still stuck in the dash animation and unable to cleanly and quickly gain wall control
 

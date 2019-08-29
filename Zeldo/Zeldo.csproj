@@ -231,6 +231,7 @@
     <Compile Include="Entities\DummyCube.cs" />
     <Compile Include="Entities\Enemies\Enemy.cs" />
     <Compile Include="Entities\Enemies\Groot.cs" />
+    <Compile Include="Entities\Enemies\HealthBar.cs" />
     <Compile Include="Entities\Enemies\Kitterket.cs" />
     <Compile Include="Entities\Core\EntityIds.cs" />
     <Compile Include="Entities\Core\EntityGroups.cs" />

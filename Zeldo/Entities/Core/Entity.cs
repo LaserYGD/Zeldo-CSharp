@@ -84,6 +84,9 @@ namespace Zeldo.Entities.Core
 		// instead remains loaded. This allows the entity to continue updating even when not visible and far away.
 		public bool IsPersistent { get; protected set; }
 
+		// This is used by actors (like the player) to determine when an entity collision should cause a stop.
+		public bool IsStatic => controllingBody.IsStatic;
+
 		public virtual void Dispose()
 		{
 			foreach (var attachment in attachments)
@@ -226,7 +229,7 @@ namespace Zeldo.Entities.Core
 			Orientation = orientation;
 		}
 
-		public virtual void OnCollision(Entity entity, vec3 point, vec3 normal)
+		public virtual void OnCollision(Entity entity, vec3 point, vec3 normal, float penetration)
 		{
 		}
 

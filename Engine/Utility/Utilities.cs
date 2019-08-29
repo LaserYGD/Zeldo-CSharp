@@ -207,6 +207,11 @@ namespace Engine.Utility
 			return vec2.Dot(onto, v) / vec2.Dot(onto, onto) * onto;
 		}
 
+		public static vec2 Normalize(float x, float y)
+		{
+			return Normalize(new vec2(x, y));
+		}
+
 		public static vec2 Normalize(vec2 v)
 		{
 			if (v == vec2.Zero)
@@ -215,6 +220,11 @@ namespace Engine.Utility
 			}
 
 			return v / Length(v);
+		}
+
+		public static vec3 Normalize(float x, float y, float z)
+		{
+			return Normalize(new vec3(x, y, z));
 		}
 
 		public static vec3 Normalize(vec3 v)

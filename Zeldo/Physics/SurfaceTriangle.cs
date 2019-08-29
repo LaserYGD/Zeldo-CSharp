@@ -70,6 +70,12 @@ namespace Zeldo.Physics
 				: Constants.PiOverTwo - Utilities.Angle(new vec3(Normal.x, 0, Normal.z), Normal);
 
 			Slope = (float)Math.Sin(theta);
+
+			// Downard-facing triangles are given a negative slope.
+			if (normal.y < 0)
+			{
+				Slope *= -1;
+			}
 		}
 
 		public vec3[] Points { get; }
