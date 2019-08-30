@@ -34,7 +34,7 @@ dotnet_style_prefer_auto_properties = false:silent
 dotnet_style_object_initializer = false:silent
 dotnet_style_readonly_field = false:silent
 
-# More things I've added'
+# More things I've added
 csharp_style_inlined_variable_declaration = false:silent
 
 # Naming conventions

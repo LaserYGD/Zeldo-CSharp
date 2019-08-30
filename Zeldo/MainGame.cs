@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Engine;
+using Engine.Core;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
 using Engine.Graphics._3D;
@@ -18,6 +19,7 @@ using Engine.View;
 using GlmSharp;
 using Jitter;
 using Jitter.Collision;
+using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Control;
@@ -38,6 +40,12 @@ namespace Zeldo
 {
 	public class MainGame : Game, IReceiver
 	{
+		public const float PhysicsStep = 1f / 120;
+		public const int PhysicsIterations = 8;
+		public const int Gravity = -18;
+
+		private const bool FrameAdvanceEnabled = false;
+
 		// This is temporary for kinematic physics testing.
 		private const bool CreateDemoCubes = false;
 
@@ -61,6 +69,8 @@ namespace Zeldo
 		private JitterVisualizer jitterVisualizer;
 
 		private GameLoop activeLoop;
+
+		private bool frameAdvanceReady;
 
 		public MainGame() : base("Zeldo")
 		{
@@ -132,7 +142,7 @@ namespace Zeldo
 			};
 
 			world = new World(system);
-			world.Gravity = new JVector(0, -18, 0);
+			world.Gravity = new JVector(0, Gravity, 0);
 			
 			// TODO: Should damping factors be left in their default states? (they were changed while adding kinematic bodies)
 			world.SetDampingFactors(1, 1);
@@ -216,13 +226,13 @@ namespace Zeldo
 			}
 			else
 			{
-				const float XRange = 8;
+				const float XRange = 12;
 				const float YRange = 4;
-				const float ZRange = 8;
+				const float ZRange = 12;
 
 				Random random = new Random();
 
-				for (int i = 0; i < 10; i++)
+				for (int i = 0; i < 40; i++)
 				{
 					float x = (float)random.NextDouble() * XRange - XRange / 2;
 					float y = (float)random.NextDouble() * YRange + 2;
@@ -231,12 +241,17 @@ namespace Zeldo
 					var cube = new DummyCube(RigidBodyTypes.Dynamic);
 					cube.Position = new vec3(x, y, z);
 
-					var staticCube = new DummyCube(RigidBodyTypes.Static);
-					staticCube.Position = new vec3(-1, 1.5f, 1);
-
 					scene.Add(cube);
-					scene.Add(staticCube);
 				}
+
+				var staticCube1 = new DummyCube(RigidBodyTypes.Static);
+				staticCube1.Position = new vec3(-1, 1.5f, 1);
+
+				var staticCube2 = new DummyCube(RigidBodyTypes.Static);
+				staticCube2.Position = new vec3(0, 1.5f, 0);
+
+				scene.Add(staticCube1);
+				scene.Add(staticCube2);
 			}
 
 			MasterRenderer3D renderer = scene.Renderer;
@@ -249,7 +264,7 @@ namespace Zeldo
 				DebugView = debugView
 			};
 
-			player.Position = CreateDemoCubes ? new vec3(2, 3, -3.5f) : new vec3(2, 25, -2);
+			player.Position = CreateDemoCubes ? new vec3(2, 3, -3.5f) : new vec3(2, 3, -2);
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 
@@ -312,9 +327,16 @@ namespace Zeldo
 
 		private void ProcessKeyboard(KeyboardData data)
 		{
+			// Process the game exiting.
 			if (data.Query(GLFW_KEY_ESCAPE, InputStates.PressedThisFrame))
 			{
 				glfwSetWindowShouldClose(window.Address, 1);
+			}
+
+			// Process frame advance.
+			if (data.Query(GLFW_KEY_F, InputStates.PressedThisFrame))
+			{
+				frameAdvanceReady = true;
 			}
 
 			bool controlHeld = data.Query(GLFW_KEY_LEFT_CONTROL, InputStates.Held) ||
@@ -325,11 +347,13 @@ namespace Zeldo
 				return;
 			}
 
+			// Toggle Jitter visualization.
 			if (data.Query(GLFW_KEY_J, InputStates.PressedThisFrame))
 			{
 				jitterVisualizer.IsEnabled = !jitterVisualizer.IsEnabled;
 			}
 
+			// Toggle mesh visualization.
 			if (data.Query(GLFW_KEY_M, InputStates.PressedThisFrame))
 			{
 				scene.Renderer.IsEnabled = !scene.Renderer.IsEnabled;
@@ -343,10 +367,15 @@ namespace Zeldo
 
 		protected override void Update(float dt)
 		{
-			world.Step(dt, true, PhysicsConstants.Step, PhysicsConstants.MaxSteps);
-			space.Update();
-			scene.Update(dt);
+			if (!FrameAdvanceEnabled || frameAdvanceReady)
+			{
+				world.Step(dt, true, PhysicsStep, PhysicsIterations);
+				space.Update();
+				scene.Update(dt);
+			}
+
 			camera.Update(dt);
+			frameAdvanceReady = false;
 
 			MessageSystem.ProcessChanges();
 		}
@@ -364,44 +393,6 @@ namespace Zeldo
 			jitterVisualizer.Draw(camera);
 			//spaceVisualizer.Draw();
 
-			// This is temporary for run testing.
-			/*
-			var triangle = PlayerController.ActiveTriangle;
-			var points = triangle.Points;
-			var flatPoints = SurfaceTriangle.FlatPoints;
-
-			vec3 center = vec3.Zero;
-
-			for (int i = 0; i < 3; i++)
-			{
-				vec3 p1 = points[i];
-				vec3 p2 = points[(i + 1) % 3];
-				vec2 fp1 = flatPoints[i];
-				vec2 fp2 = flatPoints[(i + 1) % 3];
-
-				primitives.DrawLine(p1, p2, Color.Red);
-				primitives.DrawLine(new vec3(fp1.x, 0, fp1.y), new vec3(fp2.x, 0, fp2.y), Color.Magenta);
-
-				center += p1;
-			}
-
-			center /= 3;
-
-			vec3 d1 = center + triangle.Normal;
-			vec3 d2 = d1 + PlayerController.SlopeDirection;
-
-			if (triangle.Project(d2, out vec3 result))
-			{
-				primitives.DrawLine(d2, result, Color.Yellow);
-			}
-
-			primitives.DrawLine(center, center + vec3.UnitY, Color.Blue);
-			primitives.DrawLine(center, d1, Color.Cyan);
-			primitives.DrawLine(d1, d1 + SurfaceTriangle.Axis, Color.Red);
-			primitives.DrawLine(d1, d2, Color.Green);
-			primitives.Flush();
-			*/
-
 			// Render 2D targets.
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
@@ -418,9 +409,6 @@ namespace Zeldo
 			mainSprite.Draw(sb);		
 			canvas.Draw(sb);
 			
-			// This is temporary.
-			spriteText.Draw(sb);
-
 			sb.Flush();
 		}
 	}

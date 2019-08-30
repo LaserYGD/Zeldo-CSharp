@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Linq;
 using Engine;
+using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
+using Jitter.LinearMath;
 
 namespace Zeldo.Physics
 {
 	public class SurfaceTriangle
 	{
-		public static vec2[] FlatPoints { get; private set; }
 		public static vec3 Axis { get; private set; }
 
 		// These areused to project points onto the triangle (primarily used to "stick" actors onto a surface while
@@ -22,9 +24,9 @@ namespace Zeldo.Physics
 		// For projection purposes, the double area (2 * area) is what you want.
 		private float doubleArea;
 
-		public SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, int material, Windings winding) :
+		public SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, WindingTypes winding, int material) :
 			this(p0, p1, p2,
-				Utilities.Normalize(Utilities.Cross(p1 - p0, p2 - p0) * (winding == Windings.Clockwise ? 1 : -1)),
+				Utilities.Normalize(Utilities.Cross(p1 - p0, p2 - p0) * (winding == WindingTypes.Clockwise ? 1 : -1)),
 				material)
 		{
 		}
@@ -60,7 +62,6 @@ namespace Zeldo.Physics
 			fp0 = flatPoints[0];
 			fp1 = flatPoints[1];
 			fp2 = flatPoints[2];
-			FlatPoints = new[] { fp0, fp1, fp2 };
 
 			// See https://stackoverflow.com/a/14382692/7281613.
 			doubleArea = -fp1.y * fp2.x + fp0.y * (-fp1.x + fp2.x) + fp0.x * (fp1.y - fp2.y) + fp1.x * fp2.y;

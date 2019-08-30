@@ -20,10 +20,10 @@ namespace Zeldo.Entities.Core
 {
 	public abstract class Entity : ITransformable3D, IDynamic, IDisposable
 	{
-		private vec3 position;
 		private quat orientation;
 		private List<EntityAttachment> attachments;
-		
+
+		protected vec3 position;
 		protected RigidBody controllingBody;
 
 		// The entity's transform properties (Position and Orientation) also update attachments. Since the controlling
@@ -52,15 +52,11 @@ namespace Zeldo.Entities.Core
 			set
 			{
 				position = value;
-
-				// TODO: Adding unit Y is temporary for run testing (to render the model at a better position). Same applies to the body below. This should be handled properly later.
 				attachments.ForEach(a => a.Target.Position = value + a.Position);
-				//attachments.ForEach(a => a.Target.Position = value + a.Position + (tempOnGround ? vec3.UnitY : vec3.Zero));
 
 			    if (controllingBody != null && !selfUpdate)
 			    {
 					controllingBody.Position = value.ToJVector();
-				    //controllingBody.Position = (value + vec3.UnitY).ToJVector();
 			    }
 			}
 		}

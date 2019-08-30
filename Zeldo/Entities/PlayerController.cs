@@ -29,13 +29,10 @@ namespace Zeldo.Entities
 		// an actual square root call at runtime).
 		private const float SqrtTwo = 1.41421356237f;
 
-		// This is temporary for run testing on arbitrary surfaces.
-		public static SurfaceTriangle ActiveSurface { get; private set; }
-		public static vec3 SlopeDirection { get; private set; }
-
 		private Player player;
 		private PlayerData playerData;
 		private PlayerControls controls;
+		private SurfaceTriangle surface;
 
 		// Passing an array of controllers is easier than passing each one as a separate constructor argument.
 		private AbstractController[] controllers;
@@ -73,13 +70,10 @@ namespace Zeldo.Entities
 			MessageSystem.Unsubscribe(this);
 		}
 
-		public void OnLanding(vec3 p, SurfaceTriangle triangle)
+		public void OnLanding(SurfaceTriangle surface)
 		{
-			ActiveSurface = triangle;
-			ActiveSurface.Project(p, out vec3 result);
+			this.surface = surface;
 
-			// The player's onGround flag is set to true before this function is called.
-			player.SetSurfacePosition(result);
 			jumpBindUsed = null;
 		}
 
@@ -187,7 +181,7 @@ namespace Zeldo.Entities
 
 			if (v == vec3.Zero)
 			{
-				player.SetSurfacePosition(p);
+				player.GroundPosition = p;
 
 				// This prevents very slow drift when standing still on sloped surfaces.
 				return;
@@ -197,20 +191,20 @@ namespace Zeldo.Entities
 
 			// The player's position is always set at the bottom of this function. If this function return true, that
 			// means the player is still within the current triangle.
-			if (!ActiveSurface.Project(p, out vec3 result))
+			if (!surface.Project(p, out vec3 result))
 			{
 				// TODO: Store a reference to the physics map separate (rather than querying the world every frame).
 				var world = player.Scene.World;
 				var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
-				var normal = ActiveSurface.Normal;
+				var normal = surface.Normal;
 				var results = PhysicsUtilities.Raycast(world, map, p + normal * 0.2f, -normal, 1);
 
 				if (results?.Triangle != null)
 				{
-					ActiveSurface = new SurfaceTriangle(results.Triangle, results.Normal, 0);
-					ActiveSurface.Project(results.Position, out result);
+					surface = new SurfaceTriangle(results.Triangle, results.Normal, 0);
+					surface.Project(results.Position, out result);
 					
-					player.OnSurfaceTransition(ActiveSurface);
+					player.OnSurfaceTransition(surface);
 				}
 			}
 
@@ -219,7 +213,7 @@ namespace Zeldo.Entities
 			// behavior when very close to a triangle's edge. In theory, this failsafe shouldn't be needed (assuming a
 			// seamlessly interconnected map without gaps in the geometry), but it's safer to keep it (plus the fix
 			// shouldn't be tiny and unnoticeable anyway).
-			player.SetSurfacePosition(result);
+			player.GroundPosition = result;
 		}
 
 		private vec3 AdjustRunningVelocity(vec2 flatDirection, float dt)
@@ -254,7 +248,7 @@ namespace Zeldo.Entities
 			// Accleration.
 			flatDirection = Utilities.Rotate(flatDirection, FollowController.Yaw);
 
-			vec3 normal = ActiveSurface.Normal;
+			vec3 normal = surface.Normal;
 			vec3 sloped;
 
 			// This means the ground is completely flat (meaning that the flat direction can be used for movement
@@ -268,15 +262,12 @@ namespace Zeldo.Entities
 				vec2 flatNormal = Utilities.Normalize(normal.swizzle.xz);
 
 				float d = Utilities.Dot(flatDirection, flatNormal);
-				float y = -ActiveSurface.Slope * d;
+				float y = -surface.Slope * d;
 
 				sloped = Utilities.Normalize(new vec3(flatDirection.x, y, flatDirection.y));
 			}
 
 			v += sloped * /*player.RunAcceleration*/ 60 * dt;
-
-			// This is temporary (for visual debugging).
-			SlopeDirection = sloped;
 
 			float max = 4.5f;//player.RunMaxSpeed;
 
@@ -293,8 +284,8 @@ namespace Zeldo.Entities
 		private vec3 AdjustSlidingVelocity(vec2 flatDirection, float dt)
 		{
 			vec3 v = player.SurfaceVelocity;
-			vec3 normal = ActiveSurface.Normal;
-			vec3 slideDirection = Utilities.Normalize(new vec3(normal.x, -ActiveSurface.Slope, normal.z));
+			vec3 normal = surface.Normal;
+			vec3 slideDirection = Utilities.Normalize(new vec3(normal.x, -surface.Slope, normal.z));
 
 			return v;
 		}

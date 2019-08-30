@@ -1,8 +1,12 @@
-﻿using Engine.Physics;
+﻿using System.Linq;
+using Engine.Physics;
+using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
+using Jitter.LinearMath;
 using Zeldo.Control;
+using Zeldo.Physics;
 
 namespace Zeldo.Entities.Core
 {
@@ -10,15 +14,19 @@ namespace Zeldo.Entities.Core
 	{
 		private AbstractController activeController;
 
+		private bool firstPositionSet;
 		private float halfHeight;
 
 		protected bool onGround;
 
+		// TODO: Once surface movement is fully transferred to this class (from Player), this variable could probably be public.
+		protected vec3 oldPosition;
+
 		protected Actor(EntityGroups group) : base(group)
 		{
+			firstPositionSet = true;
 		}
 		
-		// TODO: This could probably be protected rather than public.
 		public float Height
 		{
 			get => halfHeight * 2;
@@ -32,17 +40,30 @@ namespace Zeldo.Entities.Core
 			{
 				if (onGround)
 				{
-					// TODO: Is this redundant with the same code in Entity?
-					// The controlling body will probably always exist once the actor is finished, but it might not
-					// exist during development.
-					if (!selfUpdate && controllingBody != null)
-					{
-						controllingBody.Position = value.ToJVector();
-					}
+					// This assumes that all actors will have a valid controlling body created.
+					controllingBody.LinearVelocity = (value - controllingBody.Position.ToVec3()).ToJVector();
+				}
+
+				// Without this check, the first airborne raytrace (to handle collisions with surfaces) would be way
+				// too large (unless the actor happens to spawn at the origin).
+				if (firstPositionSet)
+				{
+					oldPosition = value;
+					firstPositionSet = false;
+				}
+				else
+				{
+					oldPosition = position;
 				}
 
 				base.Position = value;
 			}
+		}
+
+		public vec3 GroundPosition
+		{
+			get => position - new vec3(0, halfHeight, 0);
+			set => Position = value + new vec3(0, halfHeight, 0);
 		}
 
 		// A separate velocity is used for controlled movement along a surface (such as the ground). The controlling
@@ -60,11 +81,33 @@ namespace Zeldo.Entities.Core
 			return body;
 		}
 
-		protected virtual bool ShouldIgnore(RigidBody other)
+		protected virtual bool ShouldIgnore(RigidBody other, JVector[] triangle)
 		{
-			// TODO: Handle other surfaces as well (i.e. walls rather than just the ground).
-			// Actors ignore collisions with the static world mesh while grounded (or otherwise on a surface).
-			return onGround && other.Shape is TriangleMeshShape;
+			bool isMesh = other.Shape is TriangleMeshShape;
+
+			if (!isMesh)
+			{
+				// All non-mesh collisions should occur.
+				return false;
+			}
+
+			if (onGround)
+			{
+				// While already grounded, collisions with the static world mesh should be ignored (controllers and
+				// raycasting are used instead).
+				return true;
+			}
+
+			// It's assumed that if the body is a triangle mesh, the triangle array will be populated.
+			var p0 = triangle[0];
+			var p1 = triangle[1];
+			var p2 = triangle[2];
+			var normal = JVector.Normalize(JVector.Cross(p1 - p0, p2 - p0));
+
+			float slope = JVector.Dot(normal, JVector.Up);
+
+			// TODO: Use a property or constant instead.
+			return slope < 0.5f;
 		}
 
 		protected void Swap(AbstractController controller, bool shouldComputeImmediately = false)
@@ -79,46 +122,58 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
-		// This function should be used when the actor is on a controlled surface (such as the ground or a wall).
-		// While on a surface, the kinematic body is controlled using computed velocity rather than a direct position
-		// set.
-		// TODO: If delta time isn't needed, this could be merged back into the main Position property.
-		public void SetSurfacePosition(vec3 p)
-		{
-			vec3 midPosition = p + new vec3(0, Height / 2, 0);
-
-			// Using the base version ensures that the body's position isn't set directly.
-			// TODO: Consider using an epsilon to determine whether the new position is different from the old one (optimization to avoid recomputing attachments).
-			base.Position = midPosition;
-
-			// JVector doesn't have a divide function (which is why conversions happen both ways here).
-			// TODO: Is a divide by dt needed here? With that division, velocities felt wrong.
-			//controllingBody.LinearVelocity = ((midPosition - controllingBody.Position.ToVec3()) / dt).ToJVector();
-			controllingBody.LinearVelocity = (midPosition - controllingBody.Position.ToVec3()).ToJVector();
-		}
-
 		public void PlayAnimation(string animation)
 		{
 		}
 
 		public override void Update(float dt)
 		{
+			// TODO: Verify the ordering of method calls here.
 			Components.Update(dt);
 			selfUpdate = true;
 			activeController?.Update(dt);
 
-			if (onGround)
+			// It's assumed that all actors capable of going airborne have a controlling body set.
+			if (!onGround)
 			{
-				//Position = new vec3(p.x, groundBody.Elevation + halfHeight, p.y);
-			}
-			// It's assumed that all actors capable of going airborne have a controlling 3D body set.
-			else
-			{
-				Position = controllingBody.Position.ToVec3();
-				Orientation = controllingBody.Orientation.ToQuat();
+				if (CheckGroundCollision(out var results))
+				{
+					OnCollision(results.Position, results.Normal, results.Triangle);
+				}
+				else
+				{
+					Position = controllingBody.Position.ToVec3();
+					Orientation = controllingBody.Orientation.ToQuat();
+				}
 			}
 
 			selfUpdate = false;
+		}
+
+		private bool CheckGroundCollision(out RaycastResults results)
+		{
+			results = null;
+
+			// TODO: If moving platforms are added, a relative velocity check will be needed.
+			// This prevents false collisions just after jumping.
+			if (controllingBody.LinearVelocity.Y > 0)
+			{
+				return false;
+			}
+
+			// Since the player's body is a capsule, a ground landing is only considered valid if the bottom point
+			// passes through a triangle (rather than any collision with the static world mesh).
+			// TODO: Store easier references to static meshes on the scene.
+			var world = Scene.World;
+			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
+
+			vec3 halfVector = new vec3(0, halfHeight, 0);
+			vec3 p1 = oldPosition - halfVector;
+			vec3 p2 = Position - halfVector;
+
+			results = PhysicsUtilities.Raycast(world, map, p1, p2);
+
+			return results != null;
 		}
 	}
 }

@@ -8,15 +8,34 @@ namespace Engine.Physics
 {
 	public static class PhysicsUtilities
 	{
+		public static RaycastResults Raycast(World world, vec3 start, vec3 end)
+		{
+			return RaycastInternal(world, null, start, end - start);
+		}
+
 		public static RaycastResults Raycast(World world, vec3 start, vec3 direction, float range)
 		{
-			return Raycast(world, null, start, direction, range);
+			return RaycastInternal(world, null, start, direction * range, direction);
+		}
+
+		public static RaycastResults Raycast(World world, RigidBody body, vec3 start, vec3 end)
+		{
+			return RaycastInternal(world, body, start, end - start);
 		}
 
 		public static RaycastResults Raycast(World world, RigidBody body, vec3 start, vec3 direction, float range)
 		{
+			return RaycastInternal(world, body, start, direction * range, direction);
+		}
+
+		private static RaycastResults RaycastInternal(World world, RigidBody body, vec3 start, vec3 ray,
+			vec3? direction = null)
+		{
 			JVector jStart = start.ToJVector();
-			JVector jDirection = direction.ToJVector() * range;
+			
+			// Note that Jitter's Raycast signature below calls one of its parameters "rayDirection", but that vector
+			// isn't meant to be normalized (meaning that it's actually just a ray from start to end).
+			JVector jDirection = ray.ToJVector();
 			JVector normal;
 			JVector[] triangle;
 
@@ -29,7 +48,7 @@ namespace Engine.Physics
 				: system.Raycast(jStart, jDirection, (b, n, f) => true, out body, out normal,
 					out fraction, out triangle);
 
-			if (!success)
+			if (!success || fraction > 1)
 			{
 				return null;
 			}
@@ -47,8 +66,11 @@ namespace Engine.Physics
 				}
 			}
 
-			return new RaycastResults(body, start + direction * fraction, Utilities.Normalize(normal.ToVec3()),
-				tVectors);
+			// Using a nullable direction argument avoids a square root call when the direction is already known.
+			//vec3 d = direction ?? Utilities.Normalize(ray);
+
+			return new RaycastResults(body, start + jDirection.ToVec3() * fraction,
+				Utilities.Normalize(normal.ToVec3()), tVectors);
 		}
 	}
 }

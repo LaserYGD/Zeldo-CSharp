@@ -109,11 +109,15 @@ namespace Engine
 
 				inputProcessor.Update(Target);
 
-				while (accumulator >= Target)
+				// TODO: This limits to a single frame even for large spikes in accumulated time (largely to accommodate frame advance). Considering undoing this in the future.
+				//while (accumulator >= Target)
+				if (accumulator >= Target)
 				{
 					glfwPollEvents();
 					Update(Target);
-					accumulator -= Target;
+
+					//accumulator -= Target;
+					accumulator = 0;
 				}
 
 				Draw();

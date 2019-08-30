@@ -268,7 +268,6 @@
     <Compile Include="Items\ItemIds.cs" />
     <Compile Include="JumpTester.cs" />
     <Compile Include="JumpTester2.cs" />
-    <Compile Include="Physics\PhysicsConstants.cs" />
     <Compile Include="Physics\SurfaceMaterials.cs" />
     <Compile Include="Physics\SurfaceTriangle.cs" />
     <Compile Include="Physics\TriangleMeshLoader.cs" />

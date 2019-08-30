@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Zeldo.Physics
 {
-	public enum Windings
+	public enum WindingTypes
 	{
 		Clockwise,
 		CounterClockwise

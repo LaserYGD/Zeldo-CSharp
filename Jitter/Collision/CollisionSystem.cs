@@ -257,11 +257,6 @@ namespace Jitter.Collision
 			// CUSTOM: Added custom detection callbacks (primarily to accommodate actor movement on the ground).
 	        var callback1 = body1.ShouldIgnore;
 	        var callback2 = body2.ShouldIgnore;
-			
-			if ((callback1 != null && callback1.Invoke(body2)) || (callback2 != null && callback2.Invoke(body1)))
-	        {
-		        return;
-	        }
 
             bool b1IsMulti = (body1.Shape is Multishape);
             bool b2IsMulti = (body2.Shape is Multishape);
@@ -274,6 +269,12 @@ namespace Jitter.Collision
 
             if (!b1IsMulti && !b2IsMulti)
             {
+				// CUSTOM: Added these callbacks (two rigid bodies).
+	            if ((callback1 != null && callback1(body2, null)) || (callback2 != null && callback2(body1, null)))
+	            {
+		            return;
+	            }
+
                 if (XenoCollide.Detect(body1.Shape, body2.Shape, ref body1.orientation,
                     ref body2.orientation, ref body1.position, ref body2.position,
                     out point, out normal, out penetration))
@@ -379,7 +380,16 @@ namespace Jitter.Collision
             {
                 RigidBody b1, b2;
 
-                if (body2.Shape is Multishape) { b1 = body2; b2 = body1; }
+	            if (body2.Shape is Multishape)
+	            {
+					// CUSTOM: Swapped callbacks here as well.
+		            b1 = body2;
+		            b2 = body1;
+
+					// A proper swap here (using a temporary variable) isn't necessary since, by this point, the other
+					// callback (attached to the static body) is intentionally not used.
+		            callback2 = callback1;
+	            }
                 else { b2 = body2; b1 = body1; }
 
                 Multishape ms = (b1.Shape as Multishape);
@@ -415,13 +425,19 @@ namespace Jitter.Collision
                             JVector.Transform(ref normal, ref b1.orientation, out normal);
                         }
                         else if (useTriangleMeshNormal && ms is TriangleMeshShape tMesh)
-                        {
-	                        triangle = tMesh.CurrentTriangle;
+						{
+							triangle = tMesh.CurrentTriangle;
 	                        tMesh.CollisionNormal(out normal);
                             JVector.Transform(ref normal, ref b1.orientation, out normal);
                         }
 
-                        RaiseCollisionDetected(b1, b2, ref point1, ref point2, ref normal, triangle, penetration);
+	                    // CUSTOM: Added this callback (rigid body colliding with a multishape).
+	                    if (callback2 != null && callback2(b1, triangle))
+	                    {
+		                    return;
+	                    }
+
+						RaiseCollisionDetected(b1, b2, ref point1, ref point2, ref normal, triangle, penetration);
                     }
                     else if (speculative)
                     {

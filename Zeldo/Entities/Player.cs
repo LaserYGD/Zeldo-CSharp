@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Engine;
 using Engine.Input.Data;
 using Engine.Physics;
@@ -102,7 +103,7 @@ namespace Zeldo.Entities
 			Height = capsuleHeight + capsuleRadius * 2;
 
 			CreateModel(scene, "Capsule.obj");
-			CreateKinematicBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius));
+			CreateKinematicBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius)).AllowDeactivation = false;
 
 			//sensor = CreateSensor(scene, groundShape, SensorUsages.Hitbox | SensorUsages.Interaction, Height);
 			//CreateSensor(scene, new Point(), SensorUsages.Control, 1, null, -0.75f);
@@ -122,17 +123,9 @@ namespace Zeldo.Entities
 		// TODO: Move some of this code down to the base Actor class (so that other actors can properly traverse the environment too).
 		public override void OnCollision(vec3 p, vec3 normal, vec3[] triangle)
 		{
-			// This fixes a "fake" collision that occurs when the player jumps and separates from a surface.
-			// TODO: If the surface is a moving platform, the body's Y velocity will need to be compared against the platform.
-			// TODO: This fake collision might be due to using capsules on a slope (such that it technically intersects the surface a bit when set by bottom point).
-			if (!onGround && Utilities.Dot(normal, vec3.UnitY) > 0 && controllingBody.LinearVelocity.Y > 0)
-			{
-				return;
-			}
-
 			var surface = new SurfaceTriangle(triangle, normal, 0);
 
-			// TODO: Process running into static objects while grounded.
+			// TODO: Process running into walls while grounded.
 			if (onGround)
 			{
 				return;
@@ -161,8 +154,14 @@ namespace Zeldo.Entities
 			}
 		}
 
+		// Note that the position given is the ground position.
 		private void OnLanding(vec3 p, SurfaceTriangle surface)
 		{
+			// Project onto the surface. Note that setting ground position *before* the onGround flag, the body's
+			// velocity isn't wastefully set twice (since it's forcibly set to zero below).
+			surface.Project(p, out vec3 result);
+			GroundPosition = result;
+
 			onGround = true;
 			isJumpDecelerating = false;
 			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
@@ -175,8 +174,12 @@ namespace Zeldo.Entities
 			v.z = bodyVelocity.Z;
 			SurfaceVelocity = v;
 
-			controller.OnLanding(p, surface);
+			controller.OnLanding(surface);
 			controllingBody.AffectedByGravity = false;
+
+			// TODO: Setting body position directly could cause rare collision misses on dynamic objects. Should be tested.
+			controllingBody.Position = (result + new vec3(0, Height / 2, 0)).ToJVector();
+			controllingBody.LinearVelocity = JVector.Zero;
 
 			OnSurfaceTransition(surface);
 			Swap(null);
@@ -301,8 +304,11 @@ namespace Zeldo.Entities
 			DebugView.Lines = new []
 			{
 				$"Position: {Position.x}, {Position.y}, {Position.z}",
+				$"Old position: {oldPosition.x}, {oldPosition.y}, {oldPosition.z}",
 				$"Surface velocity: {SurfaceVelocity.x}, {SurfaceVelocity.y}, {SurfaceVelocity.z}",
 				$"Body velocity: {v.x}, {v.y}, {v.z}",
+				$"Body gravity: {controllingBody.AffectedByGravity}",
+				$"Body asleep: {controllingBody.IsActive}",
 				$"On ground: {onGround}",
 				$"Jump enabled: {skillsEnabled[JumpIndex]}",
 				$"Jump decelerating: {isJumpDecelerating}",
