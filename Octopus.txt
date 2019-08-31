@@ -1,0 +1,34 @@
+=== Mantis Lords ===
+
+- Introduction with a single mantis to learn the basic moveset
+- Moves are simple, but varied (slash from the side that requires jumping, slash from the top that requires dodging to the side, perched + projectile that's harder to dodge, but leaves the boss vulnerable to hits)
+- As the fight progresses, the second, then third mantises join
+- Each boss has the same moveset, but when multiple are active, there's code in place to make sure attacks layer in fair ways
+- Completing the fight only requires basic movement (running and jumping, or maybe a dash) plus basic attacks
+- Could arguably spice up fights by requiring usage of special attacks to break shields, or attacking at specific weak points to stun the boss or deal additional damage
+- Also virtually no interaction with the environment (just a plain rectangular arena with fixed camera)
+- The fight doesn't (and isn't built for) additional strats or complexity with a larger moveset (you could still use more powerful spells, but nothing else changes)
+
+=== Octopus Boss ===
+
+- Could start with a single tentacle with slower, simpler attacks (that just require movement to dodge)
+
+=== Tentacle Attacks ===
+
+- Slam: Tentacle hovers above the player (tracking position) for a few moments before pausing, then slamming to the ground. After slamming, the tentacle remains in place for a few moments for counterattack.
+
+- Thrust: Similar to slam, but hovers in *front* of the player before pausing and thrusting forward. Unlike the slam, this can be dodged by jumping above the thrust.
+
+- Sweep: A tentacle sweeps horizontally across the arena, requiring a jump to dodge. In later phases, tentacles could sweep back and forth more than once.
+
+=== Other Ideas ===
+
+- Some (or all) tentacles could have one or two weak points. These could be discolored spots that can be damaged (and broken for an extra burst of damage), or weak spots caused by the octopus's previous battles (like part of a spear embedded and making the spot vulnerable).
+
+- A rare weapon lodged more fully in a part of the octopus. Can be retrieved during battle by sufficiently damaging the weak spot (similar to cutting off tails in Dark Souls) or, if the boss is defeated prior to collecting the weapon, it can still be acquired from the corpse. This weapon could be returned to the NPC who led you to the shipwreck for a special reward (and extra lore).
+
+- I'll need to properly handle the fact that tentacles could get a bit twisted and overlapping as the fight progresses and more tentacles are in play. This will likely require careful coordination of attacks.
+
+- If the arena was a bit more open, tentacles could potentially attack from underneath (or angled from the bottom) as well. Leaning against this idea, though, since I'd rather have a more straightforward fight that builds its challenge with the different tentacle variations and combinations. With attacks from below, it's also harder to communicate tells.
+
+- For the tentacles with weapons, I'll have to be careful those phases don't just feel like another regular boss with weapons (there will be other bosses for that). In other words, I should consider the unique capabilities of a tentacle (that happens to be wielding a weapon) rather than treating it like just another weapon.

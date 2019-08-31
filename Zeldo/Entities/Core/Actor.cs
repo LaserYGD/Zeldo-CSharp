@@ -154,9 +154,11 @@ namespace Zeldo.Entities.Core
 		{
 			results = null;
 
+			var v = controllingBody.LinearVelocity;
+
 			// TODO: If moving platforms are added, a relative velocity check will be needed.
 			// This prevents false collisions just after jumping.
-			if (controllingBody.LinearVelocity.Y > 0)
+			if (v.Y > 0)
 			{
 				return false;
 			}
@@ -173,7 +175,8 @@ namespace Zeldo.Entities.Core
 
 			results = PhysicsUtilities.Raycast(world, map, p1, p2);
 
-			return results != null;
+			// Actors can only land on surfaces facing the actor (not back-facing ones).
+			return results != null && Utilities.Dot(results.Normal, v.ToVec3()) < 0;
 		}
 	}
 }

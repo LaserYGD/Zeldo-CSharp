@@ -224,6 +224,7 @@
     <Compile Include="Data\TileFlags.cs" />
     <Compile Include="Entities\Bosses\Boss.cs" />
     <Compile Include="Entities\Bosses\OctopusBoss.cs" />
+    <Compile Include="Entities\Bosses\Tentacle.cs" />
     <Compile Include="Entities\Characters\Character.cs" />
     <Compile Include="Entities\Characters\LeviathonHead.cs" />
     <Compile Include="Entities\Characters\LeviathonTentacle.cs" />
