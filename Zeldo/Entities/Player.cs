@@ -33,6 +33,8 @@ namespace Zeldo.Entities
 		private PlayerData playerData;
 		private PlayerControls controls;
 		private PlayerController controller;
+		private PlayerHealthDisplay healthDisplay;
+		private DebugView debugView;
 		private Weapon weapon;
 
 		private AerialController aerialController;
@@ -74,10 +76,6 @@ namespace Zeldo.Entities
 			Swap(aerialController);
 		}
 		
-		public PlayerHealthDisplay HealthDisplay { get; set; }
-		public PlayerManaDisplay ManaDisplay { get; set; }
-		public PlayerDebugView DebugView { get; set; }
-
 		// This is required to move in the direction of camera aim (passed through to the controller class).
 		public FollowController FollowController
 		{
@@ -107,6 +105,10 @@ namespace Zeldo.Entities
 
 			//sensor = CreateSensor(scene, groundShape, SensorUsages.Hitbox | SensorUsages.Interaction, Height);
 			//CreateSensor(scene, new Point(), SensorUsages.Control, 1, null, -0.75f);
+
+			var canvas = scene.Canvas;
+			healthDisplay = canvas.GetElement<PlayerHealthDisplay>();
+			debugView = canvas.GetElement<DebugView>();
 
 			base.Initialize(scene, data);
 		}
@@ -300,20 +302,20 @@ namespace Zeldo.Entities
 			}
 
 			var v = controllingBody.LinearVelocity.ToVec3();
-
-			DebugView.Lines = new []
+			var entries = new []
 			{
-				$"Position: {Position.x}, {Position.y}, {Position.z}",
-				$"Old position: {oldPosition.x}, {oldPosition.y}, {oldPosition.z}",
-				$"Surface velocity: {SurfaceVelocity.x}, {SurfaceVelocity.y}, {SurfaceVelocity.z}",
-				$"Body velocity: {v.x}, {v.y}, {v.z}",
+				$"Position: {Position.x:N2}, {Position.y:N2}, {Position.z:N2}",
+				$"Old position: {oldPosition.x:N2}, {oldPosition.y:N2}, {oldPosition.z:N2}",
+				$"Surface velocity: {SurfaceVelocity.x:N2}, {SurfaceVelocity.y:N2}, {SurfaceVelocity.z:N2}",
+				$"Body velocity: {v.x:N2}, {v.y:N2}, {v.z:N2}",
 				$"Body gravity: {controllingBody.AffectedByGravity}",
-				$"Body asleep: {controllingBody.IsActive}",
 				$"On ground: {onGround}",
 				$"Jump enabled: {skillsEnabled[JumpIndex]}",
 				$"Jump decelerating: {isJumpDecelerating}",
 				$"State: {State}"
 			};
+
+			debugView.GetGroup("Player").AddRange(entries);
 
 			base.Update(dt);
 		}

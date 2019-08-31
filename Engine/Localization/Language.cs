@@ -21,7 +21,8 @@ namespace Engine.Localization
 			{
 				string line = lines[i];
 
-				if (line.Length == 0)
+				// Comments in language files start with '#'.
+				if (line.Length == 0 || line[0] == '#')
 				{
 					continue;
 				}

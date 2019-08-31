@@ -21,7 +21,8 @@ namespace Engine
 
 			foreach (string line in lines)
 			{
-				if (line.Length == 0)
+				// Comments start with '#'.
+				if (line.Length == 0 || line[0] == '#')
 				{
 					continue;
 				}

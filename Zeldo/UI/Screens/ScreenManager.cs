@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Graphics;
+﻿using System.Collections.Generic;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
@@ -31,7 +26,7 @@ namespace Zeldo.UI.Screens
 		public void Load(Canvas canvas)
 		{
 			inventoryScreen = new InventoryScreen();
-			inventoryScreen.Visible = false;
+			inventoryScreen.IsVisible = false;
 			canvas.Add(inventoryScreen);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
@@ -51,7 +46,7 @@ namespace Zeldo.UI.Screens
 		{
 			if (data.Query(controls.Inventory, InputStates.PressedThisFrame))
 			{
-				inventoryScreen.Visible = !inventoryScreen.Visible;
+				inventoryScreen.IsVisible = !inventoryScreen.IsVisible;
 			}
 		}
 	}

@@ -31,10 +31,9 @@ namespace Zeldo.UI.Speech
 		{
 			font = ContentCache.GetFont("Default");
 			lines = new List<SpriteText>();
-			Bounds = new Bounds2D(500, 150);
 			Anchor = Alignments.Bottom;
 			Offset = new ivec2(0, 100);
-			Centered = true;
+			IsCentered = true;
 		}
 
 		public int Width
@@ -62,9 +61,9 @@ namespace Zeldo.UI.Speech
 
 		public void Refresh(DialogueToken token)
 		{
-			if (!Visible)
+			if (!IsVisible)
 			{
-				Visible = true;
+				IsVisible = true;
 			}
 
 			string[] wrapped = Utilities.WrapLines(token.Value, font, Bounds.Width - Padding * 2);

@@ -13,9 +13,19 @@ namespace Engine.Utility
 			return JObject.Parse(File.ReadAllText(Path + filename));
 		}
 
-		public static T Deserialize<T>(string filename)
+		public static T Deserialize<T>(string filename, bool useTypes = false)
 		{
-			return JsonConvert.DeserializeObject<T>(File.ReadAllText(Path + filename));
+			var raw = File.ReadAllText(Path + filename);
+
+			if (!useTypes)
+			{
+				return JsonConvert.DeserializeObject<T>(raw);
+			}
+
+			var settings = new JsonSerializerSettings();
+			settings.TypeNameHandling = TypeNameHandling.Auto;
+
+			return JsonConvert.DeserializeObject<T>(raw, settings);
 		}
 	}
 }

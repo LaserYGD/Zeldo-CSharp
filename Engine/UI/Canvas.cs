@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
@@ -6,6 +7,7 @@ using Engine.Interfaces;
 using Engine.Interfaces._2D;
 using Engine.Messaging;
 using Engine.Sound;
+using Engine.Utility;
 using GlmSharp;
 
 namespace Engine.UI
@@ -23,7 +25,7 @@ namespace Engine.UI
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) =>
 			{
-				elements.ForEach(PlaceElement);
+				elements.ForEach(e => e.Location = ComputePlacement(e));
 			});
 		}
 
@@ -39,11 +41,26 @@ namespace Engine.UI
 			MessageSystem.Unsubscribe(this);
 		}
 
+		public void Load(string jsonFilename)
+		{
+			foreach (var element in JsonUtilities.Deserialize<CanvasElement[]>(jsonFilename, true))
+			{
+				Add(element);
+			}
+		}
+
 		public void Add(CanvasElement element)
 		{
+			var placement = ComputePlacement(element);
+
+			if (element.IsCentered)
+			{
+				placement -= element.Bounds.Dimensions / 2;
+			}
+
+			element.Location = placement;
 			element.Canvas = this;
 			elements.Add(element);
-			PlaceElement(element);
 
 			if (element.UsesRenderTarget)
 			{
@@ -67,7 +84,7 @@ namespace Engine.UI
 			return elements.OfType<T>().First();
 		}
 
-		private void PlaceElement(CanvasElement element)
+		private ivec2 ComputePlacement(CanvasElement element)
 		{
 			Alignments anchor = element.Anchor;
 
@@ -84,7 +101,7 @@ namespace Engine.UI
 			int x = left ? offset.x : (right ? width - offset.x : width / 2 + offset.x);
 			int y = top ? offset.y : (bottom ? height - offset.y : height / 2 + offset.y);
 
-			element.Location = new ivec2(x, y);
+			return new ivec2(x, y);
 		}
 
 		public void Update(float dt)
@@ -96,7 +113,7 @@ namespace Engine.UI
 
 			foreach (CanvasElement element in elements)
 			{
-				if (element.Visible)
+				if (element.IsVisible)
 				{
 					element.Update(dt);
 				}
@@ -106,7 +123,7 @@ namespace Engine.UI
 			{
 				var element = elements[i];
 
-				if (element.MarkedForDestruction)
+				if (element.IsMarkedForDestruction)
 				{
 					element.Dispose();
 					elements.RemoveAt(i);
@@ -133,7 +150,7 @@ namespace Engine.UI
 
 			foreach (CanvasElement element in elements)
 			{
-				if (element.Visible)
+				if (element.IsVisible)
 				{
 					element.Draw(sb);
 				}

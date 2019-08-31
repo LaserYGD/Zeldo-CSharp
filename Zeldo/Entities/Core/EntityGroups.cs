@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Zeldo.Entities.Core
 {
+	// TODO: Consider whether entity groups are needed at all (likely used to more efficiently query entities).
 	public enum EntityGroups
 	{
+		Boss,
 		Character,
 		Enemy,
 

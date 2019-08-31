@@ -97,14 +97,8 @@ namespace Zeldo
 			mainSprite = new Sprite(mainTarget, null, Alignments.Left | Alignments.Top);
 			mainSprite.Mods = SpriteModifiers.FlipVertical;
 
-			PlayerHealthDisplay healthDisplay = new PlayerHealthDisplay();
-			PlayerManaDisplay manaDisplay = new PlayerManaDisplay();
-			PlayerDebugView debugView = new PlayerDebugView();
-
 			canvas = new Canvas();
-			canvas.Add(healthDisplay);
-			canvas.Add(manaDisplay);
-			canvas.Add(debugView);
+			canvas.Load("Hud.json");
 
 			screenManager = new ScreenManager();
 			screenManager.Load(canvas);		
@@ -257,13 +251,7 @@ namespace Zeldo
 			MasterRenderer3D renderer = scene.Renderer;
 			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.35f, -0.7f));
 
-			Player player = new Player
-			{
-				HealthDisplay = healthDisplay,
-				ManaDisplay = manaDisplay,
-				DebugView = debugView
-			};
-
+			Player player = new Player();
 			player.Position = CreateDemoCubes ? new vec3(2, 3, -3.5f) : new vec3(2, 3, -2);
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
@@ -406,7 +394,8 @@ namespace Zeldo
 			glViewport(0, 0, (uint)Resolution.WindowWidth, (uint)Resolution.WindowHeight);
 
 			sb.ApplyTarget(null);
-			mainSprite.Draw(sb);		
+			mainSprite.Draw(sb);
+
 			canvas.Draw(sb);
 			
 			sb.Flush();

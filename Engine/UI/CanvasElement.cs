@@ -10,50 +10,45 @@ namespace Engine.UI
 {
 	public abstract class CanvasElement : IBoundable2D, IDynamic, IRenderable2D, IDisposable
 	{
-		private ivec2 location;
+		protected Bounds2D bounds;
 
 		protected CanvasElement()
 		{
 			Components = new ComponentCollection();
-			Visible = true;
+			bounds = new Bounds2D();
+			IsVisible = true;
 		}
 
 		protected ComponentCollection Components { get; }
 
-		protected bool Centered { get; set; }
-
 		public virtual ivec2 Location
 		{
-			get => location;
-			set
-			{
-				location = value;
-
-				if (Bounds == null)
-				{
-					return;
-				}
-
-				if (Centered)
-				{
-					Bounds.Center = value;
-				}
-				else
-				{
-					Bounds.Location = value;
-				}
-			}
+			get => bounds.Location;
+			set => bounds.Location = value;
 		}
 
-		public bool Visible { get; set; }
+		public bool IsVisible { get; set; }
+		public bool IsCentered { get; protected set; }
+		public bool IsMarkedForDestruction { get; protected set; }
 		public bool UsesRenderTarget { get; protected set; }
-		public bool MarkedForDestruction { get; protected set; }
 
 		public Alignments Anchor { get; set; }
 
 		public ivec2 Offset { get; set; }
-		public Bounds2D Bounds { get; protected set; }
+		public Bounds2D Bounds => bounds;
 		public Canvas Canvas { get; set; }
+
+		public int Width
+		{
+			get => bounds.Width;
+			set => bounds.Width = value;
+		}
+
+		public int Height
+		{
+			get => bounds.Height;
+			set => bounds.Height = value;
+		}
 
 		public virtual void Dispose()
 		{

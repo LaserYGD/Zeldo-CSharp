@@ -53,6 +53,8 @@ namespace Engine.Core._2D
 			}
 		}
 
+		public int Size => font.Size;
+
 		public bool UseLiteralMeasuring
 		{
 			get => useLiteralMeasuring;

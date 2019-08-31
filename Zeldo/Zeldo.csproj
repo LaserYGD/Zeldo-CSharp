@@ -92,7 +92,9 @@
     <None Include="Content\Json\Fragments\Windmill\Windmill.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Json\Hud.json" />
+    <None Include="Content\Json\Hud.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Json\Items.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -165,6 +167,9 @@
     <None Include="Content\Properties\Enemy.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Properties\Hud.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Properties\Player.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -217,6 +222,8 @@
     <Compile Include="CustomMessageTypes.cs" />
     <Compile Include="Data\SaveSlot.cs" />
     <Compile Include="Data\TileFlags.cs" />
+    <Compile Include="Entities\Bosses\Boss.cs" />
+    <Compile Include="Entities\Bosses\OctopusBoss.cs" />
     <Compile Include="Entities\Characters\Character.cs" />
     <Compile Include="Entities\Characters\LeviathonHead.cs" />
     <Compile Include="Entities\Characters\LeviathonTentacle.cs" />
@@ -301,12 +308,12 @@
     <Compile Include="State\SplashLoop.cs" />
     <Compile Include="UI\Controls\ToggleButton.cs" />
     <Compile Include="UI\Controls\Slider.cs" />
+    <Compile Include="UI\Hud\BossHealthBar.cs" />
     <Compile Include="UI\Hud\ItemShowcaseDisplay.cs" />
     <Compile Include="UI\Hud\PlayerHealthDisplay.cs" />
-    <Compile Include="UI\Hud\PlayerManaDisplay.cs" />
     <Compile Include="UI\Hud\WatchDisplay.cs" />
     <Compile Include="UI\Letterbox.cs" />
-    <Compile Include="UI\PlayerDebugView.cs" />
+    <Compile Include="UI\DebugView.cs" />
     <Compile Include="UI\Screens\Settings\AudioScreen.cs" />
     <Compile Include="UI\Menus\PauseMenu.cs" />
     <Compile Include="UI\Screens\Settings\ControlScreen.cs" />

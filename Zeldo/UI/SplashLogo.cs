@@ -20,7 +20,7 @@ namespace Zeldo.UI
 
 		public SplashLogo()
 		{
-			Centered = true;
+			IsCentered = true;
 			spriteText = new SpriteText("Debug", "[Grimgaming]", Alignments.Center);
 			spriteText.UseLiteralMeasuring = true;
 

@@ -1,6 +1,20 @@
-﻿{
-	"ItemShowcase": {
-		"Anchor": 0,
-		"Offset": "0, 0"
+﻿[
+	{
+		"$type": "Zeldo.UI.Hud.BossHealthBar, Zeldo",
+		"Anchor": 8,
+		"Offset": [0, 80],
+		"Width": 700,
+		"Height": 30,
+		"IsVisible": false
+	},
+	{
+		"$type": "Zeldo.UI.DebugView, Zeldo",
+		"Anchor": 5,
+		"Offset": [10, 10]
+	},
+	{
+		"$type": "Zeldo.UI.Hud.PlayerHealthDisplay, Zeldo",
+		"Anchor": 5,
+		"Offset": [15, 30]
 	}
-}
+]
