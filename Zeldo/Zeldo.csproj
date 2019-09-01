@@ -134,6 +134,9 @@
     <None Include="Content\Meshes\Player.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Meshes\Tentacle.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Meshes\Triangle.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -307,6 +310,7 @@
     <Compile Include="State\GameplayLoop.cs" />
     <Compile Include="State\Gamestates.cs" />
     <Compile Include="State\SplashLoop.cs" />
+    <Compile Include="TentacleTester.cs" />
     <Compile Include="UI\Controls\ToggleButton.cs" />
     <Compile Include="UI\Controls\Slider.cs" />
     <Compile Include="UI\Hud\BossHealthBar.cs" />

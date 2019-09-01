@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Engine.Animation;
 using Engine.Core;
 using Engine.Core._2D;
@@ -7,9 +6,7 @@ using Engine.Core._3D;
 using Engine.Interfaces._3D;
 using Engine.Lighting;
 using Engine.Shaders;
-using Engine.View;
 using GlmSharp;
-using static Engine.GL;
 
 namespace Engine.Graphics._3D.Rendering
 {

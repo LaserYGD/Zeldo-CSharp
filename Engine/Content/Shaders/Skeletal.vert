@@ -14,7 +14,7 @@ out vec4 fShadowMapCoords;
 uniform mat4 orientation;
 uniform mat4 mvp;
 uniform mat4 lightBiasMatrix;
-uniform mat4 bones[2];
+uniform mat4 bones[20];
 
 void main()
 {
@@ -23,22 +23,11 @@ void main()
 
 	for (int i = 0; i < boneCount; i++)
 	{
-		int index = boneIndexes[i];
-
-		if (index == -1)
-		{
-			break;
-		}
-
-		mat4 bone = bones[index] * boneWeights[i];
+		mat4 bone = bones[boneIndexes[i]] * boneWeights[i];
 
 		position *= bone;
 		normal *= bone;
 	}
-
-//	position.x *= boneWeights.x;
-//	position.x *= boneIndexes.x + 1;
-//	position.x *= boneCount;
 
 	gl_Position = mvp * position;
 
