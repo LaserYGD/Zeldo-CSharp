@@ -1,15 +1,24 @@
-﻿using Engine.Interfaces._3D;
+﻿using System;
+using System.Linq;
+using Engine.Graphics._3D;
+using Engine.Interfaces._3D;
 using GlmSharp;
 
 namespace Engine.Animation
 {
 	public class Skeleton : IRenderable3D
 	{
-		public Skeleton(Bone[] bones)
+		public Skeleton(string filename) : this(ContentCache.GetMesh(filename))
 		{
-			Bones = bones;
 		}
 
+		public Skeleton(Mesh mesh)
+		{
+			Mesh = mesh;
+			Bones = new Bone[mesh.BoneIndexes.Max(p => Math.Max(p.x, p.y))];
+		}
+
+		public Mesh Mesh { get; }
 		public Bone[] Bones { get; }
 
 		public vec3 Position { get; set; }

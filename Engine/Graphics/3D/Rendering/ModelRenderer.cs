@@ -39,9 +39,15 @@ namespace Engine.Graphics._3D.Rendering
 		
 		public override unsafe void Add(Model item)
 		{
-			Add(item.Mesh, item);
-
 			Mesh mesh = item.Mesh;
+
+			Add(mesh, item);
+
+			// Each mesh only needs to be buffered to GPU memory once (the first time it's used).
+			if (mesh.Handle != null)
+			{
+				return;
+			}
 
 			var points = mesh.Points;
 			var source = mesh.Source;
@@ -73,12 +79,6 @@ namespace Engine.Graphics._3D.Rendering
 
 			int size = sizeof(float) * buffer.Length;
 			int localIndexSize = sizeof(ushort) * indices.Length;
-
-			// Each mesh only needs to be buffered to GPU memory once (the first time it's used).
-			if (mesh.Handle != null)
-			{
-				return;
-			}
 
 			var handle = new MeshHandle(indices.Length, indexSize, maxIndex);
 			mesh.Handle = handle;
@@ -117,6 +117,7 @@ namespace Engine.Graphics._3D.Rendering
 
 		public override void Prepare()
 		{
+			// TODO: This call to glEnable can probably be removed (since it'll already be enabled via the earlier call to PrepareShadow()).
 			glEnable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
 

@@ -92,3 +92,28 @@
 
 - If there's a dash, dashing into a wall should allow an immediate, smooth wall jump (likely with a small amount of input buffering) => Inspired by watching Spike play the forced aerial section of the HK arena and dashing into nearby walls, but still stuck in the dash animation and unable to cleanly and quickly gain wall control
 
+- Probably better to focus on interesting, memorable boss fights rather than strictly long or difficult ones (although the various gimmicks should still generally introduce fun, engaging new challenges as well) => Inspired by watching Eiko face an early boss in Astral Chain, and I was intrigued at what looked like free exploration and tracking down a boss before starting a fight in an open environment
+
+- Should have the effects of defeating bosses be noticeable and worthwhile in some way
+
+- Hidden passage from the throne room to another area (or maybe from a dungeon cell?)
+
+- Hidden area in the ground, signalled by a hollow sound when you walk across it (inspired by the hidden White Defender boss in HK, accessed by ground pounding an unmarked section of floor) => Could arguably use subtle environmental arrangements to point to a special location
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

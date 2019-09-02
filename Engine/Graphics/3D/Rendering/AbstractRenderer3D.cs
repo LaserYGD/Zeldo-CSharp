@@ -8,6 +8,7 @@ using static Engine.GL;
 
 namespace Engine.Graphics._3D.Rendering
 {
+	// TODO: Move map renderer functionality down here, and convert the existing MapRenderer to a mesh renderer.
 	public abstract class AbstractRenderer3D<T> : IDisposable where T : IRenderable3D
 	{
 		private uint bufferId;
@@ -22,7 +23,7 @@ namespace Engine.Graphics._3D.Rendering
 		protected Shader Shader { get; set; }
 		protected GlobalLight Light { get; }
 
-		protected unsafe void Bind(Shader shader, uint bufferId, uint indexId = 0)
+		protected unsafe void Bind(Shader shader, uint bufferId, uint indexId)
 		{
 			this.bufferId = bufferId;
 			this.indexId = indexId;

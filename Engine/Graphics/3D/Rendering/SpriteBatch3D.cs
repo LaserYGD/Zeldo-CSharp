@@ -108,6 +108,7 @@ namespace Engine.Graphics._3D.Rendering
 
 		public override void Prepare()
 		{
+			// TODO: This can probably be removed (since Prepare() is called after PrepareShadow() and face culling will already be disabled).
 			glDisable(GL_CULL_FACE);
 
 			base.Prepare();

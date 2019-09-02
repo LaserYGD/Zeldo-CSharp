@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Engine.Interfaces._3D;
 using Engine.Lighting;
-using GlmSharp;
 
 namespace Engine.Graphics._3D.Rendering
 {

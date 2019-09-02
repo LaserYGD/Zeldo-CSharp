@@ -109,6 +109,7 @@ namespace Engine.Graphics._3D.Rendering
 
 			DrawShadow(modelRenderer);
 			DrawShadow(spriteBatch3D);
+			DrawShadow(skeletonRenderer);
 		}
 
 		private void DrawShadow<T>(AbstractRenderer3D<T> renderer) where T : IRenderable3D
@@ -147,6 +148,7 @@ namespace Engine.Graphics._3D.Rendering
 
 			Draw(modelRenderer);
 			Draw(spriteBatch3D);
+			Draw(skeletonRenderer);
 		}
 
 		private void Draw<T>(AbstractRenderer3D<T> renderer) where T : IRenderable3D

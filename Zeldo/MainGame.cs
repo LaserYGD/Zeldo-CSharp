@@ -68,6 +68,7 @@ namespace Zeldo
 
 		private SpaceVisualizer spaceVisualizer;
 		private JitterVisualizer jitterVisualizer;
+		private TentacleTester tentacleTester;
 
 		private GameLoop activeLoop;
 
@@ -153,6 +154,8 @@ namespace Zeldo
 			};
 
 			scene.LoadFragment("Triangle.json");
+
+			tentacleTester = new TentacleTester(scene);
 
 			// Create testing cubes.
 			var seekers = new List<DummyCube>();
@@ -382,8 +385,6 @@ namespace Zeldo
 			jitterVisualizer.Draw(camera);
 			//spaceVisualizer.Draw();
 
-			TestCurves();
-
 			// Render 2D targets.
 			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
@@ -402,38 +403,6 @@ namespace Zeldo
 			canvas.Draw(sb);
 			
 			sb.Flush();
-		}
-
-		private void TestCurves()
-		{
-			var player = scene.GetEntities(EntityGroups.Player)[0];
-
-			vec3[] controlPoints =
-			{
-				new vec3(0, 3, 0),
-				player.Position,
-				new vec3(3, 2, -1),
-				new vec3(4, 4, 2),
-			};
-
-			var curve = new Curve3D();
-			curve.ControlPoints.AddRange(controlPoints);
-
-			var points = curve.Evaluate(30);
-
-			// Draw control segments.
-			for (int i = 0; i < controlPoints.Length - 1; i++)
-			{
-				primitives.DrawLine(controlPoints[i], controlPoints[i + 1], Color.White);
-			}
-
-			// Draw curve segments.
-			for (int i = 0; i < points.Length - 1; i++)
-			{
-				primitives.DrawLine(points[i], points[i + 1], Color.Yellow);
-			}
-
-			primitives.Flush();
 		}
 	}
 }
