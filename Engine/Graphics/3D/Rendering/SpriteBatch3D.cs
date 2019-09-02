@@ -8,23 +8,19 @@ using static Engine.GL;
 
 namespace Engine.Graphics._3D.Rendering
 {
-	public class SpriteBatch3D : MapRenderer3D<uint, Sprite3D>
+	public class SpriteBatch3D : AbstractRenderer3D<uint, Sprite3D>
 	{
 		public unsafe SpriteBatch3D(GlobalLight light) : base(light)
 		{
-			GLUtilities.GenerateBuffers(out uint bufferId, out uint indexId);
+			GLUtilities.GenerateBuffers(out bufferId, out indexId);
 
-			var shader = new Shader();
+			shader = new Shader();
 			shader.Attach(ShaderTypes.Vertex, "Sprite3D.vert");
 			shader.Attach(ShaderTypes.Fragment, "Sprite3D.frag");
 			shader.AddAttribute<float>(3, GL_FLOAT);
 			shader.AddAttribute<float>(2, GL_FLOAT);
-			shader.Initialize();
-			shader.Use();
-			shader.SetUniform("textureSampler", 0);
-			shader.SetUniform("shadowSampler", 1);
 
-			Bind(shader, bufferId, indexId);
+			Bind(bufferId, indexId);
 
 			// Buffer vertex data.
 			vec2[] points =
@@ -124,8 +120,7 @@ namespace Engine.Graphics._3D.Rendering
 		public override unsafe void Draw(Sprite3D item, mat4? vp)
 		{
 			PrepareShader(item, vp);
-			Shader.SetUniform("tint", item.Color.ToVec4());
-			
+			shader.SetUniform("tint", item.Color.ToVec4());
 			glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (void*)0);
 		}
 	}

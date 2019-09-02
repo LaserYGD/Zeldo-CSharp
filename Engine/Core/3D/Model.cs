@@ -4,7 +4,7 @@ using GlmSharp;
 
 namespace Engine.Core._3D
 {
-	public class Model : IRenderable3D, IScalable3D
+	public class Model : IMeshUser, IScalable3D
 	{
 		public Model(string filename) : this(ContentCache.GetMesh(filename))
 		{

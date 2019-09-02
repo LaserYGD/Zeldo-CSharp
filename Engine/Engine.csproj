@@ -149,12 +149,12 @@
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
     <Compile Include="Graphics\3D\Rendering\AbstractRenderer3D.cs" />
-    <Compile Include="Graphics\3D\Rendering\MapRenderer3D.cs" />
     <Compile Include="Graphics\3D\InstancedMeshHandle.cs" />
     <Compile Include="Graphics\3D\Loaders\DaeLoader.cs" />
     <Compile Include="Graphics\3D\Rendering\MasterRenderer3D.cs" />
     <Compile Include="Graphics\3D\MeshHandle.cs" />
     <Compile Include="Graphics\3D\Loaders\ObjLoader.cs" />
+    <Compile Include="Graphics\3D\Rendering\MeshRenderer.cs" />
     <Compile Include="Graphics\3D\Rendering\ModelRenderer.cs" />
     <Compile Include="Graphics\3D\Rendering\SkeletonRenderer.cs" />
     <Compile Include="Graphics\3D\ShadowMapSizeTester.cs" />
@@ -170,6 +170,7 @@
     <Compile Include="Interfaces\2D\IBoundable2D.cs" />
     <Compile Include="Interfaces\2D\IClickable.cs" />
     <Compile Include="Interfaces\2D\IRenderTargetUser2D.cs" />
+    <Compile Include="Interfaces\3D\IMeshUser.cs" />
     <Compile Include="Interfaces\3D\IRenderable3D.cs" />
     <Compile Include="Interfaces\3D\IScalable3D.cs" />
     <Compile Include="Lighting\GlobalLight.cs" />

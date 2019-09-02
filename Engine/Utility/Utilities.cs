@@ -28,8 +28,6 @@ namespace Engine.Utility
 			return (byte)((end - start) * t + start);
 		}
 
-		public static byte[] 
-
 		public static int Lerp(int start, int end, float t)
 		{
 			return (int)((end - start) * t) + start;

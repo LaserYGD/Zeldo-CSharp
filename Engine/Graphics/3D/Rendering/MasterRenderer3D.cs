@@ -112,15 +112,15 @@ namespace Engine.Graphics._3D.Rendering
 			DrawShadow(skeletonRenderer);
 		}
 
-		private void DrawShadow<T>(AbstractRenderer3D<T> renderer) where T : IRenderable3D
+		private void DrawShadow<K, V>(AbstractRenderer3D<K, V> renderer) where V : IRenderable3D
 		{
 			renderer.PrepareShadow();
 
-			List<T> items;
+			List<V> items;
 
 			while ((items = renderer.RetrieveNext()) != null)
 			{
-				foreach (T item in items)
+				foreach (V item in items)
 				{
 					// Even if the object doesn't cast a shadow, its world matrix is recomputed here for use during
 					// normal rendering.
@@ -151,15 +151,15 @@ namespace Engine.Graphics._3D.Rendering
 			Draw(skeletonRenderer);
 		}
 
-		private void Draw<T>(AbstractRenderer3D<T> renderer) where T : IRenderable3D
+		private void Draw<K, V>(AbstractRenderer3D<K, V> renderer) where V : IRenderable3D
 		{
 			renderer.Prepare();
 
-			List<T> items;
+			List<V> items;
 
 			while ((items = renderer.RetrieveNext()) != null)
 			{
-				foreach (T item in items)
+				foreach (V item in items)
 				{
 					renderer.Draw(item, VpMatrix);
 				}

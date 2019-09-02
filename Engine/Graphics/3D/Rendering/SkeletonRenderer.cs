@@ -7,23 +7,11 @@ using static Engine.GL;
 
 namespace Engine.Graphics._3D.Rendering
 {
-	public class SkeletonRenderer : MapRenderer3D<Mesh, Skeleton>
+	public class SkeletonRenderer : MeshRenderer<Skeleton>
 	{
-		private uint bufferId;
-		private uint indexId;
-
-		private int bufferSize;
-		private int indexSize;
-		private int maxIndex;
-
-		public SkeletonRenderer(GlobalLight light) : base(light)
+		public SkeletonRenderer(GlobalLight light) : base(light, "skeletal")
 		{
-			int bufferCapacity = Properties.GetInt("skeletal.buffer.capacity");
-			int indexCapacity = Properties.GetInt("skeletal.index.capacity");
-
-			GLUtilities.AllocateBuffers(bufferCapacity, indexCapacity, out bufferId, out indexId, GL_STATIC_DRAW);
-
-			Shader shader = new Shader();
+			shader = new Shader();
 			shader.Attach(ShaderTypes.Vertex, "Skeletal.vert");
 			shader.Attach(ShaderTypes.Fragment, "ModelShadow.frag");
 			shader.AddAttribute<float>(3, GL_FLOAT);
@@ -32,27 +20,12 @@ namespace Engine.Graphics._3D.Rendering
 			shader.AddAttribute<float>(2, GL_FLOAT);
 			shader.AddAttribute<short>(2, GL_SHORT, ShaderAttributeFlags.IsInteger);
 			shader.AddAttribute<int>(1, GL_INT, ShaderAttributeFlags.IsInteger);
-			shader.Initialize();
-			shader.Use();
-			shader.SetUniform("shadowSampler", 0);
-			shader.SetUniform("textureSampler", 1);
 
-			Bind(Shader, bufferId, indexId);
+			Bind(bufferId, indexId);
 		}
 
-		public override unsafe void Add(Skeleton item)
+		protected override float[] GetData(Mesh mesh)
 		{
-			Mesh mesh = item.Mesh;
-
-			Add(mesh, item);
-
-			// Each skeleton (mesh + bone data) only needs to be buffered to GPU memory once (the first time it's
-			// used).
-			if (mesh.Handle != null)
-			{
-				return;
-			}
-
 			var points = mesh.Points;
 			var source = mesh.Source;
 			var normals = mesh.Normals;
@@ -91,57 +64,11 @@ namespace Engine.Graphics._3D.Rendering
 				buffer[start + 9] = w.y;
 
 				// Both indexes (interpreted as shorts by OpenGL) are combined into the same float.
-				buffer[start + 10] = BitConverter.ToSingle(new [] { b1[0], b1[1], b2[0], b2[1] }, 0);
+				buffer[start + 10] = BitConverter.ToSingle(new[] { b1[0], b1[1], b2[0], b2[1] }, 0);
 				buffer[start + 11] = BitConverter.ToSingle(b3, 0);
 			}
 
-			ushort[] indices = mesh.Indices;
-
-			int size = sizeof(float) * buffer.Length;
-			int localIndexSize = sizeof(ushort) * indices.Length;
-
-			var handle = new MeshHandle(indices.Length, indexSize, maxIndex);
-			mesh.Handle = handle;
-
-			maxIndex += mesh.MaxIndex + 1;
-			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-
-			fixed (float* address = &buffer[0])
-			{
-				glBufferSubData(GL_ARRAY_BUFFER, bufferSize, (uint)size, address);
-			}
-
-			bufferSize += size;
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
-
-			fixed (ushort* address = &indices[0])
-			{
-				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indexSize, (uint)localIndexSize, address);
-			}
-
-			indexSize += localIndexSize;
-		}
-
-		public override void Remove(Skeleton item)
-		{
-			Remove(item.Mesh, item);
-		}
-
-		public override void PrepareShadow()
-		{
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_FRONT);
-
-			base.PrepareShadow();
-		}
-
-		public override void Prepare()
-		{
-			// TODO: This call to glEnable can probably be removed (since it'll already be enabled via the earlier call to PrepareShadow()).
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-
-			base.Prepare();
+			return buffer;
 		}
 
 		public override void Draw(Skeleton item, mat4? vp)

@@ -9,27 +9,40 @@ using static Engine.GL;
 namespace Engine.Graphics._3D.Rendering
 {
 	// TODO: Move map renderer functionality down here, and convert the existing MapRenderer to a mesh renderer.
-	public abstract class AbstractRenderer3D<T> : IDisposable where T : IRenderable3D
+	public abstract class AbstractRenderer3D<K, V> : IDisposable where V : IRenderable3D
 	{
-		private uint bufferId;
-		private uint indexId;
+		protected uint bufferId;
+		protected uint indexId;
+
+		protected Shader shader;
+
 		private uint shadowVao;
+		private int nextIndex;
+
+		private Dictionary<K, List<V>> map;
+
+		// A separate list is needed to access keys by index.
+		private List<K> keys;
 
 		protected AbstractRenderer3D(GlobalLight light)
 		{
 			Light = light;
+			map = new Dictionary<K, List<V>>();
+			keys = new List<K>();
 		}
 
-		protected Shader Shader { get; set; }
 		protected GlobalLight Light { get; }
 
-		protected unsafe void Bind(Shader shader, uint bufferId, uint indexId)
+		protected unsafe void Bind(uint bufferId, uint indexId)
 		{
 			this.bufferId = bufferId;
 			this.indexId = indexId;
 
+			shader.Initialize();
 			shader.Bind(bufferId, indexId);
-			Shader = shader;
+			shader.Use();
+			shader.SetUniform("textureSampler", 0);
+			shader.SetUniform("shadowSampler", 1);
 			
 			uint stride = shader.Stride;
 
@@ -50,7 +63,7 @@ namespace Engine.Graphics._3D.Rendering
 
 		public unsafe void Dispose()
 		{
-			Shader.Dispose();
+			shader.Dispose();
 
 			// The index buffer ID isn't bound for 3D sprites (which don't use indices for rendering).
 			if (indexId == 0)
@@ -75,10 +88,45 @@ namespace Engine.Graphics._3D.Rendering
 			}
 		}
 
-		public abstract List<T> RetrieveNext();
+		public abstract void Add(V item);
+		public abstract void Remove(V item);
 
-		public abstract void Add(T item);
-		public abstract void Remove(T item);
+		protected void Add(K key, V item)
+		{
+			if (!map.TryGetValue(key, out var list))
+			{
+				list = new List<V>();
+				map.Add(key, list);
+				keys.Add(key);
+			}
+
+			list.Add(item);
+		}
+
+		protected void Remove(K key, V item)
+		{
+			map[key].Remove(item);
+		}
+
+		public List<V> RetrieveNext()
+		{
+			if (nextIndex < keys.Count)
+			{
+				K key = keys[nextIndex++];
+
+				// This call allows binding any relevant open GL state before drawing begins.
+				Apply(key);
+
+				return map[key];
+			}
+
+			// This resets the renderer for the next phase.
+			nextIndex = 0;
+
+			return null;
+		}
+
+		protected abstract void Apply(K key);
 
 		public virtual void PrepareShadow()
 		{
@@ -89,25 +137,25 @@ namespace Engine.Graphics._3D.Rendering
 
 		public virtual void Prepare()
 		{
-			Shader.Apply();
-			Shader.SetUniform("lightDirection", Light.Direction);
-			Shader.SetUniform("lightColor", Light.Color.ToVec3());
-			Shader.SetUniform("ambientIntensity", Light.AmbientIntensity);
+			shader.Apply();
+			shader.SetUniform("lightDirection", Light.Direction);
+			shader.SetUniform("lightColor", Light.Color.ToVec3());
+			shader.SetUniform("ambientIntensity", Light.AmbientIntensity);
 		}
 
-		protected void PrepareShader(T item, mat4? vp)
+		protected void PrepareShader(V item, mat4? vp)
 		{
 			if (vp.HasValue)
 			{
 				mat4 world = item.WorldMatrix;
 				quat orientation = item.Orientation;
 
-				Shader.SetUniform("orientation", orientation.ToMat4);
-				Shader.SetUniform("mvp", vp.Value * world);
-				Shader.SetUniform("lightBiasMatrix", Light.BiasMatrix * world);
+				shader.SetUniform("orientation", orientation.ToMat4);
+				shader.SetUniform("mvp", vp.Value * world);
+				shader.SetUniform("lightBiasMatrix", Light.BiasMatrix * world);
 			}
 		}
 
-		public abstract void Draw(T item, mat4? vp);
+		public abstract void Draw(V item, mat4? vp);
 	}
 }

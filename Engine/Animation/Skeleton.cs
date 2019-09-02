@@ -6,7 +6,7 @@ using GlmSharp;
 
 namespace Engine.Animation
 {
-	public class Skeleton : IRenderable3D
+	public class Skeleton : IMeshUser
 	{
 		public Skeleton(string filename) : this(ContentCache.GetMesh(filename))
 		{

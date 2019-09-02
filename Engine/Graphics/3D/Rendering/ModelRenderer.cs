@@ -6,49 +6,22 @@ using static Engine.GL;
 
 namespace Engine.Graphics._3D.Rendering
 {
-	public class ModelRenderer : MapRenderer3D<Mesh, Model>
+	public class ModelRenderer : MeshRenderer<Model>
 	{
-		private uint bufferId;
-		private uint indexId;
-
-		// These sizes are updated as data is buffered to the GPU. The data isn't actually stored here.
-		private int bufferSize;
-		private int indexSize;
-		private int maxIndex;
-
-		public ModelRenderer(GlobalLight light) : base(light)
+		public ModelRenderer(GlobalLight light) : base(light, "model")
 		{
-			int bufferCapacity = Properties.GetInt("model.buffer.capacity");
-			int indexCapacity = Properties.GetInt("model.index.capacity");
-
-			GLUtilities.AllocateBuffers(bufferCapacity, indexCapacity, out bufferId, out indexId, GL_STATIC_DRAW);
-
-			var shader = new Shader();
+			shader = new Shader();
 			shader.Attach(ShaderTypes.Vertex, "ModelShadow.vert");
 			shader.Attach(ShaderTypes.Fragment, "ModelShadow.frag");
 			shader.AddAttribute<float>(3, GL_FLOAT);
 			shader.AddAttribute<float>(2, GL_FLOAT);
 			shader.AddAttribute<float>(3, GL_FLOAT);
-			shader.Initialize();
-			shader.Use();
-			shader.SetUniform("textureSampler", 0);
-			shader.SetUniform("shadowSampler", 1);
 
-			Bind(shader, bufferId, indexId);
+			Bind(bufferId, indexId);
 		}
-		
-		public override unsafe void Add(Model item)
+
+		protected override float[] GetData(Mesh mesh)
 		{
-			Mesh mesh = item.Mesh;
-
-			Add(mesh, item);
-
-			// Each mesh only needs to be buffered to GPU memory once (the first time it's used).
-			if (mesh.Handle != null)
-			{
-				return;
-			}
-
 			var points = mesh.Points;
 			var source = mesh.Source;
 			var normals = mesh.Normals;
@@ -75,58 +48,7 @@ namespace Engine.Graphics._3D.Rendering
 				buffer[start + 7] = n.z;
 			}
 
-			ushort[] indices = mesh.Indices;
-
-			int size = sizeof(float) * buffer.Length;
-			int localIndexSize = sizeof(ushort) * indices.Length;
-
-			var handle = new MeshHandle(indices.Length, indexSize, maxIndex);
-			mesh.Handle = handle;
-
-			maxIndex += mesh.MaxIndex + 1;
-			glBindBuffer(GL_ARRAY_BUFFER, bufferId);
-
-			fixed (float* address = &buffer[0])
-			{
-				glBufferSubData(GL_ARRAY_BUFFER, bufferSize, (uint)size, address);
-			}
-
-			bufferSize += size;
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
-
-			fixed (ushort* address = &indices[0])
-			{
-				glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indexSize, (uint)localIndexSize, address);
-			}
-
-			indexSize += localIndexSize;
-		}
-
-		public override void Remove(Model item)
-		{
-			Remove(item.Mesh, item);
-		}
-
-		public override void PrepareShadow()
-		{
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_FRONT);
-
-			base.PrepareShadow();
-		}
-
-		public override void Prepare()
-		{
-			// TODO: This call to glEnable can probably be removed (since it'll already be enabled via the earlier call to PrepareShadow()).
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-
-			base.Prepare();
-		}
-
-		protected override void Apply(Mesh key)
-		{
-			key.Texture.Bind(0);
+			return buffer;
 		}
 
 		public override unsafe void Draw(Model item, mat4? vp)
