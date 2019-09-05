@@ -20,12 +20,13 @@ namespace Engine.Graphics._3D.Rendering
 
 		public MasterRenderer3D()
 		{
+			// Note that shader attributes aren't set here since custom VAOs are created per renderer.
 			shadowMapShader = new Shader();
 			shadowMapShader.Attach(ShaderTypes.Vertex, "ShadowMap.vert");
 			shadowMapShader.Attach(ShaderTypes.Fragment, "ShadowMap.frag");
 			shadowMapShader.Initialize();
 			shadowMapShader.Use();
-			//shadowMapShader.SetUniform("image", 0);
+			shadowMapShader.SetUniform("image", 0);
 
 			// These default values are arbitrary, just to make sure something shows up.
 			Light = new GlobalLight();
@@ -61,8 +62,9 @@ namespace Engine.Graphics._3D.Rendering
 		{
 			shadowMapShader.Dispose();
 			shadowMapTarget.Dispose();
-			modelRenderer.Dispose();
 			spriteBatch3D.Dispose();
+			modelRenderer.Dispose();
+			skeletonRenderer.Dispose();
 		}
 
 		public void Add(Model model)
@@ -105,7 +107,6 @@ namespace Engine.Graphics._3D.Rendering
 			Light.RecomputeMatrices(VpMatrix);
 
 			shadowMapTarget.Apply();
-			shadowMapShader.Use();
 
 			DrawShadow(modelRenderer);
 			DrawShadow(spriteBatch3D);
@@ -114,6 +115,8 @@ namespace Engine.Graphics._3D.Rendering
 
 		private void DrawShadow<K, V>(AbstractRenderer3D<K, V> renderer) where V : IRenderable3D
 		{
+			// Skeletons use a custom shadow shader (since skeletal vertices are transformed differently).
+			(renderer.ShadowShader ?? shadowMapShader).Use();
 			renderer.PrepareShadow();
 
 			List<V> items;

@@ -100,11 +100,15 @@
 
 - Hidden area in the ground, signalled by a hollow sound when you walk across it (inspired by the hidden White Defender boss in HK, accessed by ground pounding an unmarked section of floor) => Could arguably use subtle environmental arrangements to point to a special location
 
+- Puzzles involving water manipulation (like using an essence to create an aerial arc of water to swim over a gap) => Could experiment with currents as well
 
+- Octopus boss as the first (or very early) part of the dungeon, as the "keeper" of the water essence (he uses it against you in various ways, which has a side effect of teaching you some of the essence's uses) => That idea of every essence having a "Keeper" seems like a great idea
 
+- Could experiment with wind directions in the windmill dungeon as a puzzle mechanism (like aligning gears or directions) => Skippy's idea, inspired by BotW's Divine Beasts, where pressing buttons or flipping switches affects the entire dungeon at a large scale
 
+- For the windmill, the entire, giant structure could slowly rotate in response to dynamic wind (hear a creak as the structure starts to move, see shafts of sunlight change, look out the window and see yourself rotating), but still maintain the level design (since everything inside the dungeon remained relatively fixed)
 
-
+- Boss with an attack that throws you into the air and knocks you away, but allows you to recover and control yourself using regular movement mechanics (inspired by watching Spike face Champion Gundyr, who has an attack that launches you into the air, followed by a quick shoulder charge) => The boss could even jump after you to add a lot more dynamic movement to the fight
 
 
 

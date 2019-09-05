@@ -69,9 +69,10 @@ namespace Engine
 			glGetUniformLocation = GetDelegate<Delegates.glGetUniformLocation>();
 			glLinkProgram = GetDelegate<Delegates.glLinkProgram>();
 			glShaderSource = GetDelegate<Delegates.glShaderSource>();
-			glUniform1i= GetDelegate<Delegates.glUniform1i>();
-			glUniform1f= GetDelegate<Delegates.glUniform1f>();
-			glUniform3f= GetDelegate<Delegates.glUniform3f>();
+			glUniform1i = GetDelegate<Delegates.glUniform1i>();
+			glUniform1f = GetDelegate<Delegates.glUniform1f>();
+			glUniform3f = GetDelegate<Delegates.glUniform3f>();
+			glUniform3fv = GetDelegate<Delegates.glUniform3fv>();
 			glUniform4f = GetDelegate<Delegates.glUniform4f>();
 			glUniform4fv = GetDelegate<Delegates.glUniform4fv>();
 			glUniformMatrix4fv = GetDelegate<Delegates.glUniformMatrix4fv>();
@@ -890,6 +891,7 @@ namespace Engine
 		public static Delegates.glUniform1i glUniform1i;
 		public static Delegates.glUniform1f glUniform1f;
 		public static Delegates.glUniform3f glUniform3f;
+		public static Delegates.glUniform3fv glUniform3fv;
 		public static Delegates.glUniform4f glUniform4f;
 		public static Delegates.glUniform4fv glUniform4fv;
 		public static Delegates.glUniformMatrix4fv glUniformMatrix4fv;
@@ -982,6 +984,7 @@ namespace Engine
 			public delegate void glUniform1i(int location, int v0);
 			public delegate void glUniform1f(int location, float v0);
 			public delegate void glUniform3f(int location, float v0, float v1, float v2);
+			public delegate void glUniform3fv(int location, uint count, float* value);
 			public delegate void glUniform4f(int location, float v0, float v1, float v2, float v3);
 			public delegate void glUniform4fv(int location, uint count, float* value);
 			public delegate void glUniformMatrix4fv(int location, uint count, bool transpose, float* value);

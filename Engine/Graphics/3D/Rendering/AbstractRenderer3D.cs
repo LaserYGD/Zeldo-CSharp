@@ -8,7 +8,6 @@ using static Engine.GL;
 
 namespace Engine.Graphics._3D.Rendering
 {
-	// TODO: Move map renderer functionality down here, and convert the existing MapRenderer to a mesh renderer.
 	public abstract class AbstractRenderer3D<K, V> : IDisposable where V : IRenderable3D
 	{
 		protected uint bufferId;
@@ -33,6 +32,10 @@ namespace Engine.Graphics._3D.Rendering
 
 		protected GlobalLight Light { get; }
 
+		// Skeletons use a custom shader to create the shadow map (but it's easier and more future-proof to put the
+		// property here).
+		public virtual Shader ShadowShader => null;
+
 		protected unsafe void Bind(uint bufferId, uint indexId)
 		{
 			this.bufferId = bufferId;
@@ -52,16 +55,25 @@ namespace Engine.Graphics._3D.Rendering
 			}
 
 			glBindVertexArray(shadowVao);
-			glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, (void*)0);
-			glVertexAttribPointer(1, 2, GL_FLOAT, false, stride, (void*)(sizeof(float) * 3));
 
-			for (int i = 0; i <= 1; i++)
+			// Using this function allows the skeletal renderer to set up its custom shadow shader properly.
+			int attributeCount = InitializeShadowVao(stride);
+
+			for (int i = 0; i < attributeCount; i++)
 			{
 				glEnableVertexAttribArray((uint)i);
 			}
 		}
 
-		public unsafe void Dispose()
+		protected virtual unsafe int InitializeShadowVao(uint stride)
+		{
+			glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, (void*)0);
+			glVertexAttribPointer(1, 2, GL_FLOAT, false, stride, (void*)(sizeof(float) * 3));
+
+			return 2;
+		}
+
+		public virtual unsafe void Dispose()
 		{
 			shader.Dispose();
 
@@ -145,15 +157,14 @@ namespace Engine.Graphics._3D.Rendering
 
 		protected void PrepareShader(V item, mat4? vp)
 		{
-			if (vp.HasValue)
-			{
-				mat4 world = item.WorldMatrix;
-				quat orientation = item.Orientation;
+			// This function is only called if the VP matrix isn't null (i.e. you're on the regular draw step, not the
+			// shadow map step).
+			mat4 world = item.WorldMatrix;
+			quat orientation = item.Orientation;
 
-				shader.SetUniform("orientation", orientation.ToMat4);
-				shader.SetUniform("mvp", vp.Value * world);
-				shader.SetUniform("lightBiasMatrix", Light.BiasMatrix * world);
-			}
+			shader.SetUniform("orientation", orientation.ToMat4);
+			shader.SetUniform("mvp", vp.Value * world);
+			shader.SetUniform("lightBiasMatrix", Light.BiasMatrix * world);
 		}
 
 		public abstract void Draw(V item, mat4? vp);

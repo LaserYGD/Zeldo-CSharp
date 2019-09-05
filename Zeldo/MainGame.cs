@@ -101,6 +101,7 @@ namespace Zeldo
 
 			canvas = new Canvas();
 			canvas.Load("Hud.json");
+			canvas.GetElement<DebugView>().IsVisible = false;
 
 			screenManager = new ScreenManager();
 			screenManager.Load(canvas);		
@@ -239,7 +240,7 @@ namespace Zeldo
 					var cube = new DummyCube(RigidBodyTypes.Dynamic);
 					cube.Position = new vec3(x, y, z);
 
-					scene.Add(cube);
+					//scene.Add(cube);
 				}
 
 				var staticCube1 = new DummyCube(RigidBodyTypes.Static);
@@ -248,8 +249,8 @@ namespace Zeldo
 				var staticCube2 = new DummyCube(RigidBodyTypes.Static);
 				staticCube2.Position = new vec3(0, 1.5f, 0);
 
-				scene.Add(staticCube1);
-				scene.Add(staticCube2);
+				//scene.Add(staticCube1);
+				//scene.Add(staticCube2);
 			}
 
 			MasterRenderer3D renderer = scene.Renderer;
@@ -364,6 +365,7 @@ namespace Zeldo
 				world.Step(dt, true, PhysicsStep, PhysicsIterations);
 				space.Update();
 				scene.Update(dt);
+				tentacleTester.Update(dt);
 			}
 
 			camera.Update(dt);

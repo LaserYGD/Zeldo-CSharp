@@ -1,5 +1,6 @@
 ﻿using Engine.Interfaces._3D;
 using Engine.Lighting;
+using GlmSharp;
 using static Engine.GL;
 
 namespace Engine.Graphics._3D.Rendering
@@ -84,6 +85,19 @@ namespace Engine.Graphics._3D.Rendering
 			glCullFace(GL_BACK);
 
 			base.Prepare();
+		}
+
+		public override unsafe void Draw(T item, mat4? vp)
+		{
+			if (vp != null)
+			{
+				PrepareShader(item, vp);
+			}
+
+			var handle = item.Mesh.Handle;
+
+			glDrawElementsBaseVertex(GL_TRIANGLES, (uint)handle.Count, GL_UNSIGNED_SHORT, (void*)handle.Offset,
+				handle.BaseVertex);
 		}
 	}
 }

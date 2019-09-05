@@ -49,8 +49,9 @@ namespace Engine.Graphics._3D
 		public vec3 Origin { get; }
 
 		// These two arrays will be left null for non-animated meshes.
-		public ivec2[] BoneIndexes { get; }
-		public vec2[] BoneWeights { get; }
+		// TODO: Remove these setters once tentacle testing is complete.
+		public ivec2[] BoneIndexes { get; set; }
+		public vec2[] BoneWeights { get; set; }
 
 		public ushort[] Indices { get; }
 		public ushort MaxIndex { get; }

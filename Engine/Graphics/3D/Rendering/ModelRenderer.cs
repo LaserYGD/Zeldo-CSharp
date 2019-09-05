@@ -50,15 +50,5 @@ namespace Engine.Graphics._3D.Rendering
 
 			return buffer;
 		}
-
-		public override unsafe void Draw(Model item, mat4? vp)
-		{
-			PrepareShader(item, vp);
-
-			var handle = item.Mesh.Handle;
-
-			glDrawElementsBaseVertex(GL_TRIANGLES, (uint)handle.Count, GL_UNSIGNED_SHORT, (void*)handle.Offset,
-				handle.BaseVertex);
-		}
 	}
 }

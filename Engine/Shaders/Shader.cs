@@ -287,11 +287,19 @@ namespace Engine.Shaders
 			glUniform4f(uniforms[name], value.r, value.g, value.b, value.a);
 		}
 
+		public unsafe void SetUniform(string name, vec3[] values)
+		{
+			fixed (float* address = &values[0].x)
+			{
+				glUniform3fv(uniforms[name + "[0]"], (uint)values.Length, address);
+			}
+		}
+
 		public unsafe void SetUniform(string name, vec4[] values)
 		{
 			fixed (float* address = &values[0].x)
 			{
-				glUniform4fv(uniforms[name], (uint)values.Length, address);
+				glUniform4fv(uniforms[name + "[0]"], (uint)values.Length, address);
 			}
 		}
 
@@ -323,7 +331,7 @@ namespace Engine.Shaders
 
 			fixed (float* address = &floats[0])
 			{
-				glUniformMatrix4fv(uniforms[name], (uint)values.Length, false, address);
+				glUniformMatrix4fv(uniforms[name + "[0]"], (uint)values.Length, false, address);
 			}
 		}
 	}

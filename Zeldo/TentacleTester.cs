@@ -1,37 +1,25 @@
 ﻿using System;
+using System.Linq;
 using Engine;
-using Engine.Shaders;
+using Engine.Animation;
+using Engine.Interfaces;
 using Engine.Structures;
 using GlmSharp;
 using Zeldo.Entities.Core;
-using static Engine.GL;
 
 namespace Zeldo
 {
-	public class TentacleTester
+	public class TentacleTester : IDynamic
 	{
-		private const int Bones = 20;
+		private const int Bones = 40;
 
+		private Scene scene;
 		private Curve3D curve;
-		private Shader shader;
+		private Skeleton skeleton;
 
 		public TentacleTester(Scene scene)
 		{
-			curve = new Curve3D();
-
-			shader = new Shader();
-			shader.Attach(ShaderTypes.Vertex, "Skeletal.vert");
-			shader.Attach(ShaderTypes.Fragment, "ModelShadow.frag");
-			shader.AddAttribute<float>(3, GL_FLOAT);
-			shader.AddAttribute<float>(2, GL_FLOAT);
-			shader.AddAttribute<float>(3, GL_FLOAT);
-			shader.AddAttribute<float>(2, GL_FLOAT);
-			shader.AddAttribute<short>(2, GL_SHORT, ShaderAttributeFlags.IsInteger);
-			shader.AddAttribute<int>(1, GL_INT, ShaderAttributeFlags.IsInteger);
-			shader.Initialize();
-			shader.Use();
-			shader.SetUniform("shadowSampler", 0);
-			shader.SetUniform("textureSampler", 1);
+			this.scene = scene;
 
 			var mesh = ContentCache.GetMesh("Tentacle.obj");
 			var points = mesh.Points;
@@ -40,39 +28,98 @@ namespace Zeldo
 			ivec2[] boneIndexes = new ivec2[vertices.Length];
 			vec2[] boneWeights = new vec2[vertices.Length];
 
-			const float Range = 10;
-			const float SegmentLength = Range * 2 / (Bones - 1);
-
+			float halfRange = (points.Max(p => p.x) - points.Min(p => p.x)) / 2;
+			float segmentLength = halfRange * 2 / (Bones - 1);
+			
+			// Compute bone indexes and weights.
 			for (int i = 0; i < vertices.Length; i++)
 			{
 				float x = points[vertices[i].x].x;
-				float weight = ((x + Range) % SegmentLength) / SegmentLength;
-
-				if (weight > 0.5f)
-				{
-					weight = 1 - weight;
-				}
+				float weight = 1 - ((x + halfRange) % segmentLength) / segmentLength;
 
 				// Each segment spans two bones.
-				int index = (int)Math.Floor((x + Range) / SegmentLength);
+				int index = (int)Math.Floor((x + halfRange) / segmentLength);
 
-				boneIndexes[i] = new ivec2(index, index + 1);
+				boneIndexes[i] = new ivec2(index, Math.Min(index + 1, Bones - 1));
 				boneWeights[i] = new vec2(weight, 1 - weight);
 			}
+
+			mesh.BoneIndexes = boneIndexes;
+			mesh.BoneWeights = boneWeights;
+
+			curve = new Curve3D();
+
+			// Compute the default pose.
+			vec3[] defaultPose = new vec3[Bones];
+
+			for (int i = 0; i < Bones; i++)
+			{
+				defaultPose[i] = new vec3(-halfRange + segmentLength * i, 0, 0);
+			}
+
+			skeleton = new Skeleton(mesh, defaultPose);
+			scene.Renderer.Add(skeleton);
 		}
 
-		public void Draw()
+		private float offset = 0;
+
+		public void Update(float dt)
 		{
+			var pose = skeleton.DefaultPose;
+
+			vec3[] array =
+			{
+				pose[0],
+				scene.GetEntities(EntityGroups.Player)[0].Position,
+				pose.Last()
+			};
+
+			var list = curve.ControlPoints;
+			list.Clear();
+			list.AddRange(array);
+
 			var points = curve.Evaluate(Bones - 1);
-			var bones = new mat4[points.Length];
+			var bones = skeleton.Bones;
+
+			offset += dt * 1.5f;
+
+			if (offset >= Constants.TwoPi)
+			{
+				offset -= Constants.TwoPi;
+			}
 
 			for (int i = 0; i < points.Length; i++)
 			{
-				bones[i] = mat4.Translate(points[i]);
+				float angle = Constants.TwoPi / bones.Length * 3 * i + offset;
+				float y = (float)Math.Sin(angle) + 3;
+
+				//bones[i].Position = points[i];
+				var bone = bones[i];
+				var p = bone.Position;
+				p.y = y;
+				bone.Position = p;
 			}
 
-			shader.Use();
-			shader.SetUniform("bones", bones);
+			//skeleton.Bones[1].Position += vec3.UnitY * dt / 5;
+			//skeleton.Bones[3].Position = scene.GetEntities(EntityGroups.Player)[0].Position;
+			//skeleton.Bones[0].Orientation *= quat.FromAxisAngle(dt / 2, vec3.UnitX);
+			//skeleton.Bones[1].Orientation *= quat.FromAxisAngle(dt / 2, vec3.UnitX);
+			//skeleton.Bones[1].Orientation *= quat.FromAxisAngle(dt, vec3.UnitX);
+			//skeleton.Bones[2].Orientation *= quat.FromAxisAngle(dt, vec3.UnitX);
+
+			//bones[0].Position = -vec3.UnitY;
+			//bones[1].Position = vec3.UnitY;
+			//bones[2].Position = -vec3.UnitY;
+
+			//for (int i = 0; i < bones.Length; i++)
+			//{
+			//	bones[i].Position += vec3.UnitY * dt / 5 * (i % 2 == 0 ? 1 : -1);
+			//}
+
+			for (int i = 0; i < bones.Length; i += 2)
+			{
+				//bones[i].Orientation *= quat.FromAxisAngle(dt / 2, vec3.UnitX);
+			}
 		}
 	}
 }

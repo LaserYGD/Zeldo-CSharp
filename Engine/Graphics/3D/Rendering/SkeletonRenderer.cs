@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Engine.Animation;
 using Engine.Lighting;
 using Engine.Shaders;
@@ -9,6 +10,8 @@ namespace Engine.Graphics._3D.Rendering
 {
 	public class SkeletonRenderer : MeshRenderer<Skeleton>
 	{
+		private Shader shadowShader;
+
 		public SkeletonRenderer(GlobalLight light) : base(light, "skeletal")
 		{
 			shader = new Shader();
@@ -19,10 +22,38 @@ namespace Engine.Graphics._3D.Rendering
 			shader.AddAttribute<float>(3, GL_FLOAT);
 			shader.AddAttribute<float>(2, GL_FLOAT);
 			shader.AddAttribute<short>(2, GL_SHORT, ShaderAttributeFlags.IsInteger);
-			shader.AddAttribute<int>(1, GL_INT, ShaderAttributeFlags.IsInteger);
+
+			shadowShader = new Shader();
+			shadowShader.Attach(ShaderTypes.Vertex, "ShadowMapSkeletal.vert");
+			shadowShader.Attach(ShaderTypes.Fragment, "ShadowMap.frag");
+			shadowShader.Initialize();
+			shadowShader.Use();
+			shadowShader.SetUniform("image", 0);
 
 			Bind(bufferId, indexId);
 		}
+
+		//public override Shader ShadowShader => shadowShader;
+		public override Shader ShadowShader => null;
+
+		public override void Dispose()
+		{
+			shadowShader.Dispose();
+
+			base.Dispose();
+		}
+
+		/*
+		protected override unsafe int InitializeShadowVao(uint stride)
+		{
+			glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, (void*)0);
+			glVertexAttribPointer(1, 2, GL_FLOAT, false, stride, (void*)(sizeof(float) * 3));
+			glVertexAttribPointer(2, 2, GL_FLOAT, false, stride, (void*)(sizeof(float) * 8));
+			glVertexAttribIPointer(3, 2, GL_SHORT, stride, (void*)(sizeof(float) * 10));
+
+			return 4;
+		}
+		*/
 
 		protected override float[] GetData(Mesh mesh)
 		{
@@ -33,9 +64,8 @@ namespace Engine.Graphics._3D.Rendering
 			var boneIndexes = mesh.BoneIndexes;
 			var boneWeights = mesh.BoneWeights;
 
-			// The skeletal shader uses ten floats, two shorts, and an integer, which take up the same combined space
-			// as twelve floats.
-			float[] buffer = new float[vertices.Length * 12];
+			// The skeletal shader uses ten floats and two shorts, which take up the same combined space as 11 floats.
+			float[] buffer = new float[vertices.Length * 11];
 
 			for (int i = 0; i < vertices.Length; i++)
 			{
@@ -43,14 +73,16 @@ namespace Engine.Graphics._3D.Rendering
 				var p = points[v.x];
 				var s = source[v.y];
 				var n = normals[v.z];
-				var w = boneWeights[v.z];
-				var d = boneIndexes[v.z];
 
-				int start = i * 12;
+				// Positions, normals, and source coordinates are stored in distinct lists, then indexed by vertex. In
+				// contrast, bone data is stored directly (i.e. one entry per vertex).
+				var w = boneWeights[i];
+				var d = boneIndexes[i];
+				
+				int start = i * 11;
 
 				byte[] b1 = BitConverter.GetBytes((short)d.x);
 				byte[] b2 = BitConverter.GetBytes((short)d.y);
-				byte[] b3 = BitConverter.GetBytes(d.y == -1 ? 1 : 2);
 
 				buffer[start] = p.x;
 				buffer[start + 1] = p.y;
@@ -65,7 +97,6 @@ namespace Engine.Graphics._3D.Rendering
 
 				// Both indexes (interpreted as shorts by OpenGL) are combined into the same float.
 				buffer[start + 10] = BitConverter.ToSingle(new[] { b1[0], b1[1], b2[0], b2[1] }, 0);
-				buffer[start + 11] = BitConverter.ToSingle(b3, 0);
 			}
 
 			return buffer;
@@ -73,6 +104,20 @@ namespace Engine.Graphics._3D.Rendering
 
 		public override void Draw(Skeleton item, mat4? vp)
 		{
+			var bones = item.Bones;
+
+			vec3[] bonePositions = bones.Select(b => b.Position).ToArray();
+			vec4[] boneOrientations = item.Bones.Select(b => b.Orientation.ToVec4()).ToArray();
+
+			var activeShader = vp.HasValue ? shader : shadowShader;
+
+			activeShader.Use();
+			activeShader.SetUniform("poseOrigin", item.PoseOrigin);
+			activeShader.SetUniform("defaultPose", item.DefaultPose);
+			activeShader.SetUniform("bonePositions", bonePositions);
+			activeShader.SetUniform("boneOrientations", boneOrientations);
+
+			base.Draw(item, vp);
 		}
 	}
 }

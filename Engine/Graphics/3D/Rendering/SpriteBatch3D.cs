@@ -119,7 +119,11 @@ namespace Engine.Graphics._3D.Rendering
 
 		public override unsafe void Draw(Sprite3D item, mat4? vp)
 		{
-			PrepareShader(item, vp);
+			if (vp != null)
+			{
+				PrepareShader(item, vp);
+			}
+
 			shader.SetUniform("tint", item.Color.ToVec4());
 			glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (void*)0);
 		}
