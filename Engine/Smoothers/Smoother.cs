@@ -1,9 +1,9 @@
-﻿using Engine.Core;
+﻿using Engine.Interfaces;
 using Engine.Utility;
 
 namespace Engine.Smoothers
 {
-	public abstract class Smoother<T> : Component
+	public abstract class Smoother<T> : IComponent
 	{
 		private float elapsed;
 		private float duration;
@@ -22,7 +22,9 @@ namespace Engine.Smoothers
 		protected T Start { get; }
 		protected T End { get; }
 
-		public override void Update(float dt)
+		public bool IsComplete { get; private set; }
+
+		public void Update(float dt)
 		{
 			elapsed += dt;
 

@@ -14,7 +14,7 @@ namespace Engine.Timing
 
 		public override void Update(float dt)
 		{
-			if (Paused)
+			if (IsPaused)
 			{
 				return;
 			}
@@ -27,10 +27,10 @@ namespace Engine.Timing
 				Tick?.Invoke(1);
 				Trigger(Elapsed - Duration);
 
-				if (Repeatable)
+				if (IsRepeatable)
 				{
 					Elapsed = 0;
-					Paused = true;
+					IsPaused = true;
 				}
 				else
 				{

@@ -8,15 +8,32 @@ namespace Zeldo.Entities.Bosses.Octopus
 	// ways to actors (such as using AI functions and triggering attacks), but don't require surface control.
 	public class Tentacle : LivingEntity
 	{
-		private static Dictionary<string, AttackData> attacks;
+		private static Dictionary<string, AttackData> dataMap;
 
 		static Tentacle()
 		{
-			attacks = AttackData.Load("Octopus.json");
+			dataMap = AttackData.Load("Octopus.json");
 		}
 
-		public Tentacle() : base(EntityGroups.Boss)
+		private Dictionary<string, Attack<Tentacle>> attacks;
+
+		public Tentacle(OctopusBoss parent) : base(EntityGroups.Boss)
 		{
+			Parent = parent;
+			attacks = new Dictionary<string, Attack<Tentacle>>();
+
+			// TODO: Allow different tentacles to be initialized with a subset of attacks (e.g. only weapon-based attacks).
+			foreach (var pair in dataMap)
+			{
+				attacks.Add(pair.Key, pair.Value.Activate(this));
+			}
+		}
+
+		public OctopusBoss Parent { get; }
+
+		public void TriggerAttack(string name)
+		{
+			Components.Add(attacks[name]).Start();
 		}
 	}
 }

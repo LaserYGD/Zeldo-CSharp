@@ -8,7 +8,7 @@ namespace Zeldo.Combat
 	// Although most attacks are carried out by living entities, it's possible a non-living entity (like a static
 	// turret) could attack as well (without requiring health values, damage callbacks, and other data associated with
 	// living things).
-	public abstract class Attack<T> : IDynamic where T : Entity
+	public abstract class Attack<T> : IComponent where T : Entity
 	{
 		private AttackData data;
 		private SingleTimer timer;
@@ -22,8 +22,8 @@ namespace Zeldo.Combat
 			Parent = parent;
 
 			timer = new SingleTimer(time => { AdvancePhase(); });
-			timer.Paused = true;
-			timer.Repeatable = true;
+			timer.IsPaused = true;
+			timer.IsRepeatable = true;
 
 			phase = AttackPhases.Idle;
 			phaseTicks = new Action<float>[]
@@ -36,6 +36,10 @@ namespace Zeldo.Combat
 		}
 
 		protected T Parent { get; }
+
+		// Attacks are only added to component collections when started. As such, the attack is complete when it
+		// loops through all phases back around to idle.
+		public bool IsComplete => phase == AttackPhases.Idle;
 
 		public void Start()
 		{
@@ -66,7 +70,7 @@ namespace Zeldo.Combat
 
 			timer.Duration = data.Durations[phaseIndex];
 			timer.Tick = phaseTicks[phaseIndex];
-			timer.Paused = false;
+			timer.IsPaused = false;
 
 			switch (phase)
 			{

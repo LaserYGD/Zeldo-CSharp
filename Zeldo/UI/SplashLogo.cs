@@ -37,11 +37,11 @@ namespace Zeldo.UI
 				}
 				else
 				{
-					timer.IsComplete = state == 2;
+					// TODO: Transition game states once the logo has fully faded out.
 				}
 			}, fadeTime);
 
-			timer.Repeatable = true;
+			timer.IsRepeatable = true;
 			timer.Tick = t =>
 			{
 				// Holding between fades.

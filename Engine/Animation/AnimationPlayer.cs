@@ -1,8 +1,8 @@
-﻿using Engine.Core;
+﻿using Engine.Interfaces;
 
 namespace Engine.Animation
 {
-	public class AnimationPlayer : Component
+	public class AnimationPlayer : IComponent
 	{
 		private Skeleton skeleton;
 		private Animation animation;
@@ -14,6 +14,8 @@ namespace Engine.Animation
 			this.skeleton = skeleton;
 		}
 
+		public bool IsComplete { get; private set; }
+
 		public void Play(Animation animation)
 		{
 			this.animation = animation;
@@ -21,7 +23,7 @@ namespace Engine.Animation
 			elapsed = 0;
 		}
 
-		public override void Update(float dt)
+		public void Update(float dt)
 		{
 			elapsed += dt;
 

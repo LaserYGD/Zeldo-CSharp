@@ -145,7 +145,7 @@
     <Compile Include="Core\3D\Motor.cs" />
     <Compile Include="Core\3D\Sprite3D.cs" />
     <Compile Include="Core\ComponentCollection.cs" />
-    <Compile Include="Core\Component.cs" />
+    <Compile Include="Interfaces\IComponent.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
     <Compile Include="Graphics\3D\Rendering\AbstractRenderer3D.cs" />

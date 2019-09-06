@@ -10,8 +10,8 @@ namespace Zeldo.Entities.Weapons
 		protected Weapon()
 		{
 			cooldownTimer = new SingleTimer(time => { OnCooldown = false; });
-			cooldownTimer.Repeatable = true;
-			cooldownTimer.Paused = true;
+			cooldownTimer.IsRepeatable = true;
+			cooldownTimer.IsPaused = true;
 		}
 
 		public Actor Owner { get; set; }
@@ -24,10 +24,10 @@ namespace Zeldo.Entities.Weapons
 		// buffered.
 		public bool HasCooldownExpired(float dt)
 		{
-			bool previouslyOnCooldown = !cooldownTimer.Paused;
+			bool previouslyOnCooldown = !cooldownTimer.IsPaused;
 			cooldownTimer.Update(dt);
 
-			return previouslyOnCooldown && cooldownTimer.Paused;
+			return previouslyOnCooldown && cooldownTimer.IsPaused;
 		}
 
 		// Player attacks use a short input buffering window in order to make chaining a series of attacks a bit easier
@@ -40,7 +40,7 @@ namespace Zeldo.Entities.Weapons
 			if (cooldownTime > 0)
 			{
 				cooldownTimer.Duration = cooldownTime;
-				cooldownTimer.Paused = false;
+				cooldownTimer.IsPaused = false;
 			}
 
 			return bufferTime;

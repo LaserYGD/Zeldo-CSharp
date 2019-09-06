@@ -5,14 +5,17 @@ namespace Engine.Core
 {
 	public class ComponentCollection : IDynamic
 	{
-		private List<Component> components = new List<Component>();
+		private List<IComponent> components = new List<IComponent>();
 
-		public void Add(Component component)
+		// Returning the component allows for chained function calls if desired.
+		public T Add<T>(T component) where T : IComponent
 		{
 			components.Add(component);
+
+			return component;
 		}
 
-		public void Remove(Component component)
+		public void Remove(IComponent component)
 		{
 			components.Remove(component);
 		}

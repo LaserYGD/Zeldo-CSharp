@@ -14,23 +14,23 @@ namespace Engine.Timing
 
 		public override void Update(float dt)
 		{
-			if (Paused)
+			if (IsPaused)
 			{
 				return;
 			}
 
 			Elapsed += dt;
 
-			while (Elapsed >= Duration && !Paused)
+			while (Elapsed >= Duration && !IsPaused)
 			{
 				float previousDuration = Duration;
 
 				if (!trigger(Elapsed % Duration))
 				{
-					if (Repeatable)
+					if (IsRepeatable)
 					{
 						Elapsed = 0;
-						Paused = true;
+						IsPaused = true;
 					}
 					else
 					{

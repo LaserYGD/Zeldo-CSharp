@@ -8,17 +8,17 @@ namespace Engine.Animation
 {
 	public class Animation
 	{
-		public Animation(Timeline[] timelines, float length, bool isRepeating)
+		public Animation(Timeline[] timelines, float length, bool isLooped)
 		{
 			Timelines = timelines;
 			Length = length;
-			IsRepeating = isRepeating;
+			IsLooped = isLooped;
 		}
 
 		public Timeline[] Timelines { get; }
 
 		public float Length { get; }
 
-		public bool IsRepeating { get; }
+		public bool IsLooped { get; }
 	}
 }

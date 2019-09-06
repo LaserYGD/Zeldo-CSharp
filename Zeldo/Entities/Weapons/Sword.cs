@@ -33,8 +33,8 @@ namespace Zeldo.Entities.Weapons
 			},
 			0.2f);
 
-			timer.Paused = true;
-			timer.Repeatable = true;
+			timer.IsPaused = true;
+			timer.IsRepeatable = true;
 
 			Components.Add(timer);
 		}
@@ -72,7 +72,7 @@ namespace Zeldo.Entities.Weapons
 		{
 			arc.Angle = Utilities.Angle(direction);
 			sensor.IsEnabled = true;
-			timer.Paused = false;
+			timer.IsPaused = false;
 		}
 	}
 }

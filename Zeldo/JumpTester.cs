@@ -151,7 +151,7 @@ namespace Zeldo
 		{
 			if (data.Query(GLFW_KEY_SPACE, InputStates.PressedThisFrame))
 			{
-				timer.Paused = false;
+				timer.IsPaused = false;
 				onGround = false;
 			}
 		}

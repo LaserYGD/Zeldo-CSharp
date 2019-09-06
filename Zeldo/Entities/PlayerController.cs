@@ -53,8 +53,8 @@ namespace Zeldo.Entities
 			this.controllers = controllers;
 
 			attackBuffer = new SingleTimer(time => { });
-			attackBuffer.Repeatable = true;
-			attackBuffer.Paused = true;
+			attackBuffer.IsRepeatable = true;
+			attackBuffer.IsPaused = true;
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
@@ -371,12 +371,12 @@ namespace Zeldo.Entities
 			}
 
 			// If an attack was buffered as the weapon's cooldown expires, trigger another attack immediately.
-			if (weapon.HasCooldownExpired(dt) && !attackBuffer.Paused)
+			if (weapon.HasCooldownExpired(dt) && !attackBuffer.IsPaused)
 			{
 				TriggerPrimary();
 
 				attackBuffer.Elapsed = 0;
-				attackBuffer.Paused = true;
+				attackBuffer.IsPaused = true;
 
 				return;
 			}
@@ -388,7 +388,7 @@ namespace Zeldo.Entities
 				if (attackBuffer.Duration > 0)
 				{
 					attackBuffer.Elapsed = 0;
-					attackBuffer.Paused = false;
+					attackBuffer.IsPaused = false;
 				}
 			}
 			else

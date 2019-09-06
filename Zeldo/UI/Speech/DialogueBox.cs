@@ -84,7 +84,7 @@ namespace Zeldo.UI.Speech
 
 		public override void Update(float dt)
 		{
-			if (!timer.Paused)
+			if (!timer.IsPaused)
 			{
 				timer.Update(dt);
 			}

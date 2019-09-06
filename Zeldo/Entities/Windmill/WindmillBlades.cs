@@ -38,9 +38,14 @@ namespace Zeldo.Entities.Windmill
 				model.IsShadowCaster = false;
 			}
 
-			Components.Add(motorTree);
-
 			base.Initialize(scene, data);
+		}
+
+		public override void Update(float dt)
+		{
+			motorTree.Update(dt);
+
+			base.Update(dt);
 		}
 	}
 }

@@ -1,9 +1,9 @@
 ﻿using System;
-using Engine.Core;
+using Engine.Interfaces;
 
 namespace Engine.Timing
 {
-	public abstract class Timer : Component
+	public abstract class Timer : IComponent
 	{
 		protected Timer(float duration, float elapsed = 0)
 		{
@@ -14,9 +14,12 @@ namespace Engine.Timing
 		public float Elapsed { get; set; }
 		public float Duration { get; set; }
 
-		public bool Paused { get; set; }
-		public bool Repeatable { get; set; }
+		public bool IsPaused { get; set; }
+		public bool IsRepeatable { get; set; }
+		public bool IsComplete { get; protected set; }
 
 		public Action<float> Tick { get; set; }
+
+		public abstract void Update(float dt);
 	}
 }

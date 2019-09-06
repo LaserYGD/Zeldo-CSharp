@@ -1,9 +1,9 @@
 ﻿using Engine;
-using Engine.Core;
+using Engine.Interfaces;
 
 namespace Zeldo.Entities.Windmill
 {
-	public class MotorTree : Component
+	public class MotorTree : IDynamic
 	{
 		private float rotation;
 
@@ -11,7 +11,7 @@ namespace Zeldo.Entities.Windmill
 
 		public float AngularVelocity { get; set; }
 
-		public override void Update(float dt)
+		public void Update(float dt)
 		{
 			rotation += AngularVelocity * dt;
 
