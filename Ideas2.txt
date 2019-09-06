@@ -110,7 +110,7 @@
 
 - Boss with an attack that throws you into the air and knocks you away, but allows you to recover and control yourself using regular movement mechanics (inspired by watching Spike face Champion Gundyr, who has an attack that launches you into the air, followed by a quick shoulder charge) => The boss could even jump after you to add a lot more dynamic movement to the fight
 
-
+- Boss using reflected sunlight via shafts in the ceiling (maybe you have to trigger the boss to break them during the fight?) => Could also add a few breakable spots throughout the dungeon to optionally make the fight easier
 
 
 

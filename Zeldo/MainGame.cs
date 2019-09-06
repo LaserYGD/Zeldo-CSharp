@@ -25,6 +25,7 @@ using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Control;
 using Zeldo.Entities;
+using Zeldo.Entities.Bosses.Octopus;
 using Zeldo.Entities.Core;
 using Zeldo.Physics;
 using Zeldo.Sensors;
@@ -156,8 +157,6 @@ namespace Zeldo
 
 			scene.LoadFragment("Triangle.json");
 
-			tentacleTester = new TentacleTester(scene);
-
 			// Create testing cubes.
 			var seekers = new List<DummyCube>();
 
@@ -268,6 +267,9 @@ namespace Zeldo
 
 			scene.Add(player);
 			//scene.LoadFragment("Demo.json");
+
+			// The tentacle testing is intentionally created after the player is added to the scene.
+			tentacleTester = new TentacleTester(scene);
 
 			renderTargetUsers = new List<IRenderTargetUser3D>();
 			renderTargetUsers.Add(scene.Renderer);

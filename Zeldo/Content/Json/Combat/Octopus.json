@@ -1,0 +1,25 @@
+﻿{
+	"Slam": { 
+		"Class": "Zeldo.Entities.Bosses.Octopus.TentacleSlamAttack",
+		"Prepare": 3,
+		"Execute": 0.75,
+		"Cooldown": 3.25,
+		"Reset": 2
+	},
+
+	"Thrust": {
+		"Class": "Zeldo.Entities.Bosses.Octopus.TentacleThrustAttack",
+		"Prepare": 3,
+		"Execute": 0.75,
+		"Cooldown": 3.25,
+		"Reset": 2
+	},
+
+	"Sweep": {
+		"Class": "Zeldo.Entities.Bosses.Octopus.TentacleSweepAttack",
+		"Prepare": 3,
+		"Execute": 0.75,
+		"Cooldown": 3.25,
+		"Reset": 2
+	}
+}

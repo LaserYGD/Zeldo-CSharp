@@ -269,7 +269,7 @@ namespace Zeldo.Entities
 
 			v += sloped * /*player.RunAcceleration*/ 60 * dt;
 
-			float max = 4.5f;//player.RunMaxSpeed;
+			float max = 10;//player.RunMaxSpeed;
 
 			if (Utilities.LengthSquared(v) > max * max)
 			{

@@ -14,6 +14,10 @@ namespace Zeldo.View
 	public class FollowController : CameraController3D, IReceiver
 	{
 		private const float AimDivisor = 10000f;
+		
+		// Shifting the camera upward by a small amount gives a better view of objects above the player without
+		// negatively affecting visibility of the player. Feels a bit better than a pure centered camera.
+		private const float Shift = 1;
 
 		private Player player;
 		private ControlSettings settings;
@@ -97,8 +101,9 @@ namespace Zeldo.View
 
 		public override void Update()
 		{
+			// TODO: Since the camera is shifted slighty upward, experiment with subtly modifying follow distance based on pitch.
 			quat aim = quat.FromAxisAngle(pitch, vec3.UnitX) * quat.FromAxisAngle(yaw, vec3.UnitY);
-			vec3 eye = player.Position + new vec3(0, 0, -followDistance) * aim;
+			vec3 eye = player.Position + new vec3(0, 0, -followDistance) * aim + new vec3(0, Shift, 0);
 
 			Camera.Position = eye;
 			Camera.Orientation = mat4.LookAt(eye, player.Position, vec3.UnitY).ToQuaternion;

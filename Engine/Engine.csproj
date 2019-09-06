@@ -204,6 +204,7 @@
     <Compile Include="Sound\CachedSoundSampleProvider.cs" />
     <Compile Include="Structures\Curve3D.cs" />
     <Compile Include="Structures\SafeList.cs" />
+    <Compile Include="Structures\SpringPoint3D.cs" />
     <Compile Include="Timing\RepeatingTimer.cs" />
     <Compile Include="Timing\SingleTimer.cs" />
     <Compile Include="Timing\Timer.cs" />

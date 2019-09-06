@@ -12,10 +12,12 @@ namespace Zeldo
 	public class TentacleTester : IDynamic
 	{
 		private const int Bones = 40;
+		private const float HoverHeight = 3.5f;
 
 		private Scene scene;
 		private Curve3D curve;
 		private Skeleton skeleton;
+		private SpringPoint3D[] springs;
 
 		public TentacleTester(Scene scene)
 		{
@@ -57,24 +59,35 @@ namespace Zeldo
 				defaultPose[i] = new vec3(-halfRange + segmentLength * i, 0, 0);
 			}
 
+			// Initialize springs.
+			vec3 target = scene.GetEntities(EntityGroups.Player)[0].Position;
+			vec3[] springPoints =
+			{
+				new vec3(halfRange * 2, HoverHeight, 0),
+				new vec3(halfRange, HoverHeight, 0),
+				new vec3(target.x, HoverHeight, target.z)
+			};
+
+			springs = springPoints.Select(p => new SpringPoint3D(p, 0.85f, 0.85f)).ToArray();
 			skeleton = new Skeleton(mesh, defaultPose);
 			scene.Renderer.Add(skeleton);
 		}
 
 		public void Update(float dt)
 		{
-			var pose = skeleton.DefaultPose;
+			vec3 target = scene.GetEntities(EntityGroups.Player)[0].Position;
+			target.y = HoverHeight;
 
-			vec3[] array =
+			springs[2].Target = target;
+
+			foreach (var spring in springs)
 			{
-				pose[0],
-				scene.GetEntities(EntityGroups.Player)[0].Position,
-				pose.Last()
-			};
+				spring.Update(dt);
+			}
 
 			var list = curve.ControlPoints;
 			list.Clear();
-			list.AddRange(array);
+			list.AddRange(springs.Select(s => s.Position));
 
 			var points = curve.Evaluate(Bones - 1);
 			var bones = skeleton.Bones;

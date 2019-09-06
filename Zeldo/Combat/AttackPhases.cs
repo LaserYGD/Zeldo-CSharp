@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.Entities.Bosses
+namespace Zeldo.Combat
 {
-	public class OctopusBoss : Boss
+	public enum AttackPhases
 	{
-		public OctopusBoss() : base("octopus.boss")
-		{
-		}
+		Idle,
+		Prepare,
+		Execute,
+		Cooldown,
+		Reset
 	}
 }

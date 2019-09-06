@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.Entities.Bosses
+namespace Zeldo.Entities.Bosses.Octopus
 {
-	public class Tentacles
+	public class OctopusBoss : Boss
 	{
+		public OctopusBoss() : base("octopus.boss")
+		{
+		}
 	}
 }

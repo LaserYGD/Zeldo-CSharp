@@ -83,6 +83,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Fonts\Leviathon.fnt" />
+    <None Include="Content\Json\Combat\Octopus.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Json\Fragments\Demo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -219,6 +222,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CharacterControlTester.cs" />
+    <Compile Include="Combat\Attack.cs" />
+    <Compile Include="Combat\AttackData.cs" />
+    <Compile Include="Combat\AttackPhases.cs" />
     <Compile Include="Control\AerialController.cs" />
     <Compile Include="Control\AbstractController.cs" />
     <Compile Include="Control\SurfaceController.cs" />
@@ -226,8 +232,11 @@
     <Compile Include="Data\SaveSlot.cs" />
     <Compile Include="Data\TileFlags.cs" />
     <Compile Include="Entities\Bosses\Boss.cs" />
-    <Compile Include="Entities\Bosses\OctopusBoss.cs" />
-    <Compile Include="Entities\Bosses\Tentacle.cs" />
+    <Compile Include="Entities\Bosses\Octopus\OctopusBoss.cs" />
+    <Compile Include="Entities\Bosses\Octopus\Tentacle.cs" />
+    <Compile Include="Entities\Bosses\Octopus\TentacleSlamAttack.cs" />
+    <Compile Include="Entities\Bosses\Octopus\TentacleSweepAttack.cs" />
+    <Compile Include="Entities\Bosses\Octopus\TentacleThrustAttack.cs" />
     <Compile Include="Entities\Characters\Character.cs" />
     <Compile Include="Entities\Characters\LeviathonHead.cs" />
     <Compile Include="Entities\Characters\LeviathonTentacle.cs" />
