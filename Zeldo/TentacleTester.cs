@@ -61,8 +61,6 @@ namespace Zeldo
 			scene.Renderer.Add(skeleton);
 		}
 
-		private float offset = 0;
-
 		public void Update(float dt)
 		{
 			var pose = skeleton.DefaultPose;
@@ -81,44 +79,9 @@ namespace Zeldo
 			var points = curve.Evaluate(Bones - 1);
 			var bones = skeleton.Bones;
 
-			offset += dt * 1.5f;
-
-			if (offset >= Constants.TwoPi)
-			{
-				offset -= Constants.TwoPi;
-			}
-
 			for (int i = 0; i < points.Length; i++)
 			{
-				float angle = Constants.TwoPi / bones.Length * 3 * i + offset;
-				float y = (float)Math.Sin(angle) + 3;
-
-				//bones[i].Position = points[i];
-				var bone = bones[i];
-				var p = bone.Position;
-				p.y = y;
-				bone.Position = p;
-			}
-
-			//skeleton.Bones[1].Position += vec3.UnitY * dt / 5;
-			//skeleton.Bones[3].Position = scene.GetEntities(EntityGroups.Player)[0].Position;
-			//skeleton.Bones[0].Orientation *= quat.FromAxisAngle(dt / 2, vec3.UnitX);
-			//skeleton.Bones[1].Orientation *= quat.FromAxisAngle(dt / 2, vec3.UnitX);
-			//skeleton.Bones[1].Orientation *= quat.FromAxisAngle(dt, vec3.UnitX);
-			//skeleton.Bones[2].Orientation *= quat.FromAxisAngle(dt, vec3.UnitX);
-
-			//bones[0].Position = -vec3.UnitY;
-			//bones[1].Position = vec3.UnitY;
-			//bones[2].Position = -vec3.UnitY;
-
-			//for (int i = 0; i < bones.Length; i++)
-			//{
-			//	bones[i].Position += vec3.UnitY * dt / 5 * (i % 2 == 0 ? 1 : -1);
-			//}
-
-			for (int i = 0; i < bones.Length; i += 2)
-			{
-				//bones[i].Orientation *= quat.FromAxisAngle(dt / 2, vec3.UnitX);
+				bones[i].Position = points[i];
 			}
 		}
 	}

@@ -33,8 +33,7 @@ namespace Engine.Graphics._3D.Rendering
 			Bind(bufferId, indexId);
 		}
 
-		//public override Shader ShadowShader => shadowShader;
-		public override Shader ShadowShader => null;
+		public override Shader ShadowShader => shadowShader;
 
 		public override void Dispose()
 		{
@@ -43,7 +42,6 @@ namespace Engine.Graphics._3D.Rendering
 			base.Dispose();
 		}
 
-		/*
 		protected override unsafe int InitializeShadowVao(uint stride)
 		{
 			glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, (void*)0);
@@ -53,7 +51,6 @@ namespace Engine.Graphics._3D.Rendering
 
 			return 4;
 		}
-		*/
 
 		protected override float[] GetData(Mesh mesh)
 		{
@@ -111,7 +108,6 @@ namespace Engine.Graphics._3D.Rendering
 
 			var activeShader = vp.HasValue ? shader : shadowShader;
 
-			activeShader.Use();
 			activeShader.SetUniform("poseOrigin", item.PoseOrigin);
 			activeShader.SetUniform("defaultPose", item.DefaultPose);
 			activeShader.SetUniform("bonePositions", bonePositions);

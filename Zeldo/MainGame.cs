@@ -254,7 +254,7 @@ namespace Zeldo
 			}
 
 			MasterRenderer3D renderer = scene.Renderer;
-			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.35f, -0.7f));
+			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.35f, -2.5f));
 
 			Player player = new Player();
 			player.Position = CreateDemoCubes ? new vec3(2, 3, -3.5f) : new vec3(2, 3, -2);
