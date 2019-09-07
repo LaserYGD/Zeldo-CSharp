@@ -82,6 +82,7 @@ namespace Engine.Graphics._3D.Rendering
 		public override void Prepare()
 		{
 			// Note that face culling will already be enabled here (via PrepareShadow()).
+			// TODO: For skeletons, something seems to be wrong with face culling (faces are still visible when the camera is inside a mesh).
 			glCullFace(GL_BACK);
 
 			base.Prepare();

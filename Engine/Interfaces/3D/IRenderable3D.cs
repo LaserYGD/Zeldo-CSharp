@@ -1,4 +1,5 @@
-﻿using GlmSharp;
+﻿using Engine.Shaders;
+using GlmSharp;
 
 namespace Engine.Interfaces._3D
 {
@@ -8,6 +9,11 @@ namespace Engine.Interfaces._3D
 		bool IsShadowCaster { get; set; }
 
 		mat4 WorldMatrix { get; }
+
+		// Setting custom shaders is optional. Shadow shaders are only required if vertices for the renderable object
+		// are transformed in distinct ways on the base shader.
+		Shader Shader { get; set; }
+		Shader ShadowShader { get; set; }
 
 		void RecomputeWorldMatrix();
 	}

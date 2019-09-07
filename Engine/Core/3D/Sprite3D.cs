@@ -3,8 +3,8 @@ using Engine.Core._2D;
 using Engine.Interfaces;
 using Engine.Interfaces._2D;
 using Engine.Interfaces._3D;
+using Engine.Shaders;
 using Engine.Utility;
-using Engine.View;
 using GlmSharp;
 
 namespace Engine.Core._3D
@@ -40,6 +40,10 @@ namespace Engine.Core._3D
 		public vec3 Position { get; set; }
 		public quat Orientation { get; set; }
 		public Color Color { get; set; }
+
+		// Custom shaders are optional. If not set, the default 3D sprite shader is used.
+		public Shader Shader { get; set; }
+		public Shader ShadowShader { get; set; }
 
 		public vec2 Scale
 		{

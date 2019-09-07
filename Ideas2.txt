@@ -112,6 +112,10 @@
 
 - Boss using reflected sunlight via shafts in the ceiling (maybe you have to trigger the boss to break them during the fight?) => Could also add a few breakable spots throughout the dungeon to optionally make the fight easier
 
+- Trees with distinct shapes and different-colored leaves in different zones (inspired by a cool picture on Reddit of a tree changing colors from green to bright orange, but since Essence doesn't have seasons, the colors have to be applied to different trees more permanently)
+
+- Followup idea: using an essence (the essence of nature, maybe?) to affect plans (trees, grass, flowers, foliage, etc.) near the player (almost like a soft radial explosion that causes plants to move, change color, grow fruit, etc.) => This brings up an interesting thought, which is including elements in a trailer (like this visual flair explosion) without necessarily spoiling exactly WHAT the thing is or HOW it's used. As a rule of thumb, that could be a very effective way to build an intriguing trailer without spoiling the cool parts too much
+
 
 
 

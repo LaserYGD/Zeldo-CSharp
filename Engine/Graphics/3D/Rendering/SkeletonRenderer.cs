@@ -8,6 +8,7 @@ using static Engine.GL;
 
 namespace Engine.Graphics._3D.Rendering
 {
+	// TODO: Lighting is wrong on rendering certain mesh faces for skeletons (the normal might be the culprit).
 	public class SkeletonRenderer : MeshRenderer<Skeleton>
 	{
 		private Shader shadowShader;

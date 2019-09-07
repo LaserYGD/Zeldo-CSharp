@@ -48,8 +48,8 @@ namespace Engine.Graphics._3D
 		public vec3 Bounds { get; }
 		public vec3 Origin { get; }
 
-		// These two arrays will be left null for non-animated meshes.
-		// TODO: Remove these setters once tentacle testing is complete.
+		// These two arrays will be left null for non-animated meshes. Bone data can optionally be set programatically
+		// (rather than loaded from a file).
 		public ivec2[] BoneIndexes { get; set; }
 		public vec2[] BoneWeights { get; set; }
 

@@ -2,6 +2,7 @@
 using System.Linq;
 using Engine.Graphics._3D;
 using Engine.Interfaces._3D;
+using Engine.Shaders;
 using GlmSharp;
 
 namespace Engine.Animation
@@ -63,6 +64,9 @@ namespace Engine.Animation
 		public vec3 Position { get; set; }
 		public quat Orientation { get; set; }
 		public mat4 WorldMatrix { get; private set; }
+
+		public Shader Shader { get; set; }
+		public Shader ShadowShader { get; set; }
 
 		public bool IsShadowCaster { get; set; }
 

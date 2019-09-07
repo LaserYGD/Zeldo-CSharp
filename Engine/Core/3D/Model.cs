@@ -1,5 +1,6 @@
 ﻿using Engine.Graphics._3D;
 using Engine.Interfaces._3D;
+using Engine.Shaders;
 using GlmSharp;
 
 namespace Engine.Core._3D
@@ -22,7 +23,10 @@ namespace Engine.Core._3D
 		public mat4 WorldMatrix { get; private set; }
 		public vec3 Position { get; set; }
 		public quat Orientation { get; set; }
-		public vec3 Scale { get; set; }		
+		public vec3 Scale { get; set; }
+
+		public Shader Shader { get; set; }
+		public Shader ShadowShader { get; set; }
 
 		public bool IsShadowCaster { get; set; }
 
