@@ -116,10 +116,11 @@
 
 - Followup idea: using an essence (the essence of nature, maybe?) to affect plans (trees, grass, flowers, foliage, etc.) near the player (almost like a soft radial explosion that causes plants to move, change color, grow fruit, etc.) => This brings up an interesting thought, which is including elements in a trailer (like this visual flair explosion) without necessarily spoiling exactly WHAT the thing is or HOW it's used. As a rule of thumb, that could be a very effective way to build an intriguing trailer without spoiling the cool parts too much
 
+- Consider a nameplate-style game title with 3D zoom (inspired by a part of Titanfall 2 by Bryonato during host judgements for AGDQ 2020)
 
+- Consider having no achievements (inspired by a Twitter post by Noel Berry criticizing achievements, which I agreed with) => If achievements are required for Steam, could compromise by only adding achievements for mainline progression events, such that all players who beat the game will automatically have all achievements
 
-
-
+- Make sure to include some puzzles simply hidden in the world to discover and solve (inspired by the Luigi's Mansion TAS, when you enter a dark room with five unlit candles around a circle and you have to siphon flame from an outside torch to light them and open a door)
 
 
 
