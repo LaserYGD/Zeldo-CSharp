@@ -122,6 +122,13 @@
 
 - Make sure to include some puzzles simply hidden in the world to discover and solve (inspired by the Luigi's Mansion TAS, when you enter a dark room with five unlit candles around a circle and you have to siphon flame from an outside torch to light them and open a door)
 
+- Could consider building larger zones to explore along with smaller, more controlled challenges and dungeons (inspired by Joseph Anderson's video on BotW, when he talked about slowly gliding and looking around to see what catches your attention) => For me, BotW exploration quickly fell flat when I realized that there was nothing of substance to find anywhere, even if things look intriguing (no new, permanent items, no immediate upgrades, no proper hidden dungeons, no character questlines to advance, no deep endgame secrets, no worthwhile hidden enemies and bosses, and often no reward AFTER the discovery, like the world permanently reacting)
+ 
+- I value exploration and discovery very heavily, but remember that other people primarily play Zelda-like games for bosses or items
+
+- NPC you can find that crafts many of the weapons used by mobs in the game (inspired by hearing Joseph Anderson talk about stealing dragonbone weapons in BotW, which prompted the thought, "Where are the dragons from which these weapons are being created?")
+
+- With all of this, remember to think about how these ideas fit into the theme of a magical world with essences
 
 
 

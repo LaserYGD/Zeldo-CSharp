@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Engine.Utility;
+using GlmSharp;
 
 namespace Engine.Shapes._3D
 {
@@ -18,5 +15,10 @@ namespace Engine.Shapes._3D
 		}
 
 		public float Radius { get; set; }
+
+		public override bool Contains(vec3 p)
+		{
+			return Utilities.DistanceSquared(Position, p) <= Radius * Radius;
+		}
 	}
 }

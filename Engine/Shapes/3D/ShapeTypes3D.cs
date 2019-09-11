@@ -9,6 +9,8 @@ namespace Engine.Shapes._3D
 	public enum ShapeTypes3D
 	{
 		Box,
+		Line,
+		Point,
 		Sphere
 	}
 }

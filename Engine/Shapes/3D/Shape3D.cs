@@ -21,5 +21,7 @@ namespace Engine.Shapes._3D
 			Position = position;
 			Orientation = orientation;
 		}
+
+		public abstract bool Contains(vec3 p);
 	}
 }

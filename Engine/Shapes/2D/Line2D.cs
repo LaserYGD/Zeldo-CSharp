@@ -29,6 +29,7 @@ namespace Engine.Shapes._2D
 
 		public override bool Contains(vec2 p)
 		{
+			// TODO: Return true if the point is on the line (and within the ray's length).
 			return false;
 		}
 	}

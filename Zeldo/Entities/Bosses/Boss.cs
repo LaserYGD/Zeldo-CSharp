@@ -10,9 +10,9 @@ namespace Zeldo.Entities.Bosses
 		private BossHealthBar healthBar;
 		private string name;
 
-		protected Boss(string nameKey) : base(EntityGroups.Boss)
+		protected Boss(string key) : base(EntityGroups.Boss)
 		{
-			name = Language.GetString(nameKey + ".name");
+			name = Language.GetString(key + ".name");
 		}
 
 		public override void Initialize(Scene scene, JToken data)

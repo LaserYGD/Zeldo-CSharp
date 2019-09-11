@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Engine.Utility;
 using GlmSharp;
 
@@ -15,6 +12,7 @@ namespace Engine.Shapes._2D
 			ShapeTypes2D type1 = shape1.ShapeType;
 			ShapeTypes2D type2 = shape2.ShapeType;
 
+			// TODO: Handle point-point intersections.
 			if (type1 == ShapeTypes2D.Point)
 			{
 				return shape2.Contains(shape1.Position);
