@@ -1,11 +1,11 @@
 ﻿using Engine.Shapes._3D;
 using GlmSharp;
 
-namespace Zeldo.Sensors
+namespace Engine.Sensors
 {
-	public class CompoundAttachment
+	public class ShapeAttachment
 	{
-		public CompoundAttachment(Shape3D shape, vec3 position, quat orientation)
+		public ShapeAttachment(Shape3D shape, vec3 position, quat orientation)
 		{
 			Shape = shape;
 			Position = position;

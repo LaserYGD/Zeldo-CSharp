@@ -2,20 +2,20 @@
 using Engine.Shapes._3D;
 using GlmSharp;
 
-namespace Zeldo.Sensors
+namespace Engine.Sensors
 {
-	public class CompoundSensor : Sensor
+	public class MultiSensor : Sensor
 	{
 		private vec3 position;
 		private quat orientation;
 
-		public CompoundSensor(SensorTypes type, SensorUsages usage, object parent) : base(type, usage, parent)
+		public MultiSensor(SensorTypes type, object owner, int group, Shape3D shape = null) :
+			base(type, owner, group, true, shape)
 		{
-			Attachments = new List<CompoundAttachment>();
-			IsCompound = true;
+			Attachments = new List<ShapeAttachment>();
 		}
 
-		public List<CompoundAttachment> Attachments { get; }
+		internal List<ShapeAttachment> Attachments { get; }
 		
 		public override vec3 Position
 		{
@@ -47,7 +47,7 @@ namespace Zeldo.Sensors
 
 		public void Attach(Shape3D shape, vec3 position, quat orientation)
 		{
-			Attachments.Add(new CompoundAttachment(shape, position, orientation));
+			Attachments.Add(new ShapeAttachment(shape, position, orientation));
 		}
 
 		private void RecomputeAttachments()
@@ -55,10 +55,9 @@ namespace Zeldo.Sensors
 			foreach (var attachment in Attachments)
 			{
 				var shape = attachment.Shape;
-				var localOrientation = attachment.Orientation;
 
-				shape.Position = position + attachment.Position * localOrientation;
-				shape.Orientation = orientation * localOrientation;
+				shape.Position = position + Orientation * attachment.Position;
+				shape.Orientation = orientation * attachment.Orientation;
 			}
 		}
 	}

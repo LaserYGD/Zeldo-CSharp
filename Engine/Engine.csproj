@@ -188,6 +188,12 @@
     <Compile Include="Physics\RaycastResults.cs" />
     <Compile Include="Physics\TransformableBody.cs" />
     <Compile Include="Properties.cs" />
+    <Compile Include="Sensors\ShapeAttachment.cs" />
+    <Compile Include="Sensors\MultiSensor.cs" />
+    <Compile Include="Sensors\Sensor.cs" />
+    <Compile Include="Sensors\SensorTypes.cs" />
+    <Compile Include="Sensors\Space.cs" />
+    <Compile Include="Sensors\SpaceVisualizer.cs" />
     <Compile Include="Shaders\ShaderAttributeFlags.cs" />
     <Compile Include="Shapes\2D\Arc.cs" />
     <Compile Include="Shapes\2D\Point.cs" />
@@ -290,6 +296,7 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />

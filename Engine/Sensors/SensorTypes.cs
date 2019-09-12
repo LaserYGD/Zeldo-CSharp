@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.Sensors
+namespace Engine.Sensors
 {
 	public enum SensorTypes
 	{

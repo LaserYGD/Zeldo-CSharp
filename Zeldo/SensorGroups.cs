@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace Zeldo.Sensors
+namespace Engine.Sensors
 {
 	[Flags]
-	public enum SensorUsages
+	public enum SensorGroups
 	{
 		None = 0,
 		Control = 1<<0,

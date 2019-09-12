@@ -26,5 +26,10 @@ namespace Engine.Shapes._3D
 		}
 
 		public abstract bool Contains(vec3 p);
+
+		public bool Overlaps(Shape3D other)
+		{
+			return ShapeHelper3D.Overlaps(this, other);
+		}
 	}
 }

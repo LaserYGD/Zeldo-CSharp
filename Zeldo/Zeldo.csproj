@@ -303,13 +303,7 @@
     <Compile Include="PuddleTester.cs" />
     <Compile Include="RaindropTester.cs" />
     <Compile Include="Room.cs" />
-    <Compile Include="Sensors\CompoundAttachment.cs" />
-    <Compile Include="Sensors\CompoundSensor.cs" />
-    <Compile Include="Sensors\Sensor.cs" />
-    <Compile Include="Sensors\SensorTypes.cs" />
-    <Compile Include="Sensors\SensorUsages.cs" />
-    <Compile Include="Sensors\Space.cs" />
-    <Compile Include="Sensors\SpaceVisualizer.cs" />
+    <Compile Include="SensorGroups.cs" />
     <Compile Include="Settings\ControlSettings.cs" />
     <Compile Include="Settings\VideoSettings.cs" />
     <Compile Include="Settings\AudioSettings.cs" />
