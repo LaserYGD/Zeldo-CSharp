@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Utility;
+﻿using Engine.Utility;
 
 namespace Engine.Shapes._3D
 {
@@ -40,6 +35,7 @@ namespace Engine.Shapes._3D
 			switch (type1)
 			{
 				case ShapeTypes3D.Box: return Overlaps((Box)shape1, shape2);
+				case ShapeTypes3D.Cylinder: return Overlaps((Cylinder)shape1, shape2);
 				case ShapeTypes3D.Line: return Overlaps((Line3D)shape1, shape2);
 				case ShapeTypes3D.Sphere: return Overlaps((Sphere)shape1, (Sphere)shape2);
 			}
@@ -52,6 +48,7 @@ namespace Engine.Shapes._3D
 			switch (other.ShapeType)
 			{
 				case ShapeTypes3D.Box: return Overlaps(box, (Box)other);
+				case ShapeTypes3D.Cylinder: return Overlaps(box, (Cylinder)other);
 				case ShapeTypes3D.Line: return Overlaps(box, (Line3D)other);
 				case ShapeTypes3D.Sphere: return Overlaps(box, (Sphere)other);
 			}
@@ -60,6 +57,11 @@ namespace Engine.Shapes._3D
 		}
 
 		private static bool Overlaps(Box box1, Box box2)
+		{
+			return false;
+		}
+
+		private static bool Overlaps(Box box, Cylinder cylinder)
 		{
 			return false;
 		}
@@ -74,12 +76,39 @@ namespace Engine.Shapes._3D
 			return false;
 		}
 
+		private static bool Overlaps(Cylinder cylinder, Shape3D other)
+		{
+			switch (other.ShapeType)
+			{
+				case ShapeTypes3D.Cylinder: return Overlaps(cylinder, (Cylinder)other);
+				case ShapeTypes3D.Line: return Overlaps(cylinder, (Line3D)other);
+				case ShapeTypes3D.Sphere: return Overlaps(cylinder, (Sphere)other);
+			}
+
+			return false;
+		}
+
+		private static bool Overlaps(Cylinder cylinder1, Cylinder cylinder2)
+		{
+			return false;
+		}
+
+		private static bool Overlaps(Cylinder cylinder, Line3D line)
+		{
+			return false;
+		}
+
+		private static bool Overlaps(Cylinder cylinder, Sphere sphere)
+		{
+			return false;
+		}
+
 		private static bool Overlaps(Line3D line, Shape3D other)
 		{
 			switch (other.ShapeType)
 			{
-				case ShapeTypes3D.Line: break;
-				case ShapeTypes3D.Sphere: break;
+				case ShapeTypes3D.Line: return Overlaps(line, (Line3D)other);
+				case ShapeTypes3D.Sphere: return Overlaps(line, (Sphere)other);
 			}
 
 			return false;

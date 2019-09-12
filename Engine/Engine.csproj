@@ -193,6 +193,7 @@
     <Compile Include="Shapes\2D\Point.cs" />
     <Compile Include="Shapes\2D\Rectangle.cs" />
     <Compile Include="Shapes\2D\ShapeHelper2D.cs" />
+    <Compile Include="Shapes\3D\Cylinder.cs" />
     <Compile Include="Shapes\3D\Line3D.cs" />
     <Compile Include="Shapes\3D\ShapeHelper3D.cs" />
     <Compile Include="Smoothers\3D\OrientationSmoother.cs" />

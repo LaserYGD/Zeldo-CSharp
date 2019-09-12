@@ -16,6 +16,9 @@ namespace Engine.Shapes._3D
 		public vec3 Position { get; set; }
 		public quat Orientation { get; set; }
 
+		// This value allows overlap calculations to be optimized in many cases.
+		public bool IsAxisAligned { get; set; }
+
 		public void SetTransform(vec3 position, quat orientation)
 		{
 			Position = position;
