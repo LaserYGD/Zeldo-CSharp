@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Zeldo.Entities.Weapons
 {
-	public class Twinblade : Weapon
+	public class Twinblade : MeleeWeapon
 	{
 		protected override void TriggerPrimary(out float cooldownTime, out float bufferTime)
 		{
