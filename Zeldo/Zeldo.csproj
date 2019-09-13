@@ -270,6 +270,7 @@
     <Compile Include="Entities\PlayerController.cs" />
     <Compile Include="Entities\PlayerData.cs" />
     <Compile Include="Entities\PlayerStates.cs" />
+    <Compile Include="Entities\Weapons\MeleeWeapon.cs" />
     <Compile Include="Entities\Weapons\Twinblade.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerControls.cs" />

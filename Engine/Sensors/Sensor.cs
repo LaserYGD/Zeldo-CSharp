@@ -9,6 +9,8 @@ namespace Engine.Sensors
 {
 	public class Sensor : ITransformable3D
 	{
+		private const string AssertMessage = "Can't modify a sensor from a callback.";
+
 		private bool isEnabled;
 		private int collidesWith;
 
@@ -37,25 +39,21 @@ namespace Engine.Sensors
 		}
 
 		internal Space Space { get; set; }
-
+		
 		internal bool IsTogglePending { get; private set; }
 		internal bool IsMarkedForDestruction { get; set; }
 		internal bool IsCompound { get; }
 		internal int Group { get; }
-		internal object Owner { get; }
+
 
 		internal SensorTypes Type { get; }
 
 		public int CollidesWith
 		{
-			internal get => collidesWith;
+			get => collidesWith;
 			set
 			{
-				Debug.Assert(value > 0, "collidesWith can't be negative.");
-				Debug.Assert(collidesWith == -1, "collidesWith can't be changed more than once (since doing so " +
-					"would require recomputing contacts).");
-				Debug.Assert(Space == null || !Space.IsUpdateActive, "collidesWith can't be set during the space's " +
-					"update loop (since some contacts might be missed on that frame).");
+				Debug.Assert(Space == null || !Space.IsUpdateActive, AssertMessage);
 
 				collidesWith = value;
 			}
@@ -64,22 +62,33 @@ namespace Engine.Sensors
 		public virtual vec3 Position
 		{
 			get => Shape.Position;
-			set => Shape.Position = value;
+			set
+			{
+				Debug.Assert(Space == null || !Space.IsUpdateActive, AssertMessage);
+
+				Shape.Position = value;
+			}
 		}
 
 		public virtual quat Orientation
 		{
 			get => Shape.Orientation;
-			set => Shape.Orientation = value;
+			set
+			{
+				Debug.Assert(Space == null || !Space.IsUpdateActive, AssertMessage);
+
+				Shape.Orientation = value;
+			}
 		}
+
+		public object Owner { get; }
 
 		public Shape3D Shape
 		{
 			internal get => shape;
 			set
 			{
-				Debug.Assert(shape == null, "Can't change shape more than once (since doing so would require " +
-					"recomputing contacts).");
+				Debug.Assert(Space == null || !Space.IsUpdateActive, AssertMessage);
 
 				shape = value;
 			}
@@ -117,6 +126,8 @@ namespace Engine.Sensors
 
 		public virtual void SetTransform(vec3 position, quat orientation)
 		{
+			Debug.Assert(Space == null || !Space.IsUpdateActive, AssertMessage);
+
 			Position = position;
 			Orientation = orientation;
 		}

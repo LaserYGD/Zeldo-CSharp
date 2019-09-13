@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Engine;
-using Engine.Core;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
 using Engine.Graphics._3D;
@@ -13,26 +12,20 @@ using Engine.Interfaces._3D;
 using Engine.Localization;
 using Engine.Messaging;
 using Engine.Physics;
-using Engine.Structures;
+using Engine.Sensors;
 using Engine.UI;
 using Engine.Utility;
 using Engine.View;
 using GlmSharp;
 using Jitter;
 using Jitter.Collision;
-using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
-using Zeldo.Control;
 using Zeldo.Entities;
-using Zeldo.Entities.Bosses.Octopus;
 using Zeldo.Entities.Core;
-using Zeldo.Physics;
-using Zeldo.Sensors;
 using Zeldo.Settings;
 using Zeldo.State;
 using Zeldo.UI;
-using Zeldo.UI.Hud;
 using Zeldo.UI.Screens;
 using Zeldo.View;
 using static Engine.GL;
@@ -387,7 +380,7 @@ namespace Zeldo
 			mainTarget.Apply();
 			scene.Draw(camera);
 			jitterVisualizer.Draw(camera);
-			//spaceVisualizer.Draw();
+			spaceVisualizer.Draw();
 
 			// Render 2D targets.
 			glDisable(GL_DEPTH_TEST);

@@ -1,15 +1,12 @@
 ﻿using Engine;
 using Engine.Core._3D;
 using Engine.Physics;
-using Engine.Shapes._2D;
 using Engine.Timing;
 using GlmSharp;
-using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
-using Zeldo.Sensors;
 
 namespace Zeldo.Entities
 {

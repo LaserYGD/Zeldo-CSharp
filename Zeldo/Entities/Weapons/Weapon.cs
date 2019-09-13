@@ -3,11 +3,11 @@ using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities.Weapons
 {
-	public abstract class Weapon
+	public abstract class Weapon : Entity
 	{
 		private SingleTimer cooldownTimer;
 
-		protected Weapon()
+		protected Weapon() : base(EntityGroups.Weapon)
 		{
 			cooldownTimer = new SingleTimer(time => { OnCooldown = false; });
 			cooldownTimer.IsRepeatable = true;

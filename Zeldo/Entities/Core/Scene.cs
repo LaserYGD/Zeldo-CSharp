@@ -3,11 +3,11 @@ using System.Linq;
 using Engine;
 using Engine.Graphics._3D.Rendering;
 using Engine.Interfaces;
+using Engine.Sensors;
 using Engine.UI;
 using Engine.Utility;
 using Engine.View;
 using Jitter;
-using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Core
 {

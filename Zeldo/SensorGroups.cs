@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Engine.Sensors
+namespace Zeldo
 {
 	[Flags]
 	public enum SensorGroups

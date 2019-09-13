@@ -1,42 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Engine.Sensors;
 using Engine.Shapes._2D;
 using Engine.Timing;
 using Engine.Utility;
-using GlmSharp;
 using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
-using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Weapons
 {
-	public class Sword : Entity
+	public class Sword : Weapon
 	{
 		private Arc arc;
 		private Sensor sensor;
-		private SingleTimer timer;
-		private List<ITargetable> targetsHit;
 
-		public Sword() : base(EntityGroups.Weapon)
+		public Sword()
 		{
 			arc = new Arc(1, 1.25f);
-			targetsHit = new List<ITargetable>();
-
-			timer = new SingleTimer(time =>
-			{
-				sensor.IsEnabled = false;
-				targetsHit.Clear();
-			},
-			0.2f);
-
-			timer.IsPaused = true;
-			timer.IsRepeatable = true;
-
-			Components.Add(timer);
 		}
 
 		public override void Initialize(Scene scene, JToken data)
@@ -68,11 +48,13 @@ namespace Zeldo.Entities.Weapons
 			targetsHit.Add(target);
 		}
 
-		public void Attack(vec2 direction)
+		protected override void TriggerPrimary(out float cooldownTime, out float bufferTime)
 		{
+			/*
 			arc.Angle = Utilities.Angle(direction);
 			sensor.IsEnabled = true;
 			timer.IsPaused = false;
+			*/
 		}
 	}
 }

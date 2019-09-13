@@ -1,13 +1,8 @@
-﻿using Engine;
-using Engine.Core;
-using Engine.Graphics._3D;
-using Engine.Shapes._2D;
+﻿using Engine.Graphics._3D;
 using Engine.Shapes._3D;
-using Engine.Utility;
 using Engine.View;
-using GlmSharp;
 
-namespace Zeldo.Sensors
+namespace Engine.Sensors
 {
 	public class SpaceVisualizer
 	{
@@ -23,42 +18,28 @@ namespace Zeldo.Sensors
 
 		public void Draw()
 		{
-			/*
 			foreach (var sensor in space.Sensors)
 			{
 				if (sensor.IsCompound)
 				{
-					Draw((CompoundSensor)sensor);
-
-					continue;
+					((MultiSensor)sensor).Attachments.ForEach(a => Draw(a.Shape));
 				}
-
-				Draw(sensor.Shape, sensor.Height, sensor.Elevation);
+				else
+				{
+					Draw(sensor.Shape);
+				}
 			}
 
 			primitives.Flush();
-			*/
 		}
 
-		private void Draw(CompoundSensor compound)
-		{
-			/*
-			float e = compound.Elevation;
-
-			foreach (var attachment in compound.Attachments)
-			{
-				Draw(attachment.Shape, attachment.Height, e + attachment.Elevation);
-			}
-			*/
-		}
-
-		private void Draw(Shape2D shape, float height, float elevation)
+		private void Draw(Shape3D shape)
 		{
 			var p = shape.Position;
-			var rotation = shape.Rotation;
 
 			switch (shape.ShapeType)
 			{
+				/*
 				case ShapeTypes2D.Circle:
 					Circle circle = (Circle)shape;
 					vec3[] points = new vec3[32];
@@ -94,6 +75,7 @@ namespace Zeldo.Sensors
 					primitives.Draw(box, Color.Cyan);
 
 					break;
+				*/
 			}
 		}
 	}

@@ -7,14 +7,12 @@ using Engine.Graphics._3D;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using Engine.Physics;
-using Engine.Shapes._2D;
+using Engine.Sensors;
 using Engine.Shapes._3D;
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Newtonsoft.Json.Linq;
-using Zeldo.Physics;
-using Zeldo.Sensors;
 
 namespace Zeldo.Entities.Core
 {
@@ -141,10 +139,10 @@ namespace Zeldo.Entities.Core
 			return model;
 		}
 
-		protected Sensor CreateSensor(Scene scene, Shape3D shape = null, SensorUsages usage = SensorUsages.None,
-			vec3? position = null, quat? orientation = null, bool enabled = true)
+		protected Sensor CreateSensor(Scene scene, SensorGroups group, Shape3D shape = null, vec3? position = null,
+			quat? orientation = null, bool enabled = true)
 		{
-			Sensor sensor = new Sensor(SensorTypes.Entity, usage, this, shape);
+			Sensor sensor = new Sensor(SensorTypes.Entity, this, (int)group, shape);
 			sensor.IsEnabled = enabled;
 			
 			Attach(EntityAttachmentTypes.Sensor, sensor, position, orientation);

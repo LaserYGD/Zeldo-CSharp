@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using Engine;
-using Engine.Input.Data;
+﻿using Engine;
 using Engine.Physics;
-using Engine.Shapes._2D;
+using Engine.Sensors;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
-using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;
 using Zeldo.Control;
@@ -16,7 +12,6 @@ using Zeldo.Entities.Weapons;
 using Zeldo.Interfaces;
 using Zeldo.Items;
 using Zeldo.Physics;
-using Zeldo.Sensors;
 using Zeldo.UI;
 using Zeldo.UI.Hud;
 using Zeldo.View;
@@ -251,7 +246,7 @@ namespace Zeldo.Entities
 
 			for (int i = contacts.Count - 1; i >= 0; i--)
 			{
-				if (contacts[i].Parent is IInteractive target && target.IsInteractionEnabled)
+				if (contacts[i].Owner is IInteractive target && target.IsInteractionEnabled)
 				{
 					target.OnInteract(this);
 
