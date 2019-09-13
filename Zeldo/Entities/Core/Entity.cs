@@ -139,11 +139,11 @@ namespace Zeldo.Entities.Core
 			return model;
 		}
 
-		protected Sensor CreateSensor(Scene scene, SensorGroups group, Shape3D shape = null, vec3? position = null,
-			quat? orientation = null, bool enabled = true)
+		protected Sensor CreateSensor(Scene scene, Shape3D shape = null, SensorGroups group = SensorGroups.None,
+			SensorTypes type = SensorTypes.Entity, vec3? position = null,
+			quat? orientation = null)
 		{
-			Sensor sensor = new Sensor(SensorTypes.Entity, this, (int)group, shape);
-			sensor.IsEnabled = enabled;
+			var sensor = new Sensor(SensorTypes.Entity, this, (int)group, shape);
 			
 			Attach(EntityAttachmentTypes.Sensor, sensor, position, orientation);
 			scene.Space.Add(sensor);

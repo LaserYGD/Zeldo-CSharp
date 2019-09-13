@@ -9,8 +9,8 @@ namespace Engine.Sensors
 		private vec3 position;
 		private quat orientation;
 
-		public MultiSensor(SensorTypes type, object owner, int group, Shape3D shape = null) :
-			base(type, owner, group, true, shape)
+		public MultiSensor(SensorTypes type, object owner, int groups, Shape3D shape = null) :
+			base(type, owner, groups, true, shape)
 		{
 			Attachments = new List<ShapeAttachment>();
 		}

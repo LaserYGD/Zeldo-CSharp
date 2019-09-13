@@ -1,5 +1,5 @@
-﻿using Jitter;
-using Zeldo.Sensors;
+﻿using Engine.Sensors;
+using Jitter;
 
 namespace Zeldo.State
 {

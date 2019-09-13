@@ -9,7 +9,12 @@ namespace Zeldo.Entities.Weapons
 
 		protected Weapon() : base(EntityGroups.Weapon)
 		{
-			cooldownTimer = new SingleTimer(time => { OnCooldown = false; });
+			cooldownTimer = new SingleTimer(time =>
+			{
+				IsCoolingDown = false;
+				OnCooldownExpired();
+			});
+
 			cooldownTimer.IsRepeatable = true;
 			cooldownTimer.IsPaused = true;
 		}
@@ -18,7 +23,11 @@ namespace Zeldo.Entities.Weapons
 
 		// If a weapon is on cooldown, input may still be buffered for a short time to trigger the next attack (in the
 		// case of the player, anyway).
-		public bool OnCooldown { get; private set; }
+		public bool IsCoolingDown { get; private set; }
+
+		protected virtual void OnCooldownExpired()
+		{
+		}
 
 		// This function is used to signal the player controller to trigger another attack immediately if input was
 		// buffered.

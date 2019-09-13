@@ -21,7 +21,7 @@ namespace Zeldo.Entities.Objects
 			float pickupRadius = Properties.GetFloat("cannonball.pickup.radius");
 
 			CreateModel(scene, "Cannonball.obj");
-			CreateSensor(scene, new Sphere(pickupRadius));
+			CreateSensor(scene, new Sphere(pickupRadius), SensorGroups.Interaction);
 			CreateRigidBody(scene, new SphereShape(collisionRadius));
 
 			base.Initialize(scene, data);

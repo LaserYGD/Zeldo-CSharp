@@ -381,7 +381,7 @@ namespace Zeldo.Entities
 				return;
 			}
 
-			if (weapon.OnCooldown)
+			if (weapon.IsCoolingDown)
 			{
 				// The attack buffer is reset with each new input (assuming buffering was enabled by the weapon's
 				// previous attack).

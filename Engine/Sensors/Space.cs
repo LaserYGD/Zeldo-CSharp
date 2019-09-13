@@ -60,8 +60,8 @@ namespace Engine.Sensors
 
 				var owner1 = sensor1.Owner;
 				var type1 = sensor1.Type;
-				var group1 = sensor1.Group;
-				var collidesWith1 = sensor1.CollidesWith;
+				var groups1 = sensor1.Groups;
+				var affects1 = sensor1.Affects;
 				var contacts1 = sensor1.Contacts;
 
 				bool isZone1 = sensor1.Type == SensorTypes.Zone;
@@ -72,10 +72,14 @@ namespace Engine.Sensors
 
 					Debug.Assert(sensor2.Shape != null, "Sensor never had its shape set.");
 
+					// Although contacts are symmetric, callbacks can be configured to trigger in only one direction.
+					bool oneAffectsTwo = (affects1 & sensor2.Groups) > 0;
+					bool twoAffectsOne = (sensor2.Affects & groups1) > 0;
+
 					// By design, zones cannot interact with each other (only entity-entity or entity-zone collisions
 					// are allowed).
-					if (!sensor2.IsEnabled || (isZone1 && sensor2.Type == SensorTypes.Zone) ||
-					    (group1 & sensor2.CollidesWith) == 0 || (sensor2.Group & collidesWith1) == 0)
+					if (!sensor2.IsEnabled || (isZone1 && sensor2.Type == SensorTypes.Zone) || !(oneAffectsTwo ||
+						twoAffectsOne))
 					{
 						continue;
 					}
@@ -91,16 +95,16 @@ namespace Engine.Sensors
 					{
 						if (overlaps)
 						{
-							sensor1.OnStay?.Invoke(type2, owner2);
-							sensor2.OnStay?.Invoke(type1, owner1);
+							if (oneAffectsTwo) { sensor1.OnStay?.Invoke(type2, owner2); }
+							if (twoAffectsOne) { sensor2.OnStay?.Invoke(type1, owner1); }
 						}
 						else
 						{
 							contacts1.Remove(sensor2);
 							contacts2.Remove(sensor1);
 
-							sensor1.OnSeparate?.Invoke(type2, owner2);
-							sensor2.OnSeparate?.Invoke(type1, owner1);
+							if (oneAffectsTwo) { sensor1.OnSeparate?.Invoke(type2, owner2); }
+							if (twoAffectsOne) { sensor2.OnSeparate?.Invoke(type1, owner1); }
 						}
 
 						continue;
@@ -111,8 +115,8 @@ namespace Engine.Sensors
 						contacts1.Add(sensor2);
 						contacts2.Add(sensor1);
 
-						sensor1.OnSense?.Invoke(type2, owner2);
-						sensor2.OnSense?.Invoke(type1, owner1);
+						if (oneAffectsTwo) { sensor1.OnSense?.Invoke(type2, owner2); }
+						if (twoAffectsOne) { sensor2.OnSense?.Invoke(type1, owner1); }
 					}
 				}
 			}
