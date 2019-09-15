@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Engine.Graphics._2D;
 using Engine.Interfaces;
+using Engine.Interfaces._3D;
 using Engine.UI;
 
 namespace Zeldo.State
@@ -9,23 +11,19 @@ namespace Zeldo.State
 	{
 		protected Canvas canvas;
 		protected SpriteBatch sb;
+		protected List<IRenderTargetUser3D> renderTargetUsers3D;
 
-		public void Transfer(GameLoop loop)
+		protected GameLoop(LoopTypes type)
 		{
-			if (loop == null)
-			{
-				canvas = new Canvas();
-				sb = new SpriteBatch();
-
-				return;
-			}
-
-			canvas = loop.Canvas;
-			sb = loop.SpriteBatch;
+			LoopType = type;
+			renderTargetUsers3D = new List<IRenderTargetUser3D>();
 		}
 
-		public Canvas Canvas => canvas;
-		public SpriteBatch SpriteBatch => sb;
+		public LoopTypes LoopType { get; }
+
+		// All loops can render 2D elements.
+		public Canvas Canvas { set => canvas = value; }
+		public SpriteBatch SpriteBatch { set => sb = value; }
 
 		public virtual void Dispose()
 		{
@@ -34,5 +32,10 @@ namespace Zeldo.State
 		public abstract void Initialize();
 		public abstract void Update(float dt);
 		public abstract void Draw();
+
+		public void DrawTargets()
+		{
+			renderTargetUsers3D.ForEach(t => t.DrawTargets());
+		}
 	}
 }

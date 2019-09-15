@@ -130,6 +130,7 @@
 
 - With all of this, remember to think about how these ideas fit into the theme of a magical world with essences
 
+- Bow with a rope attached (can be used for puzzle solving or movement, including ascension targets) => Would have to make sure this combination doesn't trivialize vertical platforming
 
 
 

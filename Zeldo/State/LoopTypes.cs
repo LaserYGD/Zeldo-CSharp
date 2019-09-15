@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Zeldo.State
 {
-	// TODO: Consider adding a credits loop.
-	public enum Gamestates
+	public enum LoopTypes
 	{
 		Gameplay,
 		Splash,

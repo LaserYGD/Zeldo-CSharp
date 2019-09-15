@@ -1,0 +1,190 @@
+=== Terminology ===
+
+- Skill: a permanent technique acquired by the player (i.e. the player himself becomes more powerful)
+- Item: a usable object or tool that must be equipped to be used (may or may not be consumable)
+- Equipment: a piece of clothing or gear that can be equipped, and provides bonuses while equipped (but isn't part of the player)
+- Upgrade: a modification (usually beneficial) to any of the above
+
+=== Link ===
+
+- Humanoid
+- Basic runs, jumps, and rolls (plus iron boots, hover boots, and hookshot)
+- Combat has a lot more complexity (via items)
+- Weapon variety is low (sword and shield plus one ranged weapon for child vs. adult Link)
+- Equipment doesn't really affect combat (used more for puzzle solving in the environment)
+- Gains additional health (hearts) and a magic meter
+- Ammo (and limited quantities of other consumables)
+
+=== Ori ===
+
+- Spirit creature
+- Absorbs powerful movement skills
+- Most of these skills have uses in combat as well
+- Primary attack comes from Sein
+- No equipment or items (although there are upgrades)
+- Gains additional health and energy
+- Energy acts as ammunition for some skills
+
+=== Hollow Knight ===
+
+- Bug (but a magical bug)
+- Absorbs skills
+- No items
+- No upgrades to movement skills, but there are upgrades to combat skills
+- Only one weapon (the nail), plus magic
+- Equipment in the form of charms
+- Health and mana (soul) can be increased
+
+=== Hat Kid ===
+
+- Humanoid
+- No skills or items
+- Equipment in the form of hats (that grant skills while equipped) and badges
+- Skills granted by hats vary among movement and combat (but can be swapped on the fly)
+- No ammunition or other resources
+- Maximum health can't be increased
+
+=== Banjo + Kazooie ===
+
+- Animals (Banjo is humanoid)
+- No equipment, items, or upgrades
+- Skills are taught by an NPC (Bottles)
+- Skills are primarily based somewhat realistically on what a humanoid bear and bird could believably do (e.g. Kazooie can flap her wings and shoot eggs)
+- Ammunition (eggs)
+- Gain health (honeycombs)
+- Banjo-Tooie expands on all of this with additional content (new egg types and skills)
+
+=== Questions ===
+
+- What kind of creature is the player character?
+- Is the player's identity customizable or fixed?
+- What is the player's motivation for going on an adventure?
+- Does this motivation match the human player's motivation?
+- Is it reasonable that the player is capable of performing the movement and combat skills given in the game? (especially skills that feel magical or unrealistic)
+- Of the terms defined above, which are present in the game? (e.g. does the player use items?)
+- If skills exist, how does the player acquire new skills?
+- Is there ammunition (or other resources, like energy)?
+- How does the player increase maximum health?
+- Does the player talk?
+
+=== Feedback ===
+
+- Is the player the chosen one, or could anyone of your race do this?
+- Magical skills don't need to be literally explained, but could be shown to be believable through other entities performing similar feats
+- Worlds like Mario 64 or Banjo Kazooie don't make any sense if you actually think about them, but it doesn't matter because it provides a setting for building cool stages (and the stories aren't serious enough to make you question those settings)
+- Skippy: "Charm" is important (difficult to define)
+- Obi: Show, not tell
+- Obi: Searching for "DnD character design" on Imgur gives you a huge image dump of various characters (good for spurring different ideas)
+- Grim: I want the player to be humanoid (not an animal or a spirit)
+- Grim: Having many races around the world normalizes that fact and allows us to create unique, charming characters
+- Obi: In terms of races, there's the Lord of the Rings approach (a small, distinct set of races), or the Star Wars approach (tons of races you see all the time)
+- Skippy: If you meet an intelligent spider character, then later fight minion spiders (that aren't intelligent), there's a disconnect there
+- Skippy: Not explaining absolutely everything can be beneficial, since it gives players opportunities to speculate and discuss (also gives room for a sequel or DLC)
+- Grim: For plot, many openings are too cliched (like your town being destroyed), so I'd prefer to allow the story to evolve over time (and the player's motivations with it) => This would also allow the tasks you perform to range from more mundane (repair a windmill to provide power to a town) to eventually grander, more serious tasks (save the world)
+- Obi: Maybe the player could be a worker of some kind (there's a cataclysm coming, but it isn't immediately apparent)
+- Skippy: How deep are the RPG elements in the game? (e.g. are there classes, stats, elemental damage, etc.)
+- Grim: There are no classes or RPG stats. Damage calculations are simple (likely with some kind of elemental effects, but still simplified, e.g. if the enemy is weak to fire, you deal flat double damage)
+- Obi: Using block-based damage (with relatively small health values) is easier to conceptualize and visually represent
+- Skippy: Anything that's understandable at a glance is good (rather than having to do complex calculations in your head)
+- Grim: Fuck RNG. Even in boss fights, you can build a complex, but defined, system of rules
+- Skippy: Cheesing bosses (e.g. standing in a corner) is bad (but we can solve that through testing and modifying AI patterns if needed to explicitly counter that cheese)
+- Obi: In the beginning, everything is new to the player (so you accept it as normal), but you might later learn that parts of the world are "wrong" and you can help fix that (feels good to make permanent changes in the world) => Big reveal hidden in plain sight (a fact that changes your perception of the world when you learn it)
+- Grim: That idea is similar to Metroidvania mechanics like Bash, which makes you re-contextualize the world (suddenly, enemies are bash targets)
+- Obi: What does combat look like in the game?
+- Grim: The player can wield a variety of weapons, and damage primarily comes from weapons (rather than movement skills directly, although upgrades could be acquired to have them interact)
+- Grim: I want combat encounters to be creative and memorable rather than strictly hard (also want movement and combat to blend together smoothly)
+- Grim: Have to make sure combat doesn't become too complicated (e.g. HK, which has nail arts I never bothered using) => Intuitive control scheme is a big part of that
+- Skippy: A dash/dodge is based on positioning, but not i-frames
+- Obi: Could have limited usages or cooldowns to help with that
+- Skippy: Could use mana (or some other resources) or a timed cooldown, but I like a middle ground (e.g. the third dash makes you slide and ends up being slower)
+- Grim: Those are all good ideas, but I feel it's punative rather than rewarding, and it's important to me that players feel encouraged to experiment with their skills
+- Skippy: One thing I've been wanting to say: for every great game, rather than having discussions about what works and what doesn't, they mock it and actually play it to analyze how it feels (that's likely the most efficient method)
+- Obi: Let's get back to the task at hand (the player character), where the more traditional quest structure is more defined
+- Skippy: Is the player an underdog? (e.g. bullied, etc.)
+- Grim: No. Your character is pretty average at the start, then becomes great over time
+- Grim: I want the primary conflict to be player vs. world, where characters eventually work together to prevent the end of the world, rather than killing a specific villain who is ending the world
+- Obi: Rather than a farmer, blacksmith, etc., we could come up with a world-specific job?
+- Skippy: Maybe the player can track minor essences, then (by nature of their skillset), they have the ability to acquire them and perform tasks more believably than others
+- Obi: The player should start with some magical knowledge (everyone has *some* knowledge and can do the very basic things, but there are specialized people that know more)
+- Skippy: Maybe all essences are equal, but some creatures are able to use them in more focused or creative ways
+- Obi: What if rather than essences being a purely physical, emotionless force, what if it was a being instead?
+- Grim: I've had the idea for a long time of a godlike being that created the universe (but not in the traditional religious sense). More an ancient being with a problem it can't solve, and that eventually forms the final quest of the game (helping that being solve its problem)
+- Obi: Maybe there's a different fraction of the whole personality that accounts for each essence (but they're all part of the collective whole), and maybe they all interact a little differently
+- Grim: I like the concept, but I worry it could diminish the mystery of the essences
+- Grim: I want a casual playthrough to "end" before you ever learn about the godlike creature, then you continue pushing forward and eventually discover the "true" ending (but it's not a branched ending)
+- Skippy: What if the world isn't finished yet? (you can find part of it)
+- Skippy: Early on (or at some point, at least), the player could learn that the world is much younger than they thought (maybe you find hidden ruins?)
+- Obi: If the player's profession is world-specific, that's your motivation to adventure, and combat and the rest is effectively a side effect of that (you find details that drive the story forward)
+- Grim: If we go with the ancient race, need to be careful that they aren't secretly guiding your actions (since that would diminish player agency over the changes they make to the world)
+- Obi: The world being unfinished could open up some fascinating set pieces
+- Grim: Maybe the power of essences *isn't* unlimited, but is actually pulled from a power source (the same one used to construct the world), but that power source is ruptured
+- Skippy: The "void" zone is called "the fracture"
+- Skippy: Maybe the reason the world is unfinished is because the creators split or went their separate ways => Wouldn't diminish player agency if your agency is to help *fix* that split (to finish the world)
+- Obi: What if rather than personality clashes (e.g. Olympian gods), there was an "error" of some kind, and that causes the fracture between them?
+- Grim: I love the idea, but I don't want it to be too technology based (like, not an actual programming error). It should remain magical instead
+- Obi: We can spin the lore however we need to to maintain the feel of magic rather than technology
+- Obi: How many essences are there? Do you "absorb" that essence and use properties from that?
+- Grim: Original concept was that there's a separation of an "essence" (the underlying force) and a "fragment" (actual objects that are "attuned" to different essences). Given this, your character can start to "attune" to essences to gain power and skill
+- Skippy: If you're sufficiently attuned to a particular essence, can you interact with the essence being?
+- Grim: I'm not totally sold on the idea of essence beings
+- Grim: Once you complete that final goal (fix the problem to finish the world), what changes? (might be better left for DLC or a sequel)
+- Skippy: We need the world fleshed out before we can define who the player is (and your role in it)
+- Grim: Could have the player be a researcher (underneath a mentor) and start with a relatively mundane task (don't really need to explain combat and movement proficiency)
+- Skippy: It would be foolish to end with you fixing the world (since you can't ever come up with another conflict with more gravity than the nature of the world)
+- Grim: Could choose to 1) not do a sequel at all, or 2) end this game at the "first" ending, then leave the larger conflict for a sequel or DLC
+- Grim: Rather than a generic researcher of "the essence of magic", you could be researching a specific essence (or working with one specific essence, with a friend or mentor with philosophical interest in the nature of the world)
+- Obi: Currency is a driving force in how civilization operates, so you could be a trader or miner (use transportation somehow?)
+- Skippy: Do essences need to be recharged or replaced? (would pose pretty big economic problems if they didn't)
+- Grim: What if essences need to be replaced, but your mentor/boss is interested in finding a way to recharge them? (this starts to get the player thinking about the nature of essences and the distinction among essences and fragments)
+- Obi: What if (due to the same "leaking" from the rupture in the world) fragments are starting to lose their potency? (e.g. light stones deplete more quickly)
+- Grim: If we plant the idea of essences starting to become less potent, we should follow through and show that to the player (similar to Bloodborne, where the world advances based on certain world triggers)
+- Grim: Plays into the idea of many essences, since if all essences are losing potency, it makes sense that the world (trees, sunlight, wind, heat, light) would start to visually decay
+- Grim: What if, rather than the core power source losing power, the energy is just starting to bleed? (i.e. the plumbing is ruptured and leaking energy where it's not supposed to) => This could lead to the set pieces Obi described in the late game
+- Obi: We definitely have some disjoint between some of the ideas we've shared (there's this leaking dilapidation, there's the idea of godlike beings, and there's the "event" or "error" that caused the problem of the world being unfinished)
+- Obi: The inciting incident could be the error, which caused the leaks (shown through the world as fragments losing potency)
+- Obi: If one essence leaked into another, what would that look like? (could come up with interesting anomalies) => The *player* doesn't combine these, but they happen in the world
+- Grim: This would add too much complexity if applied to player skills (should stay as set pieces of environmental puzzles)
+- Grim: What happens if you *don't* fix the problem? (does the world end, or just become dark and cold?) => The latter works well since that's what the player actually observes over the course of the game (the world becoming drained and decayed)
+- Obi: Are there bosses? How are we going to up the ante?
+- Skippy: Some bosses could be beings that found the "leaks" and absorbed power as a result?
+- Grim: Could meet another character (a hermit in the woods) who has questioned the nature of the world (just like your mentor). Maybe a boss fight, maybe just another character
+- Obi: For parries, could use something like the essence of wind to modify *how* you parry (but with the same controls)
+- Obi: Could have a scare of killing your mentor and have him protect himself
+- Grim: Starting to have a lot of complexity to the player's capabilities, so it's probably better to have no usable items at all
+- Grim: You already have movement skills and weapons (and combinations of the two), and essences could further upgrade and improve those things
+- Skippy: Equipment would probably still work
+- Obi: For items, might need an exception for healing flasks of some kind
+- Skippy: Could have an "estus flask" that is attuned to the essence of life (makes sense in the world)
+- Grim: Yes, and could improve it later via replenishment from damaging or killing enemies
+- Obi: Could have coalesced "drops" of the essence itself (in gameplay terms, it's like a potion or soul item from Dark Souls)
+- Grim: Could have the actual act of attunement be a major discovery (by yourself or someone else) that allows replenishment (i.e. you can use drops to recharge other items)
+- Skippy: The Witness is a somewhat cel-shaded, very vibrant, saturated game that looks gorgeous (good art style for smaller teams since you can focus more on geometry than ultra-detailed textures)
+- Skippy: With that art style, you need great shapes to make things memorable and believable (Subnautica is another good example, or even Breath of the Wild)
+- Grim: Could use rim lighting to highlight important objects (in combination with more realistic lighting, like The Witness)
+- Grim: Keep brainstorming movement skills (would be nice to have two forms of wall interaction)
+- Skippy: Some kind of wall bounce?
+- Grim: I had an idea for a dash that can be redirected off a wall (and likely used to gain height as well)
+- Skippy: In Mario Kart 8, when you're in hover mode, you hit a peg and kind of wrap around it and get a boost
+- Skippy: More combat related, dashing *through* an enemy and then hitting it causes something to happen (or "marks" it in some way, maybe different marks for different ways)
+- Grim: I worry marks could add too much complexity
+- Skippy: We like bash (and how enemies become a tool). Could mark an enemy and then hold a button to quickly teleport or dash to it (can prototype to see what's fun)
+- Obi: What are some examples of games with a similar gameplay loop?
+- Grim: Not Dark Souls-style combat (nor Ocarina of Time)
+- Skippy: What about Metroid Prime or Nier Automata? Maybe Ratchet and Clank?
+- Grim: Hard to say. I know I DON'T want complex combo systems or flashy, ultra fast-paced combat (instead, I want to focus on *fluidity* and creating fun, creative, memorable combat encounters, especially with regard to enemy design and variety)
+- Grim: The camera is a big concern with this kind of fluid movement and combat (you have to be able to maintain control over what you're doing without flailing or button mashing)
+- Obi: Could use Pinterest to start gathering ideas on different topics
+
+
+
+
+
+
+
+
+
+
+
+
+
+

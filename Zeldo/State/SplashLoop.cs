@@ -4,8 +4,14 @@ namespace Zeldo.State
 {
 	public class SplashLoop : GameLoop
 	{
+		public SplashLoop() : base(LoopTypes.Splash)
+		{
+		}
+
 		public override void Initialize()
 		{
+			// The canvas is intentionally not cleared here under the assumption that if the splash loop is created,
+			// it'll be the first one used (meaning that the canvas will already be clear). 
 			canvas.Add(new SplashLogo());
 		}
 

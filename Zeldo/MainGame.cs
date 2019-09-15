@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Engine;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
-using Engine.Graphics._3D;
 using Engine.Graphics._3D.Rendering;
 using Engine.Input.Data;
 using Engine.Interfaces;
@@ -13,14 +14,9 @@ using Engine.Physics;
 using Engine.Sensors;
 using Engine.UI;
 using Engine.Utility;
-using Engine.View;
 using GlmSharp;
-using Jitter.LinearMath;
-using Zeldo.Entities;
 using Zeldo.Settings;
 using Zeldo.State;
-using Zeldo.UI;
-using Zeldo.View;
 using static Engine.GL;
 using static Engine.GLFW;
 
@@ -28,29 +24,14 @@ namespace Zeldo
 {
 	public class MainGame : Game, IReceiver
 	{
-		private const bool FrameAdvanceEnabled = false;
-
-		// This is temporary for kinematic physics testing.
-		private const bool CreateDemoCubes = false;
-
 		private Gamestates currentState;
 		private Gamestates nextState;
 
+		private Canvas canvas;
 		private SpriteBatch sb;
 		private RenderTarget mainTarget;
 		private Sprite mainSprite;
-		private Camera3D camera;
-		private Canvas canvas;
-		private List<IRenderTargetUser3D> renderTargetUsers;
-		private PrimitiveRenderer3D primitives;
-
-		private SpaceVisualizer spaceVisualizer;
-		private JitterVisualizer jitterVisualizer;
-		private TentacleTester tentacleTester;
-
 		private GameLoop activeLoop;
-
-		private bool frameAdvanceReady;
 
 		public MainGame() : base("Zeldo")
 		{
@@ -60,14 +41,10 @@ namespace Zeldo
 			glPrimitiveRestartIndex(Constants.RestartIndex);
 			glfwSetInputMode(window.Address, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-			currentState = Gamestates.Unassigned;
-			nextState = Gamestates.Splash;
-
 			Properties.LoadAll();
 			Language.Reload(Languages.English);
 
-			camera = new Camera3D();
-			primitives = new PrimitiveRenderer3D(camera, 10000, 1000);
+			canvas = new Canvas();
 			sb = new SpriteBatch();
 
 			mainTarget = new RenderTarget(Resolution.RenderWidth, Resolution.RenderHeight, RenderTargetFlags.Color |
@@ -75,53 +52,14 @@ namespace Zeldo
 			mainSprite = new Sprite(mainTarget, null, Alignments.Left | Alignments.Top);
 			mainSprite.Mods = SpriteModifiers.FlipVertical;
 
-			canvas = new Canvas();
-			canvas.Load("Hud.json");
-			canvas.GetElement<DebugView>().IsVisible = false;
-
-			spaceVisualizer = new SpaceVisualizer(camera, space);
-
-			MasterRenderer3D renderer = scene.Renderer;
-			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.35f, -2.5f));
-
-			Player player = new Player();
-			player.Position = CreateDemoCubes ? new vec3(2, 3, -3.5f) : new vec3(2, 3, -2);
-			player.UnlockSkill(PlayerSkills.Grab);
-			player.UnlockSkill(PlayerSkills.Jump);
-
-			ControlSettings settings = new ControlSettings();
-			settings.MouseSensitivity = 50;
-
-			camera.Attach(new FollowController(player, settings));
-
-			scene.Add(player);
-			//scene.LoadFragment("Demo.json");
-
-			// The tentacle testing is intentionally created after the player is added to the scene.
-			tentacleTester = new TentacleTester(scene);
-
-			renderTargetUsers = new List<IRenderTargetUser3D>();
-			renderTargetUsers.Add(scene.Renderer);
-
-			jitterVisualizer = new JitterVisualizer(camera, world);
-			jitterVisualizer.IsEnabled = true;
+			// The first loop is created manually. Others are created via gamestate messages.
+			currentState = Gamestates.Gameplay;
+			nextState = currentState;
+			activeLoop = CreateLoop(currentState);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Keyboard, (messageType, data, dt) =>
 			{
 				ProcessKeyboard((KeyboardData)data);
-
-				if (CreateDemoCubes)
-				{
-					var kbData = (KeyboardData)data;
-
-					if (kbData.Query(GLFW_KEY_P, InputStates.PressedThisFrame))
-					{
-						foreach (var seeker in seekers)
-						{
-							seeker.ControllingBody.LinearVelocity = new JVector(-2.5f, 0, 0);
-						}
-					}
-				}
 			});
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) =>
@@ -132,6 +70,8 @@ namespace Zeldo
 			MessageSystem.Subscribe(this, CustomMessageTypes.Gamestate, (messageType, data, dt) =>
 			{
 				var state = (Gamestates)data;
+
+				Debug.Assert(state != Gamestates.Splash, "Can't transition to the splash loop.");
 
 				// This implementation means that if multiple gamestate messages are sent on a single frame, the last
 				// state will take priority (although that should never happen in practice).
@@ -149,6 +89,11 @@ namespace Zeldo
 
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		public void Dispose()
+		{
+			MessageSystem.Unsubscribe(this);
+		}
+
 		private void ProcessKeyboard(KeyboardData data)
 		{
 			// Process the game exiting.
@@ -156,53 +101,43 @@ namespace Zeldo
 			{
 				glfwSetWindowShouldClose(window.Address, 1);
 			}
-
-			// Process frame advance.
-			if (data.Query(GLFW_KEY_F, InputStates.PressedThisFrame))
-			{
-				frameAdvanceReady = true;
-			}
-
-			bool controlHeld = data.Query(GLFW_KEY_LEFT_CONTROL, InputStates.Held) ||
-				data.Query(GLFW_KEY_RIGHT_CONTROL, InputStates.Held);
-
-			if (!controlHeld)
-			{
-				return;
-			}
-
-			// Toggle Jitter visualization.
-			if (data.Query(GLFW_KEY_J, InputStates.PressedThisFrame))
-			{
-				jitterVisualizer.IsEnabled = !jitterVisualizer.IsEnabled;
-			}
-
-			// Toggle mesh visualization.
-			if (data.Query(GLFW_KEY_M, InputStates.PressedThisFrame))
-			{
-				scene.Renderer.IsEnabled = !scene.Renderer.IsEnabled;
-			}
-		}
-
-		public void Dispose()
-		{
-			MessageSystem.Unsubscribe(this);
 		}
 
 		protected override void Update(float dt)
 		{
-			if (!FrameAdvanceEnabled || frameAdvanceReady)
+			activeLoop.Update(dt);
+
+			// Gamestate changes don't apply until the end of the current frame.
+			if (nextState != currentState)
 			{
-				world.Step(dt, true, PhysicsStep, PhysicsIterations);
-				space.Update();
-				scene.Update(dt);
-				tentacleTester.Update(dt);
+				activeLoop = CreateLoop(nextState);
+				currentState = nextState;
 			}
 
-			camera.Update(dt);
-			frameAdvanceReady = false;
-
 			MessageSystem.ProcessChanges();
+		}
+
+		private GameLoop CreateLoop(Gamestates state)
+		{
+			GameLoop loop = null;
+
+			switch (state)
+			{
+				case Gamestates.Gameplay: loop = new GameplayLoop((TitleLoop)activeLoop);
+					break;
+
+				case Gamestates.Title: loop = new TitleLoop();
+					break;
+
+				case Gamestates.Splash: loop = new SplashLoop();
+					break;
+			}
+
+			loop.Canvas = canvas;
+			loop.SpriteBatch = sb;
+			loop.Initialize();
+
+			return loop;
 		}
 
 		protected override void Draw()
@@ -212,11 +147,9 @@ namespace Zeldo
 			glEnable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);
 
-			renderTargetUsers.ForEach(u => u.DrawTargets());
+			activeLoop.DrawTargets();
 			mainTarget.Apply();
-			scene.Draw(camera);
-			jitterVisualizer.Draw(camera);
-			spaceVisualizer.Draw();
+			activeLoop.Draw();
 
 			// Render 2D targets.
 			glDisable(GL_DEPTH_TEST);
@@ -232,9 +165,7 @@ namespace Zeldo
 
 			sb.ApplyTarget(null);
 			mainSprite.Draw(sb);
-
-			canvas.Draw(sb);
-			
+			canvas.Draw(sb);		
 			sb.Flush();
 		}
 	}
