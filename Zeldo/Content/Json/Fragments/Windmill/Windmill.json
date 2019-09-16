@@ -1,40 +1,13 @@
 ﻿{
 	"Origin": "0, 0, 0",
+	"Static": "WindmillTop_Physics.obj",
 	"Entities": [
 		{
-			"Type": "Sunflower",
-			"Position": "-3, 0, -1"
-		},
-		{
-			"Type": "WindmillBlades",
-			"Position": "0, 0, 0",
+			"$type": "Windmill.WindmillBlades",
+			"Position": "0|0|0",
 			"Blades": 5,
 			"Radius": 2,
-			"Size": "Large"
-		},
-		{
-			"Type": "Generic",
-			"Position": "0, 0, 0",
-			"Attachments": [
-				{
-					"Type": "Motor",
-					"Axis": "0, 0, 1"
-				}
-			]
+			"Type": "Large"
 		}
-	],
-
-	"Ground": [
-		{
-		}
-	],
-
-	"Tag": {
-		"Windows": [
-			{
-				"Position": "1, 2, 3",
-				"Radius": 1.5
-			}
-		]
-	}
+	]
 }

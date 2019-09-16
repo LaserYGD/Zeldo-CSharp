@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Engine;
+using Engine.Input;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
@@ -10,9 +11,7 @@ using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
-using Jitter.LinearMath;
 using Zeldo.Control;
-using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
 using Zeldo.View;
 
@@ -43,6 +42,7 @@ namespace Zeldo.Entities
 		// Player jumping has variable height, meaning that releasing the bind early cuts your jump short. Since the
 		// player can have multiple jump binds, though, this limit should only apply if the SAME bind was released.
 		private InputBind jumpBindUsed;
+		private InputBuffer grabBuffer;
 
 		public PlayerController(Player player, PlayerData playerData, PlayerControls controls,
 			AbstractController[] controllers)
@@ -55,6 +55,11 @@ namespace Zeldo.Entities
 			attackBuffer = new SingleTimer(time => { });
 			attackBuffer.IsRepeatable = true;
 			attackBuffer.IsPaused = true;
+
+			// Create buffers.
+			float grab = Properties.GetFloat("player.grab.buffer");
+
+			grabBuffer = new InputBuffer(grab, true, controls.Grab);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
@@ -316,6 +321,11 @@ namespace Zeldo.Entities
 			}
 
 			return true;
+		}
+
+		private void ProcessGrab(FullInputData data, float dt)
+		{
+			grabBuffer.Update(dt);
 		}
 
 		private void ProcessJumping(FullInputData data, float dt)

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -6,16 +7,18 @@ namespace Engine.Utility
 {
 	public static class JsonUtilities
 	{
-		private const string Path = "Content/Json/";
-
 		public static JObject Load(string filename)
 		{
-			return JObject.Parse(File.ReadAllText(Path + filename));
+			Debug.Assert(File.Exists(Paths.Json + filename), $"Missing Json file '{filename}'.");
+
+			return JObject.Parse(File.ReadAllText(Paths.Json + filename));
 		}
 
 		public static T Deserialize<T>(string filename, bool useTypes = false)
 		{
-			var raw = File.ReadAllText(Path + filename);
+			Debug.Assert(File.Exists(Paths.Json + filename), $"Missing Json file '{filename}'.");
+
+			var raw = File.ReadAllText(Paths.Json + filename);
 
 			if (!useTypes)
 			{

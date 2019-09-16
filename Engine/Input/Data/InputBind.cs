@@ -14,8 +14,13 @@ namespace Engine.Input.Data
 			Data = data;
 		}
 
-		public InputTypes InputType { get; set; }
+		public InputTypes InputType { get; }
 
-		public int Data { get; set; }
+		public int Data { get; }
+
+		public override string ToString()
+		{
+			return InputType + "-" + Data;
+		}
 	}
 }

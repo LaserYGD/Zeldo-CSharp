@@ -12,5 +12,8 @@ namespace Zeldo.Settings
 
 		public bool InvertX { get; set; }
 		public bool InvertY { get; set; }
+
+		// For accessibility, grabbing can be changed to a toggle (rather than held).
+		public bool UseToggleGrab { get; set; }
 	}
 }

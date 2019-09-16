@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -57,10 +58,10 @@ namespace Engine.Shaders
 	
 		private unsafe uint Load(string filename, uint shaderType)
 		{
-			uint id = glCreateShader(shaderType);
+			Debug.Assert(File.Exists(Paths.Shaders + filename), $"Missing shader '{filename}'.");
 
-			string source = File.ReadAllText("Content/Shaders/" + filename);
-			
+			uint id = glCreateShader(shaderType);
+			string source = File.ReadAllText(Paths.Shaders + filename);
 			int length = source.Length;
 
 			glShaderSource(id, 1, new [] { source }, &length);

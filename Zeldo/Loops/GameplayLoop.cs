@@ -20,7 +20,7 @@ using Zeldo.UI;
 using Zeldo.View;
 using static Engine.GLFW;
 
-namespace Zeldo.State
+namespace Zeldo.Loops
 {
 	public class GameplayLoop : GameLoop, IReceiver
 	{
@@ -79,7 +79,8 @@ namespace Zeldo.State
 			player.UnlockSkill(PlayerSkills.Jump);
 
 			// TODO: Load fragments from a save slot.
-			scene.LoadFragment("Triangle.json");
+			//scene.LoadFragment("Triangle.json");
+			scene.LoadFragment("Windmill/Windmill.json");
 			scene.Add(player);
 
 			// TODO: Load settings from a file.

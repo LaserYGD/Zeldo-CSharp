@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.Data
+namespace Zeldo
 {
-	[Flags]
-	public enum TileFlags
+	// TODO: Consider adding a credits loop.
+	public enum Gamestates
 	{
-		Empty = 1<<0,
-		Ice = 1<<1,
-		Solid = 1<<2
+		Gameplay,
+		Splash,
+		Title
 	}
 }

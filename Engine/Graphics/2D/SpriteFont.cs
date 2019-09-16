@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GlmSharp;
 
 namespace Engine.Graphics._2D
@@ -15,11 +12,13 @@ namespace Engine.Graphics._2D
 
 		public static SpriteFont Load(string name)
 		{
-			const string Path = "Content/Fonts/";
-
 			Texture texture = ContentCache.GetTexture(name + "_0.png", false, "Fonts/");
 
-			string[] lines = File.ReadAllLines(Path + name + ".fnt");
+			string filename = name + ".fnt";
+
+			Debug.Assert(File.Exists(Paths.Fonts + filename), $"Missing font '{filename}'.");
+
+			string[] lines = File.ReadAllLines(Paths.Fonts + filename);
 			string first = lines[0];
 
 			// Size is in the form "size=[value]" (without the square brackets);

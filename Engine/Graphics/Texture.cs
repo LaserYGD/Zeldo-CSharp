@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using Engine.Core._2D;
 using static Engine.GL;
 
@@ -27,7 +29,9 @@ namespace Engine.Graphics
 		// is used for purposes other than direct rendering.
 		public static void LoadData(string path, out int width, out int height, out int[] data)
 		{
-			Bitmap image = new Bitmap("Content/" + path);
+			Debug.Assert(File.Exists(Paths.Content + path), $"Missing texture '{path}'.");
+
+			Bitmap image = new Bitmap(Paths.Content + path);
 			
 			width = image.Width;
 			height = image.Height;

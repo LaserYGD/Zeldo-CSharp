@@ -4,13 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.State
+namespace Zeldo.Entities.Grabbable
 {
-	// TODO: Consider adding a credits loop.
-	public enum Gamestates
+	public enum GrabTypes
 	{
-		Gameplay,
-		Splash,
-		Title
+		Netting
 	}
 }

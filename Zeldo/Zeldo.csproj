@@ -230,7 +230,6 @@
     <Compile Include="Control\SurfaceController.cs" />
     <Compile Include="CustomMessageTypes.cs" />
     <Compile Include="Data\SaveSlot.cs" />
-    <Compile Include="Data\TileFlags.cs" />
     <Compile Include="Entities\Bosses\Boss.cs" />
     <Compile Include="Entities\Bosses\Octopus\OctopusBoss.cs" />
     <Compile Include="Entities\Bosses\Octopus\Tentacle.cs" />
@@ -258,7 +257,8 @@
     <Compile Include="Entities\Enemies\Sunflower.cs" />
     <Compile Include="Entities\Enemies\SunflowerHelper.cs" />
     <Compile Include="Entities\Enemies\SunflowerTendril.cs" />
-    <Compile Include="Entities\EntityFactory.cs" />
+    <Compile Include="Entities\Grabbable\GrabTypes.cs" />
+    <Compile Include="Entities\Grabbable\Netting.cs" />
     <Compile Include="Entities\Hazards\PoisonBush.cs" />
     <Compile Include="Entities\JesterWall.cs" />
     <Compile Include="Entities\Mechanisms\Lever.cs" />
@@ -283,6 +283,7 @@
     <Compile Include="Entities\Windmill\MotorNode.cs" />
     <Compile Include="Entities\Windmill\WindmillBlades.cs" />
     <Compile Include="Interfaces\IAscendable.cs" />
+    <Compile Include="Interfaces\IGrabbable.cs" />
     <Compile Include="Interfaces\IInteractive.cs" />
     <Compile Include="Interfaces\IMechanical.cs" />
     <Compile Include="Items\Inventory.cs" />
@@ -310,12 +311,12 @@
     <Compile Include="Settings\AudioSettings.cs" />
     <Compile Include="SkeletalTester.cs" />
     <Compile Include="Sky.cs" />
-    <Compile Include="State\GameLoop.cs" />
-    <Compile Include="State\GameplayLoop.cs" />
-    <Compile Include="State\Gamestates.cs" />
-    <Compile Include="State\LoopTypes.cs" />
-    <Compile Include="State\SplashLoop.cs" />
-    <Compile Include="State\TitleLoop.cs" />
+    <Compile Include="Loops\GameLoop.cs" />
+    <Compile Include="Loops\GameplayLoop.cs" />
+    <Compile Include="Gamestates.cs" />
+    <Compile Include="Loops\LoopTypes.cs" />
+    <Compile Include="Loops\SplashLoop.cs" />
+    <Compile Include="Loops\TitleLoop.cs" />
     <Compile Include="TentacleTester.cs" />
     <Compile Include="UI\Controls\ToggleButton.cs" />
     <Compile Include="UI\Controls\Slider.cs" />

@@ -9,7 +9,7 @@ namespace Engine.Graphics._3D.Loaders
 	{
 		public static Mesh Load(string filename)
 		{
-			XElement root = XDocument.Load(Mesh.Path + filename).Root;
+			XElement root = XDocument.Load(Paths.Meshes + filename).Root;
 			XElement geometryElement = root.Local("library_geometries").Local("geometry");
 			XElement meshElement = geometryElement.Local("mesh");
 			XElement[] sourceElements = meshElement.Locals("source").ToArray();

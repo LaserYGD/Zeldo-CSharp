@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
@@ -32,7 +30,7 @@ namespace Engine.Input
 			firstMouseMovement = true;
 		}
 
-		public void KeyCallback(IntPtr window, int key, int scancode, int action, int mods)
+		internal void KeyCallback(IntPtr window, int key, int scancode, int action, int mods)
 		{
 			if (key == -1)
 			{
@@ -46,28 +44,28 @@ namespace Engine.Input
 			}
 		}
 
-		public void OnKeyPress(int key, int mods)
+		internal void OnKeyPress(int key, int mods)
 		{
 			keys[key] = InputStates.PressedThisFrame;
 			keyPresses.Add(new KeyPress(key, (KeyModifiers)mods));
 		}
 
-		public void OnKeyRelease(int key)
+		internal void OnKeyRelease(int key)
 		{
 			keys[key] = InputStates.ReleasedThisFrame;
 		}
 
-		public void OnMouseButtonPress(int button)
+		internal void OnMouseButtonPress(int button)
 		{
 			buttons[button] = InputStates.PressedThisFrame;
 		}
 
-		public void OnMouseButtonRelease(int button)
+		internal void OnMouseButtonRelease(int button)
 		{
 			buttons[button] = InputStates.ReleasedThisFrame;
 		}
 
-		public void OnMouseMove(int x, int y)
+		internal void OnMouseMove(int x, int y)
 		{
 			mouseLocation.x = x;
 			mouseLocation.y = y;

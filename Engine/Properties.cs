@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace Engine
@@ -9,7 +10,7 @@ namespace Engine
 
 		public static void LoadAll()
 		{
-			foreach (var file in Directory.GetFiles("Content/Properties"))
+			foreach (var file in Directory.GetFiles(Paths.Properties))
 			{
 				Load(file);
 			}
@@ -17,18 +18,28 @@ namespace Engine
 
 		private static void Load(string filename)
 		{
+			Debug.Assert(File.Exists(filename), $"Missing property file '{filename.StripPath()}'.");
+
 			string[] lines = File.ReadAllLines(filename);
 
-			foreach (string line in lines)
+			for (int i = 0; i < lines.Length; i++)
 			{
+				string line = lines[i];
+
 				// Comments start with '#'.
 				if (line.Length == 0 || line[0] == '#')
 				{
 					continue;
 				}
 
+				Debug.Assert(!line.StartsWith("//"), $"Invalid property ('{filename}', line {i}'): Use # for comments.");
+				Debug.Assert(!line.EndsWith(";"), $"Invalid property ('{filename}', line {i}'): Don't end lines with semicolons.");
+
 				// The expected format of each line is "key = value" (although it'll work without the spaces as well).
 				string[] tokens = line.Split('=');
+
+				Debug.Assert(tokens.Length == 2, $"Invalid property ('{filename}', line {i}'): Expected format is 'key = value'.");
+
 				string key = tokens[0].TrimEnd();
 				string value = tokens[1].TrimStart();
 
@@ -39,16 +50,22 @@ namespace Engine
 
 		public static int GetInt(string key)
 		{
+			Debug.Assert(map.ContainsKey(key), $"Missing property '{key}'.");
+
 			return int.Parse(map[key]);
 		}
 
 		public static float GetFloat(string key)
 		{
+			Debug.Assert(map.ContainsKey(key), $"Missing property '{key}'.");
+
 			return float.Parse(map[key]);
 		}
 
 		public static string GetString(string key)
 		{
+			Debug.Assert(map.ContainsKey(key), $"Missing property '{key}'.");
+
 			return map[key];
 		}
 	}

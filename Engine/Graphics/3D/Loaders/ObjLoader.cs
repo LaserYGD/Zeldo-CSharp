@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Engine.Utility;
@@ -10,7 +11,7 @@ namespace Engine.Graphics._3D.Loaders
 	{
 		public static Mesh Load(string filename)
 		{
-			string[] lines = File.ReadAllLines(Mesh.Path + filename);
+			string[] lines = File.ReadAllLines(Paths.Meshes + filename);
 			bool usesMaterial = lines[2][0] == 'm';
 			int lineIndex = usesMaterial ? 3 : 2;
 			string line = lines[lineIndex];
@@ -106,7 +107,7 @@ namespace Engine.Graphics._3D.Loaders
 			while (lineIndex < lines.Length);
 
 			string texture = usesTexturing
-				? ParseTexture(Mesh.Path + filename.StripExtension() + ".mtl")
+				? ParseTexture(Paths.Meshes + filename.StripExtension() + ".mtl")
 				: null;
 
 			return new Mesh(points.ToArray(), source.ToArray(), normals.ToArray(), vertices.ToArray(),
@@ -136,10 +137,7 @@ namespace Engine.Graphics._3D.Loaders
 
 		private static string ParseTexture(string filename)
 		{
-			if (!File.Exists(filename))
-			{
-				throw new FileNotFoundException($"Material file \"{filename}\" not found.");
-			}
+			Debug.Assert(File.Exists(filename), $"Missing material file '{filename}'.");
 
 			string[] lines = File.ReadAllLines(filename);
 			string line = lines.First(l => l.StartsWith("map_Kd"));

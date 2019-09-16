@@ -145,6 +145,8 @@
     <Compile Include="Core\3D\Motor.cs" />
     <Compile Include="Core\3D\Sprite3D.cs" />
     <Compile Include="Core\ComponentCollection.cs" />
+    <Compile Include="Core\TimedFlag.cs" />
+    <Compile Include="Input\InputBuffer.cs" />
     <Compile Include="Interfaces\IComponent.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
@@ -182,6 +184,7 @@
     <Compile Include="Networking\GamePeer.cs" />
     <Compile Include="Particles\Emitters\Emitter.cs" />
     <Compile Include="Particles\Particle.cs" />
+    <Compile Include="Paths.cs" />
     <Compile Include="Physics\JitterVisualizer.cs" />
     <Compile Include="Physics\PhysicsExtensions.cs" />
     <Compile Include="Physics\PhysicsUtilities.cs" />

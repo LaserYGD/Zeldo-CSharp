@@ -1,6 +1,6 @@
 ﻿using Zeldo.UI;
 
-namespace Zeldo.State
+namespace Zeldo.Loops
 {
 	public class SplashLoop : GameLoop
 	{

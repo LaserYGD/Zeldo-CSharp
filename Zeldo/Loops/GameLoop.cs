@@ -5,7 +5,7 @@ using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using Engine.UI;
 
-namespace Zeldo.State
+namespace Zeldo.Loops
 {
 	public abstract class GameLoop : IDynamic, IDisposable
 	{

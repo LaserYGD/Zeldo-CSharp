@@ -1,22 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Engine;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
-using Engine.Graphics._3D.Rendering;
 using Engine.Input.Data;
 using Engine.Interfaces;
-using Engine.Interfaces._3D;
 using Engine.Localization;
 using Engine.Messaging;
-using Engine.Physics;
-using Engine.Sensors;
 using Engine.UI;
-using Engine.Utility;
-using GlmSharp;
-using Zeldo.Settings;
-using Zeldo.State;
+using Zeldo.Loops;
 using static Engine.GL;
 using static Engine.GLFW;
 

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using Engine.Graphics;
 using Engine.Graphics._2D;
 using Engine.Graphics._3D;
@@ -22,12 +20,12 @@ namespace Engine
 			textures = new Dictionary<string, Texture>();
 		}
 
-		public static Mesh GetMesh(string name)
+		public static Mesh GetMesh(string filename)
 		{
-			if (!meshes.TryGetValue(name, out Mesh mesh))
+			if (!meshes.TryGetValue(filename, out Mesh mesh))
 			{
-				mesh = Mesh.Load(name);
-				meshes.Add(name, mesh);
+				mesh = Mesh.Load(filename);
+				meshes.Add(filename, mesh);
 			}
 
 			return mesh;

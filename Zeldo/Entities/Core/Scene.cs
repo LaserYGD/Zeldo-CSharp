@@ -28,7 +28,7 @@ namespace Zeldo.Entities.Core
 			}
 
 			fragments = new List<SceneFragment>();
-			UserData = new Dictionary<string, object>();
+			Tag = new Dictionary<string, object>();
 		}
 
 		public Camera3D Camera
@@ -49,13 +49,13 @@ namespace Zeldo.Entities.Core
 		public World World { get; set; }
 		public MasterRenderer3D Renderer => renderer;
 
-		// In this context, "user data" means custom data optionally loaded with each fragment. Used as needed in order
-		// to implement custom features for different kinds of locations.
-		public Dictionary<string, object> UserData { get; }
+		// In this context, a "tag" means custom data optionally loaded with each fragment. Used as needed in order to
+		// implement custom features for different kinds of locations.
+		public Dictionary<string, object> Tag { get; }
 
 		public void LoadFragment(string filename)
 		{
-			var fragment = SceneFragment.Load(filename);
+			var fragment = SceneFragment.Load(filename, this);
 			fragments.Add(fragment);
 			renderer.Add(fragment.MapModel);
 			World.AddBody(fragment.MapBody);
@@ -66,7 +66,8 @@ namespace Zeldo.Entities.Core
 			{
 				foreach (var entity in fragment.Entities)
 				{
-					Add(entity);
+					// Entities are already initialized by this point (which is why the main Add function isn't used).
+					entities[(int)entity.Group].Add(entity);
 				}
 			}
 		}

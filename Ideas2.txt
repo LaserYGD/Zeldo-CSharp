@@ -132,5 +132,16 @@
 
 - Bow with a rope attached (can be used for puzzle solving or movement, including ascension targets) => Would have to make sure this combination doesn't trivialize vertical platforming
 
+- Dungeon where the game takes away an item (forcing you to think more creatively about how to proceed without it) => Inspired by a discussion in Vula's server about how Ori doesn't teach the depth of its mechanics well enough, and removing Sein temporarily could help break tunnel vision (Sigma also said that it feels potentially immersion-breaking to magically remove a skill, e.g. suddenly, you can't wall jump) => If you take away an item, though, you'd have to consider what happens if the player turns around and leaves the item lost while exploring the rest of the world
+
+- Consider ways to optionally increase the difficulty for extra rewards or variety (inspired by Vaati's first impressions video on DS2, where he mentioned bonfire ascetics and NG+ rather than traditional difficulty modes)
+
+- Make sure the tutorial is optional (so players aren't frustrated or bored on second playthroughs or speedruns)
+
+
+
+
+
+
 
 

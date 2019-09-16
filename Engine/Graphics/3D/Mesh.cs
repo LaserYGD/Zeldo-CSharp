@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using Engine.Graphics._3D.Loaders;
 using GlmSharp;
 
@@ -6,10 +8,10 @@ namespace Engine.Graphics._3D
 {
 	public class Mesh
 	{
-		public const string Path = "Content/Meshes/";
-
 		public static Mesh Load(string filename)
 		{
+			Debug.Assert(File.Exists(Paths.Meshes + filename), $"Missing mesh '{filename}'.");
+
 			return filename.EndsWith(".obj") ? ObjLoader.Load(filename) : DaeLoader.Load(filename);
 		}
 
