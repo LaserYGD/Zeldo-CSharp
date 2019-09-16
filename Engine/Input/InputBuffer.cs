@@ -28,7 +28,6 @@ namespace Engine.Input
 		
 		// Buffers are designed to be persistent (i.e. repeatable).
 		public bool IsComplete => false;
-		public bool IsSatisfied => map.Values.Any(t => t.IsPaused);
 
 		public List<InputBind> Binds
 		{
@@ -72,6 +71,28 @@ namespace Engine.Input
 			}
 		}
 
+		public bool IsSatisfied()
+		{
+			return map.Values.Any(t => !t.IsPaused);
+		}
+
+		public bool IsSatisfied(out InputBind bind)
+		{
+			foreach (var key in map.Keys)
+			{
+				if (!map[key].IsPaused)
+				{
+					bind = key;
+
+					return true;
+				}
+			}
+
+			bind = null;
+
+			return false;
+		}
+
 		public void Update(float dt)
 		{
 			foreach (var tuple in map.Values)
@@ -88,6 +109,11 @@ namespace Engine.Input
 
 		private class BindTuple
 		{
+			public BindTuple()
+			{
+				IsPaused = true;
+			}
+
 			public bool IsPaused { get; set; }
 			public float Elapsed { get; set; }
 		}
