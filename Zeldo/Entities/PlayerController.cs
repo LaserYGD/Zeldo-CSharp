@@ -39,9 +39,12 @@ namespace Zeldo.Entities
 		// Attacks use a short input buffering window in order to make chained attacks easier to execute.
 		private SingleTimer attackBuffer;
 
-		// Player jumping has variable height, meaning that releasing the bind early cuts your jump short. Since the
-		// player can have multiple jump binds, though, this limit should only apply if the SAME bind was released.
+		// It's possible for actions to have multiple binds. In cases where releasing a bind does something (e.g.
+		// limiting a player's jump or releasing a hold), that action should only take place if the *same* bind was
+		// released (rather than releasing a *different* button bound to the same action). In practice, then, that
+		// means that while one bind is held in this scenario, other binds for that same action are ignored.
 		private InputBind jumpBindUsed;
+		private InputBind grabBindUsed;
 		private InputBuffer grabBuffer;
 
 		public PlayerController(Player player, PlayerData playerData, PlayerControls controls,
@@ -325,7 +328,9 @@ namespace Zeldo.Entities
 
 		private void ProcessGrab(FullInputData data, float dt)
 		{
-			grabBuffer.Update(dt);
+			if (grabBuffer.Refresh(data, dt, out grabBindUsed))
+			{
+			}
 		}
 
 		private void ProcessJumping(FullInputData data, float dt)

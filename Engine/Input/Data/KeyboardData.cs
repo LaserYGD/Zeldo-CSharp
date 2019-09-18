@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
+using static Engine.GLFW;
 
 namespace Engine.Input.Data
 {
@@ -15,6 +17,16 @@ namespace Engine.Input.Data
 
 		public KeyPress[] KeysPressedThisFrame { get; }
 
+		public override InputStates this[int data]
+		{
+			get
+			{
+				Debug.Assert(data >= 0 && data <= GLFW_KEY_LAST, "Invalid key (outside maximum range).");
+
+				return keys[data];
+			}
+		}
+
 		public override bool AnyPressed()
 		{
 			return keys.Any(k => k == InputStates.PressedThisFrame);
@@ -22,6 +34,10 @@ namespace Engine.Input.Data
 
 		public override bool Query(int data, InputStates state)
 		{
+			// This isn't a perfect assertion (since not all keys within this integer range are valid), but it's better
+			// than nothing.
+			Debug.Assert(data >= 0 && data <= GLFW_KEY_LAST, "Invalid key (outside maximum range).");
+
 			return (keys[data] & state) == state;
 		}
 	}

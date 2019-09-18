@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace Engine.Input.Data
 		{
 			dataArray = new InputData[Utilities.EnumCount<InputTypes>()];
 		}
+
+		public InputStates this[InputBind bind] => dataArray[(int)bind.InputType][bind.Data];
 
 		public InputData GetData(InputTypes inputType)
 		{

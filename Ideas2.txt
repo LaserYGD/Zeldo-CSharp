@@ -138,10 +138,14 @@
 
 - Make sure the tutorial is optional (so players aren't frustrated or bored on second playthroughs or speedruns)
 
+- For all health bars (but especially bosses), make sure the last sliver of health can't be confused for the enemy being dead (inspired by watching Ela's Bloodborne All Bosses PB, where sometimes I wasn't sure if a boss was dead of had a sliver left) => Could be accomplished by keeping total health values low or artificially weighting the fill percentage such that 1 HP left is still easily visible
 
+- For fast travel, could consider four kinds: 1) above ground (some kind of flying animal maybe), 2) on the ground (the train system), 3) below ground (something in the caves), and 4) teleportation-based => Inspired by the Boss Keys episode on Metroid Prime 3, which showed a clip of Samus's ship flying to new planets (reminds me of Ratchet and Clank as well)
 
+- In that same episode of Boss Keys (on Metroid Prime 3), Mark Brown mentions a final dungeon that you have to slowly power up with power cells found on other planets (could do something similar in Essence, although the revisited dungeon should be first discoverable in the mid-game)
 
+- For the map screen, a tiny bit of 3D rotation makes visualizing elevation much easier (even if individual sections of the map are still 2D) => Should probably experiment with multiple map styles (with different levels of detail) => Inspired by watching Brian play Borderlands 3 (and seeing the map)
 
+- Lock on system for combat (and lock onto NPCs to talk to them more easily, like Ocarina of Time) => Could try Joseph Anderson's idea of having a special enemy or boss that shakes your lock on and forces you to play differently
 
-
-
+- Maybe some kind of musical instrument to play? (inspired by the fairy ocarina you get before the ocarina of time)

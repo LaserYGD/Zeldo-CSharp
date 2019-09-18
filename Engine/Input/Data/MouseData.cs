@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GlmSharp;
+using static Engine.GLFW;
 
 namespace Engine.Input.Data
 {
@@ -22,6 +20,16 @@ namespace Engine.Input.Data
 		public ivec2 Location { get; }
 		public ivec2 PreviousLocation { get; }
 
+		public override InputStates this[int data]
+		{
+			get
+			{
+				Debug.Assert(data >= 0 && data <= GLFW_MOUSE_BUTTON_LAST, "Invalid mouse button (outside maximum range).");
+
+				return buttons[data];
+			}
+		}
+
 		public override bool AnyPressed()
 		{
 			// Mouse movement, holding down buttons, or using the scroll wheel don't count as an "any press" (for the
@@ -31,6 +39,8 @@ namespace Engine.Input.Data
 
 		public override bool Query(int data, InputStates state)
 		{
+			Debug.Assert(data >= 0 && data <= GLFW_MOUSE_BUTTON_LAST, "Invalid mouse button (outside maximum range).");
+
 			return (buttons[data] & state) == state;
 		}
 	}

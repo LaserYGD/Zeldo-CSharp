@@ -15,6 +15,8 @@ namespace Engine.Input.Data
 
 		public InputTypes InputType { get; }
 
+		public abstract InputStates this[int data] { get; }
+
 		// This function is useful for something like a "Press any button to continue" screen.
 		public abstract bool AnyPressed();
 		public abstract bool Query(int data, InputStates state);
