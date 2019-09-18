@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
@@ -87,6 +86,12 @@ namespace Engine.UI
 		private ivec2 ComputePlacement(CanvasElement element)
 		{
 			Alignments anchor = element.Anchor;
+
+			// Using a None anchor allows elements to not be automatically placed (and repositioned) by the canvas.
+			if (anchor == Alignments.None)
+			{
+				return element.Location;
+			}
 
 			bool left = (anchor & Alignments.Left) > 0;
 			bool right = (anchor & Alignments.Right) > 0;

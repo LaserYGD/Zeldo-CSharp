@@ -317,6 +317,9 @@
     <Compile Include="Loops\LoopTypes.cs" />
     <Compile Include="Loops\SplashLoop.cs" />
     <Compile Include="Loops\TitleLoop.cs" />
+    <Compile Include="State\Progression.cs" />
+    <Compile Include="State\ProgressionEvent.cs" />
+    <Compile Include="State\ProgressionPool.cs" />
     <Compile Include="TentacleTester.cs" />
     <Compile Include="UI\Controls\ToggleButton.cs" />
     <Compile Include="UI\Controls\Slider.cs" />
@@ -338,6 +341,7 @@
     <Compile Include="UI\Screens\ScreenControls.cs" />
     <Compile Include="UI\Screens\ScreenManager.cs" />
     <Compile Include="UI\Screens\ShopScreen.cs" />
+    <Compile Include="UI\Screens\Title\SaveSlotUI.cs" />
     <Compile Include="UI\Speech\DialogueBox.cs" />
     <Compile Include="UI\Speech\DialogueCondition.cs" />
     <Compile Include="UI\Speech\DialogueConditionTypes.cs" />

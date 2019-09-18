@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.Core._2D
 {
@@ -13,6 +9,7 @@ namespace Engine.Core._2D
 		Left = 1,
 		Right = 2,
 		Top = 4,
-		Bottom = 8
+		Bottom = 8,
+		None = -1
 	}
 }
