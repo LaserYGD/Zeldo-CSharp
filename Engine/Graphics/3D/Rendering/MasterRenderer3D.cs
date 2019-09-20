@@ -26,7 +26,7 @@ namespace Engine.Graphics._3D.Rendering
 			shadowMapShader.Attach(ShaderTypes.Fragment, "ShadowMap.frag");
 			shadowMapShader.Initialize();
 			shadowMapShader.Use();
-			shadowMapShader.SetUniform("image", 0);
+			//shadowMapShader.SetUniform("image", 0);
 
 			// These default values are arbitrary, just to make sure something shows up.
 			Light = new GlobalLight();
@@ -107,7 +107,6 @@ namespace Engine.Graphics._3D.Rendering
 			Light.RecomputeMatrices(VpMatrix);
 
 			shadowMapTarget.Apply();
-			//shadowMapShader.Use();
 
 			DrawShadow(modelRenderer);
 			DrawShadow(spriteBatch3D);

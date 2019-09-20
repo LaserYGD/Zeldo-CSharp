@@ -57,8 +57,8 @@ namespace Zeldo.Entities.Core
 		{
 			var fragment = SceneFragment.Load(filename, this);
 			fragments.Add(fragment);
-			renderer.Add(fragment.MapModel);
-			World.AddBody(fragment.MapBody);
+			//renderer.Add(fragment.MapModel);
+			//World.AddBody(fragment.MapBody);
 
 			// This means that the fragment contains no entities (unlikely in the finished product, but possible during
 			// development).

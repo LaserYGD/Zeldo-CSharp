@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using Engine.Core;
-using Engine.Core._3D;
+﻿using Engine.Core._3D;
 using Engine.Lighting;
 using Engine.Shaders;
 using GlmSharp;

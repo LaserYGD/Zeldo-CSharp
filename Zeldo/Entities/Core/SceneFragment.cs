@@ -30,8 +30,9 @@ namespace Zeldo.Entities.Core
 			{
 				staticMeshes[i] = ContentCache.GetMesh(staticTokens[i].Value<string>());
 			}
-			
-			return new SceneFragment(entities, staticMeshes);
+
+			return null;
+			//return new SceneFragment(entities, staticMeshes);
 		}
 
 		private static Entity[] LoadEntities(JObject json, Scene scene)
@@ -72,6 +73,7 @@ namespace Zeldo.Entities.Core
 
 		private SceneFragment(Entity[] entities, Model[] staticMeshes)
 		{
+			/*
 			// Each physics mesh is located in the "Physics" folder within the parent folder, and uses "_Physics" in
 			// the filename.
 			string filename = map.StripPath(out string path).StripExtension();
@@ -83,6 +85,7 @@ namespace Zeldo.Entities.Core
 			MapBody = new RigidBody(TriangleMeshLoader.Load(physicsFile));
 			MapBody.IsStatic = true;
 			Entities = entities;
+			*/
 		}
 
 		public Entity[] Entities { get; }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Engine;
+using Engine.Core._3D;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
@@ -15,6 +15,7 @@ using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
+using Zeldo.Physics;
 using Zeldo.Settings;
 using Zeldo.UI;
 using Zeldo.View;
@@ -54,10 +55,14 @@ namespace Zeldo.Loops
 			system.UseTriangleMeshNormal = true;
 			system.CollisionDetected += OnCollision;
 
+			var body = new RigidBody(TriangleMeshLoader.Load("Physics/Triangle_Physics.obj"));
+			body.IsStatic = true;
+
 			// TODO: Should damping factors be left in their default states? (they were changed while adding kinematic bodies)
 			world = new World(system);
 			world.Gravity = new JVector(0, Gravity, 0);
 			world.SetDampingFactors(1, 1);
+			world.AddBody(body);
 
 			space = new Space();
 			scene = new Scene
@@ -74,13 +79,11 @@ namespace Zeldo.Loops
 
 			// TODO: Set player position from a save slot.
 			Player player = new Player();
-			player.Position = new vec3(2, 3, -2);
+			player.Position = new vec3(2, 3, -1);
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 
 			// TODO: Load fragments from a save slot.
-			//scene.LoadFragment("Triangle.json");
-			scene.LoadFragment("Windmill/Windmill.json");
 			scene.Add(player);
 
 			// TODO: Load settings from a file.
@@ -89,10 +92,16 @@ namespace Zeldo.Loops
 
 			camera.Attach(new FollowController(player, settings));
 
+			var sprite = new Sprite3D("Link.png");
+			sprite.Position = new vec3(1, 2.5f, -3);
+			sprite.Scale = new vec2(1.5f);
+
 			// TODO: Initialize renderer settings from a configuration file (based on user settings).
 			// TODO: Set light color and direction based on time of day and weather.
 			var renderer = scene.Renderer;
 			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.35f, -2.5f));
+			renderer.Add(new Model("Triangle.obj"));
+			renderer.Add(sprite);
 			renderTargetUsers3D.Add(renderer);
 
 			// Create visualizers.

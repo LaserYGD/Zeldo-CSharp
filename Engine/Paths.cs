@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Engine
 {
-	internal static class Paths
+	public static class Paths
 	{
 		public const string Content = "Content/";
 		public const string Fonts = Content + "Fonts/";
