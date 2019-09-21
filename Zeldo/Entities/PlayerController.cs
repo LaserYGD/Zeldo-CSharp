@@ -45,7 +45,10 @@ namespace Zeldo.Entities
 		// means that while one bind is held in this scenario, other binds for that same action are ignored.
 		private InputBind jumpBindUsed;
 		private InputBind grabBindUsed;
+		private InputBind ascendBindUsed;
+
 		private InputBuffer grabBuffer;
+		private InputBuffer ascendBuffer;
 
 		public PlayerController(Player player, PlayerData playerData, PlayerControls controls,
 			AbstractController[] controllers)
@@ -61,8 +64,11 @@ namespace Zeldo.Entities
 
 			// Create buffers.
 			float grab = Properties.GetFloat("player.grab.buffer");
+			float ascend = Properties.GetFloat("player.ascend.buffer");
 
 			grabBuffer = new InputBuffer(grab, true, controls.Grab);
+			ascendBuffer = new InputBuffer(ascend, false, controls.Jump);
+			ascendBuffer.RequiredChords = controls.Ascend;
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
@@ -102,7 +108,7 @@ namespace Zeldo.Entities
 			// Ascension reuses the jump bind (since it's conceptually also an "up" action), but requires an additional
 			// button to be held. By checking for ascension first, the jump input can be stored and reused for jump
 			// processing even if that additional bind isn't held.
-			if (!ProcessAscend(data))
+			if (!ProcessAscend(data, dt))
 			{
 				ProcessJumping(data, dt);
 			}
@@ -298,7 +304,7 @@ namespace Zeldo.Entities
 			return v;
 		}
 		
-		private bool ProcessAscend(FullInputData data)
+		private bool ProcessAscend(FullInputData data, float dt)
 		{
 			// There are two ascend-based actions the player can take: 1) starting an ascend (by holding the relevant
 			// button and pressing jump), or 2) breaking out of an ongoing ascend (by pressing jump mid-ascend). Also
@@ -309,19 +315,17 @@ namespace Zeldo.Entities
 				return false;
 			}
 
-			if (!data.Query(controls.Jump, InputStates.PressedThisFrame, out jumpBindUsed))
+			if (!ascendBuffer.Refresh(data, dt, out ascendBindUsed))
 			{
 				return false;
 			}
 
 			if (player.State != PlayerStates.Ascending)
 			{
-				player.Ascend();
+				return player.TryAscend();
 			}
-			else
-			{
-				player.BreakAscend();
-			}
+
+			player.BreakAscend();
 
 			return true;
 		}
@@ -416,7 +420,7 @@ namespace Zeldo.Entities
 		{
 			if (data.Query(controls.Interact, InputStates.PressedThisFrame))
 			{
-				player.Interact();
+				player.TryInteract();
 			}
 		}
 	}

@@ -82,6 +82,7 @@ namespace Zeldo.Loops
 			player.Position = new vec3(2, 3, -1);
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
+			player.UnlockSkill(PlayerSkills.Ascend);
 
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);

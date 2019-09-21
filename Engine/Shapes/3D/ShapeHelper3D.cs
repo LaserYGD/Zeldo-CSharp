@@ -1,4 +1,5 @@
-﻿using Engine.Utility;
+﻿using System;
+using Engine.Utility;
 
 namespace Engine.Shapes._3D
 {
@@ -90,6 +91,27 @@ namespace Engine.Shapes._3D
 
 		private static bool Overlaps(Cylinder cylinder1, Cylinder cylinder2)
 		{
+			bool isAxisAligned1 = cylinder1.IsAxisAligned;
+			bool isAxisAligned2 = cylinder2.IsAxisAligned;
+
+			if (isAxisAligned1 && isAxisAligned2)
+			{
+				var p1 = cylinder1.Position;
+				var p2 = cylinder2.Position;
+
+				float delta = Math.Abs(p1.y - p2.y);
+				float sum = (cylinder1.Height + cylinder2.Height) / 2;
+
+				if (delta > sum)
+				{
+					return false;
+				}
+
+				float sumRadii = cylinder1.Radius + cylinder2.Radius;
+
+				return Utilities.DistanceSquared(p1.swizzle.xz, p2.swizzle.xz) <= sumRadii * sumRadii;
+			}
+
 			return false;
 		}
 

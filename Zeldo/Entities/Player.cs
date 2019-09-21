@@ -1,6 +1,8 @@
-﻿using Engine;
+﻿using System;
+using Engine;
 using Engine.Physics;
 using Engine.Sensors;
+using Engine.Shapes._3D;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
@@ -24,16 +26,19 @@ namespace Zeldo.Entities
 		private const int GrabIndex = (int)PlayerSkills.Grab;
 		private const int JumpIndex = (int)PlayerSkills.Jump;
 		
-		private Sensor sensor;
 		private PlayerData playerData;
 		private PlayerControls controls;
 		private PlayerController controller;
 		private PlayerHealthDisplay healthDisplay;
 		private DebugView debugView;
+		private Sensor sensor;
 		private Weapon weapon;
 
 		private AerialController aerialController;
 		private SurfaceController surfaceController;
+
+		private IInteractive interactionTarget;
+		private IAscendable ascensionTarget;
 		
 		private bool[] skillsUnlocked;
 		private bool[] skillsEnabled;
@@ -98,8 +103,11 @@ namespace Zeldo.Entities
 			CreateModel(scene, "Capsule.obj");
 			CreateKinematicBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius)).AllowDeactivation = false;
 
-			//sensor = CreateSensor(scene, groundShape, SensorUsages.Hitbox | SensorUsages.Interaction, Height);
-			//CreateSensor(scene, new Point(), SensorUsages.Control, 1, null, -0.75f);
+			// TODO: Should all actor sensors be axis-aligned?
+			var shape = new Cylinder(Height, capsuleRadius);
+			shape.IsAxisAligned = true;
+
+			sensor = CreateSensor(scene, shape, SensorGroups.Player);
 
 			var canvas = scene.Canvas;
 			healthDisplay = canvas.GetElement<PlayerHealthDisplay>();
@@ -228,10 +236,20 @@ namespace Zeldo.Entities
 			State = PlayerStates.Airborne;
 		}
 
-		public void Ascend()
+		public bool TryAscend()
 		{
-			// TODO: Attach to the ascension target and begin climbing.
-			State = PlayerStates.Ascending;
+			foreach (var contact in sensor.Contacts)
+			{
+				if (contact.Owner is IAscendable target)
+				{
+					ascensionTarget = target;
+					State = PlayerStates.Ascending;
+
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		public void BreakAscend()
@@ -240,17 +258,15 @@ namespace Zeldo.Entities
 			State = PlayerStates.Jumping;
 		}
 
-		public void Interact()
+		public void TryInteract()
 		{
-			var contacts = sensor.Contacts;
-
-			for (int i = contacts.Count - 1; i >= 0; i--)
+			foreach (var contact in sensor.Contacts)
 			{
-				if (contacts[i].Owner is IInteractive target && target.IsInteractionEnabled)
+				if (contact.Owner is IInteractive target && target.IsInteractionEnabled)
 				{
 					target.OnInteract(this);
 
-					// Only one object can be interacted with each frame.
+					// TODO: Handle multiple interactive targets (likely with a swap, similar to Dark Souls).
 					return;
 				}
 			}
@@ -295,6 +311,10 @@ namespace Zeldo.Entities
 			{
 				isJumpDecelerating = false;
 			}
+			else if (State == PlayerStates.Ascending)
+			{
+				UpdateAscend(dt);
+			}
 
 			var v = controllingBody.LinearVelocity.ToVec3();
 			var entries = new []
@@ -334,6 +354,20 @@ namespace Zeldo.Entities
 			controllingBody.LinearVelocity = v;
 
 			return false;
+		}
+
+		private void UpdateAscend(float dt)
+		{
+			// The body's linear velocity is reused for ascension.
+			var v = controllingBody.LinearVelocity;
+			v.Y += playerData.AscendAcceleration * dt;
+
+			if (v.Y > playerData.AscendTargetSpeed)
+			{
+				v.Y = playerData.AscendTargetSpeed;
+			}
+
+			controllingBody.LinearVelocity = v;
 		}
 
 		public static class ControllerIndexes

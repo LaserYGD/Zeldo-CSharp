@@ -13,16 +13,14 @@ namespace Engine.Input
 
 		private float duration;
 		
-		private bool requiresHold;
-
 		// Some buffered actions require the bind to still be held when the action occurs, while others don't.
 		public InputBuffer(float duration, bool requiresHold, List<InputBind> binds)
 		{
 			Debug.Assert(duration > 0, "Input buffer duration must be positive.");
 
 			this.duration = duration;
-			this.requiresHold = requiresHold;
 
+			RequiresHold = requiresHold;
 			map = new Dictionary<InputBind, BindTuple>();
 			Binds = binds;
 		}
@@ -39,6 +37,14 @@ namespace Engine.Input
 			}
 		}
 
+		// TODO: Is a more robust chord system needed for input buffers?
+		// This allows actions to be activated only when another bind is held (e.g. ascend, which requires holding
+		// another key when jump is pressed near an ascension target). For the time being, this works the same as Ori's
+		// charge dash logic, where pressing both binds on the same frame also counts as a successful activation.
+		public List<InputBind> RequiredChords { get; set; }
+
+		public bool RequiresHold { get; set; }
+
 		public bool Refresh(FullInputData data, float dt)
 		{
 			foreach (var bind in map.Keys)
@@ -47,9 +53,22 @@ namespace Engine.Input
 
 				if (state == InputStates.PressedThisFrame)
 				{
-					OnPress(bind);
+					bool isChordSatisfied = RequiredChords == null || data.Query(RequiredChords, InputStates.Held);
+
+					// TODO: Probably worth revisiting how chorded buffers are handled (to make sure they apply to all use cases).
+					// By design, required chords are designed to work as modifiers on the base binds. In other words,
+					// the action only triggers if a bind is pressed *while one of the chords is held*. This also means
+					// that the chord could be released by the time the buffered action occurs, but I think that's
+					// probably fine.
+					if (isChordSatisfied)
+					{
+						OnPress(bind);
+					}
 				}
-				else if (requiresHold && state == InputStates.ReleasedThisFrame)
+				// If a required chord is set, it's possible to press a bind, then hold the chord, then release the
+				// bind. This could trigger a false release without verifying the bind was actually pressed first (with
+				// the chord), which is determined via IsPaused.
+				else if (RequiresHold && state == InputStates.ReleasedThisFrame && !map[bind].IsPaused)
 				{
 					OnRelease(bind);
 				}
@@ -100,11 +119,11 @@ namespace Engine.Input
 
 			if (tuple.IsPaused)
 			{
-				tuple.Elapsed = 0;
+				tuple.IsPaused = false;
 			}
 			else
 			{
-				tuple.IsPaused = false;
+				tuple.Elapsed = 0;
 			}
 		}
 
