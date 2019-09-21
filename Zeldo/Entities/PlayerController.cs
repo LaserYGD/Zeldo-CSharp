@@ -25,6 +25,10 @@ namespace Zeldo.Entities
 		private const int GrabIndex = (int)PlayerSkills.Grab;
 		private const int JumpIndex = (int)PlayerSkills.Jump;
 
+		// Combat indexes.
+		private const int BlockIndex = (int)PlayerSkills.Block;
+		private const int ParryIndex = (int)PlayerSkills.Parry;
+
 		// When moving using the keyboard, diagonal directions can be normalized by pre-computing this value (avoiding
 		// an actual square root call at runtime).
 		private const float SqrtTwo = 1.41421356237f;
@@ -33,6 +37,7 @@ namespace Zeldo.Entities
 		private PlayerData playerData;
 		private PlayerControls controls;
 		private SurfaceTriangle surface;
+		private ControlSettings settings;
 
 		// Passing an array of controllers is easier than passing each one as a separate constructor argument.
 		private AbstractController[] controllers;
@@ -46,6 +51,7 @@ namespace Zeldo.Entities
 		// means that while one bind is held in this scenario, other binds for that same action are ignored.
 		private InputBind jumpBindUsed;
 		private InputBind grabBindUsed;
+		private InputBind blockBindUsed;
 
 		private InputBuffer grabBuffer;
 		private InputBuffer ascendBuffer;
@@ -56,6 +62,7 @@ namespace Zeldo.Entities
 			this.player = player;
 			this.playerData = playerData;
 			this.controls = controls;
+			this.settings = settings;
 			this.controllers = controllers;
 
 			attackBuffer = new SingleTimer(time => { });
@@ -422,6 +429,54 @@ namespace Zeldo.Entities
 			else
 			{
 				TriggerPrimary();
+			}
+		}
+
+		private void ProcessBlock(FullInputData data)
+		{
+			var binds = controls.Block;
+
+			if (settings.UseToggleBlock)
+			{
+				if (data.Query(binds, InputStates.PressedThisFrame))
+				{
+					if (player.IsBlocking)
+					{
+						player.Block();
+					}
+					else
+					{
+						player.Unblock();
+					}
+				}
+
+				return;
+			}
+
+			if (!player.IsBlocking && data.Query(binds, InputStates.PressedThisFrame, out blockBindUsed))
+			{
+				player.Block();
+			}
+			else if (player.IsBlocking && data.Query(blockBindUsed, InputStates.ReleasedThisFrame))
+			{
+				player.Unblock();
+			}
+		}
+
+		private void ProcessParry(FullInputData data)
+		{
+			// Parry will never be enabled (or unlocked) without the ability to block. A parrying tool (like a shield)
+			// must be equipped as well. Once those conditions are satisfied, parrying works similarly to ascend, where
+			// an existing bind (in this case, block) executes differently if chorded with the parry bind.
+			if (!(player.SkillsEnabled[ParryIndex] && data.Query(controls.Parry, InputStates.Held)))
+			{
+				return;
+			}
+
+			// TODO: This means that the player needs to release block for at least a frame before parrying. Could instead have a dedicated parry button (but at time of writing, I prefer the chorded approach).
+			if (data.Query(controls.Block, InputStates.PressedThisFrame))
+			{
+				player.Parry();
 			}
 		}
 

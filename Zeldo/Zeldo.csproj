@@ -300,8 +300,6 @@
     <Compile Include="Interfaces\ITargetable.cs" />
     <Compile Include="Items\Item.cs" />
     <Compile Include="MainGame.cs" />
-    <Compile Include="Physics\VerletPoint.cs" />
-    <Compile Include="Physics\VerletRope.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PuddleTester.cs" />
     <Compile Include="RaindropTester.cs" />

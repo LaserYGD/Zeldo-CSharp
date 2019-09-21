@@ -191,6 +191,9 @@
     <Compile Include="Physics\PhysicsUtilities.cs" />
     <Compile Include="Physics\RaycastResults.cs" />
     <Compile Include="Physics\TransformableBody.cs" />
+    <Compile Include="Physics\Verlet\VerletCloth.cs" />
+    <Compile Include="Physics\Verlet\VerletPoint.cs" />
+    <Compile Include="Physics\Verlet\VerletRope.cs" />
     <Compile Include="Properties.cs" />
     <Compile Include="Sensors\ShapeAttachment.cs" />
     <Compile Include="Sensors\MultiSensor.cs" />

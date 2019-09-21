@@ -17,8 +17,9 @@ namespace Zeldo.Settings
 
 		// For accessibility (and preference), some skills (like grab and ascend) can be used as either a toggle or a
 		// hold.
-		public bool UseToggleGrab { get; set; }
 		public bool UseToggleAscend { get; set; }
+		public bool UseToggleBlock { get; set; }
+		public bool UseToggleGrab { get; set; }
 
 		public event ApplyHandler ApplyEvent;
 

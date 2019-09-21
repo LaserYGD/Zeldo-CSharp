@@ -23,8 +23,7 @@ namespace Zeldo.Entities
 {
 	public class Player : Actor
 	{
-		private const int DashIndex = (int)PlayerSkills.Dash;
-		private const int GrabIndex = (int)PlayerSkills.Grab;
+		private const int AscendIndex = (int)PlayerSkills.Ascend;
 		private const int JumpIndex = (int)PlayerSkills.Jump;
 		
 		private PlayerData playerData;
@@ -92,6 +91,7 @@ namespace Zeldo.Entities
 
 		// This is used by the player controller.
 		public bool[] SkillsEnabled => skillsEnabled;
+		public bool IsBlocking { get; private set; }
 
 		public override void Initialize(Scene scene, JToken data)
 		{
@@ -245,6 +245,7 @@ namespace Zeldo.Entities
 				{
 					ascensionTarget = target;
 					State = PlayerStates.Ascending;
+					skillsEnabled[AscendIndex] = false;
 
 					return true;
 				}
@@ -278,6 +279,20 @@ namespace Zeldo.Entities
 			this.weapon = weapon;
 
 			weapon.Owner = this;
+		}
+
+		public void Block()
+		{
+			IsBlocking = true;
+		}
+
+		public void Unblock()
+		{
+			IsBlocking = false;
+		}
+
+		public void Parry()
+		{
 		}
 
 		public void UnlockSkill(PlayerSkills skill)

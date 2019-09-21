@@ -151,3 +151,5 @@
 - Maybe some kind of musical instrument to play? (inspired by the fairy ocarina you get before the ocarina of time)
 
 - Would be smart to have different attacks (and/or weapons) for different purposes (inspired by Elajjaz's Bloodborne first playthrough, when he used the extended axe's charged spin attack to take out a group of relatively week enemies in a spread in front) => Other attacks could have higher reach, longer range, or even hit enemies behind you
+
+- Combat NPC who teaches you how to parry => Do you need to learn how to block first?

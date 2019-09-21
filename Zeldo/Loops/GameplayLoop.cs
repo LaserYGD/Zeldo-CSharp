@@ -99,6 +99,10 @@ namespace Zeldo.Loops
 			player.UnlockSkill(PlayerSkills.Jump);
 			player.UnlockSkill(PlayerSkills.Ascend);
 
+			// Combat skills
+			player.UnlockSkill(PlayerSkills.Block);
+			player.UnlockSkill(PlayerSkills.Parry);
+
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
 
