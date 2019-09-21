@@ -13,6 +13,7 @@ using GlmSharp;
 using Jitter.Collision.Shapes;
 using Zeldo.Control;
 using Zeldo.Physics;
+using Zeldo.Settings;
 using Zeldo.View;
 
 namespace Zeldo.Entities
@@ -45,13 +46,12 @@ namespace Zeldo.Entities
 		// means that while one bind is held in this scenario, other binds for that same action are ignored.
 		private InputBind jumpBindUsed;
 		private InputBind grabBindUsed;
-		private InputBind ascendBindUsed;
 
 		private InputBuffer grabBuffer;
 		private InputBuffer ascendBuffer;
 
 		public PlayerController(Player player, PlayerData playerData, PlayerControls controls,
-			AbstractController[] controllers)
+			ControlSettings settings, AbstractController[] controllers)
 		{
 			this.player = player;
 			this.playerData = playerData;
@@ -66,9 +66,12 @@ namespace Zeldo.Entities
 			float grab = Properties.GetFloat("player.grab.buffer");
 			float ascend = Properties.GetFloat("player.ascend.buffer");
 
-			grabBuffer = new InputBuffer(grab, true, controls.Grab);
+			// Actual values for requiresHold on each buffer are set when control settings are applied.
+			grabBuffer = new InputBuffer(grab, false, controls.Grab);
 			ascendBuffer = new InputBuffer(ascend, false, controls.Jump);
 			ascendBuffer.RequiredChords = controls.Ascend;
+
+			settings.ApplyEvent += OnApply;
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
@@ -82,6 +85,12 @@ namespace Zeldo.Entities
 		public void Dispose()
 		{
 			MessageSystem.Unsubscribe(this);
+		}
+
+		private void OnApply(ControlSettings settings)
+		{
+			ascendBuffer.RequiresHold = !settings.UseToggleAscend;
+			grabBuffer.RequiresHold = !settings.UseToggleGrab;
 		}
 
 		public void OnLanding(SurfaceTriangle surface)
@@ -315,7 +324,7 @@ namespace Zeldo.Entities
 				return false;
 			}
 
-			if (!ascendBuffer.Refresh(data, dt, out ascendBindUsed))
+			if (!ascendBuffer.Refresh(data, dt))
 			{
 				return false;
 			}

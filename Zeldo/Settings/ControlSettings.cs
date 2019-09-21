@@ -8,6 +8,8 @@ namespace Zeldo.Settings
 {
 	public class ControlSettings
 	{
+		public delegate void ApplyHandler(ControlSettings settings);
+
 		public int MouseSensitivity { get; set; }
 
 		public bool InvertX { get; set; }
@@ -17,5 +19,12 @@ namespace Zeldo.Settings
 		// hold.
 		public bool UseToggleGrab { get; set; }
 		public bool UseToggleAscend { get; set; }
+
+		public event ApplyHandler ApplyEvent;
+
+		public void Apply()
+		{
+			ApplyEvent?.Invoke(this);
+		}
 	}
 }

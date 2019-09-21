@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using Engine.Core;
+﻿using Engine.Core;
 using Engine.Core._2D;
-using Engine.Interfaces;
-using Engine.Messaging;
 using Engine.Shaders;
 using Engine.Shapes._2D;
 using Engine.Utility;
@@ -238,6 +235,8 @@ namespace Engine.Graphics._2D
 			}
 
 			glDrawElements(mode, buffer.Flush(), GL_UNSIGNED_SHORT, null);
+
+			Statistics.Increment(RenderKeys.DrawCalls);
 
 			activeShader = null;
 			activeTexture = 0;

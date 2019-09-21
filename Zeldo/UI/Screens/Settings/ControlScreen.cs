@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Zeldo.Settings;
 
 namespace Zeldo.UI.Screens.Settings
 {
 	public class ControlScreen
 	{
+		private ControlSettings settings;
+
+		public ControlScreen(ControlSettings settings)
+		{
+			this.settings = settings;
+		}
 	}
 }

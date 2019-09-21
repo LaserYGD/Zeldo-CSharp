@@ -322,6 +322,7 @@
     <Compile Include="State\ProgressionEvent.cs" />
     <Compile Include="State\ProgressionPool.cs" />
     <Compile Include="TentacleTester.cs" />
+    <Compile Include="UI\Controls\Checkbox.cs" />
     <Compile Include="UI\Controls\ToggleButton.cs" />
     <Compile Include="UI\Controls\Slider.cs" />
     <Compile Include="UI\Hud\BossHealthBar.cs" />
@@ -349,6 +350,7 @@
     <Compile Include="UI\Speech\DialogueToken.cs" />
     <Compile Include="UI\Speech\DialogueTree.cs" />
     <Compile Include="UI\SplashLogo.cs" />
+    <Compile Include="UI\StatisticsDisplay.cs" />
     <Compile Include="UI\Subtitles.cs" />
     <Compile Include="View\FollowController.cs" />
     <Compile Include="Weather\DayNightCycle.cs" />

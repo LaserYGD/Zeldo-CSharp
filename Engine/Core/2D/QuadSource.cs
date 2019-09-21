@@ -1,4 +1,5 @@
-﻿using GlmSharp;
+﻿using Engine.Graphics;
+using GlmSharp;
 using static Engine.GL;
 
 namespace Engine.Core._2D
@@ -30,6 +31,8 @@ namespace Engine.Core._2D
 		{
 			glActiveTexture(GL_TEXTURE0 + index);
 			glBindTexture(GL_TEXTURE_2D, Id);
+
+			Statistics.Increment(RenderKeys.TextureBinds);
 		}
 	}
 }

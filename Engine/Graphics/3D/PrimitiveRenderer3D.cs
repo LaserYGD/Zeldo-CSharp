@@ -204,6 +204,8 @@ namespace Engine.Graphics._3D
 			shader.SetUniform("mvp", camera.ViewProjection);
 
 			glDrawElements(mode, buffer.Flush(), GL_UNSIGNED_SHORT, null);
+
+			Statistics.Increment(RenderKeys.DrawCalls);
 		}
 	}
 }

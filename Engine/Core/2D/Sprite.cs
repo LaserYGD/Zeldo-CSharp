@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Engine.Graphics;
 using Engine.Graphics._2D;
 using Engine.Utility;
 using GlmSharp;
@@ -193,6 +194,8 @@ namespace Engine.Core._2D
 		public override void Draw(SpriteBatch sb)
 		{
 			Draw(sb, source.Id, data);
+
+			Statistics.Increment(RenderKeys.Triangles, 2);
 		}	
 	}
 }

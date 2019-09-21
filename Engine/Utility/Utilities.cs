@@ -261,12 +261,17 @@ namespace Engine.Utility
 			return vec3.Cross(v1, v2);
 		}
 
-		public static void PositionItems(IPositionable2D[] items, vec2 start, vec2 spacing)
+		public static void PositionItems<T>(T[] items, vec2 start, vec2 spacing) where T : class, IPositionable2D
 		{
 			for (int i = 0; i < items.Length; i++)
 			{
 				items[i].Position = start + spacing * i;
 			}
+		}
+
+		public static void PositionItems<T>(List<T> items, vec2 start, vec2 spacing) where T : class, IPositionable2D
+		{
+			PositionItems(items.ToArray(), start, spacing);
 		}
 
 		public static T Closest<T>(IEnumerable<T> items, vec2 position) where T : class, IPositionable2D

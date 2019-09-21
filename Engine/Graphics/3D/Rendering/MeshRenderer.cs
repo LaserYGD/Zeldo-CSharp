@@ -99,6 +99,9 @@ namespace Engine.Graphics._3D.Rendering
 
 			glDrawElementsBaseVertex(GL_TRIANGLES, (uint)handle.Count, GL_UNSIGNED_SHORT, (void*)handle.Offset,
 				handle.BaseVertex);
+
+			Statistics.Increment(RenderKeys.DrawCalls);
+			Statistics.Increment(RenderKeys.Triangles, handle.Count / 3);
 		}
 	}
 }

@@ -123,7 +123,11 @@ namespace Engine.Graphics._3D.Rendering
 			}
 
 			shader.SetUniform("tint", item.Color.ToVec4());
+
 			glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, (void*)0);
+
+			Statistics.Increment(RenderKeys.DrawCalls);
+			Statistics.Increment(RenderKeys.Triangles, 2);
 		}
 	}
 }

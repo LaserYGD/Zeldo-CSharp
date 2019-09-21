@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Input.Data;
 using Engine.Interfaces;
@@ -73,12 +74,26 @@ namespace Zeldo.Loops
 				World = world
 			};
 
+			var stats = new StatisticsDisplay();
+			stats.Anchor = Alignments.Left | Alignments.Top;
+			stats.Offset = new ivec2(10);
+
+			var debug = new DebugView();
+			debug.Anchor = Alignments.Left | Alignments.Top;
+			debug.Offset = new ivec2(10);
+			debug.IsVisible = false;
+
 			canvas.Clear();
 			canvas.Load("Hud.json");
-			canvas.GetElement<DebugView>().IsVisible = false;
+			canvas.Add(stats);
+			canvas.Add(debug);
+
+			// TODO: Load settings from a file.
+			ControlSettings settings = new ControlSettings();
+			settings.MouseSensitivity = 50;
 
 			// TODO: Set player position from a save slot.
-			Player player = new Player();
+			Player player = new Player(settings);
 			player.Position = new vec3(2, 3, -1);
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
@@ -86,10 +101,6 @@ namespace Zeldo.Loops
 
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
-
-			// TODO: Load settings from a file.
-			ControlSettings settings = new ControlSettings();
-			settings.MouseSensitivity = 50;
 
 			camera.Attach(new FollowController(player, settings));
 

@@ -14,6 +14,7 @@ using Zeldo.Entities.Weapons;
 using Zeldo.Interfaces;
 using Zeldo.Items;
 using Zeldo.Physics;
+using Zeldo.Settings;
 using Zeldo.UI;
 using Zeldo.UI.Hud;
 using Zeldo.View;
@@ -46,7 +47,7 @@ namespace Zeldo.Entities
 		// This is kept as a separate boolean rather than a new state (to simplify those states).
 		private bool isJumpDecelerating;
 
-		public Player() : base(EntityGroups.Player)
+		public Player(ControlSettings settings) : base(EntityGroups.Player)
 		{
 			controls = new PlayerControls();
 			playerData = new PlayerData();
@@ -72,7 +73,7 @@ namespace Zeldo.Entities
 			controllers[ControllerIndexes.Aerial] = aerialController;
 			controllers[ControllerIndexes.Surface] = surfaceController;
 
-			controller = new PlayerController(this, playerData, controls, controllers);
+			controller = new PlayerController(this, playerData, controls, settings, controllers);
 			Swap(aerialController);
 		}
 		

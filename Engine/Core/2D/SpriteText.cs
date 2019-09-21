@@ -1,9 +1,12 @@
-﻿using Engine.Graphics._2D;
+﻿using System.Diagnostics;
+using Engine.Graphics;
+using Engine.Graphics._2D;
 using Engine.Utility;
 using GlmSharp;
 
 namespace Engine.Core._2D
 {
+	[DebuggerDisplay("{" + nameof(value) + "}")]
 	public class SpriteText : Component2D
 	{
 		private SpriteFont font;
@@ -157,6 +160,8 @@ namespace Engine.Core._2D
 			}
 
 			Draw(sb, font.TextureId, data);
+
+			Statistics.Increment(RenderKeys.Triangles, value.Length * 2);
 		}
 	}
 }
