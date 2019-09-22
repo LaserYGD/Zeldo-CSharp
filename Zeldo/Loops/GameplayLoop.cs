@@ -16,6 +16,7 @@ using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
+using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
 using Zeldo.Settings;
 using Zeldo.UI;
@@ -95,6 +96,7 @@ namespace Zeldo.Loops
 			// TODO: Set player position from a save slot.
 			Player player = new Player(settings);
 			player.Position = new vec3(2, 3, -1);
+			player.Equip(new Sword());
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 			player.UnlockSkill(PlayerSkills.Ascend);

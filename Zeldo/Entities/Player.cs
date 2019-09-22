@@ -1,5 +1,6 @@
 ﻿using System;
 using Engine;
+using Engine.Interfaces._3D;
 using Engine.Physics;
 using Engine.Sensors;
 using Engine.Shapes._3D;
@@ -10,6 +11,7 @@ using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;
 using Zeldo.Control;
 using Zeldo.Entities.Core;
+using Zeldo.Entities.Grabbable;
 using Zeldo.Entities.Weapons;
 using Zeldo.Interfaces;
 using Zeldo.Items;
@@ -92,6 +94,7 @@ namespace Zeldo.Entities
 		// This is used by the player controller.
 		public bool[] SkillsEnabled => skillsEnabled;
 		public bool IsBlocking { get; private set; }
+		public bool IsOnLadder { get; private set; }
 
 		public override void Initialize(Scene scene, JToken data)
 		{
@@ -260,18 +263,43 @@ namespace Zeldo.Entities
 			State = PlayerStates.Jumping;
 		}
 
+		public bool TryGrab()
+		{
+			// The player must be facing the target in order to grab it.
+			if (!sensor.GetContact(out IGrabbable target) || !IsFacing(target))
+			{
+				return false;
+			}
+
+			// TODO: Play the appropriate grab animation.
+			State = PlayerStates.Grabbing;
+			IsOnLadder = target.GrabType == GrabTypes.Ladder;
+
+			return true;
+		}
+
+		public void ReleaseGrab()
+		{
+			IsOnLadder = false;
+		}
+
 		public void TryInteract()
 		{
-			foreach (var contact in sensor.Contacts)
+			// TODO: Handle multiple interactive targets (likely with a swap, similar to Dark Souls).
+			if (!sensor.GetContact(out IInteractive target) || !target.IsInteractionEnabled)
 			{
-				if (contact.Owner is IInteractive target && target.IsInteractionEnabled)
-				{
-					target.OnInteract(this);
-
-					// TODO: Handle multiple interactive targets (likely with a swap, similar to Dark Souls).
-					return;
-				}
+				return;
 			}
+
+			if (!target.RequiresFacing || IsFacing(target))
+			{
+				target.OnInteract(this);
+			}
+		}
+
+		private bool IsFacing(IPositionable3D target)
+		{
+			return Utilities.Dot(position.swizzle.xz, target.Position.swizzle.xz) > 0;
 		}
 
 		public void Equip(Weapon weapon)
@@ -293,6 +321,7 @@ namespace Zeldo.Entities
 
 		public void Parry()
 		{
+			// TODO: Check player direction (to see if the parry should trigger).
 		}
 
 		public void UnlockSkill(PlayerSkills skill)

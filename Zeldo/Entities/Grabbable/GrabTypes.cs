@@ -8,6 +8,7 @@ namespace Zeldo.Entities.Grabbable
 {
 	public enum GrabTypes
 	{
+		Ladder,
 		Netting
 	}
 }

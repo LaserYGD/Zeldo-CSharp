@@ -155,3 +155,5 @@
 - Combat NPC who teaches you how to parry => Do you need to learn how to block first?
 
 - When designing bosses, consider the boss's history and how that contributes to the boss's emotions during the fight (could help bosses feel more interesting and enjoyable)
+
+- Should quest items (like keys) be sellable? Explicitly listing as a quest item is kind of a spoiler, since it reveales that the item is important and unique. Could give it a shitty sell price to discourage selling, or use brief character dialogue (or other context surrounding the item's acquisition) to clue into its importance. =>If the item *is* sellable, you'd need a way to retrieve it. Using this system, you could also add secrets (e.g. sell a special key and later learn that another NPC used it to traverse a dungeon early, or have a merchant comment that they observed the key and would be willing to pay a high price for it) => This could be a potentially promising system that would be pretty unique among games in the genre

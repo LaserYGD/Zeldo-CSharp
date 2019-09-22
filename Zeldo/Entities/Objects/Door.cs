@@ -1,5 +1,4 @@
 ﻿using Engine.Physics;
-using Engine.Shapes._2D;
 using Jitter.Collision.Shapes;
 using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
@@ -16,6 +15,7 @@ namespace Zeldo.Entities.Objects
 		}
 
 		public bool IsInteractionEnabled => true;
+		public bool RequiresFacing => true;
 
 		public override void Initialize(Scene scene, JToken data)
 		{

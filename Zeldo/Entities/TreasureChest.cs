@@ -33,6 +33,7 @@ namespace Zeldo.Entities
 		}
 
 		public bool IsInteractionEnabled => !isOpened;
+		public bool RequiresFacing => true;
 
 		public override void Initialize(Scene scene, JToken data)
 		{

@@ -6,10 +6,11 @@ namespace Zeldo
 	public enum SensorGroups
 	{
 		None = 0,
-		DamageSource = 1<<2,
-		Hitbox = 1<<4,
-		Interaction = 1<<5,
-		Player = 1<<6,
-		Target = 1<<7
+		DamageSource = 1<<1,
+		DamageBlock = 1<<2,
+		Hitbox = 1<<3,
+		Interaction = 1<<4,
+		Player = 1<<5,
+		Target = 1<<6
 	}
 }

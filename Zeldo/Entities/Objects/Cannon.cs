@@ -25,6 +25,7 @@ namespace Zeldo.Entities.Objects
 	    }
 
 	    public bool IsInteractionEnabled => true;
+	    public bool RequiresFacing => true;
 
         public override void Initialize(Scene scene, JToken data)
 	    {

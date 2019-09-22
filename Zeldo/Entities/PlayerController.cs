@@ -42,6 +42,7 @@ namespace Zeldo.Entities
 		// Passing an array of controllers is easier than passing each one as a separate constructor argument.
 		private AbstractController[] controllers;
 
+		// TODO: Modify to use input buffers (rather than manual timing).
 		// Attacks use a short input buffering window in order to make chained attacks easier to execute.
 		private SingleTimer attackBuffer;
 
@@ -348,8 +349,27 @@ namespace Zeldo.Entities
 
 		private void ProcessGrab(FullInputData data, float dt)
 		{
-			if (grabBuffer.Refresh(data, dt, out grabBindUsed))
+			// TODO: Player actions (in relation to state) will likely need to be refined. In this case, could other states prevent grabbing?
+			if (player.State != PlayerStates.Grabbing)
 			{
+				if (grabBuffer.Refresh(data, dt, out grabBindUsed))
+				{
+					player.TryGrab();
+				}
+
+				return;
+			}
+
+			// Ladders are special among grabbable objects in that a toggle is always used to attach or detach from the
+			// ladder (regardless of control settings). I've never played a game where you have to hold a button to
+			// remain on a ladder.
+			bool shouldRelease = settings.UseToggleGrab || player.IsOnLadder
+				? data.Query(controls.Grab, InputStates.ReleasedThisFrame)
+				: data.Query(grabBindUsed, InputStates.ReleasedThisFrame);
+
+			if (shouldRelease)
+			{
+				player.ReleaseGrab();
 			}
 		}
 

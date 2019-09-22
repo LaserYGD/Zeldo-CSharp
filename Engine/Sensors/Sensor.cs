@@ -43,6 +43,7 @@ namespace Engine.Sensors
 		internal bool IsTogglePending { get; private set; }
 		internal bool IsMarkedForDestruction { get; set; }
 		internal bool IsCompound { get; }
+
 		internal int Groups { get; }
 
 		internal SensorTypes Type { get; }
@@ -132,6 +133,24 @@ namespace Engine.Sensors
 
 			Position = position;
 			Orientation = orientation;
+		}
+
+		public bool GetContact<T>(out T target) where T : class
+		{
+			target = null;
+
+			foreach (var contact in Contacts)
+			{
+				if (contact.Owner is T result)
+				{
+					target = result;
+
+					// Only the first contact of the given type is returned.
+					break;
+				}
+			}
+
+			return target != null;
 		}
 
 	    internal void ClearContacts()

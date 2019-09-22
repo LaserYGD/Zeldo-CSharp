@@ -259,6 +259,7 @@
     <Compile Include="Entities\Enemies\SunflowerHelper.cs" />
     <Compile Include="Entities\Enemies\SunflowerTendril.cs" />
     <Compile Include="Entities\Grabbable\GrabTypes.cs" />
+    <Compile Include="Entities\Grabbable\Ladder.cs" />
     <Compile Include="Entities\Grabbable\Netting.cs" />
     <Compile Include="Entities\Hazards\PoisonBush.cs" />
     <Compile Include="Entities\JesterWall.cs" />
