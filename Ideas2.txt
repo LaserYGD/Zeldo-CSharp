@@ -153,3 +153,5 @@
 - Would be smart to have different attacks (and/or weapons) for different purposes (inspired by Elajjaz's Bloodborne first playthrough, when he used the extended axe's charged spin attack to take out a group of relatively week enemies in a spread in front) => Other attacks could have higher reach, longer range, or even hit enemies behind you
 
 - Combat NPC who teaches you how to parry => Do you need to learn how to block first?
+
+- When designing bosses, consider the boss's history and how that contributes to the boss's emotions during the fight (could help bosses feel more interesting and enjoyable)
