@@ -6,7 +6,6 @@ using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Control;
-using Zeldo.Physics;
 
 namespace Zeldo.Entities.Core
 {

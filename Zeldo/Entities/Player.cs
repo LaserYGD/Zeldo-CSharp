@@ -37,6 +37,7 @@ namespace Zeldo.Entities
 		private Weapon weapon;
 
 		private AerialController aerialController;
+		private LadderController ladderController;
 		private SurfaceController surfaceController;
 
 		private IInteractive interactionTarget;
@@ -48,6 +49,9 @@ namespace Zeldo.Entities
 		// This is kept as a separate boolean rather than a new state (to simplify those states).
 		private bool isJumpDecelerating;
 
+		// TODO: Update this variable appropriately as the player moves around.
+		private vec2 facing;
+
 		public Player(ControlSettings settings) : base(EntityGroups.Player)
 		{
 			controls = new PlayerControls();
@@ -57,24 +61,8 @@ namespace Zeldo.Entities
 
 			skillsUnlocked = new bool[skillCount];
 			skillsEnabled = new bool[skillCount];
+			controller = new PlayerController(this, playerData, controls, settings, CreateControllers());
 
-			float acceleration = Properties.GetFloat("player.run.acceleration");
-			float deceleration = Properties.GetFloat("player.run.deceleration");
-			float maxSpeed = Properties.GetFloat("player.run.max.speed");
-
-			// Create controllers.
-			aerialController = new AerialController(this);
-			aerialController.Acceleration = acceleration;
-			aerialController.Deceleration = deceleration;
-			aerialController.MaxSpeed = maxSpeed;
-
-			surfaceController = new SurfaceController(this);
-
-			var controllers = new AbstractController[2];
-			controllers[ControllerIndexes.Aerial] = aerialController;
-			controllers[ControllerIndexes.Surface] = surfaceController;
-
-			controller = new PlayerController(this, playerData, controls, settings, controllers);
 			Swap(aerialController);
 		}
 		
@@ -95,6 +83,39 @@ namespace Zeldo.Entities
 		public bool[] SkillsEnabled => skillsEnabled;
 		public bool IsBlocking { get; private set; }
 		public bool IsOnLadder { get; private set; }
+
+		private AbstractController[] CreateControllers()
+		{
+			// Running
+			float runAcceleration = Properties.GetFloat("player.run.acceleration");
+			float runDeceleration = Properties.GetFloat("player.run.deceleration");
+			float runMaxSpeed = Properties.GetFloat("player.run.max.speed");
+
+			// Ladders
+			float ladderAcceleration = Properties.GetFloat("player.ladder.climb.acceleration");
+			float ladderDeceleration = Properties.GetFloat("player.ladder.climb.deceleration");
+			float ladderMaxSpeed = Properties.GetFloat("player.ladder.max.speed");
+
+			// Create controllers.
+			aerialController = new AerialController(this);
+			aerialController.Acceleration = runAcceleration;
+			aerialController.Deceleration = runDeceleration;
+			aerialController.MaxSpeed = runMaxSpeed;
+
+			ladderController = new LadderController(this);
+			ladderController.ClimbAcceleration = ladderAcceleration;
+			ladderController.ClimbDeceleration = ladderDeceleration;
+			ladderController.ClimbMaxSpeed = ladderMaxSpeed;
+
+			surfaceController = new SurfaceController(this);
+
+			var controllers = new AbstractController[4];
+			controllers[ControllerIndexes.Aerial] = aerialController;
+			controllers[ControllerIndexes.Ladder] = ladderController;
+			controllers[ControllerIndexes.Surface] = surfaceController;
+
+			return controllers;
+		}
 
 		public override void Initialize(Scene scene, JToken data)
 		{
@@ -123,6 +144,15 @@ namespace Zeldo.Entities
 		// TODO: Move some of this code to the base Actor class as well.
 		public override void OnCollision(Entity entity, vec3 point, vec3 normal, float penetration)
 		{
+			// TODO: Handle vaulting when near the top of a body.
+			// The player can attach to ladders by jumping towards them (but only from one side).
+			if (!onGround && entity is Ladder ladder && IsFacing(ladder) &&
+			    Utilities.Dot(ladder.Facing, facing) < -0.95f)
+			{
+				// TODO: Attach to ladder.
+				return;
+			}
+
 			if (onGround && entity.IsStatic)
 			{
 				Position += normal * penetration;
@@ -299,7 +329,7 @@ namespace Zeldo.Entities
 
 		private bool IsFacing(IPositionable3D target)
 		{
-			return Utilities.Dot(position.swizzle.xz, target.Position.swizzle.xz) > 0;
+			return Utilities.Dot(target.Position.swizzle.xz - position.swizzle.xz, facing) > 0;
 		}
 
 		public void Equip(Weapon weapon)
@@ -418,8 +448,9 @@ namespace Zeldo.Entities
 		public static class ControllerIndexes
 		{
 			public const int Aerial = 0;
-			public const int Surface = 1;
-			public const int Swimming = 2;
+			public const int Ladder = 1;
+			public const int Surface = 2;
+			public const int Swim = 3;
 		}
 	}
 }

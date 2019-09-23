@@ -228,6 +228,7 @@
     <Compile Include="Combat\AttackPhases.cs" />
     <Compile Include="Control\AerialController.cs" />
     <Compile Include="Control\AbstractController.cs" />
+    <Compile Include="Control\LadderController.cs" />
     <Compile Include="Control\SurfaceController.cs" />
     <Compile Include="CustomMessageTypes.cs" />
     <Compile Include="Data\SaveSlot.cs" />
