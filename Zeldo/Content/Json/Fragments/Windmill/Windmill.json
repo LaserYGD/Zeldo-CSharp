@@ -1,7 +1,9 @@
 ﻿{
-	"Origin": "0, 0, 0",
 	"Static": "WindmillTop_Physics.obj",
 	"Entities": [
+		{
+			"Type": "Grabbable.Ladder"
+		},
 		{
 			"$type": "Windmill.WindmillBlades",
 			"Position": "0|0|0",

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Engine;
+using Engine.Graphics._3D;
 using Engine.Graphics._3D.Rendering;
 using Engine.Interfaces;
 using Engine.Sensors;
@@ -17,6 +18,7 @@ namespace Zeldo.Entities.Core
 		private MasterRenderer3D renderer;
 		private List<Entity>[] entities;
 		private List<SceneFragment> fragments;
+		private PrimitiveRenderer3D debugPrimitives;
 
 		public Scene()
 		{
@@ -28,7 +30,7 @@ namespace Zeldo.Entities.Core
 			}
 
 			fragments = new List<SceneFragment>();
-			Tag = new Dictionary<string, object>();
+			Tags = new Dictionary<string, object>();
 		}
 
 		public Camera3D Camera
@@ -41,6 +43,8 @@ namespace Zeldo.Entities.Core
 				renderer = new MasterRenderer3D();
 				renderer.ShadowNearPlane = Properties.GetFloat("shadow.near.plane");
 				renderer.ShadowFarPlane = Properties.GetFloat("shadow.far.plane");
+
+				debugPrimitives = new PrimitiveRenderer3D(value, 10000, 1000);
 			}
 		}
 
@@ -48,10 +52,11 @@ namespace Zeldo.Entities.Core
 		public Space Space { get; set; }
 		public World World { get; set; }
 		public MasterRenderer3D Renderer => renderer;
+		public PrimitiveRenderer3D DebugPrimitives => debugPrimitives;
 
 		// In this context, a "tag" means custom data optionally loaded with each fragment. Used as needed in order to
 		// implement custom features for different kinds of locations.
-		public Dictionary<string, object> Tag { get; }
+		public Dictionary<string, object> Tags { get; }
 
 		public void LoadFragment(string filename)
 		{
@@ -110,6 +115,8 @@ namespace Zeldo.Entities.Core
 		{
 			renderer.VpMatrix = camera.ViewProjection;
 			renderer.Draw();
+
+			debugPrimitives.Flush();
 		}
 	}
 }

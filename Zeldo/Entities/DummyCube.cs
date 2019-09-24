@@ -26,7 +26,7 @@ namespace Zeldo.Entities
 		{
 			CreateModel(scene, "Cube.obj");
 
-			Body = CreateRigidBody(scene, new BoxShape(new JVector(1)), bodyType);
+			Body = CreateBody(scene, new BoxShape(new JVector(1)), bodyType);
 			Body.AffectedByGravity = affectedByGravity;
 		}
 

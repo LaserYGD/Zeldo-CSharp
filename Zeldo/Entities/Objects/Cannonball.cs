@@ -23,7 +23,7 @@ namespace Zeldo.Entities.Objects
 
 			CreateModel(scene, "Cannonball.obj");
 			CreateSensor(scene, new Sphere(pickupRadius), SensorGroups.Interaction);
-			CreateRigidBody(scene, new SphereShape(collisionRadius));
+			CreateBody(scene, new SphereShape(collisionRadius));
 
 			base.Initialize(scene, data);
 		}

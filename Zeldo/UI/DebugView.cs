@@ -31,6 +31,11 @@ namespace Zeldo.UI
 		// future).
 		public Color Highlight { get; set; } = new Color(255, 215, 0);
 
+		public void Add(string group, string value)
+		{
+			GetGroup(group).Add(value);
+		}
+
 		public List<string> GetGroup(string group)
 		{
 			if (!rawGroups.TryGetValue(group, out var list))

@@ -79,7 +79,7 @@ namespace Zeldo.Entities.Core
 		public bool IsPersistent { get; protected set; }
 
 		// This is used by actors (like the player) to determine when an entity collision should cause a stop.
-		public bool IsStatic => controllingBody.IsStatic;
+		public bool IsStatic { get; private set; }
 
 		public virtual void Dispose()
 		{
@@ -151,12 +151,18 @@ namespace Zeldo.Entities.Core
 			return sensor;
 		}
 
-		protected RigidBody CreateRigidBody(Scene scene, Shape shape, RigidBodyTypes bodyType = RigidBodyTypes.Dynamic,
+		protected RigidBody CreateBody(Scene scene, Shape shape, RigidBodyTypes bodyType = RigidBodyTypes.Dynamic,
 			bool isControlling = true, vec3? position = null, quat? orientation = null)
 		{
 			RigidBody body = new RigidBody(shape);
 			body.BodyType = bodyType;
 			body.Tag = this;
+
+			if (bodyType == RigidBodyTypes.Static)
+			{
+				// Entities are considered static if any static bodies are created.
+				IsStatic = true;
+			}
 
             // Note that the controlling body is intentionally not attached as a regular attachment. Doing so would
             // complicate transform sets by that body.

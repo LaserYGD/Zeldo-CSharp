@@ -1,5 +1,6 @@
 ﻿using System;
 using Engine;
+using Engine.Core;
 using Engine.Interfaces._3D;
 using Engine.Physics;
 using Engine.Sensors;
@@ -62,6 +63,7 @@ namespace Zeldo.Entities
 			skillsUnlocked = new bool[skillCount];
 			skillsEnabled = new bool[skillCount];
 			controller = new PlayerController(this, playerData, controls, settings, CreateControllers());
+			facing = vec2.UnitX;
 
 			Swap(aerialController);
 		}
@@ -146,10 +148,10 @@ namespace Zeldo.Entities
 		{
 			// TODO: Handle vaulting when near the top of a body.
 			// The player can attach to ladders by jumping towards them (but only from one side).
-			if (!onGround && entity is Ladder ladder && IsFacing(ladder) &&
-			    Utilities.Dot(ladder.Facing, facing) < -0.95f)
+			if (!onGround && entity is Ladder ladder && IsFacing(ladder))
 			{
-				// TODO: Attach to ladder.
+				Mount(ladder);
+
 				return;
 			}
 
@@ -331,6 +333,7 @@ namespace Zeldo.Entities
 
 		private bool IsFacing(IPositionable3D target)
 		{
+			// TODO: Should probably narrow the spread that counts as facing a target.
 			return Utilities.Dot(target.Position.swizzle.xz - position.swizzle.xz, facing) > 0;
 		}
 
@@ -358,6 +361,8 @@ namespace Zeldo.Entities
 
 		public void Mount(Ladder ladder)
 		{
+			// TODO: Whip around as appropriate.
+			LadderZones zone = ladder.GetZone(position);
 		}
 
 		public void UnlockSkill(PlayerSkills skill)
@@ -396,6 +401,8 @@ namespace Zeldo.Entities
 			{
 				UpdateAscend(dt);
 			}
+
+			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(facing.x, 0, facing.y), Color.Cyan);
 
 			var v = controllingBody.LinearVelocity.ToVec3();
 			var entries = new []

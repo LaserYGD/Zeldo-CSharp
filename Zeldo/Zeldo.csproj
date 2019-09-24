@@ -264,6 +264,7 @@
     <Compile Include="Entities\Grabbable\Netting.cs" />
     <Compile Include="Entities\Hazards\PoisonBush.cs" />
     <Compile Include="Entities\JesterWall.cs" />
+    <Compile Include="Entities\Grabbable\LadderZones.cs" />
     <Compile Include="Entities\Mechanisms\Lever.cs" />
     <Compile Include="Entities\Objects\Book.cs" />
     <Compile Include="Entities\Objects\Cannon.cs" />

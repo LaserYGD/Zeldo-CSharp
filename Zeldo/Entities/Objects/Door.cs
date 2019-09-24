@@ -21,15 +21,14 @@ namespace Zeldo.Entities.Objects
 		{
 			var bounds = CreateModel(scene, "Door.obj").Mesh.Bounds;
 
-			//CreateGroundBody(scene, new Rectangle(bounds.x, bounds.z), true);
-			CreateRigidBody(scene, new BoxShape(bounds.ToJVector()));
+			CreateBody(scene, new BoxShape(bounds.ToJVector()));
 
 			base.Initialize(scene, data);
 		}
 
 		public void OnInteract(Entity entity)
 		{
-			// Open and transition the camera if appropriate
+			// TODO: Open and transition the camera if appropriate.
 		}
 	}
 }

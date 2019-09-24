@@ -16,6 +16,7 @@ using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
+using Zeldo.Entities.Grabbable;
 using Zeldo.Entities.Weapons;
 using Zeldo.Physics;
 using Zeldo.Settings;
@@ -78,6 +79,7 @@ namespace Zeldo.Loops
 			var stats = new StatisticsDisplay();
 			stats.Anchor = Alignments.Left | Alignments.Top;
 			stats.Offset = new ivec2(10);
+			stats.IsVisible = false;
 
 			var debug = new DebugView();
 			debug.Anchor = Alignments.Left | Alignments.Top;
@@ -105,8 +107,12 @@ namespace Zeldo.Loops
 			player.UnlockSkill(PlayerSkills.Block);
 			player.UnlockSkill(PlayerSkills.Parry);
 
+			var ladder = new Ladder();
+			ladder.Position = new vec3(10, 11, -2);
+
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
+			scene.Add(ladder);
 
 			camera.Attach(new FollowController(player, settings));
 
@@ -125,6 +131,7 @@ namespace Zeldo.Loops
 			// Create visualizers.
 			spaceVisualizer = new SpaceVisualizer(camera, space);
 			jitterVisualizer = new JitterVisualizer(camera, world);
+			jitterVisualizer.IsEnabled = true;
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Keyboard, (messageType, data, dt) =>
 			{

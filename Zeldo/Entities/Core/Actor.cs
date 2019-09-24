@@ -75,7 +75,7 @@ namespace Zeldo.Entities.Core
 
 		protected RigidBody CreateKinematicBody(Scene scene, Shape shape)
 		{
-			var body = CreateRigidBody(scene, shape, RigidBodyTypes.Kinematic);
+			var body = CreateBody(scene, shape, RigidBodyTypes.Kinematic);
 			body.ShouldIgnore = ShouldIgnore;
 
 			return body;
