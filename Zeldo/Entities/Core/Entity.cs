@@ -227,8 +227,8 @@ namespace Zeldo.Entities.Core
 		{
 		}
 
-		// Note that for this callback, the point argument is the position on the triangle, not the entity.
-		public virtual void OnCollision(vec3 p, vec3 normal, vec3[] triangle)
+		// Note that for this callback, the point is the position on the triangle, not the entity.
+		public virtual void OnCollision(vec3 p, vec3 normal, vec3[] triangle, float penetration)
 		{
 		}
 

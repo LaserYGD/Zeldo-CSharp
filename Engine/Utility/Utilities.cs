@@ -8,6 +8,7 @@ using Engine.Graphics._2D;
 using Engine.Interfaces._2D;
 using Engine.Shapes._2D;
 using GlmSharp;
+using Jitter.LinearMath;
 
 namespace Engine.Utility
 {
@@ -155,6 +156,25 @@ namespace Engine.Utility
 		public static float Dot(vec3 v1, vec3 v2)
 		{
 			return vec3.Dot(v1, v2);
+		}
+
+		public static float ComputeSlope(JVector[] triangle)
+		{
+			var p0 = triangle[0];
+			var p1 = triangle[1];
+			var p2 = triangle[2];
+			var normal = JVector.Normalize(JVector.Cross(p2 - p0, p1 - p0));
+		
+			// TODO: Handle perfectly flat ceilings (conceptually negative zero, which might need to be represented as negative infinity or something).
+			float slope = 1 - Math.Abs(JVector.Dot(normal, JVector.Up));
+
+			// Downward-facing triangles are given a negative slope.
+			if (normal.Y < 0)
+			{
+				slope *= -1;
+			}
+
+			return slope;
 		}
 
 		public static vec2 Direction(float angle)

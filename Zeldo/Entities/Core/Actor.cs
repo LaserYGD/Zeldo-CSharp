@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
@@ -80,6 +81,7 @@ namespace Zeldo.Entities.Core
 			return body;
 		}
 
+		// TODO: Consider swapping this custom callback to be positive (i.e. return true if the collision *should* occur).
 		protected virtual bool ShouldIgnore(RigidBody other, JVector[] triangle)
 		{
 			bool isMesh = other.Shape is TriangleMeshShape;
@@ -90,20 +92,13 @@ namespace Zeldo.Entities.Core
 				return false;
 			}
 
+			var slope = Utilities.ComputeSlope(triangle);
+
 			if (onGround)
 			{
-				// While already grounded, collisions with the static world mesh should be ignored (controllers and
-				// raycasting are used instead).
-				return true;
+				// While already grounded, only wall collisions are registered.
+				return Math.Abs(slope) < 0.5f;
 			}
-
-			// It's assumed that if the body is a triangle mesh, the triangle array will be populated.
-			var p0 = triangle[0];
-			var p1 = triangle[1];
-			var p2 = triangle[2];
-			var normal = JVector.Normalize(JVector.Cross(p1 - p0, p2 - p0));
-
-			float slope = JVector.Dot(normal, JVector.Up);
 
 			// TODO: Use a property or constant instead.
 			return slope < 0.5f;
@@ -137,7 +132,7 @@ namespace Zeldo.Entities.Core
 			{
 				if (CheckGroundCollision(out var results))
 				{
-					OnCollision(results.Position, results.Normal, results.Triangle);
+					OnCollision(results.Position, results.Normal, results.Triangle, 0);
 				}
 				else
 				{

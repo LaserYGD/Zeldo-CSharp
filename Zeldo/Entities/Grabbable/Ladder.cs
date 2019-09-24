@@ -34,7 +34,7 @@ namespace Zeldo.Entities.Grabbable
 
 		public void OnInteract(Entity entity)
 		{
-			((Player)entity).
+			((Player)entity).Mount(this);
 		}
 	}
 }

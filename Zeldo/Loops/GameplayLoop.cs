@@ -117,7 +117,7 @@ namespace Zeldo.Loops
 			// TODO: Initialize renderer settings from a configuration file (based on user settings).
 			// TODO: Set light color and direction based on time of day and weather.
 			var renderer = scene.Renderer;
-			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.35f, -2.5f));
+			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.6f, -2f));
 			renderer.Add(new Model("Triangle.obj"));
 			renderer.Add(sprite);
 			renderTargetUsers3D.Add(renderer);
@@ -156,7 +156,7 @@ namespace Zeldo.Loops
 				var point = entity1 != null ? p2 : p1;
 				var tArray = triangle.Select(t => t.ToVec3()).ToArray();
 
-				entity.OnCollision(point, n, tArray);
+				entity.OnCollision(point, n, tArray, penetration);
 
 				return;
 			}

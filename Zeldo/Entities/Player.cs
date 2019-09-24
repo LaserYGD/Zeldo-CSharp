@@ -94,7 +94,7 @@ namespace Zeldo.Entities
 			// Ladders
 			float ladderAcceleration = Properties.GetFloat("player.ladder.climb.acceleration");
 			float ladderDeceleration = Properties.GetFloat("player.ladder.climb.deceleration");
-			float ladderMaxSpeed = Properties.GetFloat("player.ladder.max.speed");
+			float ladderMaxSpeed = Properties.GetFloat("player.ladder.climb.max.speed");
 
 			// Create controllers.
 			aerialController = new AerialController(this);
@@ -160,13 +160,15 @@ namespace Zeldo.Entities
 		}
 
 		// TODO: Move some of this code down to the base Actor class (so that other actors can properly traverse the environment too).
-		public override void OnCollision(vec3 p, vec3 normal, vec3[] triangle)
+		public override void OnCollision(vec3 p, vec3 normal, vec3[] triangle, float penetration)
 		{
 			var surface = new SurfaceTriangle(triangle, normal, 0);
 
 			// TODO: Process running into walls while grounded.
 			if (onGround)
 			{
+				Position += normal * penetration;
+
 				return;
 			}
 
@@ -352,6 +354,10 @@ namespace Zeldo.Entities
 		public void Parry()
 		{
 			// TODO: Check player direction (to see if the parry should trigger).
+		}
+
+		public void Mount(Ladder ladder)
+		{
 		}
 
 		public void UnlockSkill(PlayerSkills skill)

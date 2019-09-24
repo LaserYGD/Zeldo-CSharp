@@ -411,7 +411,11 @@ namespace Jitter.Collision
                 {
                     ms.SetCurrentShape(i);
 
-                    if (XenoCollide.Detect(ms, b2.Shape, ref b1.orientation,
+	                // CUSTOM: Added this callback (to allow specific triangle collisions to be ignored).
+					bool shouldIgnore = ms is TriangleMeshShape tMesh && callback2 != null &&
+						callback2(b1, tMesh.CurrentTriangle);
+
+					if (!shouldIgnore && XenoCollide.Detect(ms, b2.Shape, ref b1.orientation,
                         ref b2.orientation, ref b1.position, ref b2.position,
                         out point, out normal, out penetration))
                     {
@@ -424,18 +428,13 @@ namespace Jitter.Collision
                             (ms as TerrainShape).CollisionNormal(out normal);
                             JVector.Transform(ref normal, ref b1.orientation, out normal);
                         }
-                        else if (useTriangleMeshNormal && ms is TriangleMeshShape tMesh)
+                        else if (useTriangleMeshNormal)
 						{
+							tMesh = ms as TriangleMeshShape;
 							triangle = tMesh.CurrentTriangle;
 	                        tMesh.CollisionNormal(out normal);
                             JVector.Transform(ref normal, ref b1.orientation, out normal);
                         }
-
-	                    // CUSTOM: Added this callback (rigid body colliding with a multishape).
-	                    if (callback2 != null && callback2(b1, triangle))
-	                    {
-		                    return;
-	                    }
 
 						RaiseCollisionDetected(b1, b2, ref point1, ref point2, ref normal, triangle, penetration);
                     }
