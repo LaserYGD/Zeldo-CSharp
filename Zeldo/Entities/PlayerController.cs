@@ -39,8 +39,10 @@ namespace Zeldo.Entities
 		private SurfaceTriangle surface;
 		private ControlSettings settings;
 
+		// TODO: Store controllers separately (to avoid lots of casting).
 		// Passing an array of controllers is easier than passing each one as a separate constructor argument.
 		private AbstractController[] controllers;
+		private LadderController ladderController;
 
 		// TODO: Modify to use input buffers (rather than manual timing).
 		// Attacks use a short input buffering window in order to make chained attacks easier to execute.
@@ -65,6 +67,8 @@ namespace Zeldo.Entities
 			this.controls = controls;
 			this.settings = settings;
 			this.controllers = controllers;
+
+			ladderController = (LadderController)controllers[Player.ControllerIndexes.Ladder];
 
 			attackBuffer = new SingleTimer(time => { });
 			attackBuffer.IsRepeatable = true;
@@ -116,6 +120,10 @@ namespace Zeldo.Entities
 			{
 				// TODO: Replace this with usage of the surface controller.
 				ProcessRunning(data, dt);
+			}
+			else if (player.IsOnLadder)
+			{
+				ProcessLadder(data, dt);
 			}
 			else
 			{
@@ -320,7 +328,17 @@ namespace Zeldo.Entities
 
 			return v;
 		}
-		
+
+		private void ProcessLadder(FullInputData data, float dt)
+		{
+			// Ladder climbing uses the same controls as running forward and back.
+			bool up = data.Query(controls.RunForward, InputStates.Held);
+			bool down = data.Query(controls.RunBack, InputStates.Held);
+
+			ladderController.Direction = up ^ down ? (up ? 1 : -1) : 0;
+			ladderController.Update(dt);
+		}
+
 		private bool ProcessAscend(FullInputData data, float dt)
 		{
 			// There are two ascend-based actions the player can take: 1) starting an ascend (by holding the relevant

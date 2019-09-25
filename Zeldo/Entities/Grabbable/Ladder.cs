@@ -19,7 +19,7 @@ namespace Zeldo.Entities.Grabbable
 
 		// Ladders can be climbed from any angle, but the player whips around to the front when grabbing from the side
 		// or back.
-		private float facing;
+		private float facingAngle;
 
 		public Ladder() : base(EntityGroups.Object)
 		{
@@ -32,6 +32,9 @@ namespace Zeldo.Entities.Grabbable
 
 		public float Height { get; private set; }
 
+		// While climbing a ladder, actor position is set based on direction and a progress value.
+		public vec2 FacingDirection { get; private set; }
+
 		public override void Initialize(Scene scene, JToken data)
 		{
 			// TODO: Load ladders from a file.
@@ -39,7 +42,8 @@ namespace Zeldo.Entities.Grabbable
 			//int segments = data["Segments"].Value<int>();
 
 			//Facing = Utilities.Rotate(vec2.UnitX, rotation);
-			facing = 0;
+			facingAngle = Constants.Pi;
+			FacingDirection = Utilities.Direction(facingAngle);
 
 			// TODO: Compute dimensions based on mesh bounds and number of segments.
 			CreateBody(scene, new BoxShape(0.1f, 20, 1), RigidBodyTypes.Static, false);
@@ -52,7 +56,7 @@ namespace Zeldo.Entities.Grabbable
 		public LadderZones GetZone(vec3 p)
 		{
 			float angle = Utilities.Angle(p.swizzle.xz, position.swizzle.xz);
-			float delta = Math.Abs(facing - angle);
+			float delta = Math.Abs(facingAngle - angle);
 
 			if (delta > Constants.Pi)
 			{
@@ -70,7 +74,7 @@ namespace Zeldo.Entities.Grabbable
 				return LadderZones.Side;
 			}
 
-			return delta > 0 ? LadderZones.Front : LadderZones.Back;
+			return delta > 0 ? LadderZones.Back : LadderZones.Front;
 		}
 
 		public void OnInteract(Entity entity)
@@ -81,7 +85,7 @@ namespace Zeldo.Entities.Grabbable
 		public override void Update(float dt)
 		{
 			var player = Scene.GetEntities<Player>(EntityGroups.Player)[0];
-			var d = Utilities.Direction(facing);
+			var d = Utilities.Direction(facingAngle);
 
 			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(d.x, 0, d.y), Color.Cyan);
 			Scene.Canvas.GetElement<DebugView>().Add("Ladder", "Zone: " + GetZone(player.Position));

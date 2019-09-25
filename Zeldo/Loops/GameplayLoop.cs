@@ -84,7 +84,7 @@ namespace Zeldo.Loops
 			var debug = new DebugView();
 			debug.Anchor = Alignments.Left | Alignments.Top;
 			debug.Offset = new ivec2(10);
-			debug.IsVisible = false;
+			//debug.IsVisible = false;
 
 			canvas.Clear();
 			canvas.Load("Hud.json");

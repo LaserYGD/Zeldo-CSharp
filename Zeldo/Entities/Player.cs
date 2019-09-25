@@ -84,7 +84,7 @@ namespace Zeldo.Entities
 		// This is used by the player controller.
 		public bool[] SkillsEnabled => skillsEnabled;
 		public bool IsBlocking { get; private set; }
-		public bool IsOnLadder { get; private set; }
+		public bool IsOnLadder => ladderController.Ladder != null;
 
 		private AbstractController[] CreateControllers()
 		{
@@ -97,6 +97,10 @@ namespace Zeldo.Entities
 			float ladderAcceleration = Properties.GetFloat("player.ladder.climb.acceleration");
 			float ladderDeceleration = Properties.GetFloat("player.ladder.climb.deceleration");
 			float ladderMaxSpeed = Properties.GetFloat("player.ladder.climb.max.speed");
+			float ladderDistance = Properties.GetFloat("player.ladder.distance");
+
+			// Ladder climb distance is defined as the spacing between the player capsule and the ladder's body.
+			float radius = Properties.GetFloat("player.capsule.radius");
 
 			// Create controllers.
 			aerialController = new AerialController(this);
@@ -108,6 +112,9 @@ namespace Zeldo.Entities
 			ladderController.ClimbAcceleration = ladderAcceleration;
 			ladderController.ClimbDeceleration = ladderDeceleration;
 			ladderController.ClimbMaxSpeed = ladderMaxSpeed;
+
+			// TODO: Use half ladder depth (rather than hardcoded).
+			ladderController.ClimbDistance = ladderDistance + radius + 0.05f;
 
 			surfaceController = new SurfaceController(this);
 
@@ -307,14 +314,12 @@ namespace Zeldo.Entities
 
 			// TODO: Play the appropriate grab animation.
 			State = PlayerStates.Grabbing;
-			IsOnLadder = target.GrabType == GrabTypes.Ladder;
 
 			return true;
 		}
 
 		public void ReleaseGrab()
 		{
-			IsOnLadder = false;
 		}
 
 		public void TryInteract()
@@ -363,6 +368,10 @@ namespace Zeldo.Entities
 		{
 			// TODO: Whip around as appropriate.
 			LadderZones zone = ladder.GetZone(position);
+
+			ladderController.Ladder = ladder;
+			Swap(ladderController);
+			controllingBody.AffectedByGravity = false;
 		}
 
 		public void UnlockSkill(PlayerSkills skill)
@@ -402,8 +411,6 @@ namespace Zeldo.Entities
 				UpdateAscend(dt);
 			}
 
-			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(facing.x, 0, facing.y), Color.Cyan);
-
 			var v = controllingBody.LinearVelocity.ToVec3();
 			var entries = new []
 			{
@@ -421,6 +428,8 @@ namespace Zeldo.Entities
 			debugView.GetGroup("Player").AddRange(entries);
 
 			base.Update(dt);
+
+			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(facing.x, 0, facing.y), Color.Cyan);
 		}
 
 		private bool DecelerateJump(float dt)
