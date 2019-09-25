@@ -369,7 +369,7 @@ namespace Zeldo.Entities
 			// TODO: Whip around as appropriate.
 			LadderZones zone = ladder.GetZone(position);
 
-			ladderController.Ladder = ladder;
+			ladderController.OnMount(ladder, this);
 			Swap(ladderController);
 			controllingBody.AffectedByGravity = false;
 		}

@@ -9,7 +9,7 @@ namespace Zeldo.Control
 	public class LadderController : AbstractController
 	{
 		// Ladders use a custom progress value (representing the distance climbed from the bottom).
-		private float progress = 3;
+		private float progress;
 
 		// Ladders are designed to only work with the player (rather than generic actors). This may change in the
 		// future.
@@ -17,7 +17,7 @@ namespace Zeldo.Control
 		{
 		}
 
-		public Ladder Ladder { get; set; }
+		public Ladder Ladder { get; private set; }
 
 		// TODO: Add sliding down ladders (similar to Dark Souls).
 		public float ClimbAcceleration { get; set; }
@@ -27,6 +27,12 @@ namespace Zeldo.Control
 
 		// This should be 1, -1, or 0 (representing up, down, or stationary on the ladder).
 		public int Direction { get; set; }
+
+		public void OnMount(Ladder ladder, Player player)
+		{
+			Ladder = ladder;
+			progress = player.Position.y - ladder.Position.y;
+		}
 
 		public override void Update(float dt)
 		{
