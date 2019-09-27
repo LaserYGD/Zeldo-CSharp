@@ -164,6 +164,8 @@
 
 - Ladder on a rotating platform (I just think this would look neat) => Maybe in the jester's house?
 
+- "Living lava" enemies that form in a lava-filled area (likely deep underground somewhere, beneath the caves, imbued by a powerful sorcerer with essence of mind) => Could provide a cool opportunity for the player to use other essences for traversal or combat (i.e. you can't fight them normally since they'd just burn you, so you need to utilize special late-game equipment or spells)
+
 
 
 

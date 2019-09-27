@@ -16,7 +16,7 @@ uniform sampler2D textureSampler;
 void main()
 {
 	vec4 color = texture(textureSampler, fSource) * tint;
-	vec3 normal = (vec4(0, 0, 1, 1) * orientation).xyz;
+	vec3 normal = (vec4(1, 0, 0, 1) * orientation).xyz;
 
 	float shadowValue = texture(shadowSampler, fShadowMapCoords.xy).r;
 
