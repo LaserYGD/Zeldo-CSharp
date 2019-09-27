@@ -1,7 +1,6 @@
 ﻿using Engine.Core._3D;
 using Engine.Lighting;
 using Engine.Shaders;
-using GlmSharp;
 using static Engine.GL;
 
 namespace Engine.Graphics._3D.Rendering

@@ -46,6 +46,8 @@ namespace Zeldo.Loops
 		private bool isFrameAdvanceEnabled;
 		private bool isFrameAdvanceReady;
 
+		private Sprite3D sprite;
+
 		public GameplayLoop(TitleLoop titleLoop = null) : base(LoopTypes.Gameplay)
 		{
 			// TODO: Pull relevant objects from the title loop (likely camera and maybe scene).
@@ -116,8 +118,8 @@ namespace Zeldo.Loops
 
 			camera.Attach(new FollowController(player, settings));
 
-			var sprite = new Sprite3D("Link.png");
-			sprite.Position = new vec3(1, 2.5f, -3);
+			sprite = new Sprite3D("Link.png");
+			sprite.Position = new vec3(0, 2.5f, -1);
 			sprite.Scale = new vec2(1.5f);
 
 			// TODO: Initialize renderer settings from a configuration file (based on user settings).
@@ -217,6 +219,8 @@ namespace Zeldo.Loops
 		{
 			if (!isFrameAdvanceEnabled || isFrameAdvanceReady)
 			{
+				sprite.Orientation *= quat.FromAxisAngle(dt, vec3.UnitY);
+
 				world.Step(dt, true, PhysicsStep, PhysicsIterations);
 				space.Update();
 				scene.Update(dt);

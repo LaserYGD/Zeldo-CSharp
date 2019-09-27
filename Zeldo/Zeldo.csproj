@@ -292,6 +292,8 @@
     <Compile Include="Interfaces\IMechanical.cs" />
     <Compile Include="Items\Inventory.cs" />
     <Compile Include="Items\ItemIds.cs" />
+    <Compile Include="Items\MagnifyingGlass.cs" />
+    <Compile Include="Items\UsableItem.cs" />
     <Compile Include="JumpTester.cs" />
     <Compile Include="JumpTester2.cs" />
     <Compile Include="Physics\SurfaceMaterials.cs" />
@@ -377,7 +379,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Critters\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Fonts\Debug_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

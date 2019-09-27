@@ -53,7 +53,7 @@ namespace Engine.Core._2D
 			}
 			else
 			{
-				texFormat = GL_DEPTH_COMPONENT;
+				texFormat = GL_DEPTH_COMPONENT; 
 				texType = GL_FLOAT;
 				texAttachment = GL_DEPTH_ATTACHMENT;
 			}
