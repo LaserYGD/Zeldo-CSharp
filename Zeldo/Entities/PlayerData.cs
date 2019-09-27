@@ -12,9 +12,15 @@ namespace Zeldo.Entities
 			AscendAcceleration = Properties.GetFloat("player.ascend.acceleration");
 			AscendTargetSpeed = Properties.GetFloat("player.ascend.target.speed");
 			SlideThreshold = Properties.GetFloat("player.slide.threshold");
-			UpperWallThreshold = Properties.GetFloat("player.upper.wall.threshold");
-			LowerWallThreshold = Properties.GetFloat("player.lower.wall.threshold");
 			AerialAttackBoost = Properties.GetFloat("player.aerial.attack.boost");
+
+			// Walls (plus steps and vaults).
+			WallLowerThreshold = Properties.GetFloat("player.wall.lower.threshold");
+			WallUpperThreshold = Properties.GetFloat("player.wall.upper.threshold");
+			WallPressThreshold = Properties.GetFloat("player.wall.press.threshold");
+			StepThreshold = Properties.GetFloat("player.step.threshold");
+			GroundedVaultThreshold = Properties.GetFloat("player.grounded.vault.threshold");
+			AerialVaultThreshold = Properties.GetFloat("player.aerial.vault.threshold");
 		}
 
 		public float JumpSpeed { get; }
@@ -23,8 +29,14 @@ namespace Zeldo.Entities
 		public float AscendAcceleration { get; }
 		public float AscendTargetSpeed { get; }
 		public float SlideThreshold { get; }
-		public float LowerWallThreshold { get; }
-		public float UpperWallThreshold { get; }
 		public float AerialAttackBoost { get; }
+
+		// Walls (plus steps and vaults).
+		public float WallUpperThreshold { get; }
+		public float WallLowerThreshold { get; }
+		public float WallPressThreshold { get; }
+		public float StepThreshold { get; }
+		public float GroundedVaultThreshold { get; }
+		public float AerialVaultThreshold { get; }
 	}
 }

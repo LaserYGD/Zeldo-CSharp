@@ -84,7 +84,7 @@ namespace Engine.Shapes._2D
 			}
 
 			float angle = Utilities.Angle(p1, p2);
-			float delta = Utilities.CorrectAngle(Math.Abs(angle - arc.Angle));
+			float delta = Utilities.Delta(angle, arc.Angle);
 			float halfSpread = arc.Spread / 2;
 
 			if (delta <= halfSpread)
@@ -92,7 +92,7 @@ namespace Engine.Shapes._2D
 				return true;
 			}
 
-			vec2[] points = new vec2[2];
+			var points = new vec2[2];
 
 			for (int i = 0; i < 2; i++)
 			{

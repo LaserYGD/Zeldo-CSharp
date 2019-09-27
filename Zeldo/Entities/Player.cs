@@ -173,10 +173,31 @@ namespace Zeldo.Entities
 		{
 			var surface = new SurfaceTriangle(triangle, normal, 0);
 
-			// TODO: Process running into walls while grounded.
+			// This situation can only occur if the triangle represents a wall (since triangles flat enough to be
+			// considered floors are ignored while an actor is grounded).
 			if (onGround)
 			{
+				bool isStep = (p.y - GroundPosition.y) <= playerData.StepThreshold;
+
+				// TODO: Should probably override ShouldIgnore instead (to negate the step collision entirely).
+				if (isStep)
+				{
+					return;
+				}
+
 				Position += normal * penetration;
+
+				// If the player hits a wall with a velocity close to perpendicular, the player stops and presses
+				// against the wall. Once in that state, the player will remain pressed until velocity moves outside
+				// a small angle threshold.
+				float angleN = Utilities.Angle(normal.swizzle.xz);
+				float angleV = Utilities.Angle(controllingBody.LinearVelocity.ToVec3().swizzle.xz);
+
+				// TODO: Verify that the wall isn't a step (or vault target).
+				if (Utilities.Delta(angleN, angleV) <= playerData.WallPressThreshold)
+				{
+					PressAgainstWall();
+				}
 
 				return;
 			}
@@ -191,8 +212,8 @@ namespace Zeldo.Entities
 			bool isUpward = normal.y > 0;
 
 			// The collision is against a wall.
-			if (slope == 1 || (isUpward && slope >= 1 - playerData.LowerWallThreshold) || (!isUpward &&
-				slope <= 1 - playerData.UpperWallThreshold))
+			if (slope == 1 || (isUpward && slope >= 1 - playerData.WallLowerThreshold) || (!isUpward &&
+				slope <= 1 - playerData.WallUpperThreshold))
 			{
 				return;
 			}
@@ -247,6 +268,10 @@ namespace Zeldo.Entities
 
 			// Moving to a surface steep enough to cause sliding.
 			State = PlayerStates.Sliding;
+		}
+
+		private void PressAgainstWall()
+		{
 		}
 
 		public void Jump()

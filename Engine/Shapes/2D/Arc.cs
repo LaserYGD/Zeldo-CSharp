@@ -37,7 +37,7 @@ namespace Engine.Shapes._2D
 			}
 
 			float angle = Utilities.Angle(position, p);
-			float delta = Utilities.CorrectAngle(Math.Abs(angle - Angle));
+			float delta = Utilities.Delta(angle, Angle);
 
 			return delta <= Spread / 2;
 		}

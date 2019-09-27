@@ -10,6 +10,7 @@ using Zeldo.Control;
 
 namespace Zeldo.Entities.Core
 {
+	// TODO: Do all actors need to process steps?
 	public abstract class Actor : LivingEntity
 	{
 		private AbstractController activeController;

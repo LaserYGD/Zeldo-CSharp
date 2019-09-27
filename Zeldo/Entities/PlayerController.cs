@@ -232,11 +232,13 @@ namespace Zeldo.Entities
 			// means the player is still within the current triangle.
 			if (!surface.Project(p, out vec3 result))
 			{
-				// TODO: Store a reference to the physics map separate (rather than querying the world every frame).
+				// TODO: Store a reference to the physics map separately (rather than querying the world every frame).
 				var world = player.Scene.World;
 				var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
 				var normal = surface.Normal;
-				var results = PhysicsUtilities.Raycast(world, map, p + normal * 0.2f, -normal, 1);
+
+				// The raycast needs to be offset upward enough to catch steps.
+				var results = PhysicsUtilities.Raycast(world, map, p + normal, -normal, 2);
 
 				if (results?.Triangle != null)
 				{

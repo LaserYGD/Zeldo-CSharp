@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
 using Engine.Interfaces._2D;
@@ -127,14 +125,16 @@ namespace Engine.Utility
 			return (float)Math.Acos(Dot(v1, v2) / (v1.Length * v2.Length));
 		}
 
-		public static float CorrectAngle(float angle)
+		public static float Delta(float angle1, float angle2)
 		{
-			if (angle > Constants.Pi)
+			float delta = Math.Abs(angle1 - angle2);
+
+			if (delta > Constants.Pi)
 			{
-				angle = Constants.TwoPi - angle;
+				delta = Constants.TwoPi - delta;
 			}
 
-			return angle;
+			return delta;
 		}
 
 		public static float Clamp(float v, float min, float max)
