@@ -281,6 +281,22 @@ namespace Engine.Utility
 			return vec3.Cross(v1, v2);
 		}
 
+		public static quat Orientation(vec3 v1, vec3 v2)
+		{
+			var dot = Dot(v1, v2);
+
+			// See https://stackoverflow.com/a/1171995.
+			if (Math.Abs(dot) > 0.99999f)
+			{
+				return quat.Identity;
+			}
+
+			var a = Cross(v1, v2);
+			var w = (float)Math.Sqrt(LengthSquared(v1) * LengthSquared(v2)) + dot;
+			
+			return new quat(a.x, a.y, a.z, w);
+		}
+
 		public static void PositionItems<T>(T[] items, vec2 start, vec2 spacing) where T : class, IPositionable2D
 		{
 			for (int i = 0; i < items.Length; i++)

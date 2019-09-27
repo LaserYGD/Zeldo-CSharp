@@ -228,7 +228,7 @@ namespace Zeldo.Entities
 
 			p += v * dt;
 
-			// The player's position is always set at the bottom of this function. If this function return true, that
+			// The player's position is always set at the bottom of this function. If the projection returns true, that
 			// means the player is still within the current triangle.
 			if (!surface.Project(p, out vec3 result))
 			{
@@ -238,7 +238,7 @@ namespace Zeldo.Entities
 				var normal = surface.Normal;
 
 				// The raycast needs to be offset upward enough to catch steps.
-				var results = PhysicsUtilities.Raycast(world, map, p + normal, -normal, 2);
+				var results = PhysicsUtilities.Raycast(world, map, p + normal, -normal, 1.2f);
 
 				if (results?.Triangle != null)
 				{
@@ -246,6 +246,14 @@ namespace Zeldo.Entities
 					surface.Project(results.Position, out result);
 					
 					player.OnSurfaceTransition(surface);
+				}
+				// If the player has moved past a surface triangle (without transitioning to another one), a very small
+				// forgiveness distance is checked before signalling the player to become airborne. This distance is
+				// small enough to not be noticeable during gameplay, but protects against potential floating-point
+				// errors near the seams of triangles.
+				else if (ComputeForgiveness(p, surface) > playerData.EdgeForgiveness)
+				{
+					player.BecomeAirborneFromLedge();
 				}
 			}
 
@@ -257,11 +265,31 @@ namespace Zeldo.Entities
 			player.GroundPosition = result;
 		}
 
+		private float ComputeForgiveness(vec3 p, SurfaceTriangle surface)
+		{
+			// To compute the shortest distance to an edge of the triangle, points are rotated to a flat plane first
+			// (using the surface normal).
+			var q = Utilities.Orientation(surface.Normal, vec3.UnitY);
+			var flatP = (q * p).swizzle.xz;
+			var flatPoints = surface.Points.Select(v => (q * v).swizzle.xz).ToArray();
+			var d = float.MaxValue;
+
+			for (int i = 0; i < flatPoints.Length; i++)
+			{
+				var p1 = flatPoints[i];
+				var p2 = flatPoints[(i + 1) % 3];
+
+				d = Math.Min(d, Utilities.DistanceToLine(flatP, p1, p2));
+			}
+
+			return d;
+		}
+
 		private vec3 AdjustRunningVelocity(vec2 flatDirection, float dt)
 		{
 			vec3 v = player.SurfaceVelocity;
 
-			// Decleration.
+			// Deceleration.
 			if (flatDirection == vec2.Zero)
 			{
 				// The player is already stopped (and not accelerating).
@@ -286,7 +314,7 @@ namespace Zeldo.Entities
 				return v;
 			}
 
-			// Accleration.
+			// Acceleration.
 			flatDirection = Utilities.Rotate(flatDirection, FollowController.Yaw);
 
 			vec3 normal = surface.Normal;

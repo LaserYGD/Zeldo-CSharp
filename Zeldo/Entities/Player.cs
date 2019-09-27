@@ -274,6 +274,16 @@ namespace Zeldo.Entities
 		{
 		}
 
+		// This is called when the player runs or walks off an edge (without jumping).
+		public void BecomeAirborneFromLedge()
+		{
+			onGround = false;
+			controllingBody.LinearVelocity = SurfaceVelocity.ToJVector();
+			controllingBody.AffectedByGravity = true;
+
+			Swap(aerialController);
+		}
+
 		public void Jump()
 		{
 			onGround = false;

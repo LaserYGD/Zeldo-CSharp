@@ -12,7 +12,7 @@ namespace Zeldo.Physics
 	{
 		public static vec3 Axis { get; private set; }
 
-		// These areused to project points onto the triangle (primarily used to "stick" actors onto a surface while
+		// These are used to project points onto the triangle (primarily used to "stick" actors onto a surface while
 		// moving).
 		private quat projectionQuat;
 
@@ -72,7 +72,7 @@ namespace Zeldo.Physics
 
 			Slope = (float)Math.Sin(theta);
 
-			// Downard-facing triangles are given a negative slope.
+			// Downward-facing triangles are given a negative slope.
 			if (normal.y < 0)
 			{
 				Slope *= -1;
