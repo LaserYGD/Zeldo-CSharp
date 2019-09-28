@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Engine;
 using Engine.Core;
 using Engine.Core._3D;
@@ -131,6 +132,8 @@ namespace Zeldo.Entities.Core
 
 		protected Model CreateModel(Scene scene, Mesh mesh, vec3? position = null, quat? orientation = null)
 		{
+			Debug.Assert(mesh != null, "Can't create a model with a null mesh.");
+
 			Model model = new Model(mesh);
 
 			Attach(EntityAttachmentTypes.Model, model, position, orientation);
@@ -140,10 +143,9 @@ namespace Zeldo.Entities.Core
 		}
 
 		protected Sensor CreateSensor(Scene scene, Shape3D shape = null, SensorGroups group = SensorGroups.None,
-			SensorTypes type = SensorTypes.Entity, vec3? position = null,
-			quat? orientation = null)
+			SensorTypes type = SensorTypes.Entity, vec3? position = null, quat? orientation = null)
 		{
-			var sensor = new Sensor(SensorTypes.Entity, this, (int)group, shape);
+			var sensor = new Sensor(type, this, (int)group, shape);
 			
 			Attach(EntityAttachmentTypes.Sensor, sensor, position, orientation);
 			scene.Space.Add(sensor);
@@ -154,6 +156,9 @@ namespace Zeldo.Entities.Core
 		protected RigidBody CreateBody(Scene scene, Shape shape, RigidBodyTypes bodyType = RigidBodyTypes.Dynamic,
 			bool isControlling = true, vec3? position = null, quat? orientation = null)
 		{
+			Debug.Assert(shape != null, "Can't create a body with a null shape.");
+			Debug.Assert(!isControlling || controllingBody == null, "Controlling body is already set.");
+
 			RigidBody body = new RigidBody(shape);
 			body.BodyType = bodyType;
 			body.Tag = this;
@@ -186,8 +191,11 @@ namespace Zeldo.Entities.Core
 		{
 			var space = Scene.Space;
 
+			// If a sensor is given, only that sensor is removed.
 			if (sensor != null)
 			{
+				Debug.Assert(attachments.Exists(a => a.Target == sensor), "Given sensor isn't attached.");
+
 				space.Remove(sensor);
 
 				for (int i = attachments.Count - 1; i >= 0; i--)
@@ -203,9 +211,12 @@ namespace Zeldo.Entities.Core
 				return;
 			}
 
-			// If no specific sensor is given, the first sensor in the attachment list is removed.
+			// If no sensor is given, the first attached sensor is removed.
 			for (int i = attachments.Count - 1; i >= 0; i--)
 			{
+				Debug.Assert(attachments.Exists(a => a.AttachmentType == EntityAttachmentTypes.Sensor),
+					"No sensors attached.");
+
 				var attachment = attachments[i];
 
 				if (attachment.AttachmentType == EntityAttachmentTypes.Sensor)

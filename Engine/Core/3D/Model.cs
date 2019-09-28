@@ -19,6 +19,7 @@ namespace Engine.Core._3D
 			IsShadowCaster = true;
 		}
 
+		// TODO: Update to store multiple meshes.
 		public Mesh Mesh { get; }
 		public mat4 WorldMatrix { get; private set; }
 		public vec3 Position { get; set; }

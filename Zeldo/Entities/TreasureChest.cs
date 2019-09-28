@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using System.Diagnostics;
+using Engine;
 using Engine.Core._3D;
 using Engine.Physics;
 using Engine.Timing;
@@ -10,6 +11,8 @@ using Zeldo.Interfaces;
 
 namespace Zeldo.Entities
 {
+	// TODO: Allow chests to be locked.
+	// TODO: Add more complex chest animations (e.g. using gears or vines).
 	public class TreasureChest : Entity, IInteractive
 	{
 		private static readonly float LidRange;
@@ -37,6 +40,15 @@ namespace Zeldo.Entities
 
 		public override void Initialize(Scene scene, JToken data)
 		{
+			Debug.Assert(data["Item"] != null, "Missing item ID.");
+			Debug.Assert(data["Model"] != null, "Missing model.");
+
+			itemId = data["Item"].Value<int>();
+
+			// Treasure chests contain two meshes (the base container and the lid).
+			var model = CreateModel(scene, data["Model"].Value<string>());
+			var bounds = model.Mesh.Bounds;
+
 			/*
 			float interactionRadius = Properties.GetFloat("treasure.chest.interaction.radius");
 			float thickness = Properties.GetFloat("treasure.chest.thickness");
@@ -74,8 +86,9 @@ namespace Zeldo.Entities
 		public void OnInteract(Entity entity)
 		{
 			Player player = (Player)entity;
-			player.GiveItem(itemId);
+			player.Inventory.Add(itemId);
 
+			/*
 			SingleTimer timer = new SingleTimer(time =>	{ }, LidDuration);
 			timer.Tick = progress =>
 			{
@@ -91,6 +104,7 @@ namespace Zeldo.Entities
 			};
 
 			Components.Add(timer);
+			*/
 
 			isOpened = true;
 			RemoveSensor();

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using Engine.Graphics;
 using Engine.Graphics._2D;
 using Engine.Graphics._3D;
@@ -22,6 +21,8 @@ namespace Engine
 
 		public static Mesh GetMesh(string filename)
 		{
+			Debug.Assert(!string.IsNullOrEmpty(filename), "Mesh filename can't be empty or null.");
+
 			if (!meshes.TryGetValue(filename, out Mesh mesh))
 			{
 				mesh = Mesh.Load(filename);
@@ -33,6 +34,8 @@ namespace Engine
 
 		public static SpriteFont GetFont(string name)
 		{
+			Debug.Assert(!string.IsNullOrEmpty(name), "Font name can't be empty or null.");
+
 			if (!fonts.TryGetValue(name, out SpriteFont font))
 			{
 				font = SpriteFont.Load(name);
@@ -42,11 +45,14 @@ namespace Engine
 			return font;
 		}
 
-		public static Texture GetTexture(string filename, bool storeData = false, string folder = "Textures/")
+		public static Texture GetTexture(string filename, bool shouldStoreData = false, string folder = "Textures/")
 		{
+			Debug.Assert(!string.IsNullOrEmpty(filename), "Texture filename can't be empty or null.");
+			Debug.Assert(!string.IsNullOrEmpty(folder), "Texture folder can't be empty or null.");
+
 			if (!textures.TryGetValue(filename, out Texture texture))
 			{
-				texture = Texture.Load(filename, folder, storeData);
+				texture = Texture.Load(filename, folder, shouldStoreData);
 				textures.Add(filename, texture);
 			}
 

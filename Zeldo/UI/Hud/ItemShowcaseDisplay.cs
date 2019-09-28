@@ -39,7 +39,7 @@ namespace Zeldo.UI.Hud
 			}
 		}
 
-		public void Refresh(Item item)
+		public void Refresh(ItemData item)
 		{
 		}
 

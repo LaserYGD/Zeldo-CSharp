@@ -291,7 +291,9 @@
     <Compile Include="Interfaces\IInteractive.cs" />
     <Compile Include="Interfaces\IMechanical.cs" />
     <Compile Include="Items\Inventory.cs" />
+    <Compile Include="Items\Item.cs" />
     <Compile Include="Items\ItemIds.cs" />
+    <Compile Include="Items\ItemTypes.cs" />
     <Compile Include="Items\MagnifyingGlass.cs" />
     <Compile Include="Items\UsableItem.cs" />
     <Compile Include="JumpTester.cs" />
@@ -303,7 +305,7 @@
     <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
     <Compile Include="Interfaces\ITargetable.cs" />
-    <Compile Include="Items\Item.cs" />
+    <Compile Include="Items\ItemData.cs" />
     <Compile Include="MainGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="PuddleTester.cs" />
