@@ -28,6 +28,11 @@ namespace Zeldo.Entities
 	{
 		private const int AscendIndex = (int)PlayerSkills.Ascend;
 		private const int JumpIndex = (int)PlayerSkills.Jump;
+		private const int DoubleJumpIndex = (int)PlayerSkills.DoubleJump;
+
+		// This value should never be changed normally, but could theoretically be modified after release to give
+		// additional double jumps (for something like a randomizer).
+		private const int TargetJumps = 2;
 		
 		private PlayerData playerData;
 		private PlayerControls controls;
@@ -49,6 +54,9 @@ namespace Zeldo.Entities
 
 		// This is kept as a separate boolean rather than a new state (to simplify those states).
 		private bool isJumpDecelerating;
+
+		// The game has double jumping, but is coded to accommodate any number of extra jumps.
+		private int jumpsRemaining;
 
 		// TODO: Update this variable appropriately as the player moves around.
 		private vec2 facing;
@@ -85,6 +93,8 @@ namespace Zeldo.Entities
 		public bool[] SkillsEnabled => skillsEnabled;
 		public bool IsBlocking { get; private set; }
 		public bool IsOnLadder => ladderController.Ladder != null;
+
+		public int JumpsRemaining => jumpsRemaining;
 
 		private AbstractController[] CreateControllers()
 		{
@@ -232,10 +242,9 @@ namespace Zeldo.Entities
 			// velocity isn't wastefully set twice (since it's forcibly set to zero below).
 			surface.Project(p, out vec3 result);
 			GroundPosition = result;
-
 			onGround = true;
-			isJumpDecelerating = false;
-			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
+			
+			RefreshJumps();
 
 			// TODO: Account for speed differences when landing on slopes (since maximum flat speed will be a bit lower). Maybe quick deceleration?
 			// The surface controller updates the body's velocity, so that velocity needs to be transferred here first.
@@ -280,16 +289,35 @@ namespace Zeldo.Entities
 			onGround = false;
 			controllingBody.LinearVelocity = SurfaceVelocity.ToJVector();
 			controllingBody.AffectedByGravity = true;
+			jumpsRemaining--;
+			skillsEnabled[JumpIndex] = false;
 
 			Swap(aerialController);
 		}
 
 		public void Jump()
 		{
+			// Jumps are decremented regardless of single vs. double jump.
+			jumpsRemaining--;
+
+			if (!skillsUnlocked[DoubleJumpIndex] || jumpsRemaining == TargetJumps - 1)
+			{
+				SingleJump();
+			}
+			else
+			{
+				DoubleJump();
+			}
+
+			State = PlayerStates.Jumping;
+		}
+
+		private void SingleJump()
+		{
 			onGround = false;
 			skillsEnabled[JumpIndex] = false;
-			State = PlayerStates.Jumping;
-			
+
+			// TODO: Set velocity accordingly when jumping from different states (like climbing a ladder).
 			// On jump, the controlling body inherits surface velocity.
 			controllingBody.LinearVelocity = new JVector(SurfaceVelocity.x, playerData.JumpSpeed, SurfaceVelocity.z);
 			controllingBody.AffectedByGravity = true;
@@ -302,6 +330,15 @@ namespace Zeldo.Entities
 			Swap(aerialController);
 		}
 
+		private void DoubleJump()
+		{
+			skillsEnabled[DoubleJumpIndex] = jumpsRemaining > 0;
+
+			var v = controllingBody.LinearVelocity;
+			v.Y = playerData.DoubleJumpSpeed;
+			controllingBody.LinearVelocity = v;
+		}
+
 		// This function is only called when limiting actually has to occur (i.e. the player's velocity is checked in
 		// advance).
 		public void LimitJump(float dt)
@@ -310,27 +347,50 @@ namespace Zeldo.Entities
 			{
 				isJumpDecelerating = true;
 			}
-
-			// Note that if the player *doesn't* limit a jump (by releasing the jump bind early), the state will
-			// remain Jumping (rather than Airborne) until it otherwise changes.
+			
 			State = PlayerStates.Airborne;
+		}
+
+		private void RefreshJumps()
+		{
+			var djUnlocked = skillsUnlocked[DoubleJumpIndex];
+
+			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
+			skillsEnabled[DoubleJumpIndex] = djUnlocked;
+			jumpsRemaining = djUnlocked ? TargetJumps : 1;
+			isJumpDecelerating = false;
 		}
 
 		public bool TryAscend()
 		{
+			// The player can ascend while climbing ladders normally.
+			if (IsOnLadder)
+			{
+				Ascend(ladderController.Ladder);
+
+				return true;
+			}
+
 			foreach (var contact in sensor.Contacts)
 			{
 				if (contact.Owner is IAscendable target)
 				{
-					ascensionTarget = target;
-					State = PlayerStates.Ascending;
-					skillsEnabled[AscendIndex] = false;
+					Ascend(target);
 
 					return true;
 				}
 			}
 
 			return false;
+		}
+
+		private void Ascend(IAscendable target)
+		{
+			ascensionTarget = target;
+			State = PlayerStates.Ascending;
+			skillsEnabled[AscendIndex] = false;
+			
+			RefreshJumps();
 		}
 
 		public void BreakAscend()
@@ -406,6 +466,8 @@ namespace Zeldo.Entities
 
 			ladderController.OnMount(ladder, this);
 			Swap(ladderController);
+			RefreshJumps();
+
 			controllingBody.AffectedByGravity = false;
 		}
 
@@ -441,6 +503,10 @@ namespace Zeldo.Entities
 			{
 				isJumpDecelerating = false;
 			}
+			else if (State == PlayerStates.Jumping && controllingBody.LinearVelocity.Y <= playerData.JumpLimit)
+			{
+				State = PlayerStates.Airborne;
+			}
 			else if (State == PlayerStates.Ascending)
 			{
 				UpdateAscend(dt);
@@ -456,7 +522,9 @@ namespace Zeldo.Entities
 				$"Body gravity: {controllingBody.AffectedByGravity}",
 				$"On ground: {onGround}",
 				$"Jump enabled: {skillsEnabled[JumpIndex]}",
+				$"DJ enabled: {skillsEnabled[DoubleJumpIndex]}",
 				$"Jump decelerating: {isJumpDecelerating}",
+				$"Jumps remaining: {jumpsRemaining}",
 				$"State: {State}"
 			};
 

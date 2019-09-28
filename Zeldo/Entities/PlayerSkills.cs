@@ -13,6 +13,7 @@ namespace Zeldo.Entities
 		Dash,
 		Grab,
 		Jump,
+		DoubleJump,
 		Parry
 	}
 }

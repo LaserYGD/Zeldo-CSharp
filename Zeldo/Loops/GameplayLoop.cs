@@ -86,7 +86,7 @@ namespace Zeldo.Loops
 			var debug = new DebugView();
 			debug.Anchor = Alignments.Left | Alignments.Top;
 			debug.Offset = new ivec2(10);
-			debug.IsVisible = false;
+			//debug.IsVisible = false;
 
 			canvas.Clear();
 			canvas.Load("Hud.json");
@@ -103,6 +103,7 @@ namespace Zeldo.Loops
 			player.Equip(new Sword());
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
+			player.UnlockSkill(PlayerSkills.DoubleJump);
 			player.UnlockSkill(PlayerSkills.Ascend);
 
 			// Combat skills
@@ -110,7 +111,7 @@ namespace Zeldo.Loops
 			player.UnlockSkill(PlayerSkills.Parry);
 
 			var ladder = new Ladder();
-			ladder.Position = new vec3(10, 11, -2);
+			ladder.Position = new vec3(10, 8.5f, -2);
 
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);

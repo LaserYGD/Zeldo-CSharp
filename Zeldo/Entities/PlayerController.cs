@@ -424,7 +424,7 @@ namespace Zeldo.Entities
 		private void ProcessJumping(FullInputData data, float dt)
 		{
 			// If this is true, it's assumed that the jump bind must have been populated. Note that this case also
-			// handles breaking from an ascend via a jump.
+			// handles breaking from ascend via a jump.
 			if (player.State == PlayerStates.Jumping)
 			{
 				if (data.Query(jumpBindUsed, InputStates.ReleasedThisFrame) &&
@@ -437,13 +437,13 @@ namespace Zeldo.Entities
 				return;
 			}
 
-			if (!player.SkillsEnabled[JumpIndex])
+			if (player.JumpsRemaining == 0)
 			{
 				return;
 			}
 
 			// The jump bind might have already been set while processing ascension input.
-			if (jumpBindUsed != null || data.Query(controls.Jump, InputStates.PressedThisFrame, out jumpBindUsed))
+			if (data.Query(controls.Jump, InputStates.PressedThisFrame, out jumpBindUsed))
 			{
 				player.Jump();
 			}

@@ -13,7 +13,7 @@ using Zeldo.UI;
 namespace Zeldo.Entities.Grabbable
 {
 	// TODO: Should the ladder be classified as grabbable? (if not, it'll have to be moved to a different namespace)
-	public class Ladder : Entity, IInteractive, IGrabbable
+	public class Ladder : Entity, IInteractive, IGrabbable, IAscendable
 	{
 		private static readonly float HalfSideSlice = Properties.GetFloat("ladder.side.slice") / 2;
 
@@ -30,10 +30,14 @@ namespace Zeldo.Entities.Grabbable
 		public bool IsInteractionEnabled => true;
 		public bool RequiresFacing => true;
 
+		// TODO: Fill in these ascension values.
+		public float AscensionTop { get; }
+		public float AscensionBottom { get; }
 		public float Height { get; private set; }
 
 		// While climbing a ladder, actor position is set based on direction and a progress value.
 		public vec2 FacingDirection { get; private set; }
+		public vec2 AscensionAxis => position.swizzle.xz;
 
 		public override void Initialize(Scene scene, JToken data)
 		{
@@ -46,7 +50,7 @@ namespace Zeldo.Entities.Grabbable
 			FacingDirection = Utilities.Direction(facingAngle);
 
 			// TODO: Compute dimensions based on mesh bounds and number of segments.
-			CreateBody(scene, new BoxShape(0.1f, 20, 1), RigidBodyTypes.Static, false);
+			CreateBody(scene, new BoxShape(0.1f, 15, 1), RigidBodyTypes.Static, false);
 
 			base.Initialize(scene, data);
 		}
