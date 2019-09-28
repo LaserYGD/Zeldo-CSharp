@@ -129,6 +129,7 @@ namespace Zeldo.Loops
 			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.6f, -2f));
 			renderer.Add(new Model("Triangle.obj"));
 			renderer.Add(sprite);
+
 			renderTargetUsers3D.Add(renderer);
 
 			// Create visualizers.

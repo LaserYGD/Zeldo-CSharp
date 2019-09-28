@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using Engine;
 using Engine.Core._3D;
 using Engine.Graphics._3D;
 using Engine.Utility;
+using GlmSharp;
 using Jitter.Dynamics;
 using Newtonsoft.Json.Linq;
-using Zeldo.Physics;
 
 namespace Zeldo.Entities.Core
 {
@@ -89,7 +86,11 @@ namespace Zeldo.Entities.Core
 		}
 
 		public Entity[] Entities { get; }
-		public Model[] MapModels { get; }
-		public RigidBody[] MapBodies { get; }
+		public Model MapModel { get; }
+		public RigidBody MapBody { get; }
+
+		// This is the default player spawn within the fragment. Only applicable if loading into that fragment directly
+		public vec3 Origin { get; }
+		public vec3 Spawn { get; }
 	}
 }

@@ -172,5 +172,5 @@
 
 - Make sure objects between the camera and the player are dithered or otherwise made mostly transparent in order to not unfairly disrupt gameplay (for example, shattering a destructible crate and having debris fly in front of the camera)
 
-
+- Environmental objects that affect movement in fun ways (that can also make a zone more memorable and unique) => Inspired by watching Shogo: Mobile Armor Division during GDQx and seeing the player jump off air vents on the tops of buildings for extra height)
 
