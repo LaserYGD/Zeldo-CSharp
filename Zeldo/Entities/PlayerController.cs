@@ -39,9 +39,8 @@ namespace Zeldo.Entities
 		private SurfaceTriangle surface;
 		private ControlSettings settings;
 
-		// TODO: Store controllers separately (to avoid lots of casting).
-		// Passing an array of controllers is easier than passing each one as a separate constructor argument.
-		private AbstractController[] controllers;
+		private SurfaceController surfaceController;
+		private AerialController aerialController;
 		private LadderController ladderController;
 
 		// TODO: Modify to use input buffers (rather than manual timing).
@@ -66,8 +65,9 @@ namespace Zeldo.Entities
 			this.playerData = playerData;
 			this.controls = controls;
 			this.settings = settings;
-			this.controllers = controllers;
 
+			surfaceController = (SurfaceController)controllers[Player.ControllerIndexes.Surface];
+			aerialController = (AerialController)controllers[Player.ControllerIndexes.Aerial];
 			ladderController = (LadderController)controllers[Player.ControllerIndexes.Ladder];
 
 			attackBuffer = new SingleTimer(time => { });
@@ -127,7 +127,7 @@ namespace Zeldo.Entities
 			}
 			else
 			{
-				((AerialController)controllers[Player.ControllerIndexes.Aerial]).FlatDirection = flatDirection;
+				aerialController.FlatDirection = flatDirection;
 			}
 
 			// Ascension reuses the jump bind (since it's conceptually also an "up" action), but requires an additional

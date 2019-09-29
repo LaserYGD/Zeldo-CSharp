@@ -18,7 +18,6 @@ using Zeldo.Entities;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Grabbable;
 using Zeldo.Entities.Weapons;
-using Zeldo.Physics;
 using Zeldo.Settings;
 using Zeldo.UI;
 using Zeldo.View;
@@ -82,7 +81,7 @@ namespace Zeldo.Loops
 			var debug = new DebugView();
 			debug.Anchor = Alignments.Left | Alignments.Top;
 			debug.Offset = new ivec2(10);
-			debug.IsVisible = false;
+			//debug.IsVisible = false;
 
 			canvas.Clear();
 			canvas.Load("Hud.json");

@@ -195,7 +195,7 @@ namespace Engine.Utility
 				return Proximities.Side;
 			}
 
-			return delta > 0 ? Proximities.Back : Proximities.Front;
+			return delta > 0 ? Proximities.Front : Proximities.Back;
 		}
 
 		public static vec2 Direction(float angle)

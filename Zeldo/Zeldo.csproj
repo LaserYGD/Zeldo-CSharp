@@ -224,6 +224,7 @@
     <Compile Include="Control\AbstractController.cs" />
     <Compile Include="Control\LadderController.cs" />
     <Compile Include="Control\SurfaceController.cs" />
+    <Compile Include="Control\SwimController.cs" />
     <Compile Include="CustomMessageTypes.cs" />
     <Compile Include="Data\SaveSlot.cs" />
     <Compile Include="Entities\Bosses\Boss.cs" />

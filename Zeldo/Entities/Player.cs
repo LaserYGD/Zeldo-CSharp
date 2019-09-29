@@ -58,7 +58,6 @@ namespace Zeldo.Entities
 		// The game has double jumping, but is coded to accommodate any number of extra jumps.
 		private int jumpsRemaining;
 
-		// TODO: Update this variable appropriately as the player moves around.
 		private vec2 facing;
 
 		public Player(ControlSettings settings) : base(EntityGroups.Player)
@@ -506,10 +505,6 @@ namespace Zeldo.Entities
 			return true;
 		}
 
-		public void GiveItem(int id, int count = 1)
-		{
-		}
-
 		public override void Update(float dt)
 		{
 			// TODO: Add an isOrientationFixed boolean to rigid bodies and use that instead.
@@ -519,13 +514,15 @@ namespace Zeldo.Entities
 			{
 				isJumpDecelerating = false;
 			}
-			else if (State == PlayerStates.Jumping && controllingBody.LinearVelocity.Y <= playerData.JumpLimit)
+			else switch (State)
 			{
-				State = PlayerStates.Airborne;
-			}
-			else if (State == PlayerStates.Ascending)
-			{
-				UpdateAscend(dt);
+				case PlayerStates.Jumping when controllingBody.LinearVelocity.Y <= playerData.JumpLimit:
+					State = PlayerStates.Airborne;
+					break;
+
+				case PlayerStates.Ascending:
+					UpdateAscend(dt);
+					break;
 			}
 
 			var v = controllingBody.LinearVelocity.ToVec3();
@@ -547,6 +544,12 @@ namespace Zeldo.Entities
 			debugView.GetGroup("Player").AddRange(entries);
 
 			base.Update(dt);
+
+			// TODO: This logic should be re-examined (or maybe applied to all actors).
+			if (position.x != oldPosition.x || position.z != oldPosition.z)
+			{
+				facing = Utilities.Normalize((position - oldPosition).swizzle.xz);
+			}
 
 			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(facing.x, 0, facing.y), Color.Cyan);
 		}
