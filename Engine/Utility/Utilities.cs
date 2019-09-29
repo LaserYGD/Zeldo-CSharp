@@ -256,6 +256,12 @@ namespace Engine.Utility
 			return vec3.Dot(onto, v) / vec3.Dot(onto, onto) * onto;
 		}
 
+		public static vec3 ProjectOntoPlane(vec3 v, vec3 normal)
+		{
+			// See https://www.maplesoft.com/support/help/Maple/view.aspx?path=MathApps%2FProjectionOfVectorOntoPlane.
+			return v - Project(v, normal);
+		}
+
 		public static vec2 Normalize(float x, float y)
 		{
 			return Normalize(new vec2(x, y));
@@ -286,9 +292,14 @@ namespace Engine.Utility
 			return v / Length(v);
 		}
 
-		public static vec2 Rotate(vec2 v, float rotation)
+		public static vec2 Rotate(vec2 v, float angle)
 		{
-			return rotation == 0 ? v : RotationMatrix2D(rotation) * v;
+			return angle == 0 ? v : RotationMatrix2D(angle) * v;
+		}
+
+		public static vec3 Rotate(vec3 v, float angle, vec3 axis)
+		{
+			return angle == 0 ? v : quat.FromAxisAngle(angle, axis) * v;
 		}
 
 		public static mat2 RotationMatrix2D(float rotation)

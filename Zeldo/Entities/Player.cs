@@ -64,7 +64,7 @@ namespace Zeldo.Entities
 		// While grounded, it's possible for actors to hit multiple walls at once. These collisions can result in
 		// overlapping resolution vectors, which in turn can cause visual jitter as those vectors are applied. To fix
 		// this, vectors are accumulated each frame, then resolved using custom logic during the update step.
-		private List<vec3> wallVectors;
+		//private List<vec3> wallVectors;
 
 		public Player(ControlSettings settings) : base(EntityGroups.Player)
 		{
@@ -76,7 +76,7 @@ namespace Zeldo.Entities
 			skillsUnlocked = new bool[skillCount];
 			skillsEnabled = new bool[skillCount];
 			controller = new PlayerController(this, playerData, controls, settings, CreateControllers());
-			wallVectors = new List<vec3>();
+			//wallVectors = new List<vec3>();
 			facing = vec2.UnitX;
 
 			Swap(aerialController);
@@ -183,7 +183,7 @@ namespace Zeldo.Entities
 			if (onGround && entity.IsStatic)
 			{
 				// TODO: Process other kinds of collisions against static entities (steps, vaults, wall presses, etc.).
-				OnGroundedWallCollision(point, normal, penetration);
+				OnGroundedWallCollision(normal, penetration);
 			}
 		}
 
@@ -204,7 +204,7 @@ namespace Zeldo.Entities
 					return;
 				}
 
-				OnGroundedWallCollision(p, normal, penetration);
+				OnGroundedWallCollision(normal, penetration);
 
 				// If the player hits a wall with a velocity close to perpendicular, the player stops and presses
 				// against the wall. Once in that state, the player will remain pressed until velocity moves outside
@@ -289,60 +289,25 @@ namespace Zeldo.Entities
 			State = PlayerStates.Sliding;
 		}
 
-		private void OnGroundedWallCollision(vec3 p, vec3 normal, float penetration)
+		private void OnGroundedWallCollision(vec3 normal, float penetration)
 		{
-			//wallVectors.Add(normal * penetration);
-
-			// This epsilon in arbitrary (all that matters is that it's small enough to not be noticeable while
-			// playing).
-			if (Utilities.Dot(SurfaceVelocity, normal) < 0)
+			if (Utilities.Dot(SurfaceVelocity, normal) >= 0)
 			{
-				// cos(angle) = adjacent / hypotenuse => h = a / cos(angle).
-				// TODO: These calculations could be optimized to remove the trig functions.
-				// These calculations are a bit complex, but the idea is, when a wall collision occurs, to pull back to
-				// the contact point, then slide along the wall with any velocity remaining.
-				/*
-				var angle = Utilities.Angle(-SurfaceVelocity, normal);
-				var h = penetration / (float)Math.Cos(angle);
-				var l = Utilities.Length(SurfaceVelocity);
-				var v1 = position - (SurfaceVelocity / l) * h;
-				var v2 = v1 + Utilities.Normalize(p - v1) * (l - h);
-
-				Position = v2;
-				*/
-
-				Position += normal * penetration;
-
-				if (Utilities.Dot(SurfaceVelocity, normal) < 0)
-				{
-					SurfaceVelocity -= Utilities.Project(SurfaceVelocity, normal);
-				}
-
-				/*
-				var n = -normal * penetration;
-				var v = Utilities.Project(n, SurfaceVelocity);
-				var p = Utilities.Project(n, new vec3(normal.z, normal.y, -normal.x));
-				var result = -v;
-
-				//Position -= Utilities.Project(-normal * penetration, SurfaceVelocity);
-				Position += result;
-
-				if (Utilities.Dot(SurfaceVelocity, normal) < 0)
-				{
-					//SurfaceVelocity -= Utilities.Project(SurfaceVelocity, result);
-				}
-				*/
+				return;
 			}
-
-			return;
-
-			Position += normal * penetration;
+			
+			// Rather than resolve collisions using the wall normal, vectors are projected to resolve parallel to
+			// the current surface. This approach prevents weird tunneling into the floor for walls that aren't
+			// perfectly vertical.
+			var v = Utilities.ProjectOntoPlane(normal, controller.Surface.Normal);
+			var angle = Utilities.Angle(normal, v);
+			var l = penetration / (float)Math.Cos(angle);
+			
+			Position += v * l;
+			SurfaceVelocity -= Utilities.Project(SurfaceVelocity, v);
 			isSurfaceControlOverridden = true;
 
-			if (Utilities.Dot(SurfaceVelocity, normal) < 0)
-			{
-				SurfaceVelocity -= Utilities.Project(SurfaceVelocity, normal);
-			}
+			//wallVectors.Add(v * l);
 		}
 
 		private void PressAgainstWall()
@@ -574,10 +539,12 @@ namespace Zeldo.Entities
 
 		public override void Update(float dt)
 		{
+			/*
 			if (wallVectors.Count > 0)
 			{
-				//ResolveWallVectors();
+				ResolveWallVectors();
 			}
+			*/
 
 			// TODO: Add an isOrientationFixed boolean to rigid bodies and use that instead.
 			controllingBody.Orientation = JMatrix.Identity;
@@ -626,6 +593,7 @@ namespace Zeldo.Entities
 			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(facing.x, 0, facing.y), Color.Cyan);
 		}
 
+		/*
 		private void ResolveWallVectors()
 		{
 			var final = vec3.Zero;
@@ -641,15 +609,16 @@ namespace Zeldo.Entities
 				}
 			}
 
-			//if (Utilities.LengthSquared(final) > 0.00001f)
+			if (Utilities.LengthSquared(final) > 0.001f)
 			{
 				Position += final;
-				//SurfaceVelocity -= Utilities.Project(SurfaceVelocity, final);
-				//isSurfaceControlOverridden = true;
+				SurfaceVelocity -= Utilities.Project(SurfaceVelocity, final);
+				isSurfaceControlOverridden = true;
 			}
 
 			wallVectors.Clear();
 		}
+		*/
 
 		private bool DecelerateJump(float dt)
 		{

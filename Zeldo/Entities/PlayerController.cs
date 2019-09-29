@@ -94,6 +94,9 @@ namespace Zeldo.Entities
 		public FollowController FollowController { get; set; }
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		// TODO: This is temporary while testing grounded wall resolution code (the surface should be accessible from the surface controller instead).
+		public SurfaceTriangle Surface => surface;
+
 		public void Dispose()
 		{
 			MessageSystem.Unsubscribe(this);
