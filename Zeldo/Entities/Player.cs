@@ -144,7 +144,9 @@ namespace Zeldo.Entities
 			Height = capsuleHeight + capsuleRadius * 2;
 
 			CreateModel(scene, "Capsule.obj");
-			CreateKinematicBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius)).AllowDeactivation = false;
+
+			var body = CreateKinematicBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius));
+			body.AllowDeactivation = false;
 
 			// TODO: Should all actor sensors be axis-aligned?
 			var shape = new Cylinder(Height, capsuleRadius);
@@ -173,7 +175,8 @@ namespace Zeldo.Entities
 
 			if (onGround && entity.IsStatic)
 			{
-				Position += normal * penetration;
+				// TODO: Process other kinds of collisions against static entities (steps, vaults, wall presses, etc.).
+				OnGroundedWallCollision(normal, penetration);
 			}
 		}
 
@@ -182,11 +185,11 @@ namespace Zeldo.Entities
 		{
 			var surface = new SurfaceTriangle(triangle, normal, 0);
 
-			// This situation can only occur if the triangle represents a wall (since triangles flat enough to be
-			// considered floors are ignored while an actor is grounded).
+			// This situation can only occur if the triangle represents a wall or ceiling (since triangles flat enough
+			// to be considered floors are ignored while an actor is grounded).
 			if (onGround)
 			{
-				bool isStep = (p.y - GroundPosition.y) <= playerData.StepThreshold;
+				bool isStep = p.y - GroundPosition.y <= playerData.StepThreshold;
 
 				// TODO: Should probably override ShouldIgnore instead (to negate the step collision entirely).
 				if (isStep)
@@ -194,7 +197,7 @@ namespace Zeldo.Entities
 					return;
 				}
 
-				Position += normal * penetration;
+				OnGroundedWallCollision(normal, penetration);
 
 				// If the player hits a wall with a velocity close to perpendicular, the player stops and presses
 				// against the wall. Once in that state, the player will remain pressed until velocity moves outside
@@ -202,7 +205,8 @@ namespace Zeldo.Entities
 				float angleN = Utilities.Angle(normal.swizzle.xz);
 				float angleV = Utilities.Angle(controllingBody.LinearVelocity.ToVec3().swizzle.xz);
 
-				// TODO: Verify that the wall isn't a step (or vault target).
+				// TODO: Verify that the wall isn't a vault target.
+				// TODO: Verify that the collision point is wide enough to press (i.e. not a glancing hit).
 				if (Utilities.Delta(angleN, angleV) <= playerData.WallPressThreshold)
 				{
 					PressAgainstWall();
@@ -276,6 +280,17 @@ namespace Zeldo.Entities
 
 			// Moving to a surface steep enough to cause sliding.
 			State = PlayerStates.Sliding;
+		}
+
+		private void OnGroundedWallCollision(vec3 normal, float penetration)
+		{
+			Position += normal * penetration;
+			isSurfaceControlOverridden = true;
+
+			if (Utilities.Dot(SurfaceVelocity, normal) < 0)
+			{
+				SurfaceVelocity -= Utilities.Project(SurfaceVelocity, normal);
+			}
 		}
 
 		private void PressAgainstWall()

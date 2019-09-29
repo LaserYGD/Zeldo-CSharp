@@ -3,6 +3,7 @@ using System.Linq;
 using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
+using Jitter;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
@@ -19,6 +20,7 @@ namespace Zeldo.Entities.Core
 		private float halfHeight;
 
 		protected bool onGround;
+		protected bool isSurfaceControlOverridden;
 
 		// TODO: Once surface movement is fully transferred to this class (from Player), this variable could probably be public.
 		protected vec3 oldPosition;
@@ -39,7 +41,9 @@ namespace Zeldo.Entities.Core
 			get => base.Position;
 			set
 			{
-				if (onGround)
+				// Even while grounded, actors can be affected by the regular physics step (for example, running into
+				// walls).
+				if (onGround && !Scene.World.IsStepActive)
 				{
 					// This assumes that all actors will have a valid controlling body created.
 					controllingBody.LinearVelocity = (value - controllingBody.Position.ToVec3()).ToJVector();
@@ -137,9 +141,19 @@ namespace Zeldo.Entities.Core
 				}
 				else
 				{
-					Position = controllingBody.Position.ToVec3();
-					Orientation = controllingBody.Orientation.ToQuat();
+					//Position = controllingBody.Position.ToVec3();
+					//Orientation = controllingBody.Orientation.ToQuat();
 				}
+			}
+
+			// Even while on a surface (i.e. using manual control), the physics engine can override movement when
+			// certain collisions occur (e.g. hitting a wall). Using the override flag, then, helps keep the mesh and
+			// rigid body in sync.
+			if (!onGround || isSurfaceControlOverridden)
+			{
+				Position = controllingBody.Position.ToVec3();
+				Orientation = controllingBody.Orientation.ToQuat();
+				isSurfaceControlOverridden = false;
 			}
 
 			selfUpdate = false;

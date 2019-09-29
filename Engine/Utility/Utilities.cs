@@ -250,6 +250,12 @@ namespace Engine.Utility
 			return vec2.Dot(onto, v) / vec2.Dot(onto, onto) * onto;
 		}
 
+		public static vec3 Project(vec3 v, vec3 onto)
+		{
+			// See https://math.oregonstate.edu/home/programs/undergrad/CalculusQuestStudyGuides/vcalc/dotprod/dotprod.html.
+			return vec3.Dot(onto, v) / vec3.Dot(onto, onto) * onto;
+		}
+
 		public static vec2 Normalize(float x, float y)
 		{
 			return Normalize(new vec2(x, y));

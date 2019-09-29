@@ -340,6 +340,9 @@ namespace Jitter
         /// </summary>
         public bool AllowDeactivation { get; set; }
 
+		// CUSTOM: Added to facilitate grounded wall collisions by actors.
+		public bool IsStepActive { get; private set; }
+
         /// <summary>
         /// Every computation <see cref="Step"/> the angular and linear velocity 
         /// of a <see cref="RigidBody"/> gets multiplied by this value.
@@ -647,6 +650,9 @@ namespace Jitter
             int counter = 0;
             accumulatedTime += totalTime;
 
+			// CUSTOM: Added a toggle for this flag.
+            IsStepActive = true;
+
             while (accumulatedTime > timestep)
             {
                 Step(timestep, multithread);
@@ -662,6 +668,7 @@ namespace Jitter
                 }
             }
 
+            IsStepActive = false;
         }
 
         private void UpdateArbiterContacts(Arbiter arbiter)
