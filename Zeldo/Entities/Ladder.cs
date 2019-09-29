@@ -10,22 +10,20 @@ using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
 using Zeldo.UI;
 
-namespace Zeldo.Entities.Grabbable
+namespace Zeldo.Entities
 {
-	// TODO: Should the ladder be classified as grabbable? (if not, it'll have to be moved to a different namespace)
-	public class Ladder : Entity, IInteractive, IGrabbable, IAscendable
+	// TODO: Should the ladder be grabbable? (if so, should extend IGrabbable)
+	public class Ladder : Entity, IInteractive, IAscendable
 	{
-		private static readonly float HalfSideSlice = Properties.GetFloat("ladder.side.slice") / 2;
+		private static readonly float SideSlice = Properties.GetFloat("ladder.side.slice");
 
 		// Ladders can be climbed from any angle, but the player whips around to the front when grabbing from the side
 		// or back.
-		private float facingAngle;
+		private float facing;
 
 		public Ladder() : base(EntityGroups.Object)
 		{
 		}
-
-		public GrabTypes GrabType => GrabTypes.Ladder;
 
 		public bool IsInteractionEnabled => true;
 		public bool RequiresFacing => true;
@@ -45,9 +43,8 @@ namespace Zeldo.Entities.Grabbable
 			//float rotation = data["Rotation"].Value<float>();
 			//int segments = data["Segments"].Value<int>();
 
-			//Facing = Utilities.Rotate(vec2.UnitX, rotation);
-			facingAngle = Constants.Pi;
-			FacingDirection = Utilities.Direction(facingAngle);
+			facing = Constants.Pi;
+			FacingDirection = Utilities.Direction(facing);
 
 			// TODO: Compute dimensions based on mesh bounds and number of segments.
 			CreateBody(scene, new BoxShape(0.1f, 15, 1), RigidBodyTypes.Static, false);
@@ -57,28 +54,9 @@ namespace Zeldo.Entities.Grabbable
 
 		// By the time this function is called, the player is guaranteed already 1) touching the ladder while airborne,
 		// and 2) facing the ladder. This function verifies that the player is also in front
-		public LadderZones GetZone(vec3 p)
+		public Proximities ComputeProximity(vec3 p)
 		{
-			float angle = Utilities.Angle(p.swizzle.xz, position.swizzle.xz);
-			float delta = Math.Abs(facingAngle - angle);
-
-			if (delta > Constants.Pi)
-			{
-				delta = Constants.TwoPi - delta;
-			}
-
-			delta = Constants.PiOverTwo - delta;
-
-			var debug = Scene.Canvas.GetElement<DebugView>();
-			debug.Add("Ladder", $"Angle: {angle:N2}");
-			debug.Add("Ladder", $"Delta: {delta:N2}");
-
-			if (Math.Abs(delta) < HalfSideSlice)
-			{
-				return LadderZones.Side;
-			}
-
-			return delta > 0 ? LadderZones.Back : LadderZones.Front;
+			return Utilities.ComputeProximity(position, p, facing, SideSlice);
 		}
 
 		public void OnInteract(Entity entity)
@@ -89,10 +67,10 @@ namespace Zeldo.Entities.Grabbable
 		public override void Update(float dt)
 		{
 			var player = Scene.GetEntities<Player>(EntityGroups.Player)[0];
-			var d = Utilities.Direction(facingAngle);
+			var d = Utilities.Direction(facing);
 
 			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(d.x, 0, d.y), Color.Cyan);
-			Scene.Canvas.GetElement<DebugView>().Add("Ladder", "Zone: " + GetZone(player.Position));
+			Scene.Canvas.GetElement<DebugView>().Add("Ladder", "Zone: " + ComputeProximity(player.Position));
 
 			base.Update(dt);
 		}

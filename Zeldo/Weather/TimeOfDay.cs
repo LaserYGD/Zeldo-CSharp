@@ -8,23 +8,29 @@ using GlmSharp;
 
 namespace Zeldo.Weather
 {
-	public class DayNightCycle : IDynamic, IDisposable
+	public class TimeOfDay : IDynamic, IDisposable
 	{
 		private Shader shader;
 
 		private int dayDuration;
+		private int[] horizon;
 
-		public DayNightCycle()
+		// TODO: Load texture data (then clear the texture).
+		public TimeOfDay()
 		{
 			// Day duration is listed in minutes in the property file.
 			dayDuration = Properties.GetInt("day.duration") * 60;
+
+			var texture = ContentCache.GetTexture("Horizon.png", true, false);
+			horizon = texture.Data;
 			
 			LightColor = Color.White;
 			LightDirection = Utilities.Normalize(new vec3(-1, -0.4f, 0));
 		}
 
-		public float TimeOfDay { get; private set; }
+		public float Time { get; private set; }
 
+		// TODO: Update light as time of day progresses (ambient light too).
 		public Color LightColor { get; private set; }
 		public vec3 LightDirection { get; private set; }
 
@@ -35,11 +41,11 @@ namespace Zeldo.Weather
 
 		public void Update(float dt)
 		{
-			TimeOfDay += dt;
+			Time += dt;
 
-			if (TimeOfDay >= dayDuration)
+			if (Time >= dayDuration)
 			{
-				TimeOfDay -= dayDuration;
+				Time -= dayDuration;
 			}
 		}
 	}

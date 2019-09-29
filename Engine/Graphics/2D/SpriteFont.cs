@@ -10,9 +10,9 @@ namespace Engine.Graphics._2D
 		// This covers common English characters, numbers, and punctuation.
 		private const int CharacterRange = 127;
 
-		public static SpriteFont Load(string name)
+		public static SpriteFont Load(string name, bool shouldCache)
 		{
-			Texture texture = ContentCache.GetTexture(name + "_0.png", false, "Fonts/");
+			Texture texture = ContentCache.GetTexture(name + "_0.png", false, shouldCache, "Fonts/");
 
 			string filename = name + ".fnt";
 

@@ -60,14 +60,10 @@ namespace Zeldo.Loops
 			system.UseTriangleMeshNormal = true;
 			system.CollisionDetected += OnCollision;
 
-			var body = new RigidBody(TriangleMeshLoader.Load("Physics/Triangle_Physics.obj"));
-			body.IsStatic = true;
-
 			// TODO: Should damping factors be left in their default states? (they were changed while adding kinematic bodies)
 			world = new World(system);
 			world.Gravity = new JVector(0, Gravity, 0);
 			world.SetDampingFactors(1, 1);
-			world.AddBody(body);
 
 			space = new Space();
 			scene = new Scene
@@ -86,7 +82,7 @@ namespace Zeldo.Loops
 			var debug = new DebugView();
 			debug.Anchor = Alignments.Left | Alignments.Top;
 			debug.Offset = new ivec2(10);
-			//debug.IsVisible = false;
+			debug.IsVisible = false;
 
 			canvas.Clear();
 			canvas.Load("Hud.json");
@@ -99,23 +95,21 @@ namespace Zeldo.Loops
 
 			// TODO: Set player position from a save slot.
 			Player player = new Player(settings);
-			player.Position = new vec3(2, 3, -1);
 			player.Equip(new Sword());
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 			player.UnlockSkill(PlayerSkills.DoubleJump);
 			player.UnlockSkill(PlayerSkills.Ascend);
 
-			// Combat skills
+			// Combat skills.
 			player.UnlockSkill(PlayerSkills.Block);
 			player.UnlockSkill(PlayerSkills.Parry);
 
-			var ladder = new Ladder();
-			ladder.Position = new vec3(10, 8.5f, -2);
-
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
-			scene.Add(ladder);
+			
+			var fragment = scene.LoadFragment("Demo.json");
+			player.Position = fragment.Origin + fragment.Spawn;
 
 			camera.Attach(new FollowController(player, settings));
 
@@ -127,7 +121,6 @@ namespace Zeldo.Loops
 			// TODO: Set light color and direction based on time of day and weather.
 			var renderer = scene.Renderer;
 			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.6f, -2f));
-			renderer.Add(new Model("Triangle.obj"));
 			renderer.Add(sprite);
 
 			renderTargetUsers3D.Add(renderer);

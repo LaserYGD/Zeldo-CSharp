@@ -300,6 +300,12 @@ namespace Zeldo.Entities
 			// Jumps are decremented regardless of single vs. double jump.
 			jumpsRemaining--;
 
+			// The player can jump off ladders.
+			if (IsOnLadder)
+			{
+				ladderController.Ladder = null;
+			}
+
 			if (!skillsUnlocked[DoubleJumpIndex] || jumpsRemaining == TargetJumps - 1)
 			{
 				SingleJump();
@@ -314,18 +320,28 @@ namespace Zeldo.Entities
 
 		private void SingleJump()
 		{
-			onGround = false;
-			skillsEnabled[JumpIndex] = false;
-
 			// TODO: Set velocity accordingly when jumping from different states (like climbing a ladder).
 			// On jump, the controlling body inherits surface velocity.
 			controllingBody.LinearVelocity = new JVector(SurfaceVelocity.x, playerData.JumpSpeed, SurfaceVelocity.z);
 			controllingBody.AffectedByGravity = true;
 
 			var v = controllingBody.LinearVelocity;
-			v.X = SurfaceVelocity.x;
-			v.Z = SurfaceVelocity.z;
+			v.Y = playerData.JumpSpeed;
+
+			// This single jump function can be triggered from multiple scenarios (including normal jumps off the
+			// ground, jumping off ladders and ropes, or jumping from an ascend).
+			if (onGround)
+			{
+				v.X = SurfaceVelocity.x;
+				v.Z = SurfaceVelocity.z;
+			}
+			else
+			{
+			}
+
 			controllingBody.LinearVelocity = v;
+			onGround = false;
+			skillsEnabled[JumpIndex] = false;
 
 			Swap(aerialController);
 		}
@@ -462,7 +478,7 @@ namespace Zeldo.Entities
 		public void Mount(Ladder ladder)
 		{
 			// TODO: Whip around as appropriate.
-			LadderZones zone = ladder.GetZone(position);
+			Proximities proximity = ladder.ComputeProximity(position);
 
 			ladderController.OnMount(ladder, this);
 			Swap(ladderController);

@@ -40,14 +40,17 @@ namespace Zeldo.Entities
 
 		public override void Initialize(Scene scene, JToken data)
 		{
-			Debug.Assert(data["Item"] != null, "Missing item ID.");
-			Debug.Assert(data["Model"] != null, "Missing model.");
+			var jItem = data["Item"];
+			var jModel = data["Model"];
+			
+			Debug.Assert(jItem != null, "Missing item ID.");
+			Debug.Assert(jModel != null, "Missing model.");
 
-			itemId = data["Item"].Value<int>();
+			itemId = jItem.Value<int>();
 
 			// Treasure chests contain two meshes (the base container and the lid).
-			var model = CreateModel(scene, data["Model"].Value<string>());
-			var bounds = model.Mesh.Bounds;
+			//var model = CreateModel(scene, jModel.Value<string>());
+			//var bounds = model.Mesh.Bounds;
 
 			/*
 			float interactionRadius = Properties.GetFloat("treasure.chest.interaction.radius");

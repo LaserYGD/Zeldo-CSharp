@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
@@ -177,6 +178,26 @@ namespace Engine.Utility
 			return slope;
 		}
 
+		public static Proximities ComputeProximity(vec3 origin, vec3 p, float facing, float sideSlice)
+		{
+			float angle = Angle(origin.swizzle.xz, p.swizzle.xz);
+			float delta = Math.Abs(facing - angle);
+
+			if (delta > Constants.Pi)
+			{
+				delta = Constants.TwoPi - delta;
+			}
+
+			delta = Constants.PiOverTwo - delta;
+
+			if (Math.Abs(delta) < sideSlice / 2)
+			{
+				return Proximities.Side;
+			}
+
+			return delta > 0 ? Proximities.Back : Proximities.Front;
+		}
+
 		public static vec2 Direction(float angle)
 		{
 			float x = (float)Math.Cos(angle);
@@ -213,6 +234,8 @@ namespace Engine.Utility
 		{
 			// The assumed format is "X|Y|Z".
 			string[] tokens = value.Split('|');
+
+			Debug.Assert(tokens.Length == 3, "Wrong vector format (values should be pipe-separated).");
 
 			float x = float.Parse(tokens[0]);
 			float y = float.Parse(tokens[1]);

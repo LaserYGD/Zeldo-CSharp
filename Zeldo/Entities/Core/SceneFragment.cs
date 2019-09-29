@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
-using Engine;
 using Engine.Core._3D;
-using Engine.Graphics._3D;
+using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Dynamics;
 using Newtonsoft.Json.Linq;
+using Zeldo.Physics;
 
 namespace Zeldo.Entities.Core
 {
@@ -15,27 +15,45 @@ namespace Zeldo.Entities.Core
 		public static SceneFragment Load(string filename, Scene scene)
 		{
 			var json = JsonUtilities.Load("Fragments/" + filename);
-			var entities = LoadEntities(json, scene);
-			var staticTokens = (JArray)json["Static"];
+			var jStatic = json["Static"];
 
-			// All fragments are required to have at least one static mesh.
-			Debug.Assert(staticTokens != null && staticTokens.Count > 0, $"Fragment '{filename}' needs at least one static mesh.");
+			// All fragments are required to specify a static mesh.
+			Debug.Assert(jStatic != null, $"Fragment {filename} missing static block.");
 
-			Mesh[] staticMeshes = new Mesh[staticTokens.Count];
+			var jMap = jStatic["Map"];
+			var jPhysics = jStatic["Physics"];
+			var jOrigin = json["Origin"];
+			var jSpawn = json["Spawn"];
 
-			for (int i = 0; i < staticTokens.Count; i++)
-			{
-				staticMeshes[i] = ContentCache.GetMesh(staticTokens[i].Value<string>());
-			}
+			Debug.Assert(jMap != null, $"Fragment {filename} missing static map.");
+			Debug.Assert(jPhysics != null, $"Fragment {filename} missing static physics.");
+			Debug.Assert(jOrigin != null, $"Fragment {filename} missing origin.");
+			Debug.Assert(jSpawn != null, $"Fragment {filename} missing player spawn point.");
 
-			return null;
-			//return new SceneFragment(entities, staticMeshes);
+			var origin = Utilities.ParseVec3(jOrigin.Value<string>());
+			var model = new Model(jMap.Value<string>());
+			model.Position = origin;
+
+			var shape = TriangleMeshLoader.Load(jPhysics.Value<string>());
+			var body = new RigidBody(shape);
+			body.Position = origin.ToJVector();
+			body.IsStatic = true;
+
+			var fragment = new SceneFragment(filename);
+			fragment.Entities = LoadEntities(json, scene, origin);
+			fragment.MapModel = model;
+			fragment.MapBody = body;
+			fragment.Origin = origin;
+			fragment.Spawn = Utilities.ParseVec3(jSpawn.Value<string>());
+
+			return fragment;
 		}
 
-		private static Entity[] LoadEntities(JObject json, Scene scene)
+		private static Entity[] LoadEntities(JObject json, Scene scene, vec3 origin)
 		{
 			JArray array = (JArray)json["Entities"];
 
+			// It's valid for a scene to contain no entities (although unlikely in the finished game).
 			if (array == null)
 			{
 				return null;
@@ -46,51 +64,43 @@ namespace Zeldo.Entities.Core
 			for (int i = 0; i < array.Count; i++)
 			{
 				var block = array[i];
+				var jType = block["Type"];
+				var jPosition = block["Position"];
 
-				string type = block["Type"].Value<string>();
-				string position = block["Position"].Value<string>();
+				Debug.Assert(jType != null, "Missing entity type.");
+				Debug.Assert(jPosition != null, "Missing entity position.");
 
-				Debug.Assert(type != null, "Entity in fragment file missing type.");
-				Debug.Assert(position != null, "Entity in fragment file missing position.");
-				Debug.Assert(position.Split('|').Length == 3, "Entity position in wrong format (should be pipe-separated).");
+				string type = jType.Value<string>();
+				string position = jPosition.Value<string>();
 
-				Entity entity = (Entity)Activator.CreateInstance(Type.GetType("Zeldo.Entities." + type));
+				var t = Type.GetType("Zeldo.Entities." + type);
+
+				Debug.Assert(t != null, $"Missing entity type Zeldo.Entities.{type}.");
+
+				Entity entity = (Entity)Activator.CreateInstance(t);
 				entity.Initialize(scene, block);
-				entity.Position = Utilities.ParseVec3(position);
+				entity.Position = origin + Utilities.ParseVec3(position);
 				entities[i] = entity;
 			}
 
 			return entities;
 		}
 
-		private static Model[] LoadStaticModels(JObject json)
+		private SceneFragment(string filename)
 		{
-			return null;
+			Filename = filename;
 		}
 
-		private SceneFragment(Entity[] entities, Model[] staticMeshes)
-		{
-			/*
-			// Each physics mesh is located in the "Physics" folder within the parent folder, and uses "_Physics" in
-			// the filename.
-			string filename = map.StripPath(out string path).StripExtension();
-			string physicsFile = $"{path}/Physics/{filename}_Physics.obj";
+		// This is used for asserting that the fragment aren't loaded multiple times.
+		public string Filename { get; }
 
-			Debug.Assert(File.Exists("Content/Meshes/" + ));
+		public Entity[] Entities { get; private set; }
+		public Model MapModel { get; private set; }
+		public RigidBody MapBody { get; private set; }
 
-			MapModel = new Model(map);
-			MapBody = new RigidBody(TriangleMeshLoader.Load(physicsFile));
-			MapBody.IsStatic = true;
-			Entities = entities;
-			*/
-		}
-
-		public Entity[] Entities { get; }
-		public Model MapModel { get; }
-		public RigidBody MapBody { get; }
-
-		// This is the default player spawn within the fragment. Only applicable if loading into that fragment directly
-		public vec3 Origin { get; }
-		public vec3 Spawn { get; }
+		// This is the default player spawn within the fragment. Only applicable if loading into that fragment
+		// directly (used frequently during development).
+		public vec3 Spawn { get; private set; }
+		public vec3 Origin { get; private set; }
 	}
 }

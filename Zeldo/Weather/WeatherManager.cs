@@ -7,15 +7,15 @@ namespace Zeldo.Weather
 	public class WeatherManager : IDynamic
 	{
 		private Shader shader;
-		private DayNightCycle dayNightCycle;
+		private TimeOfDay dayNightCycle;
 		private WeatherFormation activeFormation;
 
 		public WeatherManager()
 		{
-			dayNightCycle = new DayNightCycle();
+			dayNightCycle = new TimeOfDay();
 		}
 
-		public float TimeOfDay => dayNightCycle.TimeOfDay;
+		public float TimeOfDay => dayNightCycle.Time;
 
 		public void Update(float dt)
 		{

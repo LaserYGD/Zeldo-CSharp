@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Engine;
 using Engine.Graphics._3D;
@@ -58,23 +59,26 @@ namespace Zeldo.Entities.Core
 		// implement custom features for different kinds of locations.
 		public Dictionary<string, object> Tags { get; }
 
-		public void LoadFragment(string filename)
+		public SceneFragment LoadFragment(string filename)
 		{
+			Debug.Assert(!fragments.Exists(f => f.Filename == filename), $"Attempting to load duplicate fragment {filename}.");
+
 			var fragment = SceneFragment.Load(filename, this);
 			fragments.Add(fragment);
-			//renderer.Add(fragment.MapModel);
-			//World.AddBody(fragment.MapBody);
+			renderer.Add(fragment.MapModel);
+			World.AddBody(fragment.MapBody);
 
-			// This means that the fragment contains no entities (unlikely in the finished product, but possible during
-			// development).
+			// It's valid (though unlikely) for a fragment to contain no entities.
 			if (fragment.Entities != null)
 			{
 				foreach (var entity in fragment.Entities)
 				{
-					// Entities are already initialized by this point (which is why the main Add function isn't used).
+					// Entities are initialized by the fragment (which is why the regular Add function isn't used).
 					entities[(int)entity.Group].Add(entity);
 				}
 			}
+
+			return fragment;
 		}
 
 		public void UnloadFragment()

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Zeldo.Entities.Grabbable
 {
+	// TODO: Should ladders be considered grabbable?
 	public enum GrabTypes
 	{
-		Ladder,
 		Netting
 	}
 }

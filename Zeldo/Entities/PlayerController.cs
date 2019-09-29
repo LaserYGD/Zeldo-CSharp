@@ -157,7 +157,7 @@ namespace Zeldo.Entities
 			{
 				flatDirection.y = forward ? 1 : -1;
 			}
-
+			
 			if (left ^ right)
 			{
 				flatDirection.x = left ? 1 : -1;

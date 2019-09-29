@@ -17,7 +17,7 @@ namespace Zeldo.Control
 		{
 		}
 
-		public Ladder Ladder { get; private set; }
+		public Ladder Ladder { get; set; }
 
 		// TODO: Add sliding down ladders (similar to Dark Souls).
 		public float ClimbAcceleration { get; set; }

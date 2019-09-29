@@ -90,9 +90,6 @@
     <None Include="Content\Json\Fragments\Demo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Json\Fragments\Triangle.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Content\Json\Fragments\Windmill\Windmill.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -123,6 +120,9 @@
     <None Include="Content\Meshes\Cube.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Meshes\Demo_Physics.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Meshes\Door.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -130,9 +130,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Physics\Demo_Physics.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\Meshes\Physics\Triangle_Physics.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Player.obj">
@@ -156,9 +153,6 @@
     </None>
     <None Include="Content\Meshes\Tree.dae">
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\Meshes\Triangle.dae">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Meshes\Wall.obj" />
@@ -260,11 +254,10 @@
     <Compile Include="Entities\Enemies\SunflowerHelper.cs" />
     <Compile Include="Entities\Enemies\SunflowerTendril.cs" />
     <Compile Include="Entities\Grabbable\GrabTypes.cs" />
-    <Compile Include="Entities\Grabbable\Ladder.cs" />
+    <Compile Include="Entities\Ladder.cs" />
     <Compile Include="Entities\Grabbable\Netting.cs" />
     <Compile Include="Entities\Hazards\PoisonBush.cs" />
     <Compile Include="Entities\JesterWall.cs" />
-    <Compile Include="Entities\Grabbable\LadderZones.cs" />
     <Compile Include="Entities\Mechanisms\Lever.cs" />
     <Compile Include="Entities\Objects\Book.cs" />
     <Compile Include="Entities\Objects\Cannon.cs" />
@@ -358,7 +351,7 @@
     <Compile Include="UI\StatisticsDisplay.cs" />
     <Compile Include="UI\Subtitles.cs" />
     <Compile Include="View\FollowController.cs" />
-    <Compile Include="Weather\DayNightCycle.cs" />
+    <Compile Include="Weather\TimeOfDay.cs" />
     <Compile Include="Weather\Rain.cs" />
     <Compile Include="Weather\Snow.cs" />
     <Compile Include="Weather\Thunderstorm.cs" />
