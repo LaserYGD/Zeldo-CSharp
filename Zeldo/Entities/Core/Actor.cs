@@ -20,6 +20,8 @@ namespace Zeldo.Entities.Core
 		private float halfHeight;
 
 		protected bool onGround;
+
+		// TODO: This may not be needed (since wall vectors are summed up and resolved in Update anyway).
 		protected bool isSurfaceControlOverridden;
 
 		// TODO: Once surface movement is fully transferred to this class (from Player), this variable could probably be public.
@@ -43,6 +45,7 @@ namespace Zeldo.Entities.Core
 			{
 				// Even while grounded, actors can be affected by the regular physics step (for example, running into
 				// walls).
+				// TODO: This world active check might not be needed (if using the aggregate method to resolve grounded wall collisions).
 				if (onGround && !Scene.World.IsStepActive)
 				{
 					// This assumes that all actors will have a valid controlling body created.
@@ -152,6 +155,8 @@ namespace Zeldo.Entities.Core
 			if (!onGround || isSurfaceControlOverridden)
 			{
 				Position = controllingBody.Position.ToVec3();
+
+				// TODO: If actor bodies are always fixed upright, is this needed?
 				Orientation = controllingBody.Orientation.ToQuat();
 				isSurfaceControlOverridden = false;
 			}
