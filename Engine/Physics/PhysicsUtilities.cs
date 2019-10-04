@@ -15,7 +15,7 @@ namespace Engine.Physics
 
 		public static RaycastResults Raycast(World world, vec3 start, vec3 direction, float range)
 		{
-			return RaycastInternal(world, null, start, direction * range, direction);
+			return RaycastInternal(world, null, start, direction * range);
 		}
 
 		public static RaycastResults Raycast(World world, RigidBody body, vec3 start, vec3 end)
@@ -25,11 +25,10 @@ namespace Engine.Physics
 
 		public static RaycastResults Raycast(World world, RigidBody body, vec3 start, vec3 direction, float range)
 		{
-			return RaycastInternal(world, body, start, direction * range, direction);
+			return RaycastInternal(world, body, start, direction * range);
 		}
 
-		private static RaycastResults RaycastInternal(World world, RigidBody body, vec3 start, vec3 ray,
-			vec3? direction = null)
+		private static RaycastResults RaycastInternal(World world, RigidBody body, vec3 start, vec3 ray)
 		{
 			JVector jStart = start.ToJVector();
 			
@@ -65,9 +64,6 @@ namespace Engine.Physics
 					tVectors[i] = triangle[i].ToVec3();
 				}
 			}
-
-			// Using a nullable direction argument avoids a square root call when the direction is already known.
-			//vec3 d = direction ?? Utilities.Normalize(ray);
 
 			return new RaycastResults(body, start + jDirection.ToVec3() * fraction,
 				Utilities.Normalize(normal.ToVec3()), tVectors);

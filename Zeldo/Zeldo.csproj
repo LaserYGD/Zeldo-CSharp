@@ -294,8 +294,9 @@
     <Compile Include="JumpTester2.cs" />
     <Compile Include="Physics\SurfaceMaterials.cs" />
     <Compile Include="Physics\SurfaceTriangle.cs" />
+    <Compile Include="Physics\SurfaceTypes.cs" />
     <Compile Include="Physics\TriangleMeshLoader.cs" />
-    <Compile Include="Physics\Windings.cs" />
+    <Compile Include="Physics\WindingTypes.cs" />
     <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
     <Compile Include="Interfaces\ITargetable.cs" />
@@ -383,6 +384,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Fonts\Leviathon_0.png" />
+    <None Include="Content\Properties\Physics.properties">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Textures\Credits\Jitter.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

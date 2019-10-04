@@ -6,14 +6,10 @@ using System.Threading.Tasks;
 
 namespace Zeldo.Physics
 {
-	public enum SurfaceMaterials
+	public enum SurfaceTypes
 	{
-		Brick,
-		Cobblestone,
-		Dirt,
-		Grass,
-		Stone,
-		Tile,
-		Unassigned
+		Ceiling,
+		Floor,
+		Wall
 	}
 }

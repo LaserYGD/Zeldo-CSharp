@@ -66,11 +66,9 @@ namespace Zeldo.Entities
 
 		public override void Update(float dt)
 		{
-			var player = Scene.GetEntities<Player>(EntityGroups.Player)[0];
 			var d = Utilities.Direction(facing);
 
 			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(d.x, 0, d.y), Color.Cyan);
-			Scene.Canvas.GetElement<DebugView>().Add("Ladder", "Zone: " + ComputeProximity(player.Position));
 
 			base.Update(dt);
 		}

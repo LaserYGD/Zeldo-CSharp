@@ -63,24 +63,6 @@ namespace Zeldo.UI
 			return list;
 		}
 
-		public override void Draw(SpriteBatch sb)
-		{
-			// This means that no debug lines were added at all (to any group).
-			if (groupOrder.Count == 0)
-			{
-				return;
-			}
-
-			RefreshGroups();
-
-			// Using group order ensures that group blocks are displayed in the order they were added.
-			foreach (string group in groupOrder)
-			{
-				textGroups[group].ForEach(t => t.Draw(sb));
-				rawGroups[group].Clear();
-			}
-		}
-
 		private void RefreshGroups()
 		{
 			// The X position of each block is updated dynamically each frame based on the strings added to that group.
@@ -94,25 +76,24 @@ namespace Zeldo.UI
 				var textList = textGroups[group];
 
 				int rawCount = rawList.Count;
-				int entryCount = textList.Count - 1;
 
-				// Raw entries for each group are cleared each frame, which means that extra text objects need to be
-				// removed as well (with the exception of the group name, which isn't removed). The goal here is to
-				// make the debug view feel more responsive and immediate to changes in the game.
-				if (rawCount == 0 && entryCount > 0)
-				{
-					for (int j = entryCount; j >= 0; j--)
-					{
-						textList[j].Dispose();
-						textList.RemoveAt(j);
-					}
-				}
+				// The first text object is the group label.
+				int entryCount = textList.Count - 1;
 
 				// If there are no entries for the current group, nothing else needs to be done (past recording the
 				// text width of the group name).
 				if (rawCount == 0)
 				{
 					nextX += font.Measure(group).x;
+
+					if (entryCount > 0)
+					{
+						for (int j = entryCount; j >= 1; j--)
+						{
+							textList[j].Dispose();
+							textList.RemoveAt(j);
+						}
+					}
 
 					continue;
 				}
@@ -180,6 +161,24 @@ namespace Zeldo.UI
 				{
 					nextX += rawList.Max(s => font.Measure(s).x) + blockSpacing;
 				}
+			}
+		}
+
+		public override void Draw(SpriteBatch sb)
+		{
+			// This means that no debug lines were added at all (to any group).
+			if (groupOrder.Count == 0)
+			{
+				return;
+			}
+
+			RefreshGroups();
+
+			// Using group order ensures that group blocks are displayed in the order they were added.
+			foreach (string group in groupOrder)
+			{
+				textGroups[group].ForEach(t => t.Draw(sb));
+				rawGroups[group].Clear();
 			}
 		}
 	}

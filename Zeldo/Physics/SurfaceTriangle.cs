@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Engine;
 using Engine.Physics;
 using Engine.Utility;
@@ -10,7 +9,40 @@ namespace Zeldo.Physics
 {
 	public class SurfaceTriangle
 	{
-		public static vec3 Axis { get; private set; }
+		private static readonly float WallThreshold;
+
+		static SurfaceTriangle()
+		{
+			WallThreshold = Properties.GetFloat("wall.threshold");
+		}
+
+		public static SurfaceTypes ComputeSurfaceType(JVector[] triangle, WindingTypes winding)
+		{
+			var p0 = triangle[0];
+			var p1 = triangle[1];
+			var p2 = triangle[2];
+			var v0 = JVector.Subtract(p1, p0);
+			var v1 = JVector.Subtract(p2, p0);
+
+			// This calculation is the same as the one used in a constructor below, but due to using JVector vs. vec3,
+			// it's easier to just duplicate the code.
+			var n = JVector.Normalize(JVector.Cross(v0, v1) * (winding == WindingTypes.Clockwise ? 1 : -1)).ToVec3();
+
+			return ComputeSurfaceType(n, out _);
+		}
+
+		private static SurfaceTypes ComputeSurfaceType(vec3 normal, out float theta)
+		{
+			// This is the tilt angle from a perfectly flat floor.
+			theta = normal == vec3.UnitY
+				? 0
+				: Constants.PiOverTwo - Utilities.Angle(new vec3(normal.x, 0, normal.z), normal);
+
+			// The wall threshold is defined as an angle range from a vertical wall (theta 90 degrees).
+			return Math.Abs(Constants.PiOverTwo - theta) <= WallThreshold
+				? SurfaceTypes.Wall
+				: (normal.y < 0 ? SurfaceTypes.Ceiling : SurfaceTypes.Floor);
+		}
 
 		// These are used to project points onto the triangle (primarily used to "stick" actors onto a surface while
 		// moving).
@@ -48,7 +80,6 @@ namespace Zeldo.Physics
 
 			var angle = Utilities.Angle(Normal, vec3.UnitY);
 			var axis = isNormalUnitY ? vec3.UnitY : Utilities.Cross(vec3.UnitY, Normal);
-			Axis = axis;
 
 			projectionQuat = quat.FromAxisAngle(angle, axis);
 
@@ -66,10 +97,7 @@ namespace Zeldo.Physics
 			// See https://stackoverflow.com/a/14382692/7281613.
 			doubleArea = -fp1.y * fp2.x + fp0.y * (-fp1.x + fp2.x) + fp0.x * (fp1.y - fp2.y) + fp1.x * fp2.y;
 
-			float theta = isNormalUnitY
-				? 0
-				: Constants.PiOverTwo - Utilities.Angle(new vec3(Normal.x, 0, Normal.z), Normal);
-
+			SurfaceType = ComputeSurfaceType(normal, out float theta);
 			Slope = (float)Math.Sin(theta);
 
 			// Downward-facing triangles are given a negative slope.
@@ -81,6 +109,8 @@ namespace Zeldo.Physics
 
 		public vec3[] Points { get; }
 		public vec3 Normal { get; }
+
+		public SurfaceTypes SurfaceType { get; }
 
 		public int Material { get; }
 

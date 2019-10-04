@@ -8,6 +8,8 @@ using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Control;
+using Zeldo.Physics;
+using Zeldo.UI;
 
 namespace Zeldo.Entities.Core
 {
@@ -16,20 +18,21 @@ namespace Zeldo.Entities.Core
 	{
 		private AbstractController activeController;
 
-		private bool firstPositionSet;
+		private bool isOldPositionUnset;
 		private float halfHeight;
 
-		protected bool onGround;
-
-		// TODO: This may not be needed (since wall vectors are summed up and resolved in Update anyway).
+		// TODO: Is this needed?
 		protected bool isSurfaceControlOverridden;
 
-		// TODO: Once surface movement is fully transferred to this class (from Player), this variable could probably be public.
 		protected vec3 oldPosition;
+		protected SurfaceController surfaceController;
 
 		protected Actor(EntityGroups group) : base(group)
 		{
-			firstPositionSet = true;
+			isOldPositionUnset = true;
+
+			// TODO: Do all actors need a surface controller created, or only actors that move?
+			surfaceController = new SurfaceController(this);
 		}
 		
 		public float Height
@@ -46,7 +49,7 @@ namespace Zeldo.Entities.Core
 				// Even while grounded, actors can be affected by the regular physics step (for example, running into
 				// walls).
 				// TODO: This world active check might not be needed (if using the aggregate method to resolve grounded wall collisions).
-				if (onGround && !Scene.World.IsStepActive)
+				if (OnSurface && !Scene.World.IsStepActive)
 				{
 					// This assumes that all actors will have a valid controlling body created.
 					controllingBody.LinearVelocity = (value - controllingBody.Position.ToVec3()).ToJVector();
@@ -54,10 +57,10 @@ namespace Zeldo.Entities.Core
 
 				// Without this check, the first airborne raytrace (to handle collisions with surfaces) would be way
 				// too large (unless the actor happens to spawn at the origin).
-				if (firstPositionSet)
+				if (isOldPositionUnset)
 				{
 					oldPosition = value;
-					firstPositionSet = false;
+					isOldPositionUnset = false;
 				}
 				else
 				{
@@ -74,42 +77,49 @@ namespace Zeldo.Entities.Core
 			set => Position = value + new vec3(0, halfHeight, 0);
 		}
 
-		// A separate velocity is used for controlled movement along a surface (such as the ground). The controlling
+		// A separate velocity is used for controlled movement along surfaces (such as the ground). The controlling
 		// body's velocity can't be easily reused because it'd constantly be affected by the physics engine.
 		public vec3 SurfaceVelocity { get; set; }
 
-		// This is used by external controllers.
-		public bool OnGround => onGround;
+		// This used to be "onGround", but was updated to account for any kind of surface (e.g. slimes that can crawl
+		// on walls or ceilings).
+		public bool OnSurface => surfaceController.Surface != null;
 
 		protected RigidBody CreateKinematicBody(Scene scene, Shape shape)
 		{
 			var body = CreateBody(scene, shape, RigidBodyTypes.Kinematic);
-			body.ShouldIgnore = ShouldIgnore;
+			body.ShouldCollideWith = ShouldCollideWith;
 
 			return body;
 		}
 
-		// TODO: Consider swapping this custom callback to be positive (i.e. return true if the collision *should* occur).
-		protected virtual bool ShouldIgnore(RigidBody other, JVector[] triangle)
+		protected virtual bool ShouldCollideWith(RigidBody body, JVector[] triangle)
 		{
-			bool isMesh = other.Shape is TriangleMeshShape;
-
-			if (!isMesh)
+			// Triangles are only sent into the callback for triangle mesh and terrain collisions. For now, collisions
+			// are only ignored to accommodate surface movement (which also means that actors without a surface
+			// controller created can return early).
+			if (triangle == null || surfaceController == null)
 			{
-				// All non-mesh collisions should occur.
+				return true;
+			}
+
+			var onSurface = OnSurface;
+			var surfaceType = SurfaceTriangle.ComputeSurfaceType(triangle, WindingTypes.CounterClockwise);
+
+			bool isPotentialLanding = !onSurface && surfaceType == SurfaceTypes.Floor;
+
+			// TODO: This will cause glancing downward collisions to be ignored. Should they be?
+			// Since actors use capsules, potential ground collisions are ignored from the air. Instead, raycasts are
+			// used to determine when the exact bottom-center of the capsule crosses a triangle.
+			if (isPotentialLanding)
+			{
 				return false;
 			}
 
-			var slope = Utilities.ComputeSlope(triangle);
-
-			if (onGround)
-			{
-				// While already grounded, only wall collisions are registered.
-				return Math.Abs(slope) < 0.5f;
-			}
-
-			// TODO: Use a property or constant instead.
-			return slope < 0.5f;
+			// While on a surface, only collisions with surfaces of *different* types are processed. For example,
+			// while grounded, only wall and ceiling collisions should occur (the surface controller handles movement
+			// among surfaces of the same type).
+			return onSurface && surfaceType != surfaceController.Surface.SurfaceType;
 		}
 
 		protected void Swap(AbstractController controller, bool shouldComputeImmediately = false)
@@ -124,6 +134,43 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
+		protected virtual void OnLanding(vec3 p, SurfaceTriangle surface)
+		{
+			// Note that by setting ground position *before* the onSurface flag, the body's velocity isn't wastefully
+			// set twice (since it's forcibly set to zero below).
+			surface.Project(p, out vec3 result);
+
+			// Note: it's important to set the surface controller's surface before updating position (to ensure that
+			// OnSurface returns true).
+			surfaceController.Surface = surface;
+			GroundPosition = result;
+
+			// TODO: Account for speed differences when landing on slopes (since maximum flat speed will be a bit lower). Maybe quick deceleration?
+			// The surface controller works off surface velocity, so the body's existing aerial velocity must be
+			// transferred.
+			var bodyVelocity = controllingBody.LinearVelocity;
+			var v = SurfaceVelocity;
+			v.x = bodyVelocity.X;
+			v.z = bodyVelocity.Z;
+			SurfaceVelocity = v;
+
+			// TODO: Setting body position directly could cause rare collision misses on dynamic objects. Should be tested.
+			controllingBody.Position = position.ToJVector();
+			controllingBody.LinearVelocity = JVector.Zero;
+			controllingBody.AffectedByGravity = false;
+
+			Swap(surfaceController);
+			OnSurfaceTransition(surface);
+		}
+
+		public virtual void OnSurfaceTransition(SurfaceTriangle surface)
+		{
+		}
+
+		public virtual void BecomeAirborneFromLedge()
+		{
+		}
+
 		public void PlayAnimation(string animation)
 		{
 		}
@@ -135,24 +182,18 @@ namespace Zeldo.Entities.Core
 			selfUpdate = true;
 			activeController?.Update(dt);
 
-			// It's assumed that all actors capable of going airborne have a controlling body set.
-			if (!onGround)
+			// This handles actors landing from being airborne (using a downward raytrace from the bottom of the
+			// capsule).
+			if (!OnSurface && CheckGroundCollision(out var results))
 			{
-				if (CheckGroundCollision(out var results))
-				{
-					OnCollision(results.Position, results.Normal, results.Triangle, 0);
-				}
-				else
-				{
-					//Position = controllingBody.Position.ToVec3();
-					//Orientation = controllingBody.Orientation.ToQuat();
-				}
+				// TODO: Retrieve material from the surface as well.
+				OnLanding(results.Position, new SurfaceTriangle(results.Triangle, results.Normal, 0));
 			}
 
 			// Even while on a surface (i.e. using manual control), the physics engine can override movement when
 			// certain collisions occur (e.g. hitting a wall). Using the override flag, then, helps keep the mesh and
 			// rigid body in sync.
-			if (!onGround || isSurfaceControlOverridden)
+			if (!OnSurface || isSurfaceControlOverridden)
 			{
 				Position = controllingBody.Position.ToVec3();
 
@@ -171,6 +212,7 @@ namespace Zeldo.Entities.Core
 			var v = controllingBody.LinearVelocity;
 
 			// TODO: If moving platforms are added, a relative velocity check will be needed.
+			// TODO: Is this check needed anymore?
 			// This prevents false collisions just after jumping.
 			if (v.Y > 0)
 			{

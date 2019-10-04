@@ -45,7 +45,6 @@ namespace Zeldo.Entities
 
 		private AerialController aerialController;
 		private LadderController ladderController;
-		private SurfaceController surfaceController;
 
 		private IInteractive interactionTarget;
 		private IAscendable ascensionTarget;
@@ -171,19 +170,21 @@ namespace Zeldo.Entities
 		// TODO: Move some of this code to the base Actor class as well.
 		public override void OnCollision(Entity entity, vec3 point, vec3 normal, float penetration)
 		{
+			var onSurface = OnSurface;
+
 			// TODO: Handle vaulting when near the top of a body.
-			// The player can attach to ladders by jumping towards them (but only from one side).
-			if (!onGround && entity is Ladder ladder && IsFacing(ladder))
+			// The player can attach to ladders by jumping towards them (from any side).
+			if (!onSurface && entity is Ladder ladder && IsFacing(ladder))
 			{
 				Mount(ladder);
 
 				return;
 			}
 
-			if (onGround && entity.IsStatic)
+			if (onSurface && entity.IsStatic)
 			{
 				// TODO: Process other kinds of collisions against static entities (steps, vaults, wall presses, etc.).
-				OnGroundedWallCollision(normal, penetration);
+				OnGroundedSurfaceCollision(normal, penetration);
 			}
 		}
 
@@ -192,91 +193,53 @@ namespace Zeldo.Entities
 		{
 			var surface = new SurfaceTriangle(triangle, normal, 0);
 
-			// This situation can only occur if the triangle represents a wall or ceiling (since triangles flat enough
-			// to be considered floors are ignored while an actor is grounded).
-			if (onGround)
+			// This situation can only occur if the triangle represents a different kind of surface (e.g. while
+			// running on the ground, you might hit a wall).
+			if (OnSurface)
 			{
-				bool isStep = p.y - GroundPosition.y <= playerData.StepThreshold;
-
-				// TODO: Should probably override ShouldIgnore instead (to negate the step collision entirely).
-				if (isStep)
+				// Wall-pressing is processed first (which, by definition, can only occur from floors to walls).
+				if (surface.SurfaceType == SurfaceTypes.Wall)
 				{
-					return;
+					// TODO: Should probably override ShouldCollideWith instead (to negate the step collision entirely).
+					bool isStep = p.y - GroundPosition.y <= playerData.StepThreshold;
+
+					if (isStep)
+					{
+						return;
+					}
+
+					// If the player hits a wall with a velocity close to perpendicular, the player stops and presses
+					// against the wall. Once in that state, the player will remain pressed until velocity moves outside
+					// a small angle threshold.
+					float angleN = Utilities.Angle(normal.swizzle.xz);
+					float angleV = Utilities.Angle(controllingBody.LinearVelocity.ToVec3().swizzle.xz);
+
+					// TODO: Verify that the wall isn't a vault target.
+					// TODO: Verify that the collision point is wide enough to press (i.e. not a glancing hit).
+					if (Utilities.Delta(angleN, angleV) <= playerData.WallPressThreshold)
+					{
+						PressAgainstWall();
+
+						return;
+					}
 				}
 
-				OnGroundedWallCollision(normal, penetration);
-
-				// If the player hits a wall with a velocity close to perpendicular, the player stops and presses
-				// against the wall. Once in that state, the player will remain pressed until velocity moves outside
-				// a small angle threshold.
-				float angleN = Utilities.Angle(normal.swizzle.xz);
-				float angleV = Utilities.Angle(controllingBody.LinearVelocity.ToVec3().swizzle.xz);
-
-				// TODO: Verify that the wall isn't a vault target.
-				// TODO: Verify that the collision point is wide enough to press (i.e. not a glancing hit).
-				if (Utilities.Delta(angleN, angleV) <= playerData.WallPressThreshold)
-				{
-					PressAgainstWall();
-				}
-
-				return;
-			}
-
-			// While the sliding threshold represents a lower bound (the shallowest slope on which the player will
-			// begin to slide), the wall thresholds are small and represent the maximum delta against a perfectly
-			// vertical wall where the surface still counts as a wall. The upper threshold allows wall jumps off
-			// surfaces that very slightly overhang, while the lower limit is a bit more generous and allows wall
-			// interaction with very steep, but still upward-facing triangles.
-			float slope = surface.Slope;
-
-			bool isUpward = normal.y > 0;
-
-			// The collision is against a wall.
-			if (slope == 1 || (isUpward && slope >= 1 - playerData.WallLowerThreshold) || (!isUpward &&
-				slope <= 1 - playerData.WallUpperThreshold))
-			{
-				return;
-			}
-
-			// The collision is a landing on a surface flat enough to run or slide.
-			if (isUpward)
-			{
-				OnLanding(p, surface);
+				// This applies to both walls and low-hanging ceilings.
+				OnGroundedSurfaceCollision(normal, penetration);
 			}
 		}
 
-		// Note that the position given is the ground position.
-		private void OnLanding(vec3 p, SurfaceTriangle surface)
+		protected override void OnLanding(vec3 p, SurfaceTriangle surface)
 		{
-			// Project onto the surface. Note that setting ground position *before* the onGround flag, the body's
-			// velocity isn't wastefully set twice (since it's forcibly set to zero below).
-			surface.Project(p, out vec3 result);
-			GroundPosition = result;
-			onGround = true;
-			
 			RefreshJumps();
 
-			// TODO: Account for speed differences when landing on slopes (since maximum flat speed will be a bit lower). Maybe quick deceleration?
-			// The surface controller updates the body's velocity, so that velocity needs to be transferred here first.
-			var bodyVelocity = controllingBody.LinearVelocity;
-			var v = SurfaceVelocity;
-			v.x = bodyVelocity.X;
-			v.z = bodyVelocity.Z;
-			SurfaceVelocity = v;
-
-			controller.OnLanding(surface);
-			controllingBody.AffectedByGravity = false;
-
-			// TODO: Setting body position directly could cause rare collision misses on dynamic objects. Should be tested.
-			controllingBody.Position = (result + new vec3(0, Height / 2, 0)).ToJVector();
-			controllingBody.LinearVelocity = JVector.Zero;
-
-			OnSurfaceTransition(surface);
-			Swap(null);
+			base.OnLanding(p, surface);
 		}
 
-		public void OnSurfaceTransition(SurfaceTriangle surface)
+		public override void OnSurfaceTransition(SurfaceTriangle surface)
 		{
+			// TODO: Re-enable sliding later (if sliding is actually kept in the game).
+			/*
 			// Moving to a surface flat enough for normal running.
 			if (surface.Slope < playerData.SlideThreshold)
 			{
@@ -287,10 +250,13 @@ namespace Zeldo.Entities
 
 			// Moving to a surface steep enough to cause sliding.
 			State = PlayerStates.Sliding;
+			*/
 		}
 
-		private void OnGroundedWallCollision(vec3 normal, float penetration)
+		// TODO: Does this need to be moved down to Actor?
+		private void OnGroundedSurfaceCollision(vec3 normal, float penetration)
 		{
+			// This helps ignore glancing collisions while sliding along another wall.
 			if (Utilities.Dot(SurfaceVelocity, normal) >= 0)
 			{
 				return;
@@ -299,15 +265,14 @@ namespace Zeldo.Entities
 			// Rather than resolve collisions using the wall normal, vectors are projected to resolve parallel to
 			// the current surface. This approach prevents weird tunneling into the floor for walls that aren't
 			// perfectly vertical.
-			var v = Utilities.ProjectOntoPlane(normal, controller.Surface.Normal);
+			var v = Utilities.ProjectOntoPlane(normal, surfaceController.Surface.Normal);
 			var angle = Utilities.Angle(normal, v);
 			var l = penetration / (float)Math.Cos(angle);
 			
+			// This step occurs before the scene is updated. 
 			Position += v * l;
 			SurfaceVelocity -= Utilities.Project(SurfaceVelocity, v);
 			isSurfaceControlOverridden = true;
-
-			//wallVectors.Add(v * l);
 		}
 
 		private void PressAgainstWall()
@@ -315,13 +280,15 @@ namespace Zeldo.Entities
 		}
 
 		// This is called when the player runs or walks off an edge (without jumping).
-		public void BecomeAirborneFromLedge()
+		public override void BecomeAirborneFromLedge()
 		{
-			onGround = false;
+			// TODO: Move some of this to the base class.
+			surfaceController.Surface = null;
 			controllingBody.LinearVelocity = SurfaceVelocity.ToJVector();
 			controllingBody.AffectedByGravity = true;
 			jumpsRemaining--;
 			skillsEnabled[JumpIndex] = false;
+			surfaceController.Surface = null;
 
 			Swap(aerialController);
 		}
@@ -361,17 +328,18 @@ namespace Zeldo.Entities
 
 			// This single jump function can be triggered from multiple scenarios (including normal jumps off the
 			// ground, jumping off ladders and ropes, or jumping from an ascend).
-			if (onGround)
+			if (OnSurface)
 			{
 				v.X = SurfaceVelocity.x;
 				v.Z = SurfaceVelocity.z;
 			}
+			// TODO: Process jumps from other scenarios (like ropes and ascend).
 			else
 			{
 			}
 
 			controllingBody.LinearVelocity = v;
-			onGround = false;
+			surfaceController.Surface = null;
 			skillsEnabled[JumpIndex] = false;
 
 			Swap(aerialController);
@@ -531,7 +499,10 @@ namespace Zeldo.Entities
 			switch (skill)
 			{
 				case PlayerSkills.Grab: return false;
-				case PlayerSkills.Jump: return onGround;
+
+				// TODO: Make sure this works if you're standing on an entity (rather than a mesh).
+				case PlayerSkills.Jump: return OnSurface &&
+					surfaceController.Surface.SurfaceType == SurfaceTypes.Floor;
 			}
 
 			return true;
@@ -572,7 +543,7 @@ namespace Zeldo.Entities
 				$"Surface velocity: {SurfaceVelocity.x:N2}, {SurfaceVelocity.y:N2}, {SurfaceVelocity.z:N2}",
 				$"Body velocity: {v.x:N2}, {v.y:N2}, {v.z:N2}",
 				$"Body gravity: {controllingBody.AffectedByGravity}",
-				$"On ground: {onGround}",
+				$"On surface: {OnSurface}",
 				$"Jump enabled: {skillsEnabled[JumpIndex]}",
 				$"DJ enabled: {skillsEnabled[DoubleJumpIndex]}",
 				$"Jump decelerating: {isJumpDecelerating}",

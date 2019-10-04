@@ -36,7 +36,6 @@ namespace Zeldo.Entities
 		private Player player;
 		private PlayerData playerData;
 		private PlayerControls controls;
-		private SurfaceTriangle surface;
 		private ControlSettings settings;
 
 		private SurfaceController surfaceController;
@@ -94,9 +93,6 @@ namespace Zeldo.Entities
 		public FollowController FollowController { get; set; }
 		public List<MessageHandle> MessageHandles { get; set; }
 
-		// TODO: This is temporary while testing grounded wall resolution code (the surface should be accessible from the surface controller instead).
-		public SurfaceTriangle Surface => surface;
-
 		public void Dispose()
 		{
 			MessageSystem.Unsubscribe(this);
@@ -110,19 +106,24 @@ namespace Zeldo.Entities
 
 		public void OnLanding(SurfaceTriangle surface)
 		{
-			this.surface = surface;
-
 			jumpBindUsed = null;
 		}
 
 		private void ProcessInput(FullInputData data, float dt)
 		{
-			vec2 flatDirection = ComputeFlatDirection(data);
+			var flatDirection = ComputeFlatDirection(data);
+			var surface = surfaceController.Surface;
 
-			if (player.OnGround)
+			if (surface != null)
 			{
-				// TODO: Replace this with usage of the surface controller.
-				ProcessRunning(data, dt);
+				switch (surface.SurfaceType)
+				{
+					case SurfaceTypes.Floor: ProcessRunning(data, dt);
+						break;
+
+					case SurfaceTypes.Wall: //ProcessWallMovement(data, dt);
+						break;
+				}
 			}
 			else if (player.IsOnLadder)
 			{
@@ -177,15 +178,6 @@ namespace Zeldo.Entities
 		
 		private void ProcessRunning(FullInputData data, float dt)
 		{
-			// This assumes that if the player is grounded, an active surface will be set.
-			if (!player.OnGround)
-			{
-				return;
-			}
-
-			vec3 halfHeight = new vec3(0, player.Height / 2, 0);
-			vec3 p = player.Position - halfHeight;
-
 			bool forward = data.Query(controls.RunForward, InputStates.Held);
 			bool back = data.Query(controls.RunBack, InputStates.Held);
 			bool left = data.Query(controls.RunLeft, InputStates.Held);
@@ -213,84 +205,19 @@ namespace Zeldo.Entities
 
 			// TODO: Make a decision about whether to keep sliding in the game in some form.
 			/*
-			vec3 v = player.State == PlayerStates.Sliding
+			player.SurfaceVelocity = player.State == PlayerStates.Sliding
 				? AdjustSlidingVelocity(flatDirection, dt)
 				: AdjustRunningVelocity(flatDirection, dt);
 			*/
 
-			vec3 v = AdjustRunningVelocity(flatDirection, dt);
-			player.SurfaceVelocity = v;
-
-			if (v == vec3.Zero)
-			{
-				player.GroundPosition = p;
-
-				// This prevents very slow drift when standing still on sloped surfaces.
-				return;
-			}
-
-			p += v * dt;
-
-			// The player's position is always set at the bottom of this function. If the projection returns true, that
-			// means the player is still within the current triangle.
-			if (!surface.Project(p, out vec3 result))
-			{
-				// TODO: Store a reference to the physics map separately (rather than querying the world every frame).
-				var world = player.Scene.World;
-				var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
-				var normal = surface.Normal;
-
-				// The raycast needs to be offset upward enough to catch steps.
-				var results = PhysicsUtilities.Raycast(world, map, p + normal, -normal, 1.2f);
-
-				if (results?.Triangle != null)
-				{
-					surface = new SurfaceTriangle(results.Triangle, results.Normal, 0);
-					surface.Project(results.Position, out result);
-					
-					player.OnSurfaceTransition(surface);
-				}
-				// If the player has moved past a surface triangle (without transitioning to another one), a very small
-				// forgiveness distance is checked before signalling the player to become airborne. This distance is
-				// small enough to not be noticeable during gameplay, but protects against potential floating-point
-				// errors near the seams of triangles.
-				else if (ComputeForgiveness(p, surface) > playerData.EdgeForgiveness)
-				{
-					player.BecomeAirborneFromLedge();
-				}
-			}
-
-			// Note that this behavior can result in the player's position being set just outside the current triangle
-			// (even if the raycast didn't return another one). This is a failsafe to account for potential weird
-			// behavior when very close to a triangle's edge. In theory, this failsafe shouldn't be needed (assuming a
-			// seamlessly interconnected map without gaps in the geometry), but it's safer to keep it (plus the fix
-			// shouldn't be tiny and unnoticeable anyway).
-			player.GroundPosition = result;
+			player.SurfaceVelocity = AdjustRunningVelocity(flatDirection, dt);
 		}
 
-		private float ComputeForgiveness(vec3 p, SurfaceTriangle surface)
-		{
-			// To compute the shortest distance to an edge of the triangle, points are rotated to a flat plane first
-			// (using the surface normal).
-			var q = Utilities.Orientation(surface.Normal, vec3.UnitY);
-			var flatP = (q * p).swizzle.xz;
-			var flatPoints = surface.Points.Select(v => (q * v).swizzle.xz).ToArray();
-			var d = float.MaxValue;
-
-			for (int i = 0; i < flatPoints.Length; i++)
-			{
-				var p1 = flatPoints[i];
-				var p2 = flatPoints[(i + 1) % 3];
-
-				d = Math.Min(d, Utilities.DistanceToLine(flatP, p1, p2));
-			}
-
-			return d;
-		}
-
+		// TODO: Update to use speed values from player data.
 		private vec3 AdjustRunningVelocity(vec2 flatDirection, float dt)
 		{
-			vec3 v = player.SurfaceVelocity;
+			var surface = surfaceController.Surface;
+			var v = player.SurfaceVelocity;
 
 			// Deceleration.
 			if (flatDirection == vec2.Zero)
@@ -349,18 +276,20 @@ namespace Zeldo.Entities
 			}
 
 			return v;
-
-			return vec3.Zero;
 		}
 
+		/*
 		private vec3 AdjustSlidingVelocity(vec2 flatDirection, float dt)
 		{
+			var surface = surfaceController.Surface;
+
 			vec3 v = player.SurfaceVelocity;
 			vec3 normal = surface.Normal;
 			vec3 slideDirection = Utilities.Normalize(new vec3(normal.x, -surface.Slope, normal.z));
 
 			return v;
 		}
+		*/
 
 		private void ProcessLadder(FullInputData data, float dt)
 		{

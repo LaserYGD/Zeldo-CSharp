@@ -516,8 +516,8 @@ namespace Jitter.Dynamics
             }
         }
 
-		// CUSTOM: Added to accommodate actor movement using kinematic bodies. Returning true negates the collision.
-	    public Func<RigidBody, JVector[], bool> ShouldIgnore { get; set; }
+		// CUSTOM: Added to accommodate actor movement using kinematic bodies. Returning false negates the collision.
+	    public Func<RigidBody, JVector[], bool> ShouldCollideWith { get; set; }
 
         public bool AffectedByGravity { get { return affectedByGravity; } set { affectedByGravity = value; } }
 

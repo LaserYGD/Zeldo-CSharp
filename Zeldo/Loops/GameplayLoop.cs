@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Engine;
 using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Input.Data;
@@ -29,10 +30,6 @@ namespace Zeldo.Loops
 	{
 		public const float PhysicsStep = 1f / 120;
 
-		// TODO: Use properties.
-		public const int PhysicsIterations = 8;
-		public const int Gravity = -18;
-
 		private Camera3D camera;
 		private World world;
 		private Scene scene;
@@ -47,10 +44,13 @@ namespace Zeldo.Loops
 
 		private Sprite3D sprite;
 
+		private int physicsMaxIterations;
+
 		public GameplayLoop(TitleLoop titleLoop = null) : base(LoopTypes.Gameplay)
 		{
 			// TODO: Pull relevant objects from the title loop (likely camera and maybe scene).
 			camera = new Camera3D();
+			physicsMaxIterations = Properties.GetInt("physics.max.iterations");
 		}
 
 		public override void Initialize()
@@ -61,7 +61,7 @@ namespace Zeldo.Loops
 
 			// TODO: Should damping factors be left in their default states? (they were changed while adding kinematic bodies)
 			world = new World(system);
-			world.Gravity = new JVector(0, Gravity, 0);
+			world.Gravity = new JVector(0, -Properties.GetInt("gravity"), 0);
 			world.SetDampingFactors(1, 1);
 
 			space = new Space();
@@ -215,7 +215,7 @@ namespace Zeldo.Loops
 			{
 				sprite.Orientation *= quat.FromAxisAngle(dt, vec3.UnitY);
 
-				world.Step(dt, true, PhysicsStep, PhysicsIterations);
+				world.Step(dt, true, PhysicsStep, physicsMaxIterations);
 				space.Update();
 				scene.Update(dt);
 			}

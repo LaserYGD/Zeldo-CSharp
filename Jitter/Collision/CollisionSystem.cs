@@ -254,9 +254,9 @@ namespace Jitter.Collision
 
         private void DetectRigidRigid(RigidBody body1, RigidBody body2)
         {
-			// CUSTOM: Added custom detection callbacks (primarily to accommodate actor movement on the ground).
-	        var callback1 = body1.ShouldIgnore;
-	        var callback2 = body2.ShouldIgnore;
+			// CUSTOM: Added custom detection callbacks (primarily to accommodate actor movement on surfaces).
+	        var callback1 = body1.ShouldCollideWith;
+	        var callback2 = body2.ShouldCollideWith;
 
             bool b1IsMulti = (body1.Shape is Multishape);
             bool b2IsMulti = (body2.Shape is Multishape);
@@ -270,7 +270,7 @@ namespace Jitter.Collision
             if (!b1IsMulti && !b2IsMulti)
             {
 				// CUSTOM: Added these callbacks (two rigid bodies).
-	            if ((callback1 != null && callback1(body2, null)) || (callback2 != null && callback2(body1, null)))
+	            if ((callback1 != null && !callback1(body2, null)) || (callback2 != null && !callback2(body1, null)))
 	            {
 		            return;
 	            }
@@ -413,7 +413,7 @@ namespace Jitter.Collision
 
 	                // CUSTOM: Added this callback (to allow specific triangle collisions to be ignored).
 					bool shouldIgnore = ms is TriangleMeshShape tMesh && callback2 != null &&
-						callback2(b1, tMesh.CurrentTriangle);
+						!callback2(b1, tMesh.CurrentTriangle);
 
 					if (!shouldIgnore && XenoCollide.Detect(ms, b2.Shape, ref b1.orientation,
                         ref b2.orientation, ref b1.position, ref b2.position,
