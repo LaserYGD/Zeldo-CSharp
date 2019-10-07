@@ -248,16 +248,9 @@ namespace Jitter.Dynamics
 	        // CUSTOM: Updated to account for kinematic body types.
 			if (isBody1Movable)
             {
-                if (body1.IsSurfaceControlled)
-                {
-                    body1.linearVelocity -= SurfaceHelper.Project(ref body1.linearVelocity, ref normal);
-                }
-                else
-                {
-                    body1.linearVelocity.X -= (impulse.X * body1.inverseMass);
-                    body1.linearVelocity.Y -= (impulse.Y * body1.inverseMass);
-                    body1.linearVelocity.Z -= (impulse.Z * body1.inverseMass);
-                }
+                body1.linearVelocity.X -= (impulse.X * body1.inverseMass);
+                body1.linearVelocity.Y -= (impulse.Y * body1.inverseMass);
+                body1.linearVelocity.Z -= (impulse.Z * body1.inverseMass);
 
                 if (!body1IsMassPoint && !body1.isRotationFixed)
                 {
@@ -287,16 +280,9 @@ namespace Jitter.Dynamics
 	        // CUSTOM: Updated to account for kinematic body types.
 			if (isBody2Movable)
             {
-                if (body2.IsSurfaceControlled)
-                {
-                    body2.linearVelocity -= SurfaceHelper.Project(ref body2.linearVelocity, ref normal);
-                }
-                else
-                {
-                    body2.linearVelocity.X += (impulse.X * body2.inverseMass);
-                    body2.linearVelocity.Y += (impulse.Y * body2.inverseMass);
-                    body2.linearVelocity.Z += (impulse.Z * body2.inverseMass);
-                }
+                body2.linearVelocity.X += (impulse.X * body2.inverseMass);
+                body2.linearVelocity.Y += (impulse.Y * body2.inverseMass);
+                body2.linearVelocity.Z += (impulse.Z * body2.inverseMass);
 
                 if (!body2IsMassPoint && !body2.isRotationFixed)
                 {
@@ -723,12 +709,9 @@ namespace Jitter.Dynamics
 	        // CUSTOM: Updated to account for kinematic body types.
 			if (isBody1Movable)
             {
-                if (!body1.IsSurfaceControlled)
-                {
-                    body1.linearVelocity.X -= (impulse.X * body1.inverseMass);
-                    body1.linearVelocity.Y -= (impulse.Y * body1.inverseMass);
-                    body1.linearVelocity.Z -= (impulse.Z * body1.inverseMass);
-                }
+                body1.linearVelocity.X -= (impulse.X * body1.inverseMass);
+                body1.linearVelocity.Y -= (impulse.Y * body1.inverseMass);
+                body1.linearVelocity.Z -= (impulse.Z * body1.inverseMass);
 
                 if (!body1IsMassPoint)
                 {
@@ -759,12 +742,9 @@ namespace Jitter.Dynamics
 	        // CUSTOM: Updated to account for kinematic body types.
 			if (isBody2Movable)
             {
-                if (!body2.IsSurfaceControlled)
-                {
-                    body2.linearVelocity.X += (impulse.X * body2.inverseMass);
-                    body2.linearVelocity.Y += (impulse.Y * body2.inverseMass);
-                    body2.linearVelocity.Z += (impulse.Z * body2.inverseMass);
-                }
+                body2.linearVelocity.X += (impulse.X * body2.inverseMass);
+                body2.linearVelocity.Y += (impulse.Y * body2.inverseMass);
+                body2.linearVelocity.Z += (impulse.Z * body2.inverseMass);
 
                 if (!body2IsMassPoint)
                 {

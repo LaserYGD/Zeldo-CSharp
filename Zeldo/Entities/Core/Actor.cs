@@ -155,6 +155,7 @@ namespace Zeldo.Entities.Core
 
 		protected virtual void OnLanding(vec3 p, SurfaceTriangle surface)
 		{
+			// TODO: When jumping straight up and down on a sloped surface, XZ position can start to change very slowly. Should be fixed.
 			// Note that by setting ground position *before* the onSurface flag, the body's velocity isn't wastefully
 			// set twice (since it's forcibly set to zero below).
 			surface.Project(p, out vec3 result);
@@ -165,25 +166,11 @@ namespace Zeldo.Entities.Core
 			GroundPosition = result;
 
 			// TODO: Account for speed differences when landing on slopes (since maximum flat speed will be a bit lower). Maybe quick deceleration?
-			// The surface controller works off surface velocity, so the body's existing aerial velocity must be
-			// transferred.
-			/*
-			var bodyVelocity = controllingBody.LinearVelocity;
-			var v = SurfaceVelocity;
-			v.x = bodyVelocity.X;
-			v.z = bodyVelocity.Z;
-			SurfaceVelocity = v;
-			*/
-
 			var v = controllingBody.LinearVelocity;
 			v.Y = 0;
 			controllingBody.LinearVelocity = v;
-
-			// TODO: Setting body position directly could cause rare collision misses on dynamic objects. Should be tested.
 			controllingBody.Position = position.ToJVector();
 			controllingBody.IsAffectedByGravity = false;
-			controllingBody.IsSurfaceControlled = true;
-			controllingBody.SurfaceNormal = surface.Normal.ToJVector();
 
 			Swap(surfaceController);
 			OnSurfaceTransition(surface);
@@ -192,7 +179,6 @@ namespace Zeldo.Entities.Core
 		public virtual void OnSurfaceTransition(SurfaceTriangle surface)
 		{
 			surfaceController.Surface = surface;
-			controllingBody.SurfaceNormal = surface.Normal.ToJVector();
 		}
 
 		public virtual void BecomeAirborneFromLedge()

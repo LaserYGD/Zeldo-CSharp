@@ -501,8 +501,6 @@ namespace Jitter.Dynamics
             set { position = value ; Update(); }
         }
 
-        public JVector SurfaceNormal { get; set; }
-
         /// <summary>
         /// The current oriention of the body.
         /// </summary>
@@ -553,8 +551,6 @@ namespace Jitter.Dynamics
 				angularVelocity.MakeZero();
 		    }
 	    }
-
-        public bool IsSurfaceControlled { get; set; }
 
 		public RigidBodyTypes BodyType
 	    {

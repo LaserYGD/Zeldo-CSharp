@@ -281,7 +281,73 @@ namespace Zeldo.Entities
 				return;
 			}
 
+			// TODO: Should velocity be applied here?
 			controllingBody.LinearVelocity = controller.AdjustRunningVelocity(controller.FlatDirection, step).ToJVector();
+
+			var vectors = new List<vec3>();
+			var surfaceNormal = surfaceController.Surface.Normal;
+
+			foreach (Arbiter arbiter in controllingBody.Arbiters)
+			{
+				var contacts = arbiter.ContactList;
+
+				// Before the physics step occurs, all static contacts are aggregated together and manually applied
+				// (based on surface normal).
+				for (int i = contacts.Count - 1; i >= 0; i--)
+				{
+					var contact = contacts[i];
+					var b1 = contact.Body1;
+					var b2 = contact.Body2;
+
+					if (!(b1.IsStatic || b2.IsStatic))
+					{
+						continue;
+					}
+
+					var n = contact.Normal.ToVec3();
+
+					if (controllingBody == b1)
+					{
+						n *= -1;
+					}
+
+					var v = Utilities.Normalize(Utilities.ProjectOntoPlane(n, surfaceNormal));
+					var angle = Utilities.Angle(n, v);
+					var l = contact.Penetration / (float)Math.Cos(angle);
+
+					vectors.Add(v * l);
+					contacts.RemoveAt(i);
+				}
+			}
+
+			if (vectors.Count > 0)
+			{
+				ResolveSurfaceVectors(vectors, step);
+			}
+		}
+
+		private void ResolveSurfaceVectors(List<vec3> vectors, float step)
+		{
+			var final = vec3.Zero;
+
+			for (int i = 0; i < vectors.Count; i++)
+			{
+				var v = vectors[i];
+				final += v;
+
+				for (int j = i + 1; j < vectors.Count; j++)
+				{
+					vectors[j] -= Utilities.Project(v, vectors[j]);
+				}
+			}
+
+			if (Utilities.LengthSquared(final) > 0.001f)
+			{
+				var v = controllingBody.LinearVelocity.ToVec3();
+
+				Position += v * step + final;
+				controllingBody.LinearVelocity -= Utilities.Project(v, final).ToJVector();
+			}
 		}
 
 		private void PostStep(float step)

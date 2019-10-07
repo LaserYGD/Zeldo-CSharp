@@ -1,15 +1,12 @@
 ﻿{
-	"Static": "WindmillTop_Physics.obj",
+	"Static": {
+		"Map": "Windmill/Windmill.obj",
+		"Physics": "Windmill/Windmill.obj"
+	},
+
 	"Entities": [
-		{
-			"Type": "Grabbable.Ladder"
-		},
-		{
-			"$type": "Windmill.WindmillBlades",
-			"Position": "0|0|0",
-			"Blades": 5,
-			"Radius": 2,
-			"Type": "Large"
-		}
-	]
+	],
+
+	"Origin": "0|0|0",
+	"Spawn": "6|3|0"
 }

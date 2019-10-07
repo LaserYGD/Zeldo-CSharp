@@ -1,7 +1,7 @@
 ﻿{
 	"Static": {
 		"Map": "Demo.obj",
-		"Physics": "Demo_Physics.obj"
+		"Physics": "Demo.obj"
 	},
 
 	"Entities": [

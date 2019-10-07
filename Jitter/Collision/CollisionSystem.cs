@@ -423,18 +423,6 @@ namespace Jitter.Collision
                         ref b2.orientation, ref b1.position, ref b2.position,
                         out point, out normal, out penetration))
                     {
-                        // CUSTOM: Added to support surface movement.
-                        if (body1.IsSurfaceControlled)
-                        {
-                            // This resolves the collision along the surface plane.
-                            var n = body1.SurfaceNormal;
-                            var v = SurfaceHelper.ProjectOntoPlane(ref normal, ref n);
-                            var angle = SurfaceHelper.Angle(ref normal, ref v);
-
-                            normal = v;
-                            penetration /= (float)Math.Cos(angle);
-                        }
-
                         JVector[] triangle = null;
                         FindSupportPoints(b1, b2, ms, b2.Shape, ref point, ref normal, out var point1, out var point2);
 
@@ -447,13 +435,8 @@ namespace Jitter.Collision
 						{
 							tMesh = ms as TriangleMeshShape;
 							triangle = tMesh.CurrentTriangle;
-
-                            // CUSTOM: Added to support surface movement.
-						    if (!body1.IsSurfaceControlled)
-						    {
-						        tMesh.CollisionNormal(out normal);
-						        JVector.Transform(ref normal, ref b1.orientation, out normal);
-                            }
+						    tMesh.CollisionNormal(out normal);
+						    JVector.Transform(ref normal, ref b1.orientation, out normal);
                         }
 
 						RaiseCollisionDetected(b1, b2, ref point1, ref point2, ref normal, triangle, penetration);

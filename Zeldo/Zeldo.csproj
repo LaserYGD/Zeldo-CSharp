@@ -156,6 +156,9 @@
     <None Include="Content\Meshes\Windmill\Physics\WindmillFloor8_0_Physics.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Meshes\Windmill\Windmill.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Meshes\Windmill\WindmillFloor8_0.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -29,7 +29,13 @@ namespace Zeldo.Physics
 				points.Add(ParseJVector(line));
 				line = lines[++lineIndex];
 			}
-			while (line[0] == 'v');
+			while (line[0] == 'v' && line[1] != 'n');
+
+			// Normals may or may not be present in the exported .obj file.
+			while (line[1] == 'n')
+			{
+				line = lines[++lineIndex];
+			}
 
 			// The next line is smoothing ("s off"), which isn't relevant.
 			lineIndex++;
@@ -42,9 +48,12 @@ namespace Zeldo.Physics
 				// With only indices exported, each face line looks like "f 1 2 3".
 				string[] tokens = lines[lineIndex++].Split(' ');
 
-				int i0 = int.Parse(tokens[1]) - 1;
-				int i1 = int.Parse(tokens[2]) - 1;
-				int i2 = int.Parse(tokens[3]) - 1;
+				// If normals were exported, each token will look like "1/2/3" instead. Also note that assigning
+				// indices in the opposite order (2-1-0 rather than 0-1-2) causes Jitter to process triangles in the
+				// correct direction (without having to flip normals in Blender).
+				int i2 = int.Parse(tokens[1].Split('/')[0]) - 1;
+				int i1 = int.Parse(tokens[2].Split('/')[0]) - 1;
+				int i0 = int.Parse(tokens[3].Split('/')[0]) - 1;
 
 				tris.Add(new TriangleVertexIndices(i0, i1, i2));
 			}
