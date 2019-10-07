@@ -21,14 +21,8 @@ namespace Zeldo.Physics
 			var p0 = triangle[0];
 			var p1 = triangle[1];
 			var p2 = triangle[2];
-			var v0 = JVector.Subtract(p1, p0);
-			var v1 = JVector.Subtract(p2, p0);
 
-			// This calculation is the same as the one used in a constructor below, but due to using JVector vs. vec3,
-			// it's easier to just duplicate the code.
-			var n = JVector.Normalize(JVector.Cross(v0, v1) * (winding == WindingTypes.Clockwise ? 1 : -1)).ToVec3();
-
-			return ComputeSurfaceType(n, out _);
+			return ComputeSurfaceType(Utilities.ComputeNormal(p0, p1, p2, winding).ToVec3(), out _);
 		}
 
 		private static SurfaceTypes ComputeSurfaceType(vec3 normal, out float theta)
@@ -57,9 +51,7 @@ namespace Zeldo.Physics
 		private float doubleArea;
 
 		public SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, WindingTypes winding, int material) :
-			this(p0, p1, p2,
-				Utilities.Normalize(Utilities.Cross(p1 - p0, p2 - p0) * (winding == WindingTypes.Clockwise ? 1 : -1)),
-				material)
+			this(p0, p1, p2, Utilities.ComputeNormal(p0, p1, p2, winding), material)
 		{
 		}
 

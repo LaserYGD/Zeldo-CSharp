@@ -106,7 +106,7 @@ namespace Zeldo.Loops
 
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
-			
+
 			var fragment = scene.LoadFragment("Demo.json");
 			player.Position = fragment.Origin + fragment.Spawn;
 
@@ -137,22 +137,24 @@ namespace Zeldo.Loops
 
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		// TODO: With the changes to surface processing within Jitter, does penetration need to be passed to entities?
 		private void OnCollision(RigidBody body1, RigidBody body2, JVector point1, JVector point2, JVector normal,
 			JVector[] triangle, float penetration)
 		{
-			// By design, all physics objects have entities attached, with the exception of static parts of the
-			// map. In the case of map collisions, it's unknown which body comes first as an argument (as of
-			// writing this comment, anyway), which is why both entities are checked for null.
+			// By design, all physics objects have entities attached, with the exception of static parts of the map. In
+			// the case of map collisions, it's unknown which body comes first as an argument (as of writing this
+			// comment, anyway), which is why both entities are checked for null.
 			Entity entity1 = body1.Tag as Entity;
 			Entity entity2 = body2.Tag as Entity;
 
 			vec3 p1 = point1.ToVec3();
 			vec3 p2 = point2.ToVec3();
 
+			// TODO: If normals are flipped on the static triangle mesh, this will likely have to be removed.
 			// The normal needs to be flipped based on how Jitter handles triangle winding.
 			vec3 n = Utilities.Normalize(-normal.ToVec3());
 
-			// A triangle will only be given in the case of collisions with the map.
+			// A triangle will only be given in the case of collisions with a triangle mesh (or terrain).
 			if (triangle != null)
 			{
 				var entity = entity1 ?? entity2;

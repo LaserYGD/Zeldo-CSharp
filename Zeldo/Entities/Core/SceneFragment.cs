@@ -39,6 +39,10 @@ namespace Zeldo.Entities.Core
 			body.Position = origin.ToJVector();
 			body.IsStatic = true;
 
+			var material = body.Material;
+			material.KineticFriction = 0;
+			material.StaticFriction = 0;
+
 			var fragment = new SceneFragment(filename);
 			fragment.Entities = LoadEntities(json, scene, origin);
 			fragment.MapModel = model;

@@ -46,14 +46,16 @@ namespace Zeldo.Entities.Core
 			get => base.Position;
 			set
 			{
+				/*
 				// Even while grounded, actors can be affected by the regular physics step (for example, running into
 				// walls).
-				// TODO: This world active check might not be needed (if using the aggregate method to resolve grounded wall collisions).
-				if (OnSurface && !Scene.World.IsStepActive)
+				if (OnSurface)
 				{
 					// This assumes that all actors will have a valid controlling body created.
-					controllingBody.LinearVelocity = (value - controllingBody.Position.ToVec3()).ToJVector();
+					//controllingBody.LinearVelocity = (value - controllingBody.Position.ToVec3()).ToJVector();
+					controllingBody.Position = value.ToJVector();
 				}
+				*/
 
 				// Without this check, the first airborne raytrace (to handle collisions with surfaces) would be way
 				// too large (unless the actor happens to spawn at the origin).
@@ -89,6 +91,13 @@ namespace Zeldo.Entities.Core
 		{
 			var body = CreateBody(scene, shape, RigidBodyTypes.Kinematic);
 			body.ShouldCollideWith = ShouldCollideWith;
+			body.IsRotationFixed = true;
+			body.Damping = RigidBody.DampingType.None;
+
+			// Restitution defaults to zero.
+			var material = body.Material;
+			material.KineticFriction = 0;
+			material.StaticFriction = 0;
 
 			return body;
 		}
@@ -98,7 +107,8 @@ namespace Zeldo.Entities.Core
 			// Triangles are only sent into the callback for triangle mesh and terrain collisions. For now, collisions
 			// are only ignored to accommodate surface movement (which also means that actors without a surface
 			// controller created can return early).
-			if (triangle == null || surfaceController == null)
+			//if (triangle == null || surfaceController == null)
+			if (triangle == null)
 			{
 				return true;
 			}
@@ -119,7 +129,16 @@ namespace Zeldo.Entities.Core
 			// While on a surface, only collisions with surfaces of *different* types are processed. For example,
 			// while grounded, only wall and ceiling collisions should occur (the surface controller handles movement
 			// among surfaces of the same type).
-			return onSurface && surfaceType != surfaceController.Surface.SurfaceType;
+			if (!(onSurface && surfaceType != surfaceController.Surface.SurfaceType))
+			{
+				return false;
+			}
+
+			// This helps prevent phantom collisions while separating from a surface (or sliding along a corner).
+			var n = Utilities.ComputeNormal(triangle[0], triangle[1], triangle[2], WindingTypes.CounterClockwise,
+				false);
+
+			return JVector.Dot(controllingBody.LinearVelocity, n) < 0;
 		}
 
 		protected void Swap(AbstractController controller, bool shouldComputeImmediately = false)
@@ -148,16 +167,23 @@ namespace Zeldo.Entities.Core
 			// TODO: Account for speed differences when landing on slopes (since maximum flat speed will be a bit lower). Maybe quick deceleration?
 			// The surface controller works off surface velocity, so the body's existing aerial velocity must be
 			// transferred.
+			/*
 			var bodyVelocity = controllingBody.LinearVelocity;
 			var v = SurfaceVelocity;
 			v.x = bodyVelocity.X;
 			v.z = bodyVelocity.Z;
 			SurfaceVelocity = v;
+			*/
+
+			var v = controllingBody.LinearVelocity;
+			v.Y = 0;
+			controllingBody.LinearVelocity = v;
 
 			// TODO: Setting body position directly could cause rare collision misses on dynamic objects. Should be tested.
 			controllingBody.Position = position.ToJVector();
-			controllingBody.LinearVelocity = JVector.Zero;
-			controllingBody.AffectedByGravity = false;
+			controllingBody.IsAffectedByGravity = false;
+			controllingBody.IsSurfaceControlled = true;
+			controllingBody.SurfaceNormal = surface.Normal.ToJVector();
 
 			Swap(surfaceController);
 			OnSurfaceTransition(surface);
@@ -165,6 +191,8 @@ namespace Zeldo.Entities.Core
 
 		public virtual void OnSurfaceTransition(SurfaceTriangle surface)
 		{
+			surfaceController.Surface = surface;
+			controllingBody.SurfaceNormal = surface.Normal.ToJVector();
 		}
 
 		public virtual void BecomeAirborneFromLedge()
@@ -189,20 +217,20 @@ namespace Zeldo.Entities.Core
 				// TODO: Retrieve material from the surface as well.
 				OnLanding(results.Position, new SurfaceTriangle(results.Triangle, results.Normal, 0));
 			}
-
+			
 			// Even while on a surface (i.e. using manual control), the physics engine can override movement when
 			// certain collisions occur (e.g. hitting a wall). Using the override flag, then, helps keep the mesh and
 			// rigid body in sync.
-			if (!OnSurface || isSurfaceControlOverridden)
+			if (!OnSurface)// || isSurfaceControlOverridden)
 			{
 				Position = controllingBody.Position.ToVec3();
-
-				// TODO: If actor bodies are always fixed upright, is this needed?
-				Orientation = controllingBody.Orientation.ToQuat();
-				isSurfaceControlOverridden = false;
+				//isSurfaceControlOverridden = false;
 			}
 
 			selfUpdate = false;
+
+			// Note that the base Update function is intentionally not called (it's easier to just duplicate a bit of
+			// code here).
 		}
 
 		private bool CheckGroundCollision(out RaycastResults results)

@@ -39,9 +39,7 @@ namespace Jitter.Dynamics
     /// </summary>
     public class ContactList : List<Contact>
     {
-
         public ContactList() : base(4) { }
-
 
         #region TODO: Write an implementation which only has 4 elements.
 

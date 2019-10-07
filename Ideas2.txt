@@ -174,3 +174,30 @@
 
 - Environmental objects that affect movement in fun ways (that can also make a zone more memorable and unique) => Inspired by watching Shogo: Mobile Armor Division during GDQx and seeing the player jump off air vents on the tops of buildings for extra height)
 
+- For enemy health bars, could change the border color to grey to unambiguously communicate that the enemy is dead (to avoid the 1 HP sliver of health enemies can have in Dark Souls, where you think it's already dead)
+
+- Quick catching your breath animation after running and jumping around for a while (like a one-time replacement idle animation following a bunch of movement)
+
+- Large beast-like enemy that leaps in front to cut you off if you try to sprint away during the boss fight (inspired by watching Ela's casual playthrough of Aava in the third DS2 DLC)
+
+- At night, consider fading distant objects to near full-black (inspired when driving home from Mary Poppins and seeing the dark silouette of trees)
+
+- Could experiment with creating a fast-travel system comparable to Ori's save system (where players can make decisions about useful warp points) => Could also use a simpler system where you get a baseline number of warp points, but can place or unlock additional ones as a reward for some kind of gameplay => Inspired by Patty mentioning a lack of fast travel in Blasphemous
+
+- Might be better to unlock faster and faster tiers of fast-travel throughout the game (to encourage players to learn the world and master movement (but unlock better systems when that traversal might start to become dull)
+
+- For wall jump, should probably think about *how* the player is now able to WJ (inspired by watching Patty play Blasphemous and seeing the player stab the sword into walls to repeatedly gain height)
+
+- Stone creatures that can't be effectively damaged with traditional sword swings (since they're made of stone) and instead require strong elemental damage (like lava infusion) or another powerful physics force to crack the stones apart (this concept could be applied to other enemy types as well to give more combat variety, like living lava creatures through which your sword harmlessly flows) => Inspired by Joseph Anderson's second DS2 video saying that hitting stone enemies never feels satisfying
+
+- Consider how much content is gated behind potentially difficult bosses (so you don't screw struggling players too badly)
+
+ 
+
+
+
+
+
+
+
+

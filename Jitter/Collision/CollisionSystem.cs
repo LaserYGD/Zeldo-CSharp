@@ -390,7 +390,11 @@ namespace Jitter.Collision
 					// callback (attached to the static body) is intentionally not used.
 		            callback2 = callback1;
 	            }
-                else { b2 = body2; b1 = body1; }
+	            else
+	            {
+	                b2 = body2;
+	                b1 = body1;
+	            }
 
                 Multishape ms = (b1.Shape as Multishape);
 
@@ -412,16 +416,27 @@ namespace Jitter.Collision
                     ms.SetCurrentShape(i);
 
 	                // CUSTOM: Added this callback (to allow specific triangle collisions to be ignored).
-					bool shouldIgnore = ms is TriangleMeshShape tMesh && callback2 != null &&
-						!callback2(b1, tMesh.CurrentTriangle);
+					bool shouldCollideWith = ms is TriangleMeshShape tMesh && (callback2 == null ||
+						callback2(b1, tMesh.CurrentTriangle));
 
-					if (!shouldIgnore && XenoCollide.Detect(ms, b2.Shape, ref b1.orientation,
+					if (shouldCollideWith && XenoCollide.Detect(ms, b2.Shape, ref b1.orientation,
                         ref b2.orientation, ref b1.position, ref b2.position,
                         out point, out normal, out penetration))
                     {
-                        JVector point1, point2;
-	                    JVector[] triangle = null;
-                        FindSupportPoints(b1, b2, ms, b2.Shape, ref point, ref normal, out point1, out point2);
+                        // CUSTOM: Added to support surface movement.
+                        if (body1.IsSurfaceControlled)
+                        {
+                            // This resolves the collision along the surface plane.
+                            var n = body1.SurfaceNormal;
+                            var v = SurfaceHelper.ProjectOntoPlane(ref normal, ref n);
+                            var angle = SurfaceHelper.Angle(ref normal, ref v);
+
+                            normal = v;
+                            penetration /= (float)Math.Cos(angle);
+                        }
+
+                        JVector[] triangle = null;
+                        FindSupportPoints(b1, b2, ms, b2.Shape, ref point, ref normal, out var point1, out var point2);
 
                         if (useTerrainNormal && ms is TerrainShape)
                         {
@@ -432,8 +447,13 @@ namespace Jitter.Collision
 						{
 							tMesh = ms as TriangleMeshShape;
 							triangle = tMesh.CurrentTriangle;
-	                        tMesh.CollisionNormal(out normal);
-                            JVector.Transform(ref normal, ref b1.orientation, out normal);
+
+                            // CUSTOM: Added to support surface movement.
+						    if (!body1.IsSurfaceControlled)
+						    {
+						        tMesh.CollisionNormal(out normal);
+						        JVector.Transform(ref normal, ref b1.orientation, out normal);
+                            }
                         }
 
 						RaiseCollisionDetected(b1, b2, ref point1, ref point2, ref normal, triangle, penetration);
@@ -463,6 +483,8 @@ namespace Jitter.Collision
                 ms.ReturnWorkingClone();
             }
         }
+
+        private int count;
 
         private void DetectSoftRigid(RigidBody rigidBody, SoftBody softBody)
         {

@@ -1,6 +1,4 @@
-﻿using System;
-using GlmSharp;
-using Jitter.Collision.Shapes;
+﻿using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;
@@ -8,13 +6,12 @@ using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities
 {
-	public class DummyCube : Entity
+	public class DummyObject : Entity
 	{
 		private RigidBodyTypes bodyType;
 		private bool affectedByGravity;
-		private int hitCount;
 
-		public DummyCube(RigidBodyTypes bodyType, bool affectedByGravity) : base(EntityGroups.Object)
+		public DummyObject(RigidBodyTypes bodyType, bool affectedByGravity) : base(EntityGroups.Object)
 		{
 			this.bodyType = bodyType;
 			this.affectedByGravity = affectedByGravity;
@@ -27,12 +24,8 @@ namespace Zeldo.Entities
 			CreateModel(scene, "Cube.obj");
 
 			Body = CreateBody(scene, new BoxShape(new JVector(1)), bodyType);
-			Body.AffectedByGravity = affectedByGravity;
+			Body.IsAffectedByGravity = affectedByGravity;
 		}
 
-		public override void OnCollision(vec3 p, vec3 normal, vec3[] triangle, float penetration)
-		{
-			Console.WriteLine($"Hit! ({hitCount++})");
-		}
 	}
 }

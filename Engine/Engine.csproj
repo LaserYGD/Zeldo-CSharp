@@ -176,6 +176,7 @@
     <Compile Include="Interfaces\3D\IMeshUser.cs" />
     <Compile Include="Interfaces\3D\IRenderable3D.cs" />
     <Compile Include="Interfaces\3D\IScalable3D.cs" />
+    <Compile Include="Physics\WindingTypes.cs" />
     <Compile Include="Proximities.cs" />
     <Compile Include="Lighting\GlobalLight.cs" />
     <Compile Include="Lighting\LightSource.cs" />

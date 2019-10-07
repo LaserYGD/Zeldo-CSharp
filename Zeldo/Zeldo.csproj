@@ -129,9 +129,6 @@
     <None Include="Content\Meshes\Demo.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Meshes\Physics\Demo_Physics.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Content\Meshes\Player.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -244,7 +241,8 @@
     <Compile Include="Entities\Core\LivingEntity.cs" />
     <Compile Include="Entities\Core\Scene.cs" />
     <Compile Include="Entities\Core\SceneFragment.cs" />
-    <Compile Include="Entities\DummyCube.cs" />
+    <Compile Include="Entities\DummyCapsule.cs" />
+    <Compile Include="Entities\DummyObject.cs" />
     <Compile Include="Entities\Enemies\Enemy.cs" />
     <Compile Include="Entities\Enemies\Groot.cs" />
     <Compile Include="Entities\Enemies\HealthBar.cs" />
@@ -296,7 +294,6 @@
     <Compile Include="Physics\SurfaceTriangle.cs" />
     <Compile Include="Physics\SurfaceTypes.cs" />
     <Compile Include="Physics\TriangleMeshLoader.cs" />
-    <Compile Include="Physics\WindingTypes.cs" />
     <Compile Include="Puddle.cs" />
     <Compile Include="Entities\Weapons\Sword.cs" />
     <Compile Include="Interfaces\ITargetable.cs" />

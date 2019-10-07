@@ -7,7 +7,6 @@ using GlmSharp;
 using Jitter.Collision.Shapes;
 using Zeldo.Entities.Core;
 using Zeldo.Physics;
-using Zeldo.UI;
 
 namespace Zeldo.Control
 {

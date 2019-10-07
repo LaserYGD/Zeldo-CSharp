@@ -5,6 +5,7 @@ using System.Text;
 using Engine.Core._2D;
 using Engine.Graphics._2D;
 using Engine.Interfaces._2D;
+using Engine.Physics;
 using Engine.Shapes._2D;
 using GlmSharp;
 using Jitter.LinearMath;
@@ -271,6 +272,26 @@ namespace Engine.Utility
 			}
 
 			return v / Length(v);
+		}
+
+		public static JVector ComputeNormal(JVector p0, JVector p1, JVector p2, WindingTypes winding,
+			bool shouldNormalize = true)
+		{
+			var v0 = JVector.Subtract(p1, p0);
+			var v1 = JVector.Subtract(p2, p0);
+
+			// This calculation is the same as the one used in a constructor below, but due to using JVector vs. vec3,
+			// it's easier to just duplicate the code.
+			var v = JVector.Cross(v0, v1) * (winding == WindingTypes.Clockwise ? 1 : -1);
+
+			return shouldNormalize ? JVector.Normalize(v) : v;
+		}
+
+		public static vec3 ComputeNormal(vec3 p0, vec3 p1, vec3 p2, WindingTypes winding, bool shouldNormalize = true)
+		{
+			var v = Cross(p1 - p0, p2 - p0) * (winding == WindingTypes.Clockwise ? 1 : -1);
+
+			return shouldNormalize ? Normalize(v) : v;
 		}
 
 		public static vec2 Rotate(vec2 v, float angle)

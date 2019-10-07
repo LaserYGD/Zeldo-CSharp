@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Engine;
 using Engine.Core;
 using Engine.Interfaces._3D;
@@ -9,6 +10,7 @@ using Engine.Shapes._3D;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
+using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;
 using Zeldo.Control;
@@ -153,6 +155,8 @@ namespace Zeldo.Entities
 
 			var body = CreateKinematicBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius));
 			body.AllowDeactivation = false;
+			body.PreStep = PreStep;
+			body.PostStep = PostStep;
 
 			// TODO: Should all actor sensors be axis-aligned?
 			var shape = new Cylinder(Height, capsuleRadius);
@@ -225,15 +229,140 @@ namespace Zeldo.Entities
 				}
 
 				// This applies to both walls and low-hanging ceilings.
-				OnGroundedSurfaceCollision(normal, penetration);
+				//OnGroundedSurfaceCollision(normal, penetration);
 			}
+		}
+
+		/*
+		protected override bool ShouldCollideWith(RigidBody body, JVector[] triangle)
+		{
+			// Triangles are only sent into the callback for triangle mesh and terrain collisions. For now, collisions
+			// are only ignored to accommodate surface movement (which also means that actors without a surface
+			// controller created can return early).
+			//if (triangle == null || surfaceController == null)
+			if (triangle == null)
+			{
+				return true;
+			}
+
+			var onSurface = OnSurface;
+			var surfaceType = SurfaceTriangle.ComputeSurfaceType(triangle, WindingTypes.CounterClockwise);
+
+			bool isPotentialLanding = !onSurface && surfaceType == SurfaceTypes.Floor;
+
+			// TODO: This will cause glancing downward collisions to be ignored. Should they be?
+			// Since actors use capsules, potential ground collisions are ignored from the air. Instead, raycasts are
+			// used to determine when the exact bottom-center of the capsule crosses a triangle.
+			if (isPotentialLanding)
+			{
+				return false;
+			}
+
+			// While on a surface, only collisions with surfaces of *different* types are processed. For example,
+			// while grounded, only wall and ceiling collisions should occur (the surface controller handles movement
+			// among surfaces of the same type).
+			if (!(onSurface && surfaceType != surfaceController.Surface.SurfaceType))
+			{
+				return false;
+			}
+
+			// This helps prevent phantom collisions while separating from a surface (or sliding along a corner).
+			var n = Utilities.ComputeNormal(triangle[0], triangle[1], triangle[2], WindingTypes.CounterClockwise,
+				false).ToVec3();
+
+			return Utilities.Dot(controller.FlatDirection, n.swizzle.xz) < 0;
+		}
+		*/
+
+		private void PreStep(float step)
+		{
+			if (!OnSurface)
+			{
+				return;
+			}
+
+			controllingBody.LinearVelocity = controller.AdjustRunningVelocity(controller.FlatDirection, step).ToJVector();
+		}
+
+		private void PostStep(float step)
+		{
+			if (!OnSurface)
+			{
+				return;
+			}
+
+			var p = controllingBody.Position.ToVec3() - new vec3(0, Height / 2, 0);
+			var surface = surfaceController.Surface;
+
+			// If the projection returns true, that means the actor is still within the current triangle.
+			if (surface.Project(p, out vec3 result))
+			{
+				GroundPosition = result;
+
+				return;
+			}
+
+			// TODO: Store a reference to the physics map separately (rather than querying the world every frame).
+			var world = Scene.World;
+			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
+			var normal = surface.Normal;
+
+			// The raycast needs to be offset upward enough to catch steps.
+			// TODO: Use properties for these raycast values.
+			var results = PhysicsUtilities.Raycast(world, map, p + normal, -normal, 1.2f);
+
+			// This means the actor moved to another triangle.
+			if (results?.Triangle != null)
+			{
+				surface = new SurfaceTriangle(results.Triangle, results.Normal, 0);
+				surface.Project(results.Position, out result);
+
+				// TODO: Signal the actor of the surface transition (if needed).
+				GroundPosition = result;
+				OnSurfaceTransition(surface);
+
+				return;
+			}
+
+			// If the actor has moved past a surface triangle (without transitioning to another one), a very small
+			// forgiveness distance is checked before signalling the actor to become airborne. This distance is small
+			// enough to not be noticeable during gameplay, but protects against potential floating-point errors near
+			// the seams of triangles.
+			// TODO: Use a constant.
+			if (ComputeForgiveness(p, surface) > Properties.GetFloat("edge.forgiveness"))
+			{
+				BecomeAirborneFromLedge();
+			}
+		}
+
+		private float ComputeForgiveness(vec3 p, SurfaceTriangle surface)
+		{
+			// To compute the shortest distance to an edge of the triangle, points are rotated to a flat plane first
+			// (using the surface normal).
+			var q = Utilities.Orientation(surface.Normal, vec3.UnitY);
+			var flatP = (q * p).swizzle.xz;
+			var flatPoints = surface.Points.Select(v => (q * v).swizzle.xz).ToArray();
+			var d = float.MaxValue;
+
+			for (int i = 0; i < flatPoints.Length; i++)
+			{
+				var p1 = flatPoints[i];
+				var p2 = flatPoints[(i + 1) % 3];
+
+				d = Math.Min(d, Utilities.DistanceToLine(flatP, p1, p2));
+			}
+
+			return d;
 		}
 
 		protected override void OnLanding(vec3 p, SurfaceTriangle surface)
 		{
+			base.OnLanding(p, surface);
+
 			RefreshJumps();
 
-			base.OnLanding(p, surface);
+			// TODO: Re-examine this (should all actors avoid the surface controller?)
+			Swap(null);
 		}
 
 		public override void OnSurfaceTransition(SurfaceTriangle surface)
@@ -251,6 +380,8 @@ namespace Zeldo.Entities
 			// Moving to a surface steep enough to cause sliding.
 			State = PlayerStates.Sliding;
 			*/
+
+			base.OnSurfaceTransition(surface);
 		}
 
 		// TODO: Does this need to be moved down to Actor?
@@ -285,7 +416,7 @@ namespace Zeldo.Entities
 			// TODO: Move some of this to the base class.
 			surfaceController.Surface = null;
 			controllingBody.LinearVelocity = SurfaceVelocity.ToJVector();
-			controllingBody.AffectedByGravity = true;
+			controllingBody.IsAffectedByGravity = true;
 			jumpsRemaining--;
 			skillsEnabled[JumpIndex] = false;
 			surfaceController.Surface = null;
@@ -321,7 +452,7 @@ namespace Zeldo.Entities
 			// TODO: Set velocity accordingly when jumping from different states (like climbing a ladder).
 			// On jump, the controlling body inherits surface velocity.
 			controllingBody.LinearVelocity = new JVector(SurfaceVelocity.x, playerData.JumpSpeed, SurfaceVelocity.z);
-			controllingBody.AffectedByGravity = true;
+			controllingBody.IsAffectedByGravity = true;
 
 			var v = controllingBody.LinearVelocity;
 			v.Y = playerData.JumpSpeed;
@@ -483,7 +614,7 @@ namespace Zeldo.Entities
 			Swap(ladderController);
 			RefreshJumps();
 
-			controllingBody.AffectedByGravity = false;
+			controllingBody.IsAffectedByGravity = false;
 		}
 
 		public void UnlockSkill(PlayerSkills skill)
@@ -517,9 +648,6 @@ namespace Zeldo.Entities
 			}
 			*/
 
-			// TODO: Add an isOrientationFixed boolean to rigid bodies and use that instead.
-			controllingBody.Orientation = JMatrix.Identity;
-
 			if (isJumpDecelerating && DecelerateJump(dt))
 			{
 				isJumpDecelerating = false;
@@ -535,20 +663,19 @@ namespace Zeldo.Entities
 					break;
 			}
 
+			var p = controllingBody.Position.ToVec3();
 			var v = controllingBody.LinearVelocity.ToVec3();
 			var entries = new []
 			{
-				$"Position: {Position.x:N2}, {Position.y:N2}, {Position.z:N2}",
+				$"P Position: {Position.x:N2}, {Position.y:N2}, {Position.z:N2}",
+				$"B position: {p.x:N2}, {p.y:N2}, {p.z:N2}",
 				$"Old position: {oldPosition.x:N2}, {oldPosition.y:N2}, {oldPosition.z:N2}",
 				$"Surface velocity: {SurfaceVelocity.x:N2}, {SurfaceVelocity.y:N2}, {SurfaceVelocity.z:N2}",
 				$"Body velocity: {v.x:N2}, {v.y:N2}, {v.z:N2}",
-				$"Body gravity: {controllingBody.AffectedByGravity}",
-				$"On surface: {OnSurface}",
-				$"Jump enabled: {skillsEnabled[JumpIndex]}",
-				$"DJ enabled: {skillsEnabled[DoubleJumpIndex]}",
-				$"Jump decelerating: {isJumpDecelerating}",
-				$"Jumps remaining: {jumpsRemaining}",
-				$"State: {State}"
+				$"Flat direction: {controller.FlatDirection}",
+				$"Arbiters: {controllingBody.Arbiters.Count}",
+				$"Contacts: {controllingBody.Arbiters.Sum(a => a.ContactList.Count)}",
+				$"On surface: {OnSurface}"
 			};
 
 			debugView.GetGroup("Player").AddRange(entries);

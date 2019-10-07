@@ -93,6 +93,8 @@ namespace Zeldo.Entities
 		public FollowController FollowController { get; set; }
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		public vec2 FlatDirection { get; private set; }
+
 		public void Dispose()
 		{
 			MessageSystem.Unsubscribe(this);
@@ -118,7 +120,7 @@ namespace Zeldo.Entities
 			{
 				switch (surface.SurfaceType)
 				{
-					case SurfaceTypes.Floor: ProcessRunning(data, dt);
+					case SurfaceTypes.Floor: FlatDirection = flatDirection; //ProcessRunning(data, dt);
 						break;
 
 					case SurfaceTypes.Wall: //ProcessWallMovement(data, dt);
@@ -175,7 +177,7 @@ namespace Zeldo.Entities
 			
 			return Utilities.Rotate(flatDirection, FollowController.Yaw);
 		}
-		
+
 		private void ProcessRunning(FullInputData data, float dt)
 		{
 			bool forward = data.Query(controls.RunForward, InputStates.Held);
@@ -203,6 +205,10 @@ namespace Zeldo.Entities
 				flatDirection *= SqrtTwo;
 			}
 
+			FlatDirection = flatDirection;
+
+			return;
+
 			// TODO: Make a decision about whether to keep sliding in the game in some form.
 			/*
 			player.SurfaceVelocity = player.State == PlayerStates.Sliding
@@ -210,14 +216,17 @@ namespace Zeldo.Entities
 				: AdjustRunningVelocity(flatDirection, dt);
 			*/
 
-			player.SurfaceVelocity = AdjustRunningVelocity(flatDirection, dt);
+			//player.SurfaceVelocity = AdjustRunningVelocity(flatDirection, dt);
+			player.ControllingBody.LinearVelocity = AdjustRunningVelocity(flatDirection, dt).ToJVector();
 		}
 
 		// TODO: Update to use speed values from player data.
-		private vec3 AdjustRunningVelocity(vec2 flatDirection, float dt)
+		//private vec3 AdjustRunningVelocity(vec2 flatDirection, float dt)
+		public vec3 AdjustRunningVelocity(vec2 flatDirection, float dt)
 		{
 			var surface = surfaceController.Surface;
-			var v = player.SurfaceVelocity;
+			//var v = player.SurfaceVelocity;
+			var v = player.ControllingBody.LinearVelocity.ToVec3();
 
 			// Deceleration.
 			if (flatDirection == vec2.Zero)
@@ -230,11 +239,11 @@ namespace Zeldo.Entities
 
 				// This assumes the player isn't moving exactly vertically (which shouldn't be possible since the
 				// player can't run on walls).
-				int oldSign = Math.Sign(v.x != 0 ? v.x : v.y);
+				int oldSign = Math.Sign(v.x != 0 ? v.x : v.z);
 
 				v -= Utilities.Normalize(v) * /*player.RunDeceleration*/ 50 * dt;
 
-				int newSign = Math.Sign(v.x != 0 ? v.x : v.y);
+				int newSign = Math.Sign(v.x != 0 ? v.x : v.z);
 
 				if (oldSign != newSign)
 				{
@@ -245,8 +254,6 @@ namespace Zeldo.Entities
 			}
 
 			// Acceleration.
-			flatDirection = Utilities.Rotate(flatDirection, FollowController.Yaw);
-
 			vec3 normal = surface.Normal;
 			vec3 sloped;
 

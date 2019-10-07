@@ -60,6 +60,7 @@
     <Compile Include="Collision\Shapes\SphereShape.cs" />
     <Compile Include="Collision\Shapes\TerrainShape.cs" />
     <Compile Include="Collision\Shapes\TriangleMeshShape.cs" />
+    <Compile Include="Collision\SurfaceHelper.cs" />
     <Compile Include="Collision\XenoCollide.cs" />
     <Compile Include="DataStructures\Action.cs" />
     <Compile Include="DataStructures\Hashset.cs" />
@@ -96,6 +97,9 @@
     <Compile Include="Dynamics\SoftBody.cs" />
     <Compile Include="ThreadManager.cs" />
     <Compile Include="World.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.Physics
+namespace Engine.Physics
 {
 	public enum WindingTypes
 	{
