@@ -1,4 +1,14 @@
+Videos:
+
 - Joseph Anderson
 - Matthewmatosis
+- Razbuten
 - Mark Brown (Game Maker's Toolkit)
+
+Libraries:
+
+- Thorben Linneweber (Jitter)
+
+References:
+
 - JasperRLZ (noclip.website)

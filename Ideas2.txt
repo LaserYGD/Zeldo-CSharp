@@ -192,6 +192,10 @@
 
 - Consider how much content is gated behind potentially difficult bosses (so you don't screw struggling players too badly)
 
+- Probably just re-watch "What Games Are Like For Someone Who Doesn't Play Games" several times (many good ideas in there)
+
+- For larger boss health bars, consider visually moving the bar from center to bottom (to make sure newer players notice)
+
  
 
 
