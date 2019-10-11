@@ -8,7 +8,7 @@ namespace Engine.Core
 	{
 		private List<IComponent> components = new List<IComponent>();
 
-		// Returning the component allows for chained function calls if desired.
+		// Returning the component allows for chained function calls (if desired).
 		public T Add<T>(T component) where T : IComponent
 		{
 			Debug.Assert(component != null, "Can't add a null component.");

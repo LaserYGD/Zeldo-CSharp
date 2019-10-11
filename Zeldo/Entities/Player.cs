@@ -27,6 +27,7 @@ using Zeldo.View;
 
 namespace Zeldo.Entities
 {
+	// TODO: Jumping is processed via jumpsRemaining, not the actual skill flags. Could consider optimizing this.
 	public class Player : Actor
 	{
 		private const int AscendIndex = (int)PlayerSkills.Ascend;
@@ -45,6 +46,10 @@ namespace Zeldo.Entities
 		private Sensor sensor;
 		private Weapon weapon;
 
+		// Flags
+		private TimedFlag coyoteFlag;
+
+		// Controllers
 		private AerialController aerialController;
 		private LadderController ladderController;
 
@@ -74,10 +79,17 @@ namespace Zeldo.Entities
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 
+			// Flags
+			coyoteFlag = Components.Add(new TimedFlag(playerData.CoyoteJumpTime, false));
+			coyoteFlag.OnExpiration = () =>
+			{
+				jumpsRemaining--;
+				skillsEnabled[JumpIndex] = false;
+			};
+
 			skillsUnlocked = new bool[skillCount];
 			skillsEnabled = new bool[skillCount];
 			controller = new PlayerController(this, playerData, controls, settings, CreateControllers());
-			//wallVectors = new List<vec3>();
 			facing = vec2.UnitX;
 
 			Swap(aerialController);
@@ -481,11 +493,9 @@ namespace Zeldo.Entities
 		{
 			// TODO: Move some of this to the base class.
 			surfaceController.Surface = null;
-			controllingBody.LinearVelocity = SurfaceVelocity.ToJVector();
 			controllingBody.IsAffectedByGravity = true;
-			jumpsRemaining--;
-			skillsEnabled[JumpIndex] = false;
 			surfaceController.Surface = null;
+			coyoteFlag.Refresh();
 
 			Swap(aerialController);
 		}
@@ -525,19 +535,15 @@ namespace Zeldo.Entities
 
 			// This single jump function can be triggered from multiple scenarios (including normal jumps off the
 			// ground, jumping off ladders and ropes, or jumping from an ascend).
-			if (OnSurface)
-			{
-				v.X = SurfaceVelocity.x;
-				v.Z = SurfaceVelocity.z;
-			}
 			// TODO: Process jumps from other scenarios (like ropes and ascend).
-			else
+			if (!OnSurface)
 			{
 			}
 
 			controllingBody.LinearVelocity = v;
 			surfaceController.Surface = null;
 			skillsEnabled[JumpIndex] = false;
+			coyoteFlag.Reset();
 
 			Swap(aerialController);
 		}
@@ -571,6 +577,10 @@ namespace Zeldo.Entities
 			skillsEnabled[DoubleJumpIndex] = djUnlocked;
 			jumpsRemaining = djUnlocked ? TargetJumps : 1;
 			isJumpDecelerating = false;
+
+			// I'm pretty sure this logic is correct (whenever jumps are refreshed, the coyote flag should be reset as
+			// well).
+			coyoteFlag.Reset();
 		}
 
 		public bool TryAscend()
@@ -707,13 +717,6 @@ namespace Zeldo.Entities
 
 		public override void Update(float dt)
 		{
-			/*
-			if (wallVectors.Count > 0)
-			{
-				ResolveWallVectors();
-			}
-			*/
-
 			if (isJumpDecelerating && DecelerateJump(dt))
 			{
 				isJumpDecelerating = false;
@@ -741,7 +744,8 @@ namespace Zeldo.Entities
 				$"Flat direction: {controller.FlatDirection}",
 				$"Arbiters: {controllingBody.Arbiters.Count}",
 				$"Contacts: {controllingBody.Arbiters.Sum(a => a.ContactList.Count)}",
-				$"On surface: {OnSurface}"
+				$"On surface: {OnSurface}",
+				$"Jumps remaining: {jumpsRemaining}"
 			};
 
 			debugView.GetGroup("Player").AddRange(entries);
@@ -756,33 +760,6 @@ namespace Zeldo.Entities
 
 			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(facing.x, 0, facing.y), Color.Cyan);
 		}
-
-		/*
-		private void ResolveWallVectors()
-		{
-			var final = vec3.Zero;
-
-			for (int i = 0; i < wallVectors.Count; i++)
-			{
-				var v = wallVectors[i];
-				final += v;
-
-				for (int j = i + 1; j < wallVectors.Count; j++)
-				{
-					wallVectors[j] -= Utilities.Project(v, wallVectors[j]);
-				}
-			}
-
-			if (Utilities.LengthSquared(final) > 0.001f)
-			{
-				Position += final;
-				SurfaceVelocity -= Utilities.Project(SurfaceVelocity, final);
-				isSurfaceControlOverridden = true;
-			}
-
-			wallVectors.Clear();
-		}
-		*/
 
 		private bool DecelerateJump(float dt)
 		{

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
-using Jitter;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Control;
 using Zeldo.Physics;
-using Zeldo.UI;
 
 namespace Zeldo.Entities.Core
 {

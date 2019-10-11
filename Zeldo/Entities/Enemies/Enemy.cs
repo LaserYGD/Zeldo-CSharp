@@ -1,18 +1,24 @@
-﻿using Zeldo.Entities.Core;
+﻿using Newtonsoft.Json.Linq;
+using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities.Enemies
 {
-	public abstract class Enemy : LivingEntity
+	public abstract class Enemy : Actor
 	{
 		// Since this game is built to be singleplayer-only, a single, static reference to the player can be used by
 		// all enemies.
-		private static Player player;
+		protected static Player player;
 
-		protected static Player GetPlayer(Scene scene)
+		// This function should be called once when the gameplay loop is loaded. Using a static scene event doesn't
+		// really work since the player needs to be added first.
+		public static void AcquirePlayer(Scene scene)
 		{
-			return player ?? (player = scene.GetEntities<Player>(EntityGroups.Player)[0]);
+			player = scene.GetEntities<Player>(EntityGroups.Player)[0];
 		}
 
+		// Similar to the function above, this function should be called once when the gameplay loop is unloaded.
+		// Leaving the player reference intact (even when the player is unloaded) could cause problems with garbage
+		// collection.
 		public static void InvalidatePlayer()
 		{
 			player = null;

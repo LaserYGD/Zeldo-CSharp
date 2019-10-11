@@ -27,9 +27,13 @@ namespace Zeldo.Entities
 			GroundedVaultThreshold = Properties.GetFloat("player.grounded.vault.threshold");
 			AerialVaultThreshold = Properties.GetFloat("player.aerial.vault.threshold");
 
+			// Sword attacks
+			UpwardSwipeLimit = Properties.GetFloat("player.upward.swipe.limit");
+			UpwardSwipeBoost = Properties.GetFloat("player.upward.swipe.boost");
+			AerialSwordBoost = Properties.GetFloat("player.aerial.sword.boost");
+
 			// Other
 			SlideThreshold = Properties.GetFloat("player.slide.threshold");
-			AerialAttackBoost = Properties.GetFloat("player.aerial.attack.boost");
 		}
 
 		// Jumps
@@ -57,8 +61,12 @@ namespace Zeldo.Entities
 		public float GroundedVaultThreshold { get; }
 		public float AerialVaultThreshold { get; }
 
+		// Sword attacks
+		public float UpwardSwipeLimit { get; }
+		public float UpwardSwipeBoost { get; }
+		public float AerialSwordBoost { get; }
+
 		// Other
 		public float SlideThreshold { get; }
-		public float AerialAttackBoost { get; }
 	}
 }

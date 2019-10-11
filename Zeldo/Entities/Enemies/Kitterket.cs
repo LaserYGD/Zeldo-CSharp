@@ -34,8 +34,6 @@ namespace Zeldo.Entities.Enemies
 		 */
 		public override void Update(float dt)
 		{
-			var player = GetPlayer(Scene);
-
 			if (Utilities.DistanceSquared(Position, player.Position) <= startleDistance * startleDistance)
 			{
 				Startle();

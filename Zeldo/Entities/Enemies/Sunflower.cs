@@ -41,8 +41,7 @@ namespace Zeldo.Entities.Enemies
 		{
 			if (isCharging)
 			{
-				// Interrupt charging by playing an animation and disrupting tendrils linking to trees
-
+				// TODO: Interrupt the gathering process.
 				isCharging = false;
 			}
 		}

@@ -205,19 +205,10 @@ namespace Zeldo.Entities
 				flatDirection *= SqrtTwo;
 			}
 
+			// TODO: Make a decision about whether to keep sliding in the game in some form.
 			FlatDirection = flatDirection;
 
 			return;
-
-			// TODO: Make a decision about whether to keep sliding in the game in some form.
-			/*
-			player.SurfaceVelocity = player.State == PlayerStates.Sliding
-				? AdjustSlidingVelocity(flatDirection, dt)
-				: AdjustRunningVelocity(flatDirection, dt);
-			*/
-
-			//player.SurfaceVelocity = AdjustRunningVelocity(flatDirection, dt);
-			player.ControllingBody.LinearVelocity = AdjustRunningVelocity(flatDirection, dt).ToJVector();
 		}
 
 		// TODO: Update to use speed values from player data.

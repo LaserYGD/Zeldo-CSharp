@@ -1,4 +1,6 @@
-﻿using Engine.Interfaces;
+﻿using System;
+using System.Diagnostics;
+using Engine.Interfaces;
 
 namespace Engine.Core
 {
@@ -10,22 +12,25 @@ namespace Engine.Core
 		private bool defaultValue;
 		private bool isPaused;
 
-		public TimedFlag(float duration, bool value)
+		public TimedFlag(float duration, bool defaultValue)
 		{
-			this.duration = duration;
+			Debug.Assert(duration > 0, "Timed flag duration must be positive.");
 
-			defaultValue = value;
+			this.duration = duration;
+			this.defaultValue = defaultValue;
+
 			isPaused = true;
-			Value = value;
 		}
 
-		// Flags are designed to be persistent.
+		// Flags are designed to be persistent (as long as the parent entity is loaded).
 		public bool IsComplete => false;
-		public bool Value { get; private set; }
+		public bool Value => isPaused ? !defaultValue : defaultValue;
 
-		public void Start()
+		public Action OnExpiration { private get; set; }
+
+		public void Refresh()
 		{
-			if (isPaused)
+			if (!isPaused)
 			{
 				elapsed = 0;
 			}
@@ -33,6 +38,13 @@ namespace Engine.Core
 			{
 				isPaused = false;
 			}
+		}
+
+		// This function allows the flag to be reset without trigging the expiration callback.
+		public void Reset()
+		{
+			elapsed = 0;
+			isPaused = true;
 		}
 
 		public void Update(float dt)
@@ -46,9 +58,8 @@ namespace Engine.Core
 
 			if (elapsed >= duration)
 			{
-				elapsed = 0;
-				Value = defaultValue;
-				isPaused = true;
+				Reset();
+				OnExpiration?.Invoke();
 			}
 		}
 	}
