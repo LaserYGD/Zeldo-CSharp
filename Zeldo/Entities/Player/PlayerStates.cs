@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Zeldo.Entities
+namespace Zeldo.Entities.Player
 {
 	// These states are meant to be mutually exclusive.
 	public enum PlayerStates

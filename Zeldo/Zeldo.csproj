@@ -84,7 +84,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Fonts\Leviathon.fnt" />
-    <None Include="Content\Json\Combat\Octopus.json">
+    <None Include="Content\Json\Combat\OctopusAttacks.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Json\Combat\PlayerSwordAttacks.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Json\Fragments\Demo.json">
@@ -266,14 +269,15 @@
     <Compile Include="Entities\Objects\Cannonball.cs" />
     <Compile Include="Entities\Objects\Crate.cs" />
     <Compile Include="Entities\Objects\Door.cs" />
-    <Compile Include="Entities\PlayerController.cs" />
-    <Compile Include="Entities\PlayerData.cs" />
-    <Compile Include="Entities\PlayerStates.cs" />
+    <Compile Include="Entities\Player\Combat\AerialSwordLift.cs" />
+    <Compile Include="Entities\Player\PlayerController.cs" />
+    <Compile Include="Entities\Player\PlayerData.cs" />
+    <Compile Include="Entities\Player\PlayerStates.cs" />
     <Compile Include="Entities\Weapons\MeleeWeapon.cs" />
     <Compile Include="Entities\Weapons\Twinblade.cs" />
-    <Compile Include="Entities\Player.cs" />
-    <Compile Include="Entities\PlayerControls.cs" />
-    <Compile Include="Entities\PlayerSkills.cs" />
+    <Compile Include="Entities\Player\PlayerCharacter.cs" />
+    <Compile Include="Entities\Player\PlayerControls.cs" />
+    <Compile Include="Entities\Player\PlayerSkills.cs" />
     <Compile Include="Entities\Projectiles\Arrow.cs" />
     <Compile Include="Entities\TreasureChest.cs" />
     <Compile Include="Entities\Weapons\Bow.cs" />

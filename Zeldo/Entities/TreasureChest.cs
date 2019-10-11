@@ -7,6 +7,7 @@ using GlmSharp;
 using Jitter.Dynamics;
 using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
+using Zeldo.Entities.Player;
 using Zeldo.Interfaces;
 
 namespace Zeldo.Entities
@@ -88,7 +89,7 @@ namespace Zeldo.Entities
 
 		public void OnInteract(Entity entity)
 		{
-			Player player = (Player)entity;
+			PlayerCharacter player = (PlayerCharacter)entity;
 			player.Inventory.Add(itemId);
 
 			/*

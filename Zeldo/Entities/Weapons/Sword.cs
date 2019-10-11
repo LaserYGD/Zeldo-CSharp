@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Zeldo.Combat;
 using Zeldo.Entities.Core;
 using Zeldo.Interfaces;
 
@@ -10,10 +11,12 @@ namespace Zeldo.Entities.Weapons
 		// TODO: Move most (or all) of this logic down to the base MeleeWeapon class.
 		// Melee weapons only hit targets once per swing (even if sensors overlap for multiple frames).
 		private List<ITargetable> targetsHit;
+		private Dictionary<string, AttackData> attacks;
 
 		public Sword()
 		{
 			targetsHit = new List<ITargetable>();
+			attacks = AttackData.Load("PlayerSwordAttacks.json");
 		}
 
 		public override void Initialize(Scene scene, JToken data)

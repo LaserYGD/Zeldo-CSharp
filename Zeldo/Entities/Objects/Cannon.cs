@@ -3,6 +3,7 @@ using GlmSharp;
 using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
+using Zeldo.Entities.Player;
 using Zeldo.Interfaces;
 
 namespace Zeldo.Entities.Objects
@@ -34,7 +35,7 @@ namespace Zeldo.Entities.Objects
 
 	    public void OnInteract(Entity entity)
 	    {
-		    Player player = (Player)entity;
+		    PlayerCharacter player = (PlayerCharacter)entity;
 
 		    if (!isLoaded)
 		    {

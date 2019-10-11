@@ -7,6 +7,7 @@ using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
+using Zeldo.Entities.Player;
 using Zeldo.Interfaces;
 using Zeldo.UI;
 
@@ -61,7 +62,7 @@ namespace Zeldo.Entities
 
 		public void OnInteract(Entity entity)
 		{
-			((Player)entity).Mount(this);
+			((PlayerCharacter)entity).Mount(this);
 		}
 
 		public override void Update(float dt)

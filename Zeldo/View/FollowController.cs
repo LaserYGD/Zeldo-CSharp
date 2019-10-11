@@ -7,6 +7,7 @@ using Engine.Utility;
 using Engine.View;
 using GlmSharp;
 using Zeldo.Entities;
+using Zeldo.Entities.Player;
 using Zeldo.Settings;
 
 namespace Zeldo.View
@@ -19,7 +20,7 @@ namespace Zeldo.View
 		// negatively affecting visibility of the player. Feels a bit better than a pure centered camera.
 		private const float Shift = 1;
 
-		private Player player;
+		private PlayerCharacter player;
 		private ControlSettings settings;
 
 		private float followDistance;
@@ -27,7 +28,7 @@ namespace Zeldo.View
 		private float yaw;
 		private float maxPitch;
 		
-		public FollowController(Player player, ControlSettings settings)
+		public FollowController(PlayerCharacter player, ControlSettings settings)
 		{
 			this.player = player;
 			this.settings = settings;

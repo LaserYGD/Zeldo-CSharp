@@ -1,6 +1,6 @@
 ﻿using Engine;
 
-namespace Zeldo.Entities
+namespace Zeldo.Entities.Player
 {
 	public class PlayerData
 	{
@@ -26,11 +26,6 @@ namespace Zeldo.Entities
 			StepThreshold = Properties.GetFloat("player.step.threshold");
 			GroundedVaultThreshold = Properties.GetFloat("player.grounded.vault.threshold");
 			AerialVaultThreshold = Properties.GetFloat("player.aerial.vault.threshold");
-
-			// Sword attacks
-			UpwardSwipeLimit = Properties.GetFloat("player.upward.swipe.limit");
-			UpwardSwipeBoost = Properties.GetFloat("player.upward.swipe.boost");
-			AerialSwordBoost = Properties.GetFloat("player.aerial.sword.boost");
 
 			// Other
 			SlideThreshold = Properties.GetFloat("player.slide.threshold");
@@ -60,11 +55,6 @@ namespace Zeldo.Entities
 		public float StepThreshold { get; }
 		public float GroundedVaultThreshold { get; }
 		public float AerialVaultThreshold { get; }
-
-		// Sword attacks
-		public float UpwardSwipeLimit { get; }
-		public float UpwardSwipeBoost { get; }
-		public float AerialSwordBoost { get; }
 
 		// Other
 		public float SlideThreshold { get; }

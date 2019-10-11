@@ -25,10 +25,10 @@ using Zeldo.UI;
 using Zeldo.UI.Hud;
 using Zeldo.View;
 
-namespace Zeldo.Entities
+namespace Zeldo.Entities.Player
 {
 	// TODO: Jumping is processed via jumpsRemaining, not the actual skill flags. Could consider optimizing this.
-	public class Player : Actor
+	public class PlayerCharacter : Actor
 	{
 		private const int AscendIndex = (int)PlayerSkills.Ascend;
 		private const int JumpIndex = (int)PlayerSkills.Jump;
@@ -72,7 +72,7 @@ namespace Zeldo.Entities
 		// this, vectors are accumulated each frame, then resolved using custom logic during the update step.
 		//private List<vec3> wallVectors;
 
-		public Player(ControlSettings settings) : base(EntityGroups.Player)
+		public PlayerCharacter(ControlSettings settings) : base(EntityGroups.Player)
 		{
 			controls = new PlayerControls();
 			playerData = new PlayerData();

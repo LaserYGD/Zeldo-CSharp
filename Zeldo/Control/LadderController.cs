@@ -3,6 +3,7 @@ using Engine.Utility;
 using GlmSharp;
 using Zeldo.Entities;
 using Zeldo.Entities.Grabbable;
+using Zeldo.Entities.Player;
 
 namespace Zeldo.Control
 {
@@ -13,7 +14,7 @@ namespace Zeldo.Control
 
 		// Ladders are designed to only work with the player (rather than generic actors). This may change in the
 		// future.
-		public LadderController(Player player) : base(player)
+		public LadderController(PlayerCharacter player) : base(player)
 		{
 		}
 
@@ -28,7 +29,7 @@ namespace Zeldo.Control
 		// This should be 1, -1, or 0 (representing up, down, or stationary on the ladder).
 		public int Direction { get; set; }
 
-		public void OnMount(Ladder ladder, Player player)
+		public void OnMount(Ladder ladder, PlayerCharacter player)
 		{
 			Ladder = ladder;
 			progress = player.Position.y - ladder.Position.y;

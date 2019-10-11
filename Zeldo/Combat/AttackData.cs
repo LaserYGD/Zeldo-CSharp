@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Engine.Utility;
 using Newtonsoft.Json;
 using Zeldo.Entities.Core;
@@ -32,6 +33,8 @@ namespace Zeldo.Combat
 			set => linkedType = Type.GetType(value);
 		}
 
+		public string Animation { get; set; }
+
 		[JsonProperty("Prepare")]
 		public float PreparationTime
 		{
@@ -62,6 +65,8 @@ namespace Zeldo.Combat
 
 		public Attack<T> Activate<T>(T parent) where T : Entity
 		{
+			Debug.Assert(parent != null, "Can't activate an attack with a null parent.");
+
 			return (Attack<T>)Activator.CreateInstance(linkedType, this, parent);
 		}
 	}

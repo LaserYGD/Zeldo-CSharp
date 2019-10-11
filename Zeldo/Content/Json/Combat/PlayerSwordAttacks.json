@@ -1,0 +1,10 @@
+﻿{
+	"Aerial Lift": { 
+		"Class": "Zeldo.Entities.Player.Combat.AerialSwordLift",
+		"Animation": "AerialSwordLift",
+		"Prepare": 0,
+		"Execute": 0.4,
+		"Cooldown": 0,
+		"Reset": 0
+	}
+}

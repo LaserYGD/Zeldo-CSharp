@@ -2,7 +2,7 @@
 using Engine.Input.Data;
 using static Engine.GLFW;
 
-namespace Zeldo.Entities
+namespace Zeldo.Entities.Player
 {
 	public class PlayerControls
 	{

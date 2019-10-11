@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
+using Zeldo.Entities.Player;
 
 namespace Zeldo.Entities.Enemies
 {
@@ -7,13 +8,13 @@ namespace Zeldo.Entities.Enemies
 	{
 		// Since this game is built to be singleplayer-only, a single, static reference to the player can be used by
 		// all enemies.
-		protected static Player player;
+		protected static PlayerCharacter player;
 
 		// This function should be called once when the gameplay loop is loaded. Using a static scene event doesn't
 		// really work since the player needs to be added first.
 		public static void AcquirePlayer(Scene scene)
 		{
-			player = scene.GetEntities<Player>(EntityGroups.Player)[0];
+			player = scene.GetEntities<PlayerCharacter>(EntityGroups.Player)[0];
 		}
 
 		// Similar to the function above, this function should be called once when the gameplay loop is unloaded.

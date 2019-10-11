@@ -1,8 +1,11 @@
-﻿using Engine.Timing;
+﻿using System.Collections.Generic;
+using Engine.Timing;
+using Zeldo.Combat;
 using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities.Weapons
 {
+	// TODO: Consider moving the attack map down here (since all weapons will need attacks attached).
 	public abstract class Weapon : Entity
 	{
 		private SingleTimer cooldownTimer;

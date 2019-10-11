@@ -16,16 +16,17 @@ using Zeldo.Physics;
 using Zeldo.Settings;
 using Zeldo.View;
 
-namespace Zeldo.Entities
+namespace Zeldo.Entities.Player
 {
 	public class PlayerController : IReceiver
 	{
+		// Movement indexes
 		private const int AscendIndex = (int)PlayerSkills.Ascend;
 		private const int DashIndex = (int)PlayerSkills.Dash;
 		private const int GrabIndex = (int)PlayerSkills.Grab;
 		private const int JumpIndex = (int)PlayerSkills.Jump;
 
-		// Combat indexes.
+		// Combat indexes
 		private const int BlockIndex = (int)PlayerSkills.Block;
 		private const int ParryIndex = (int)PlayerSkills.Parry;
 
@@ -33,7 +34,7 @@ namespace Zeldo.Entities
 		// an actual square root call at runtime).
 		private const float SqrtTwo = 1.41421356237f;
 
-		private Player player;
+		private PlayerCharacter player;
 		private PlayerData playerData;
 		private PlayerControls controls;
 		private ControlSettings settings;
@@ -57,7 +58,7 @@ namespace Zeldo.Entities
 		private InputBuffer grabBuffer;
 		private InputBuffer ascendBuffer;
 
-		public PlayerController(Player player, PlayerData playerData, PlayerControls controls,
+		public PlayerController(PlayerCharacter player, PlayerData playerData, PlayerControls controls,
 			ControlSettings settings, AbstractController[] controllers)
 		{
 			this.player = player;
@@ -65,9 +66,9 @@ namespace Zeldo.Entities
 			this.controls = controls;
 			this.settings = settings;
 
-			surfaceController = (SurfaceController)controllers[Player.ControllerIndexes.Surface];
-			aerialController = (AerialController)controllers[Player.ControllerIndexes.Aerial];
-			ladderController = (LadderController)controllers[Player.ControllerIndexes.Ladder];
+			surfaceController = (SurfaceController)controllers[PlayerCharacter.ControllerIndexes.Surface];
+			aerialController = (AerialController)controllers[PlayerCharacter.ControllerIndexes.Aerial];
+			ladderController = (LadderController)controllers[PlayerCharacter.ControllerIndexes.Ladder];
 
 			attackBuffer = new SingleTimer(time => { });
 			attackBuffer.IsRepeatable = true;
