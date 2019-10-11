@@ -12,6 +12,11 @@ namespace Zeldo.Entities.Player.Combat
 			boost = Properties.GetFloat("player.aerial.sword.boost");
 		}
 
+		public override bool ShouldTrigger()
+		{
+			return base.ShouldTrigger();
+		}
+
 		protected override void OnExecute()
 		{
 			var body = Parent.ControllingBody;
@@ -24,6 +29,7 @@ namespace Zeldo.Entities.Player.Combat
 			if (v.Y < boost)
 			{
 				v.Y = boost;
+				body.LinearVelocity = v;
 			}
 		}
 	}

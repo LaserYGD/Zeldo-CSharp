@@ -17,6 +17,7 @@ namespace Zeldo.Combat
 		// Using an array for durations simplifies advancing through phases, including attacks where one or more phases
 		// are unused (defined as that phase's duration being zero).
 		private float[] phaseDurations;
+		private string animation;
 
 		private Type linkedType;
 
@@ -33,37 +34,66 @@ namespace Zeldo.Combat
 			set => linkedType = Type.GetType(value);
 		}
 
-		public string Animation { get; set; }
+		public string Animation
+		{
+			get => animation;
+			set
+			{
+				Debug.Assert(!string.IsNullOrEmpty(value), "Animation string can't be null or empty.");
+
+				animation = value;
+			}
+		}
 
 		[JsonProperty("Prepare")]
 		public float PreparationTime
 		{
 			get => phaseDurations[(int)AttackPhases.Prepare - 1];
-			set => phaseDurations[(int)AttackPhases.Prepare - 1] = value;
+			set
+			{
+				Debug.Assert(value >= 0, "Preparation time can't be negative.");
+
+				phaseDurations[(int)AttackPhases.Prepare - 1] = value;
+			}
 		}
 
 		[JsonProperty("Execute")]
 		public float ExecutionTime
 		{
 			get => phaseDurations[(int)AttackPhases.Execute - 1];
-			set => phaseDurations[(int)AttackPhases.Execute - 1] = value;
+			set
+			{
+				Debug.Assert(value > 0, "Execution time must be positive.");
+
+				phaseDurations[(int)AttackPhases.Execute - 1] = value;
+			}
 		}
 
 		[JsonProperty("Cooldown")]
 		public float CooldownTime
 		{
 			get => phaseDurations[(int)AttackPhases.Cooldown - 1];
-			set => phaseDurations[(int)AttackPhases.Cooldown - 1] = value;
+			set
+			{
+				Debug.Assert(value >= 0, "Cooldown time can't be negative.");
+
+				phaseDurations[(int)AttackPhases.Cooldown - 1] = value;
+			}
 		}
 
 		[JsonProperty("Reset")]
 		public float ResetTime
 		{
 			get => phaseDurations[(int)AttackPhases.Reset - 1];
-			set => phaseDurations[(int)AttackPhases.Reset - 1] = value;
+			set
+			{
+				Debug.Assert(value >= 0, "Reset time can't be negative.");
+
+				phaseDurations[(int)AttackPhases.Reset - 1] = value;
+			}
 		}
 
-		public Attack<T> Activate<T>(T parent) where T : Entity
+		public Attack<T> CreateAttack<T>(T parent) where T : Entity
 		{
 			Debug.Assert(parent != null, "Can't activate an attack with a null parent.");
 

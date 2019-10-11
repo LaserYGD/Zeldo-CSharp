@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Engine.Interfaces;
 using Engine.Timing;
 using Zeldo.Entities.Core;
@@ -13,6 +14,7 @@ namespace Zeldo.Combat
 		private AttackData data;
 		private SingleTimer timer;
 		private Action<float>[] phaseTicks;
+		private Func<bool> triggerCallback;
 		private AttackPhases phase;
 
 		protected Attack(AttackData data, T parent)
@@ -37,14 +39,36 @@ namespace Zeldo.Combat
 
 		protected T Parent { get; }
 
-		// Attacks are only added to component collections when started. As such, the attack is complete when it
-		// loops through all phases back around to idle.
-		public bool IsComplete => phase == AttackPhases.Idle;
+		// Like many components, attacks are designed to be instantiated once when the parent is spawned, then
+		// activated when needed.
+		public bool IsComplete => false;
+
+		// All attacks have a specific list of requirements before they'll execute. Sometimes this logic is simple and
+		// can be encapsulated in the attack class itself. For cases when trigger logic is more complicated, a custom
+		// callback can be attached instead.
+		public Func<bool> TriggerCallback
+		{
+			set
+			{
+				Debug.Assert(value != null, "Can't set a null trigger callback on attacks.");
+
+				triggerCallback = value;
+			}
+		}
+
+		// Attack logic assumes that, for any particular set of attacks and under any possible circumstances, there
+		// will be exactly one attack eligible to be executed. This design also intentionally makes it more difficult
+		// to implement RNG in attack patterns.
+		public virtual bool ShouldTrigger()
+		{
+			// This means that if a callback isn't set and this function isn't overridden, attack classes cannot
+			// execute (since this function will always return false).
+			return triggerCallback != null && triggerCallback();
+		}
 
 		public void Start()
 		{
-			// It's assumed that if this function is called, at least one phase will be enabled. Otherwise, the phase
-			// will immediately advance back to idle.
+			// All attacks are guaranteed to have at least one phase enabled (the execution phase).
 			AdvancePhase();
 		}
 

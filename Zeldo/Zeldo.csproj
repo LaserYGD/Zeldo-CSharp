@@ -270,6 +270,7 @@
     <Compile Include="Entities\Objects\Crate.cs" />
     <Compile Include="Entities\Objects\Door.cs" />
     <Compile Include="Entities\Player\Combat\AerialSwordLift.cs" />
+    <Compile Include="Entities\Player\Combat\AerialSwordSwipe.cs" />
     <Compile Include="Entities\Player\PlayerController.cs" />
     <Compile Include="Entities\Player\PlayerData.cs" />
     <Compile Include="Entities\Player\PlayerStates.cs" />
