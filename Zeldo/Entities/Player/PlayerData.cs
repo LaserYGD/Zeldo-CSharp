@@ -29,6 +29,7 @@ namespace Zeldo.Entities.Player
 
 			// Other
 			SlideThreshold = Properties.GetFloat("player.slide.threshold");
+			KillPlane = Properties.GetInt("kill.plane");
 		}
 
 		// Jumps
@@ -58,5 +59,6 @@ namespace Zeldo.Entities.Player
 
 		// Other
 		public float SlideThreshold { get; }
+		public int KillPlane { get; }
 	}
 }

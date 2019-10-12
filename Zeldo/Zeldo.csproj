@@ -90,6 +90,9 @@
     <None Include="Content\Json\Combat\PlayerSwordAttacks.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Json\Combat\PlayerTwinbladeAttack.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Json\Fragments\Demo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -366,7 +369,6 @@
     <Compile Include="Weather\WeatherFormation.cs" />
     <Compile Include="Weather\WeatherManager.cs" />
     <Compile Include="Weather\Wind.cs" />
-    <Compile Include="ZeldoConstants.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GlmSharp, Version=0.9.8.0, Culture=neutral, processorArchitecture=MSIL">

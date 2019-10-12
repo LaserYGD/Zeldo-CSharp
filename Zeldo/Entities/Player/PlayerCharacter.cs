@@ -67,11 +67,6 @@ namespace Zeldo.Entities.Player
 
 		private vec2 facing;
 
-		// While grounded, it's possible for actors to hit multiple walls at once. These collisions can result in
-		// overlapping resolution vectors, which in turn can cause visual jitter as those vectors are applied. To fix
-		// this, vectors are accumulated each frame, then resolved using custom logic during the update step.
-		//private List<vec3> wallVectors;
-
 		public PlayerCharacter(ControlSettings settings) : base(EntityGroups.Player)
 		{
 			controls = new PlayerControls();
@@ -94,7 +89,25 @@ namespace Zeldo.Entities.Player
 
 			Swap(aerialController);
 		}
-		
+
+		public override vec3 Position
+		{
+			get => base.Position;
+			set
+			{
+				// In this way, it's impossible for the player to ever actually touch the kill plane (since they're
+				// immediately respawned instead).
+				if (value.y <= playerData.KillPlane)
+				{
+					Respawn();
+
+					return;
+				}
+
+				base.Position = value;
+			}
+		}
+
 		// This is required to move in the direction of camera aim (passed through to the controller class).
 		public FollowController FollowController
 		{
@@ -430,6 +443,10 @@ namespace Zeldo.Entities.Player
 			}
 
 			return d;
+		}
+
+		private void Respawn()
+		{
 		}
 
 		protected override void OnLanding(vec3 p, SurfaceTriangle surface)
