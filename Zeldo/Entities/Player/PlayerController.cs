@@ -382,6 +382,7 @@ namespace Zeldo.Entities.Player
 
 		private void ProcessAttack(FullInputData data, float dt)
 		{
+			/*
 			var weapon = player.Weapon;
 
 			// Helper function to trigger a weapon's primary attack with buffer time.
@@ -429,6 +430,7 @@ namespace Zeldo.Entities.Player
 			{
 				TriggerPrimary();
 			}
+			*/
 		}
 
 		private void ProcessBlock(FullInputData data)

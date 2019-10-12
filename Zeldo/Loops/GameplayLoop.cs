@@ -95,7 +95,7 @@ namespace Zeldo.Loops
 
 			// TODO: Set player position from a save slot.
 			PlayerCharacter player = new PlayerCharacter(settings);
-			player.Equip(new Sword());
+			player.Equip(new Sword(player));
 			player.UnlockSkill(PlayerSkills.Grab);
 			player.UnlockSkill(PlayerSkills.Jump);
 			player.UnlockSkill(PlayerSkills.DoubleJump);
