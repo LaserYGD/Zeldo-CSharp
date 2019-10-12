@@ -9,9 +9,18 @@ namespace Zeldo.Combat
 {
 	public class AttackData
 	{
-		public static Dictionary<string, AttackData> Load(string filename)
+		public static Dictionary<int, AttackData> Load(string filename)
 		{
-			return JsonUtilities.Deserialize<Dictionary<string, AttackData>>("Combat/" + filename);
+			var map = JsonUtilities.Deserialize<Dictionary<string, AttackData>>("Combat/" + filename);
+			var hashed = new Dictionary<int, AttackData>();
+
+			// Attack names are internal, so they're stored using hash codes rather than the raw string.=
+			foreach (var pair in map)
+			{
+				hashed.Add(pair.Key.GetHashCode(), pair.Value);
+			}
+
+			return hashed;
 		}
 
 		// Using an array for durations simplifies advancing through phases, including attacks where one or more phases
@@ -93,10 +102,8 @@ namespace Zeldo.Combat
 			}
 		}
 
-		public Attack<T> CreateAttack<T>(T parent) where T : Entity
+		public Attack<T> CreateAttack<T>(T parent) where T : LivingEntity
 		{
-			Debug.Assert(parent != null, "Can't activate an attack with a null parent.");
-
 			return (Attack<T>)Activator.CreateInstance(linkedType, this, parent);
 		}
 	}

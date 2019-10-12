@@ -2,21 +2,20 @@
 using Newtonsoft.Json.Linq;
 using Zeldo.Combat;
 using Zeldo.Entities.Core;
+using Zeldo.Entities.Player;
 using Zeldo.Interfaces;
 
 namespace Zeldo.Entities.Weapons
 {
-	public class Sword : MeleeWeapon
+	public class Sword : MeleeWeapon<PlayerCharacter>
 	{
 		// TODO: Move most (or all) of this logic down to the base MeleeWeapon class.
 		// Melee weapons only hit targets once per swing (even if sensors overlap for multiple frames).
 		private List<ITargetable> targetsHit;
-		private Dictionary<string, AttackData> attacks;
 
-		public Sword()
+		public Sword(PlayerCharacter owner) : base("PlayerSwordAttacks.json", owner)
 		{
 			targetsHit = new List<ITargetable>();
-			attacks = AttackData.Load("PlayerSwordAttacks.json");
 		}
 
 		public override void Initialize(Scene scene, JToken data)

@@ -44,7 +44,7 @@ namespace Zeldo.Entities.Player
 		private PlayerHealthDisplay healthDisplay;
 		private DebugView debugView;
 		private Sensor sensor;
-		private Weapon weapon;
+		private Weapon<PlayerCharacter> weapon;
 
 		// Flags
 		private TimedFlag coyoteFlag;
@@ -103,7 +103,6 @@ namespace Zeldo.Entities.Player
 
 		// The player owns their own inventory.
 		public Inventory Inventory { get; }
-		public Weapon Weapon => weapon;
 
 		// States are used by the controller class to more easily determine when to apply certain actions.
 		public PlayerStates State { get; private set; }
@@ -659,11 +658,9 @@ namespace Zeldo.Entities.Player
 			return Utilities.Dot(target.Position.swizzle.xz - position.swizzle.xz, facing) > 0;
 		}
 
-		public void Equip(Weapon weapon)
+		public void Equip(Weapon<PlayerCharacter> weapon)
 		{
 			this.weapon = weapon;
-
-			weapon.Owner = this;
 		}
 
 		public void Block()

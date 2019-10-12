@@ -221,6 +221,7 @@
   <ItemGroup>
     <Compile Include="CharacterControlTester.cs" />
     <Compile Include="Combat\Attack.cs" />
+    <Compile Include="Combat\AttackCollection.cs" />
     <Compile Include="Combat\AttackData.cs" />
     <Compile Include="Combat\AttackPhases.cs" />
     <Compile Include="Control\AerialController.cs" />

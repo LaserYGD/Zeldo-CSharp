@@ -6,10 +6,7 @@ using Zeldo.Entities.Core;
 
 namespace Zeldo.Combat
 {
-	// Although most attacks are carried out by living entities, it's possible a non-living entity (like a static
-	// turret) could attack as well (without requiring health values, damage callbacks, and other data associated with
-	// living things).
-	public abstract class Attack<T> : IComponent where T : Entity
+	public abstract class Attack<T> : IComponent where T : LivingEntity
 	{
 		private AttackData data;
 		private SingleTimer timer;
@@ -70,6 +67,13 @@ namespace Zeldo.Combat
 		{
 			// All attacks are guaranteed to have at least one phase enabled (the execution phase).
 			AdvancePhase();
+		}
+
+		public void Cancel()
+		{
+			timer.Elapsed = 0;
+			timer.IsPaused = true;
+			phase = AttackPhases.Idle;
 		}
 
 		private void AdvancePhase()

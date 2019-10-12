@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using Engine.Sensors;
-using Newtonsoft.Json.Linq;
-using Zeldo.Entities.Core;
-using Zeldo.Interfaces;
+﻿using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities.Weapons
 {
-	public abstract class MeleeWeapon : Weapon
+	public abstract class MeleeWeapon<T> : Weapon<T> where T : LivingEntity
 	{
+		protected MeleeWeapon(string attackFile, T owner) : base(attackFile, owner)
+		{
+		}
 	}
 }
