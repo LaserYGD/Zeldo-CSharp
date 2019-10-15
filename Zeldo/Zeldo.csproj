@@ -243,6 +243,8 @@
     <Compile Include="Entities\Bosses\Octopus\TentacleSlamAttack.cs" />
     <Compile Include="Entities\Bosses\Octopus\TentacleSweepAttack.cs" />
     <Compile Include="Entities\Bosses\Octopus\TentacleThrustAttack.cs" />
+    <Compile Include="Entities\Bosses\Tree\RootFlower.cs" />
+    <Compile Include="Entities\Bosses\Tree\TreeBoss.cs" />
     <Compile Include="Entities\Characters\Character.cs" />
     <Compile Include="Entities\Characters\LeviathonHead.cs" />
     <Compile Include="Entities\Characters\LeviathonTentacle.cs" />
