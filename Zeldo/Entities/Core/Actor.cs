@@ -18,10 +18,9 @@ namespace Zeldo.Entities.Core
 		private bool isOldPositionUnset;
 		private float halfHeight;
 
-		// TODO: Is this needed?
-		protected bool isSurfaceControlOverridden;
-
 		protected vec3 oldPosition;
+
+		// TODO: Consider removing the surface controller (and storing the surface directly instead).
 		protected SurfaceController surfaceController;
 
 		protected Actor(EntityGroups group) : base(group)
@@ -74,6 +73,14 @@ namespace Zeldo.Entities.Core
 		{
 			get => position - new vec3(0, halfHeight, 0);
 			set => Position = value + new vec3(0, halfHeight, 0);
+		}
+
+		public vec3 SurfacePosition
+		{
+			set
+			{
+
+			}
 		}
 
 		// A separate velocity is used for controlled movement along surfaces (such as the ground). The controlling

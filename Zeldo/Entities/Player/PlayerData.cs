@@ -20,8 +20,6 @@ namespace Zeldo.Entities.Player
 			AscendTargetSpeed = Properties.GetFloat("player.ascend.target.speed");
 
 			// Walls (plus steps and vaults)
-			WallLowerThreshold = Properties.GetFloat("player.wall.lower.threshold");
-			WallUpperThreshold = Properties.GetFloat("player.wall.upper.threshold");
 			WallPressThreshold = Properties.GetFloat("player.wall.press.threshold");
 			StepThreshold = Properties.GetFloat("player.step.threshold");
 			GroundedVaultThreshold = Properties.GetFloat("player.grounded.vault.threshold");
@@ -50,8 +48,6 @@ namespace Zeldo.Entities.Player
 		public float AscendTargetSpeed { get; }
 
 		// Walls (plus steps and vaults)
-		public float WallUpperThreshold { get; }
-		public float WallLowerThreshold { get; }
 		public float WallPressThreshold { get; }
 		public float StepThreshold { get; }
 		public float GroundedVaultThreshold { get; }

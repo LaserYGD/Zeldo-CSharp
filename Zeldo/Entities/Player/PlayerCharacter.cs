@@ -212,7 +212,7 @@ namespace Zeldo.Entities.Player
 			if (onSurface && entity.IsStatic)
 			{
 				// TODO: Process other kinds of collisions against static entities (steps, vaults, wall presses, etc.).
-				OnGroundedSurfaceCollision(normal, penetration);
+				//OnGroundedSurfaceCollision(normal, penetration);
 			}
 		}
 
@@ -220,83 +220,72 @@ namespace Zeldo.Entities.Player
 		public override void OnCollision(vec3 p, vec3 normal, vec3[] triangle, float penetration)
 		{
 			var surface = new SurfaceTriangle(triangle, normal, 0);
+			var isFloor = surface.SurfaceType == SurfaceTypes.Floor;
+			var isWall = surface.SurfaceType == SurfaceTypes.Wall;
 
 			// This situation can only occur if the triangle represents a different kind of surface (e.g. while
 			// running on the ground, you might hit a wall).
 			if (OnSurface)
 			{
-				// Wall-pressing is processed first (which, by definition, can only occur from floors to walls).
-				if (surface.SurfaceType == SurfaceTypes.Wall)
+				var onGround = surfaceController.Surface.SurfaceType == SurfaceTypes.Floor;
+
+				// TODO: Process sliding from a wall back onto the ground.
+				if (onGround)
 				{
-					// TODO: Should probably override ShouldCollideWith instead (to negate the step collision entirely).
-					bool isStep = p.y - GroundPosition.y <= playerData.StepThreshold;
-
-					if (isStep)
+					if (isWall)
 					{
-						return;
-					}
-
-					// If the player hits a wall with a velocity close to perpendicular, the player stops and presses
-					// against the wall. Once in that state, the player will remain pressed until velocity moves outside
-					// a small angle threshold.
-					float angleN = Utilities.Angle(normal.swizzle.xz);
-					float angleV = Utilities.Angle(controllingBody.LinearVelocity.ToVec3().swizzle.xz);
-
-					// TODO: Verify that the wall isn't a vault target.
-					// TODO: Verify that the collision point is wide enough to press (i.e. not a glancing hit).
-					if (Utilities.Delta(angleN, angleV) <= playerData.WallPressThreshold)
-					{
-						PressAgainstWall();
-
-						return;
+						OnGroundedWallCollision(p, normal);
 					}
 				}
+				// Since the player can't traverse ceilings, if the player is on a surface and *not* on the ground,
+				// they must be on a wall.
+				else if (isFloor)
+				{
+					//OnWallLanding();
+				}
 
-				// This applies to both walls and low-hanging ceilings.
-				//OnGroundedSurfaceCollision(normal, penetration);
+				return;
+			}
+
+			// If the player isn't on a surface, they must be airborne.
+			if (isWall)
+			{
+				OnAerialWallCollision(surface);
 			}
 		}
 
-		/*
-		protected override bool ShouldCollideWith(RigidBody body, JVector[] triangle)
+		private void OnGroundedWallCollision(vec3 p, vec3 normal)
 		{
-			// Triangles are only sent into the callback for triangle mesh and terrain collisions. For now, collisions
-			// are only ignored to accommodate surface movement (which also means that actors without a surface
-			// controller created can return early).
-			//if (triangle == null || surfaceController == null)
-			if (triangle == null)
+			// TODO: Should probably override ShouldCollideWith instead (to negate the step collision entirely).
+			bool isStep = p.y - GroundPosition.y <= playerData.StepThreshold;
+
+			if (isStep)
 			{
-				return true;
+				return;
 			}
 
-			var onSurface = OnSurface;
-			var surfaceType = SurfaceTriangle.ComputeSurfaceType(triangle, WindingTypes.CounterClockwise);
+			// If the player hits a wall with a velocity close to perpendicular, the player stops and presses
+			// against the wall. Once in that state, the player will remain pressed until velocity moves outside
+			// a small angle threshold.
+			float angleN = Utilities.Angle(normal.swizzle.xz);
+			float angleV = Utilities.Angle(controllingBody.LinearVelocity.ToVec3().swizzle.xz);
 
-			bool isPotentialLanding = !onSurface && surfaceType == SurfaceTypes.Floor;
-
-			// TODO: This will cause glancing downward collisions to be ignored. Should they be?
-			// Since actors use capsules, potential ground collisions are ignored from the air. Instead, raycasts are
-			// used to determine when the exact bottom-center of the capsule crosses a triangle.
-			if (isPotentialLanding)
+			// TODO: Verify that the wall isn't a vault target.
+			// TODO: Verify that the collision point is wide enough to press (i.e. not a glancing hit).
+			if (Utilities.Delta(angleN, angleV) <= playerData.WallPressThreshold)
 			{
-				return false;
+				PressAgainstWall();
 			}
-
-			// While on a surface, only collisions with surfaces of *different* types are processed. For example,
-			// while grounded, only wall and ceiling collisions should occur (the surface controller handles movement
-			// among surfaces of the same type).
-			if (!(onSurface && surfaceType != surfaceController.Surface.SurfaceType))
-			{
-				return false;
-			}
-
-			// This helps prevent phantom collisions while separating from a surface (or sliding along a corner).
-			var n = Utilities.ComputeNormal(triangle[0], triangle[1], triangle[2], WindingTypes.CounterClockwise,
-				false).ToVec3();
-
-			return Utilities.Dot(controller.FlatDirection, n.swizzle.xz) < 0;
 		}
-		*/
+
+		private void OnWallLanding()
+		{
+		}
+
+		private void OnAerialWallCollision(SurfaceTriangle surface)
+		{
+			surfaceController.Surface = surface;
+		}
 
 		private void PreStep(float step)
 		{
@@ -476,28 +465,6 @@ namespace Zeldo.Entities.Player
 			*/
 
 			base.OnSurfaceTransition(surface);
-		}
-
-		// TODO: Does this need to be moved down to Actor?
-		private void OnGroundedSurfaceCollision(vec3 normal, float penetration)
-		{
-			// This helps ignore glancing collisions while sliding along another wall.
-			if (Utilities.Dot(SurfaceVelocity, normal) >= 0)
-			{
-				return;
-			}
-			
-			// Rather than resolve collisions using the wall normal, vectors are projected to resolve parallel to
-			// the current surface. This approach prevents weird tunneling into the floor for walls that aren't
-			// perfectly vertical.
-			var v = Utilities.ProjectOntoPlane(normal, surfaceController.Surface.Normal);
-			var angle = Utilities.Angle(normal, v);
-			var l = penetration / (float)Math.Cos(angle);
-			
-			// This step occurs before the scene is updated. 
-			Position += v * l;
-			SurfaceVelocity -= Utilities.Project(SurfaceVelocity, v);
-			isSurfaceControlOverridden = true;
 		}
 
 		private void PressAgainstWall()
