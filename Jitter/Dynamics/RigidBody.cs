@@ -584,6 +584,7 @@ namespace Jitter.Dynamics
 
 	    public int BroadphaseTag { get; set; }
 
+        // TODO: Consider adding normal to this callback (to avoid having to recompute it later).
 		public Func<RigidBody, JVector[], bool> ShouldCollideWith { get; set; }
 
         public Action<float> PreStep { get; set; }

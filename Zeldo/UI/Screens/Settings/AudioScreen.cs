@@ -41,10 +41,10 @@ namespace Zeldo.UI.Screens.Settings
 				musicSlider.Value = settings.MusicVolume;
 				voiceSlider.Value = settings.VoiceVolume;
 
-				masterMuteButton.IsPressed = settings.MasterMuted;
-				effectsMuteButton.IsPressed = settings.EffectsMuted;
-				musicMuteButton.IsPressed = settings.MusicMuted;
-				voiceMuteButton.IsPressed = settings.VoiceMuted;
+				masterMuteButton.IsPressed = settings.IsMasterMuted;
+				effectsMuteButton.IsPressed = settings.IsEffectsMuted;
+				musicMuteButton.IsPressed = settings.IsMusicMuted;
+				voiceMuteButton.IsPressed = settings.IsVoiceMuted;
 			}
 		}
 	}

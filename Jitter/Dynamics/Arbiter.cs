@@ -160,20 +160,20 @@ namespace Jitter.Dynamics
         /// <param name="point2">Point on body2. In world space.</param>
         /// <param name="normal">The normal pointing to body2.</param>
         /// <param name="penetration">The estimated penetration depth.</param>
-        public Contact AddContact(JVector point1, JVector point2, JVector normal, float penetration, 
-            ContactSettings contactSettings)
+        public Contact AddContact(JVector point1, JVector point2, JVector normal, JVector[] triangle,
+            float penetration, ContactSettings contactSettings)
         {
-            JVector relPos1;
-            JVector.Subtract(ref point1, ref body1.position, out relPos1);
-
-            int index;
+            JVector.Subtract(ref point1, ref body1.position, out var relPos1);
 
             lock (contactList)
             {
-                if (this.contactList.Count == 4)
+                int index;
+
+                if (contactList.Count == 4)
                 {
                     index = SortCachedPoints(ref relPos1, penetration);
-                    ReplaceContact(ref point1, ref point2, ref normal, penetration, index, contactSettings);
+                    ReplaceContact(ref point1, ref point2, ref normal, triangle, penetration, index, contactSettings);
+                    
                     return null;
                 }
 
@@ -181,28 +181,28 @@ namespace Jitter.Dynamics
 
                 if (index >= 0)
                 {
-                    ReplaceContact(ref point1, ref point2, ref normal, penetration, index, contactSettings);
+                    ReplaceContact(ref point1, ref point2, ref normal, triangle, penetration, index, contactSettings);
+                   
                     return null;
                 }
-                else
-                {
-                    Contact contact = Contact.Pool.GetNew();
-                    contact.Initialize(body1, body2, ref point1, ref point2, ref normal, penetration, true, contactSettings);
-                    contactList.Add(contact);
-                    return contact;
-                }
+
+                Contact contact = Contact.Pool.GetNew();
+                contact.Initialize(body1, body2, ref point1, ref point2, ref normal, triangle, penetration, true,
+                    contactSettings);
+                contactList.Add(contact);
+
+                return contact;
             }
         }
 
-        private void ReplaceContact(ref JVector point1, ref JVector point2, ref JVector n, float p, int index,
-            ContactSettings contactSettings)
+        private void ReplaceContact(ref JVector point1, ref JVector point2, ref JVector n, JVector[] triangle, float p,
+            int index, ContactSettings contactSettings)
         {
             Contact contact = contactList[index];
 
             Debug.Assert(body1 == contact.body1, "Body1 and Body2 not consistent.");
 
-            contact.Initialize(body1, body2, ref point1, ref point2, ref n, p, false, contactSettings);
-
+            contact.Initialize(body1, body2, ref point1, ref point2, ref n, triangle, p, false, contactSettings);
         }
 
         private int GetCacheEntry(ref JVector realRelPos1, float contactBreakThreshold)
@@ -210,16 +210,19 @@ namespace Jitter.Dynamics
             float shortestDist = contactBreakThreshold * contactBreakThreshold;
             int size = contactList.Count;
             int nearestPoint = -1;
+           
             for (int i = 0; i < size; i++)
             {
-                JVector diffA; JVector.Subtract(ref contactList[i].relativePos1,ref realRelPos1,out diffA);
+                JVector.Subtract(ref contactList[i].relativePos1,ref realRelPos1,out var diffA);
                 float distToManiPoint = diffA.LengthSquared();
+                
                 if (distToManiPoint < shortestDist)
                 {
                     shortestDist = distToManiPoint;
                     nearestPoint = i;
                 }
             }
+
             return nearestPoint;
         }
 

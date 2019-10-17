@@ -322,6 +322,7 @@
     <Compile Include="Room.cs" />
     <Compile Include="SensorGroups.cs" />
     <Compile Include="Settings\ControlSettings.cs" />
+    <Compile Include="Settings\SubtitleTypes.cs" />
     <Compile Include="Settings\VideoSettings.cs" />
     <Compile Include="Settings\AudioSettings.cs" />
     <Compile Include="SkeletalTester.cs" />

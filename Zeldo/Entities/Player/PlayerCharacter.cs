@@ -64,6 +64,12 @@ namespace Zeldo.Entities.Player
 
 		// The game has double jumping, but is coded to accommodate any number of extra jumps.
 		private int jumpsRemaining;
+		private float capsuleRadius;
+
+		// Wall control is more complex than ground movement since the capsule can be in contact with multiple
+		// triangles at once.
+		private List<SurfaceTriangle> walls;
+		private SurfaceTriangle ground;
 
 		private vec2 facing;
 
@@ -86,6 +92,7 @@ namespace Zeldo.Entities.Player
 			skillsEnabled = new bool[skillCount];
 			controller = new PlayerController(this, playerData, controls, settings, CreateControllers());
 			facing = vec2.UnitX;
+			walls = new List<SurfaceTriangle>();
 
 			Swap(aerialController);
 		}
@@ -171,7 +178,9 @@ namespace Zeldo.Entities.Player
 		{
 			// The height here is the height of the cylinder (excluding the two rounded caps).
 			var capsuleHeight = Properties.GetFloat("player.capsule.height");
-			var capsuleRadius = Properties.GetFloat("player.capsule.radius");
+
+			// Radius is also used for wall processing.
+			capsuleRadius = Properties.GetFloat("player.capsule.radius");
 
 			Height = capsuleHeight + capsuleRadius * 2;
 
@@ -246,12 +255,6 @@ namespace Zeldo.Entities.Player
 
 				return;
 			}
-
-			// If the player isn't on a surface, they must be airborne.
-			if (isWall)
-			{
-				OnAerialWallCollision(surface);
-			}
 		}
 
 		private void OnGroundedWallCollision(vec3 p, vec3 normal)
@@ -282,23 +285,28 @@ namespace Zeldo.Entities.Player
 		{
 		}
 
-		private void OnAerialWallCollision(SurfaceTriangle surface)
-		{
-			surfaceController.Surface = surface;
-		}
-
 		private void PreStep(float step)
 		{
-			if (!OnSurface)
+			if (ground != null)
 			{
-				return;
+				ProcessGroundMovement(step);
 			}
+			else if (walls.Count > 0)
+			{
+				ProcessWallMovement(step);
+			}
+			else
+			{
+				ProcessAerialWallContacts();
+			}
+		}
 
+		private void ProcessGroundMovement(float step)
+		{
 			// TODO: Should velocity be applied here?
 			controllingBody.LinearVelocity = controller.AdjustRunningVelocity(controller.FlatDirection, step).ToJVector();
 
 			var vectors = new List<vec3>();
-			var surfaceNormal = surfaceController.Surface.Normal;
 
 			foreach (Arbiter arbiter in controllingBody.Arbiters)
 			{
@@ -324,7 +332,7 @@ namespace Zeldo.Entities.Player
 						n *= -1;
 					}
 
-					var v = Utilities.Normalize(Utilities.ProjectOntoPlane(n, surfaceNormal));
+					var v = Utilities.Normalize(Utilities.ProjectOntoPlane(n, ground.Normal));
 					var angle = Utilities.Angle(n, v);
 					var l = contact.Penetration / (float)Math.Cos(angle);
 
@@ -336,6 +344,73 @@ namespace Zeldo.Entities.Player
 			if (vectors.Count > 0)
 			{
 				ResolveSurfaceVectors(vectors, step);
+			}
+		}
+
+		private void ProcessWallMovement(float step)
+		{
+		}
+
+		private void ProcessAerialWallContacts()
+		{
+			if (walls.Count > 0)
+			{
+				return;
+			}
+
+			var velocity = controllingBody.LinearVelocity.ToVec3();
+
+			foreach (Arbiter arbiter in controllingBody.Arbiters)
+			{
+				var contacts = arbiter.ContactList;
+
+				for (int i = contacts.Count - 1; i >= 0; i--)
+				{
+					var contact = contacts[i];
+					var b1 = contact.Body1;
+					var b2 = contact.Body2;
+
+					if (!(b1.IsStatic || b2.IsStatic))
+					{
+						continue;
+					}
+
+					var n = contact.Normal.ToVec3();
+
+					if (controllingBody == b1)
+					{
+						n *= -1;
+					}
+
+					// TODO: Could be optimized a bit by not constructing the full surface if it's a non-wall.
+					// TODO: Could also be optimized by computing the flat normal only as needed.
+					var surface = new SurfaceTriangle(contact.Triangle, n, 0);
+
+					if (surface.SurfaceType != SurfaceTypes.Wall)
+					{
+						continue;
+					}
+
+					// This determines the side of the triangle on which the relevant capsule point lies. If it's
+					// opposite velocity, that means the point must have already passed through the plane.
+					var p = controllingBody.Position.ToVec3() - surface.FlatNormal * capsuleRadius;
+					var v = p - surface.Points[0];
+					var d = Utilities.Dot(v.swizzle.xz, velocity.swizzle.xz);
+
+					// Being equal to zero should be impossible here, but it's safer to check anyway.
+					if (d >= 0)
+					{
+						continue;
+					}
+
+					if (surface.Project(p, out var result))
+					{
+						controllingBody.Position = result.ToJVector();
+						controllingBody.LinearVelocity = JVector.Zero;
+
+						walls.Add(surface);
+					}
+				}
 			}
 		}
 

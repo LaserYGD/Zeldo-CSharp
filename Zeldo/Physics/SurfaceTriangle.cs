@@ -25,6 +25,11 @@ namespace Zeldo.Physics
 			return ComputeSurfaceType(Utilities.ComputeNormal(p0, p1, p2, winding).ToVec3(), out _);
 		}
 
+		public static SurfaceTypes ComputeSurfaceType(vec3 normal)
+		{
+			return ComputeSurfaceType(normal, out _);
+		}
+
 		private static SurfaceTypes ComputeSurfaceType(vec3 normal, out float theta)
 		{
 			// This is the tilt angle from a perfectly flat floor.
@@ -50,17 +55,23 @@ namespace Zeldo.Physics
 		// For projection purposes, the double area (2 * area) is what you want.
 		private float doubleArea;
 
-		public SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, WindingTypes winding, int material) :
-			this(p0, p1, p2, Utilities.ComputeNormal(p0, p1, p2, winding), material)
+		public SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, WindingTypes winding, int material,
+			bool shouldComputeFlatNormal = true) :
+			this(p0, p1, p2, Utilities.ComputeNormal(p0, p1, p2, winding), material, shouldComputeFlatNormal)
 		{
 		}
 
-		public SurfaceTriangle(vec3[] points, vec3 normal, int material) :
-			this(points[0], points[1], points[2], normal, material)
+		public SurfaceTriangle(vec3[] points, vec3 normal, int material, bool shouldComputeFlatNormal = true) :
+			this(points[0], points[1], points[2], normal, material, shouldComputeFlatNormal)
 		{
 		}
 
-		private SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, vec3 normal, int material)
+		public SurfaceTriangle(JVector[] points, vec3 normal, int material, bool shouldComputeFlatNormal = true) :
+			this(points[0].ToVec3(), points[1].ToVec3(), points[2].ToVec3(), normal, material, shouldComputeFlatNormal)
+		{
+		}
+
+		private SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, vec3 normal, int material, bool shouldComputeFlatNormal)
 		{
 			Points = new[] { p0, p1, p2 };
 			Normal = normal;
@@ -97,10 +108,18 @@ namespace Zeldo.Physics
 			{
 				Slope *= -1;
 			}
+
+			// The flat normal is used when processing wall control for the player. By definition, this only applies to
+			// walls.
+			if (SurfaceType == SurfaceTypes.Wall && shouldComputeFlatNormal)
+			{
+				FlatNormal = Utilities.Normalize(normal.x, 0, normal.z);
+			}
 		}
 
 		public vec3[] Points { get; }
 		public vec3 Normal { get; }
+		public vec3 FlatNormal { get; }
 
 		public SurfaceTypes SurfaceType { get; }
 

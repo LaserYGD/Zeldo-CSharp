@@ -905,8 +905,8 @@ namespace Jitter
             }
         }
 
-		// CUSTOM: Added triangle as an argument.
-        private void CollisionDetected(RigidBody body1, RigidBody body2, JVector point1, JVector point2, JVector normal, JVector[] triangle, float penetration)
+        private void CollisionDetected(RigidBody body1, RigidBody body2, JVector point1, JVector point2,
+            JVector normal, JVector[] triangle, float penetration)
         {
             Arbiter arbiter;
 
@@ -931,11 +931,11 @@ namespace Jitter
             if (arbiter.body1 == body1)
             {
                 JVector.Negate(ref normal, out normal);
-                contact = arbiter.AddContact(point1, point2, normal, penetration, contactSettings);
+                contact = arbiter.AddContact(point1, point2, normal, triangle, penetration, contactSettings);
             }
             else
             {
-                contact = arbiter.AddContact(point2, point1, normal, penetration, contactSettings);
+                contact = arbiter.AddContact(point2, point1, normal, triangle, penetration, contactSettings);
             }
 
             if (contact != null)

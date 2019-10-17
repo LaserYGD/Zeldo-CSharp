@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
@@ -18,17 +19,11 @@ namespace Zeldo.Entities.Core
 		private bool isOldPositionUnset;
 		private float halfHeight;
 
-		protected vec3 oldPosition;
-
-		// TODO: Consider removing the surface controller (and storing the surface directly instead).
-		protected SurfaceController surfaceController;
+		protected SurfaceTriangle ground;
 
 		protected Actor(EntityGroups group) : base(group)
 		{
 			isOldPositionUnset = true;
-
-			// TODO: Do all actors need a surface controller created, or only actors that move?
-			surfaceController = new SurfaceController(this);
 		}
 		
 		public float Height
@@ -42,32 +37,25 @@ namespace Zeldo.Entities.Core
 			get => base.Position;
 			set
 			{
-				/*
-				// Even while grounded, actors can be affected by the regular physics step (for example, running into
-				// walls).
-				if (OnSurface)
-				{
-					// This assumes that all actors will have a valid controlling body created.
-					//controllingBody.LinearVelocity = (value - controllingBody.Position.ToVec3()).ToJVector();
-					controllingBody.Position = value.ToJVector();
-				}
-				*/
-
 				// Without this check, the first airborne raytrace (to handle collisions with surfaces) would be way
 				// too large (unless the actor happens to spawn at the origin).
 				if (isOldPositionUnset)
 				{
-					oldPosition = value;
+					OldPosition = value;
 					isOldPositionUnset = false;
 				}
 				else
 				{
-					oldPosition = position;
+					OldPosition = position;
 				}
 
 				base.Position = value;
 			}
 		}
+
+		// Since it's common for multiple physics steps to occur per rendered frame (usually two), it's actually the
+		// body's old position that needs to be stored, not the entity's.
+		protected vec3 OldBodyPosition { get; private set; }
 
 		public vec3 GroundPosition
 		{
@@ -75,21 +63,123 @@ namespace Zeldo.Entities.Core
 			set => Position = value + new vec3(0, halfHeight, 0);
 		}
 
-		public vec3 SurfacePosition
+		protected virtual bool ShouldCollideWith(RigidBody body, JVector[] triangle)
 		{
-			set
+			// Triangles are only sent into the callback for triangle mesh and terrain collisions.
+			if (triangle == null)
 			{
+				return true;
+			}
 
+			var onGround = ground != null;
+			var surfaceType = SurfaceTriangle.ComputeSurfaceType(triangle, WindingTypes.CounterClockwise);
+
+			bool isPotentialLanding = !onGround && surfaceType == SurfaceTypes.Floor;
+
+			// TODO: This will cause glancing downward collisions to be ignored. Should they be?
+			// Since actors use capsules, potential ground collisions are ignored from the air. Instead, raycasts are
+			// used to determine when the exact bottom-center of the capsule crosses a triangle.
+			if (isPotentialLanding)
+			{
+				return false;
+			}
+
+			// While grounded, only wall and ceiling collisions should generate contacts.
+			if (onGround)
+			{
+				return surfaceType != SurfaceTypes.Floor;
+			}
+
+			// This helps prevent phantom collisions while separating from a non-floor surface (or sliding around a
+			// corner).
+			var n = Utilities.ComputeNormal(triangle[0], triangle[1], triangle[2], WindingTypes.CounterClockwise,
+				false);
+
+			return JVector.Dot(controllingBody.LinearVelocity, n) < 0;
+		}
+
+		protected virtual void PreStep(float step)
+		{
+			OldBodyPosition = controllingBody.Position.ToVec3();
+		}
+
+		protected virtual void PostStep(float step)
+		{
+			if (CastGround(out var results))
+			{
 			}
 		}
 
-		// A separate velocity is used for controlled movement along surfaces (such as the ground). The controlling
-		// body's velocity can't be easily reused because it'd constantly be affected by the physics engine.
-		public vec3 SurfaceVelocity { get; set; }
+		private bool CastGround(out RaycastResults results)
+		{
+			results = null;
 
-		// This used to be "onGround", but was updated to account for any kind of surface (e.g. slimes that can crawl
-		// on walls or ceilings).
-		public bool OnSurface => surfaceController.Surface != null;
+			var v = controllingBody.LinearVelocity;
+
+			// TODO: If moving platforms are added, a relative velocity check will be needed.
+			if (v.Y > 0)
+			{
+				return false;
+			}
+
+			// Since the player's body is a capsule, a ground landing is only processed if the bottom point passes
+			// through a ground triangle.
+			// TODO: Store better references to static meshes on the scene.
+			var world = Scene.World;
+			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
+
+			vec3 halfVector = new vec3(0, halfHeight, 0);
+			vec3 p1 = OldBodyPosition - halfVector;
+			vec3 p2 = controllingBody.Position.ToVec3() - halfVector;
+
+			results = PhysicsUtilities.Raycast(world, map, p1, p2);
+
+			if (results == null)
+			{
+				return false;
+			}
+
+			// Actors can only land on the ground (not on top of ceilings, which would be back-facing).
+			return SurfaceTriangle.ComputeSurfaceType(results.Normal) == SurfaceTypes.Floor;
+		}
+
+		protected void Swap(AbstractController controller, bool shouldComputeImmediately = false)
+		{
+			activeController = controller;
+
+			// Calling this function here ensures the actor will be positioned properly the moment the controller
+			// changes (if needed).
+			if (shouldComputeImmediately)
+			{
+				controller.Update(0);
+			}
+		}
+
+		// This function is called via manual raycasting during the physics step.
+		protected virtual void OnLanding(vec3 p, SurfaceTriangle surface)
+		{
+			// TODO: When jumping straight up and down on a sloped surface, XZ position can start to change very slowly. Should be fixed.
+			surface.Project(p, out vec3 result);
+
+			ground = surface;
+
+			// TODO: Apply speed properly when landing on slopes (rather than setting Y to zero).
+			var v = controllingBody.LinearVelocity;
+			v.Y = 0;
+			controllingBody.LinearVelocity = v;
+			controllingBody.Position = result.ToJVector();
+			controllingBody.IsAffectedByGravity = false;
+
+			OnSurfaceTransition(surface);
+		}
+
+		protected virtual void OnSurfaceTransition(SurfaceTriangle surface)
+		{
+		}
+
+		public virtual void BecomeAirborneFromLedge()
+		{
+		}
 
 		protected RigidBody CreateKinematicBody(Scene scene, Shape shape)
 		{
@@ -106,89 +196,6 @@ namespace Zeldo.Entities.Core
 			return body;
 		}
 
-		protected virtual bool ShouldCollideWith(RigidBody body, JVector[] triangle)
-		{
-			// Triangles are only sent into the callback for triangle mesh and terrain collisions. For now, collisions
-			// are only ignored to accommodate surface movement (which also means that actors without a surface
-			// controller created can return early).
-			//if (triangle == null || surfaceController == null)
-			if (triangle == null)
-			{
-				return true;
-			}
-
-			var onSurface = OnSurface;
-			var surfaceType = SurfaceTriangle.ComputeSurfaceType(triangle, WindingTypes.CounterClockwise);
-
-			bool isPotentialLanding = !onSurface && surfaceType == SurfaceTypes.Floor;
-
-			// TODO: This will cause glancing downward collisions to be ignored. Should they be?
-			// Since actors use capsules, potential ground collisions are ignored from the air. Instead, raycasts are
-			// used to determine when the exact bottom-center of the capsule crosses a triangle.
-			if (isPotentialLanding)
-			{
-				return false;
-			}
-
-			// While on a surface, only collisions with surfaces of *different* types are processed. For example,
-			// while grounded, only wall and ceiling collisions should occur (the surface controller handles movement
-			// among surfaces of the same type).
-			if (!(onSurface && surfaceType != surfaceController.Surface.SurfaceType))
-			{
-				return false;
-			}
-
-			// This helps prevent phantom collisions while separating from a surface (or sliding along a corner).
-			var n = Utilities.ComputeNormal(triangle[0], triangle[1], triangle[2], WindingTypes.CounterClockwise,
-				false);
-
-			return JVector.Dot(controllingBody.LinearVelocity, n) < 0;
-		}
-
-		protected void Swap(AbstractController controller, bool shouldComputeImmediately = false)
-		{
-			activeController = controller;
-
-			// Calling this function here ensures the actor will be positioned properly the moment the controller
-			// changes (if needed).
-			if (shouldComputeImmediately)
-			{
-				controller.Update(0);
-			}
-		}
-
-		protected virtual void OnLanding(vec3 p, SurfaceTriangle surface)
-		{
-			// TODO: When jumping straight up and down on a sloped surface, XZ position can start to change very slowly. Should be fixed.
-			// Note that by setting ground position *before* the onSurface flag, the body's velocity isn't wastefully
-			// set twice (since it's forcibly set to zero below).
-			surface.Project(p, out vec3 result);
-
-			// Note: it's important to set the surface controller's surface before updating position (to ensure that
-			// OnSurface returns true).
-			surfaceController.Surface = surface;
-			GroundPosition = result;
-
-			// TODO: Account for speed differences when landing on slopes (since maximum flat speed will be a bit lower). Maybe quick deceleration?
-			var v = controllingBody.LinearVelocity;
-			v.Y = 0;
-			controllingBody.LinearVelocity = v;
-			controllingBody.Position = position.ToJVector();
-			controllingBody.IsAffectedByGravity = false;
-
-			Swap(surfaceController);
-			OnSurfaceTransition(surface);
-		}
-
-		public virtual void OnSurfaceTransition(SurfaceTriangle surface)
-		{
-			surfaceController.Surface = surface;
-		}
-
-		public virtual void BecomeAirborneFromLedge()
-		{
-		}
-
 		public void PlayAnimation(string animation)
 		{
 		}
@@ -198,8 +205,10 @@ namespace Zeldo.Entities.Core
 			// TODO: Verify the ordering of method calls here.
 			Components.Update(dt);
 			selfUpdate = true;
-			activeController?.Update(dt);
+			Position = controllingBody.Position.ToVec3();
+			selfUpdate = false;
 
+			/*
 			// This handles actors landing from being airborne (using a downward raytrace from the bottom of the
 			// capsule).
 			if (!OnSurface && CheckGroundCollision(out var results))
@@ -216,41 +225,10 @@ namespace Zeldo.Entities.Core
 				Position = controllingBody.Position.ToVec3();
 				//isSurfaceControlOverridden = false;
 			}
-
-			selfUpdate = false;
+			*/
 
 			// Note that the base Update function is intentionally not called (it's easier to just duplicate a bit of
 			// code here).
-		}
-
-		private bool CheckGroundCollision(out RaycastResults results)
-		{
-			results = null;
-
-			var v = controllingBody.LinearVelocity;
-
-			// TODO: If moving platforms are added, a relative velocity check will be needed.
-			// TODO: Is this check needed anymore?
-			// This prevents false collisions just after jumping.
-			if (v.Y > 0)
-			{
-				return false;
-			}
-
-			// Since the player's body is a capsule, a ground landing is only considered valid if the bottom point
-			// passes through a triangle (rather than any collision with the static world mesh).
-			// TODO: Store easier references to static meshes on the scene.
-			var world = Scene.World;
-			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
-
-			vec3 halfVector = new vec3(0, halfHeight, 0);
-			vec3 p1 = oldPosition - halfVector;
-			vec3 p2 = Position - halfVector;
-
-			results = PhysicsUtilities.Raycast(world, map, p1, p2);
-
-			// Actors can only land on surfaces facing the actor (not back-facing ones).
-			return results != null && Utilities.Dot(results.Normal, v.ToVec3()) < 0;
 		}
 	}
 }

@@ -93,6 +93,9 @@ namespace Jitter.Dynamics
 		internal JVector p1;
 		internal JVector p2;
 
+        // CUSTOM: Added to support wall movement.
+        internal JVector[] triangle;
+
         internal float accumulatedNormalImpulse;
         internal float accumulatedTangentImpulse;
         internal float penetration;
@@ -159,6 +162,9 @@ namespace Jitter.Dynamics
         /// The contact normal.
         /// </summary>
         public JVector Normal => normal;
+
+        // This will be null for non-triangle contacts.
+        public JVector[] Triangle => triangle;
 	    #endregion
 
         /// <summary>
@@ -795,13 +801,19 @@ namespace Jitter.Dynamics
         /// <param name="n">The normal pointing to body2.</param>
         /// <param name="penetration">The estimated penetration depth.</param>
         public void Initialize(RigidBody body1, RigidBody body2, ref JVector point1, ref JVector point2, ref JVector n,
-            float penetration, bool newContact, ContactSettings settings)
+            JVector[] triangle, float penetration, bool newContact, ContactSettings settings)
         {
-            this.body1 = body1;  this.body2 = body2;
-            this.normal = n; normal.Normalize();
-            this.p1 = point1; this.p2 = point2;
+            this.body1 = body1;
+            this.body2 = body2;
+            this.triangle = triangle;
 
-            this.isNewContact = newContact;
+            normal = n;
+            normal.Normalize();
+
+            p1 = point1;
+            p2 = point2;
+
+            isNewContact = newContact;
 
             JVector.Subtract(ref p1, ref body1.position, out relativePos1);
             JVector.Subtract(ref p2, ref body2.position, out relativePos2);
