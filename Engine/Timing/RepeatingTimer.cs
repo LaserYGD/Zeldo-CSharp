@@ -14,7 +14,7 @@ namespace Engine.Timing
 
 		public override void Update(float dt)
 		{
-			if (IsPaused)
+			if (IsPaused || IsComplete)
 			{
 				return;
 			}

@@ -75,6 +75,10 @@ namespace Jitter.Dynamics
 	    internal JVector torque;
 		internal JVector sweptDirection = JVector.Zero;
 
+        // CUSTOM: Let's see if this works.
+	    internal JVector storedLinear;
+	    internal JVector storedAngular;
+
 		internal Material material;
         internal JBBox boundingBox;
 	    internal CollisionIsland island;
@@ -201,8 +205,8 @@ namespace Jitter.Dynamics
         /// world.
         /// </summary>
         public bool AllowDeactivation { get; set; }
-
         public bool EnableSpeculativeContacts { get; set; }
+        public bool RequiresResolution { get; set; }
 
         /// <summary>
         /// The axis aligned bounding box of the body.

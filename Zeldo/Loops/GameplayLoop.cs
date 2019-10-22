@@ -9,6 +9,7 @@ using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.Physics;
 using Engine.Sensors;
+using Engine.Timing;
 using Engine.Utility;
 using Engine.View;
 using GlmSharp;
@@ -45,14 +46,28 @@ namespace Zeldo.Loops
 		private bool isFrameAdvanceReady;
 
 		private Sprite3D sprite;
+		private RepeatingTimer cubeTimer;
 
 		private int physicsMaxIterations;
+		private int cubeCount;
 
 		public GameplayLoop(TitleLoop titleLoop = null) : base(LoopTypes.Gameplay)
 		{
 			// TODO: Pull relevant objects from the title loop (likely camera and maybe scene).
 			camera = new Camera3D();
 			physicsMaxIterations = Properties.GetInt("physics.max.iterations");
+
+			cubeTimer = new RepeatingTimer(progress =>
+			{
+				var cube = new DummyCube(RigidBodyTypes.Dynamic, true);
+				cube.Position = scene.GetEntities<PlayerCharacter>(EntityGroups.Player)[0].Position +
+					new vec3(0.1f, 5, 0.6f);
+
+				scene.Add(cube);
+				cubeCount++;
+
+				return cubeCount < 25;
+			}, 0.5f, 0.5f);
 		}
 
 		public override void Initialize()
@@ -109,10 +124,10 @@ namespace Zeldo.Loops
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
 
-			CreateDebugCubes();
-
 			var fragment = scene.LoadFragment("Demo.json");
 			player.Position = fragment.Origin + fragment.Spawn;
+
+			CreateDebugCubes();
 
 			camera.Attach(new FollowController(player, settings));
 
@@ -143,12 +158,13 @@ namespace Zeldo.Loops
 
 		private void CreateDebugCubes()
 		{
+			/*
 			var random = new Random();
 
 			for (int i = 0; i < 40; i++)
 			{
 				float x = (float)random.NextDouble() * 10 - 5 + 10;
-				float y = (float)random.NextDouble() * 5 + 10;
+				float y = (float)random.NextDouble() * 5 + 5;
 				float z = (float)random.NextDouble() * 10 - 5;
 
 				var cube = new DummyCube(RigidBodyTypes.Dynamic, true);
@@ -156,6 +172,7 @@ namespace Zeldo.Loops
 
 				scene.Add(cube);
 			}
+			*/
 		}
 
 		// TODO: With the changes to surface processing within Jitter, does penetration need to be passed to entities?
@@ -234,11 +251,13 @@ namespace Zeldo.Loops
 
 		public override void Update(float dt)
 		{
+			cubeTimer.Update(dt);
+
 			if (!isFrameAdvanceEnabled || isFrameAdvanceReady)
 			{
 				sprite.Orientation *= quat.FromAxisAngle(dt, vec3.UnitY);
 
-				world.Step(dt, true, PhysicsStep, physicsMaxIterations);
+				world.Step(dt, false, PhysicsStep, physicsMaxIterations);
 				space.Update();
 				scene.Update(dt);
 			}

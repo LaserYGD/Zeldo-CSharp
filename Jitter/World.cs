@@ -109,14 +109,14 @@ namespace Jitter
                 if (RemovedSoftBody != null) RemovedSoftBody(body);
             }
 
-            internal void RaiseBodiesBeginCollide(RigidBody body1,RigidBody body2)
+            internal void RaiseBodiesBeginCollide(RigidBody body1, RigidBody body2)
             {
-                if (BodiesBeginCollide != null) BodiesBeginCollide(body1,body2);
+                if (BodiesBeginCollide != null) BodiesBeginCollide(body1, body2);
             }
 
             internal void RaiseBodiesEndCollide(RigidBody body1, RigidBody body2)
             {
-                if (BodiesEndCollide != null) BodiesEndCollide(body1,body2);
+                if (BodiesEndCollide != null) BodiesEndCollide(body1, body2);
             }
 
             internal void RaiseActivatedBody(RigidBody body)
@@ -460,7 +460,7 @@ namespace Jitter
         public void AddBody(RigidBody body)
         {
             if (body == null) throw new ArgumentNullException("body", "body can't be null.");
-            if(rigidBodies.Contains(body)) throw new ArgumentException("The body was already added to the world.", "body");
+            if (rigidBodies.Contains(body)) throw new ArgumentException("The body was already added to the world.", "body");
 
             events.RaiseAddedRigidBody(body);
 
@@ -490,7 +490,7 @@ namespace Jitter
         /// <param name="constraint">The constraint which should be removed.</param>
         public void AddConstraint(Constraint constraint)
         {
-            if(constraints.Contains(constraint)) 
+            if (constraints.Contains(constraint))
                 throw new ArgumentException("The constraint was already added to the world.", "constraint");
 
             constraints.Add(constraint);
@@ -511,7 +511,7 @@ namespace Jitter
             CollisionDetect, BuildIslands, HandleArbiter, UpdateContacts,
             PreStep, DeactivateBodies, IntegrateForces, Integrate, PostStep, ClothUpdate, Num
         }
-        
+
         /// <summary>
         /// Time in ms for every part of the <see cref="Step"/> method.
         /// </summary>
@@ -588,8 +588,22 @@ namespace Jitter
                 body.DoSelfCollision(collisionDetectionHandler);
             }
 
+            // Integrate forces (changes linear and angular velocity on relevant bodies).
+            sw.Reset();
+            sw.Start();
+            IntegrateForces();
+            sw.Stop();
+            debugTimes[(int)DebugType.IntegrateForces] = sw.Elapsed.TotalMilliseconds;
+
             sw.Stop();
             debugTimes[(int)DebugType.ClothUpdate] = sw.Elapsed.TotalMilliseconds;
+
+            // Integrate bodies (by applying linear and angular velocity). Also updates bounding boxes.
+            sw.Reset();
+            sw.Start();
+            Integrate(multithread);
+            sw.Stop();
+            debugTimes[(int)DebugType.Integrate] = sw.Elapsed.TotalMilliseconds;
 
             // Detect collisions.
             sw.Reset();
@@ -617,12 +631,13 @@ namespace Jitter
             sw.Stop();
             debugTimes[(int)DebugType.DeactivateBodies] = sw.Elapsed.TotalMilliseconds;
 
-            // Integrate forces (changes linear and angular velocity on relevant bodies).
-            sw.Reset();
-            sw.Start();
-            IntegrateForces();
-            sw.Stop();
-            debugTimes[(int)DebugType.IntegrateForces] = sw.Elapsed.TotalMilliseconds;
+            // Store velocities (linear and angular) and reset resolution flags.
+            foreach (RigidBody body in RigidBodies)
+            {
+                body.storedLinear = body.linearVelocity;
+                body.storedAngular = body.angularVelocity;
+                body.RequiresResolution = false;
+            }
 
             // Iterate contacts (modifies linear and angular velocity on relevant bodies, but does NOT change position
             // directly).
@@ -632,12 +647,59 @@ namespace Jitter
             sw.Stop();
             debugTimes[(int)DebugType.HandleArbiter] = sw.Elapsed.TotalMilliseconds;
 
-            // Integrate bodies (by applying linear and angular velocity). Also updates bounding boxes.
+            // Resolve collisions.
+            foreach (RigidBody body in RigidBodies)
+            {
+                if (!body.RequiresResolution)
+                {
+                    continue;
+                }
+
+                JVector effectiveLinear = body.linearVelocity - body.storedLinear;
+                JVector effectiveAngular = body.angularVelocity - body.storedAngular;
+
+                // Apply linear velocity.
+                JVector.Multiply(ref effectiveLinear, timestep, out var temp);
+                JVector.Add(ref temp, ref body.position, out body.position);
+
+                bool isRotationFixed = body.isRotationFixed;
+
+                if (!body.isParticle && !isRotationFixed)
+                {
+                    //exponential map
+                    JVector axis;
+                    float angle = effectiveAngular.Length();
+
+                    if (angle < 0.001f)
+                    {
+                        // use Taylor's expansions of sync function
+                        // axis = body.angularVelocity * (0.5f * timestep - (timestep * timestep * timestep) * (0.020833333333f) * angle * angle);
+                        JVector.Multiply(ref effectiveAngular, (0.5f * timestep - (timestep * timestep * timestep) * (0.020833333333f) * angle * angle), out axis);
+                    }
+                    else
+                    {
+                        // sync(fAngle) = sin(c*fAngle)/t
+                        JVector.Multiply(ref effectiveAngular, ((float)Math.Sin(0.5f * angle * timestep) / angle), out axis);
+                    }
+
+                    JQuaternion dorn = new JQuaternion(axis.X, axis.Y, axis.Z, (float)Math.Cos(angle * timestep * 0.5f));
+                    JQuaternion.CreateFromMatrix(ref body.orientation, out var ornA);
+                    JQuaternion.Multiply(ref dorn, ref ornA, out dorn);
+
+                    dorn.Normalize();
+
+                    JMatrix.CreateFromQuaternion(ref dorn, out body.orientation);
+                }
+            }
+
+            // Check deactivation (i.e. sleep bodies as applicable).
+            /*
             sw.Reset();
             sw.Start();
-            Integrate(multithread);
+            CheckDeactivation();
             sw.Stop();
-            debugTimes[(int)DebugType.Integrate] = sw.Elapsed.TotalMilliseconds;
+            debugTimes[(int)DebugType.DeactivateBodies] = sw.Elapsed.TotalMilliseconds;
+            */
 
             // Post-step (bodies first, then the world).
             sw.Reset();
@@ -687,7 +749,7 @@ namespace Jitter
                 }
             }
         }
-        
+
         private void UpdateArbiterContacts(Arbiter arbiter)
         {
             if (arbiter.contactList.Count == 0)
@@ -825,19 +887,19 @@ namespace Jitter
             foreach (RigidBody body in rigidBodies)
             {
                 if (!body.IsStatic && body.IsActive)
-				{
-					// Modify linear velocity.
-					JVector.Multiply(ref body.force, body.inverseMass * timestep, out var temp);
+                {
+                    // Modify linear velocity.
+                    JVector.Multiply(ref body.force, body.inverseMass * timestep, out var temp);
                     JVector.Add(ref temp, ref body.linearVelocity, out body.linearVelocity);
 
-	                if (body.isAffectedByGravity)
-	                {
-		                JVector.Multiply(ref gravity, timestep, out temp);
-		                JVector.Add(ref body.linearVelocity, ref temp, out body.linearVelocity);
-	                }
+                    if (body.isAffectedByGravity)
+                    {
+                        JVector.Multiply(ref gravity, timestep, out temp);
+                        JVector.Add(ref body.linearVelocity, ref temp, out body.linearVelocity);
+                    }
 
-					// Modify angular velocity.
-					if (!body.isParticle && !body.isRotationFixed)
+                    // Modify angular velocity.
+                    if (!body.isParticle && !body.isRotationFixed)
                     {
                         JVector.Multiply(ref body.torque, timestep, out temp);
                         JVector.Transform(ref temp, ref body.invInertiaWorld, out temp);
@@ -855,10 +917,10 @@ namespace Jitter
             RigidBody body = obj as RigidBody;
 
             // Apply linear velocity.
-	        JVector.Multiply(ref body.linearVelocity, timestep, out var temp);
+            JVector.Multiply(ref body.linearVelocity, timestep, out var temp);
             JVector.Add(ref temp, ref body.position, out body.position);
 
-	        bool isRotationFixed = body.isRotationFixed;
+            bool isRotationFixed = body.isRotationFixed;
 
             if (!body.isParticle && !isRotationFixed)
             {
@@ -877,32 +939,32 @@ namespace Jitter
                     // sync(fAngle) = sin(c*fAngle)/t
                     JVector.Multiply(ref body.angularVelocity, ((float)Math.Sin(0.5f * angle * timestep) / angle), out axis);
                 }
-				
-	            JQuaternion dorn = new JQuaternion(axis.X, axis.Y, axis.Z, (float)Math.Cos(angle * timestep * 0.5f));
-	            JQuaternion.CreateFromMatrix(ref body.orientation, out var ornA);
-	            JQuaternion.Multiply(ref dorn, ref ornA, out dorn);
 
-	            dorn.Normalize();
+                JQuaternion dorn = new JQuaternion(axis.X, axis.Y, axis.Z, (float)Math.Cos(angle * timestep * 0.5f));
+                JQuaternion.CreateFromMatrix(ref body.orientation, out var ornA);
+                JQuaternion.Multiply(ref dorn, ref ornA, out dorn);
 
-	            JMatrix.CreateFromQuaternion(ref dorn, out body.orientation);
+                dorn.Normalize();
+
+                JMatrix.CreateFromQuaternion(ref dorn, out body.orientation);
             }
 
-	        if ((body.Damping & RigidBody.DampingType.Linear) != 0)
-	        {
-		        JVector.Multiply(ref body.linearVelocity, currentLinearDampFactor, out body.linearVelocity);
-			}
+            if ((body.Damping & RigidBody.DampingType.Linear) != 0)
+            {
+                JVector.Multiply(ref body.linearVelocity, currentLinearDampFactor, out body.linearVelocity);
+            }
 
-	        if (!isRotationFixed && (body.Damping & RigidBody.DampingType.Angular) != 0)
-			{
-				JVector.Multiply(ref body.angularVelocity, currentAngularDampFactor, out body.angularVelocity);
-			}
+            if (!isRotationFixed && (body.Damping & RigidBody.DampingType.Angular) != 0)
+            {
+                JVector.Multiply(ref body.angularVelocity, currentAngularDampFactor, out body.angularVelocity);
+            }
 
             body.Update();
 
-	        if (CollisionSystem.EnableSpeculativeContacts || body.EnableSpeculativeContacts)
-	        {
-		        body.SweptExpandBoundingBox(timestep);
-			}
+            if (CollisionSystem.EnableSpeculativeContacts || body.EnableSpeculativeContacts)
+            {
+                body.SweptExpandBoundingBox(timestep);
+            }
         }
 
         private void Integrate(bool multithread)
@@ -911,11 +973,11 @@ namespace Jitter
             {
                 foreach (RigidBody body in rigidBodies)
                 {
-					// CUSTOM: Modified to use the IsStatic property.
-	                if (body.IsStatic || !body.IsActive)
-	                {
-		                continue;
-	                }
+                    // CUSTOM: Modified to use the IsStatic property.
+                    if (body.IsStatic || !body.IsActive)
+                    {
+                        continue;
+                    }
 
                     threadManager.AddTask(integrateCallback, body);
                 }
@@ -925,12 +987,12 @@ namespace Jitter
             else
             {
                 foreach (RigidBody body in rigidBodies)
-				{
-					// CUSTOM: Modified to use the IsStatic property.
-					if (body.IsStatic || !body.IsActive)
-	                {
-		                continue;
-	                }
+                {
+                    // CUSTOM: Modified to use the IsStatic property.
+                    if (body.IsStatic || !body.IsActive)
+                    {
+                        continue;
+                    }
 
                     integrateCallback(body);
                 }
@@ -1031,7 +1093,7 @@ namespace Jitter
                             events.RaiseActivatedBody(body);
                         }
                     }
-                    
+
                 }
             }
         }

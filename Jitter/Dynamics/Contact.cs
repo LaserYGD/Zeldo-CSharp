@@ -300,6 +300,8 @@ namespace Jitter.Dynamics
                     body1.angularVelocity.Y -= num4;
                     body1.angularVelocity.Z -= num5;
                 }
+
+                body1.RequiresResolution = true;
             }
 
 	        // CUSTOM: Updated to account for kinematic body types.
@@ -332,6 +334,8 @@ namespace Jitter.Dynamics
                     body2.angularVelocity.Y += num4;
                     body2.angularVelocity.Z += num5;
                 }
+
+                body2.RequiresResolution = true;
             }
         }
 

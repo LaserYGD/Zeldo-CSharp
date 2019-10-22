@@ -67,7 +67,7 @@ namespace Zeldo.Entities.Core
 
 		protected virtual bool ShouldGenerateContact(RigidBody body, JVector[] triangle)
 		{
-			return false;
+			return true;
 
 			// Triangles are only sent into the callback for triangle mesh and terrain collisions.
 			if (triangle == null)

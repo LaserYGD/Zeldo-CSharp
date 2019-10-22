@@ -25,7 +25,8 @@ namespace Zeldo.Entities
 
 			Body = CreateBody(scene, new BoxShape(new JVector(1)), bodyType);
 			Body.IsAffectedByGravity = affectedByGravity;
-		}
 
+			base.Initialize(scene, data);
+		}
 	}
 }
