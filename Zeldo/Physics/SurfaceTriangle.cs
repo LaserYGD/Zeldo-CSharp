@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Engine;
 using Engine.Physics;
 using Engine.Utility;
@@ -9,13 +10,6 @@ namespace Zeldo.Physics
 {
 	public class SurfaceTriangle
 	{
-		private static readonly float WallThreshold;
-
-		static SurfaceTriangle()
-		{
-			WallThreshold = Properties.GetFloat("wall.threshold");
-		}
-
 		public static SurfaceTypes ComputeSurfaceType(JVector[] triangle, WindingTypes winding)
 		{
 			var p0 = triangle[0];
@@ -38,9 +32,29 @@ namespace Zeldo.Physics
 				: Constants.PiOverTwo - Utilities.Angle(new vec3(normal.x, 0, normal.z), normal);
 
 			// The wall threshold is defined as an angle range from a vertical wall (theta 90 degrees).
-			return Math.Abs(Constants.PiOverTwo - theta) <= WallThreshold
+			return Math.Abs(Constants.PiOverTwo - theta) <= PhysicsConstants.WallThreshold
 				? SurfaceTypes.Wall
 				: (normal.y < 0 ? SurfaceTypes.Ceiling : SurfaceTypes.Floor);
+		}
+		
+		public static float ComputeForgiveness(vec3 p, SurfaceTriangle surface)
+		{
+			// To compute the shortest distance to an edge of the triangle, points are rotated to a flat plane first
+			// (using the surface normal).
+			var q = Utilities.Orientation(surface.Normal, vec3.UnitY);
+			var flatP = (q * p).swizzle.xz;
+			var flatPoints = surface.Points.Select(v => (q * v).swizzle.xz).ToArray();
+			var d = float.MaxValue;
+
+			for (int i = 0; i < flatPoints.Length; i++)
+			{
+				var p1 = flatPoints[i];
+				var p2 = flatPoints[(i + 1) % 3];
+
+				d = Math.Min(d, Utilities.DistanceToLine(flatP, p1, p2));
+			}
+
+			return d;
 		}
 
 		// These are used to project points onto the triangle (primarily used to "stick" actors onto a surface while

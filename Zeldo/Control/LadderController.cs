@@ -2,7 +2,6 @@
 using Engine.Utility;
 using GlmSharp;
 using Zeldo.Entities;
-using Zeldo.Entities.Grabbable;
 using Zeldo.Entities.Player;
 
 namespace Zeldo.Control
@@ -35,7 +34,7 @@ namespace Zeldo.Control
 			progress = player.Position.y - ladder.Position.y;
 		}
 
-		public override void Update(float dt)
+		public override void PreStep(float step)
 		{
 			var body = Parent.ControllingBody;
 			var v = body.LinearVelocity;
@@ -43,7 +42,7 @@ namespace Zeldo.Control
 			// Accelerate.
 			if (Direction != 0)
 			{
-				v.Y += ClimbAcceleration * Direction * dt;
+				v.Y += ClimbAcceleration * Direction * step;
 				v.Y = Utilities.Clamp(v.Y, -ClimbMaxSpeed, ClimbMaxSpeed);
 			}
 			// Decelerate.
@@ -51,7 +50,7 @@ namespace Zeldo.Control
 			{
 				int oldSign = Math.Sign(v.Y);
 
-				v.Y -= ClimbDeceleration * dt * oldSign;
+				v.Y -= ClimbDeceleration * step * oldSign;
 
 				if (oldSign != Math.Sign(v.Y))
 				{
@@ -63,7 +62,7 @@ namespace Zeldo.Control
 
 			var f = Ladder.FacingDirection;
 
-			progress += v.Y * dt;
+			progress += v.Y * step;
 			Parent.Position = Ladder.Position + new vec3(0, progress, 0) + new vec3(f.x, 0, f.y) * ClimbDistance;
 		}
 	}

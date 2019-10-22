@@ -23,12 +23,12 @@ namespace Zeldo.Entities
 			CreateModel(scene, "Capsule.obj");
 
 			var body = CreateBody(scene, new CapsuleShape(1, 0.5f), bodyType);
-			body.ShouldCollideWith = ShouldCollideWith;
+			body.ShouldGenerateContact = ShouldGenerateContact;
 
 			base.Initialize(scene, data);
 		}
 
-		private bool ShouldCollideWith(RigidBody body, JVector[] triangle)
+		private bool ShouldGenerateContact(RigidBody body, JVector[] triangle)
 		{
 			if (triangle == null)
 			{

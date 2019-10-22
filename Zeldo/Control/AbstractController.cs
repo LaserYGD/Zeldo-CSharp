@@ -1,9 +1,8 @@
-﻿using Engine.Interfaces;
-using Zeldo.Entities.Core;
+﻿using Zeldo.Entities.Core;
 
 namespace Zeldo.Control
 {
-	public abstract class AbstractController : IDynamic
+	public abstract class AbstractController
 	{
 		protected AbstractController(Actor parent)
 		{
@@ -12,6 +11,12 @@ namespace Zeldo.Control
 
 		protected Actor Parent { get;}
 
-		public abstract void Update(float dt);
+		public virtual void PreStep(float step)
+		{
+		}
+
+		public virtual void PostStep(float step)
+		{
+		}
 	}
 }

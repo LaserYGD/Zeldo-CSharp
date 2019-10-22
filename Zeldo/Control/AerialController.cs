@@ -7,35 +7,45 @@ using Zeldo.Entities.Core;
 
 namespace Zeldo.Control
 {
-	// This class is specifically meant for aerial entities that are affected by gravity and accelerate on the flat X
-	// and Z axes (such as the player or regular ground-based enemies who can jump).
+	// This class is built for aerial entities that are affected by gravity and accelerate on the flat X and Z axes
+	// (such as the player or ground-based enemies that can jump).
 	public class AerialController : AbstractController
 	{
+		private float acceleration;
+		private float deceleration;
+		private float maxSpeed;
+
 		public AerialController(Actor parent) : base(parent)
 		{
 		}
 
-		public float Acceleration { get; set; }
-		public float Deceleration { get; set; }
-		public float MaxSpeed { get; set; }
-
 		public vec2 FlatDirection { get; set; }
 
-		public override void Update(float dt)
+		public void Initialize(float acceleration, float deceleration, float maxSpeed)
+		{
+			this.acceleration = acceleration;
+			this.deceleration = deceleration;
+			this.maxSpeed = maxSpeed;
+		}
+
+		public override void PreStep(float step)
 		{
 			var body = Parent.ControllingBody;
 			var v = body.LinearVelocity;
 			var flat = v.ToVec3().swizzle.xz;
 
-			// Acceleration.
+			// Acceleration. This code (plus the deceleration code below) is very similar to how velocity is adjusted
+			// for ground movement, but restricted to the flat XZ plane (Y is influenced by gravity instead).
 			if (FlatDirection != vec2.Zero)
 			{
-				flat += FlatDirection * Acceleration * dt;
+				flat += FlatDirection * acceleration * step;
+
+				float max = maxSpeed;
 
 				// TODO: Consider setting the new direction exactly as the velocity approaches the asymptote.
-				if (Utilities.LengthSquared(flat) > MaxSpeed * MaxSpeed)
+				if (Utilities.LengthSquared(flat) > max * max)
 				{
-					flat = Utilities.Normalize(flat) * MaxSpeed;
+					flat = Utilities.Normalize(flat) * max;
 				}
 			}
 			// Deceleration.
@@ -43,7 +53,7 @@ namespace Zeldo.Control
 			{
 				int oldSign = Math.Sign(flat.x != 0 ? flat.x : flat.y);
 
-				flat -= Utilities.Normalize(flat) * Deceleration * dt;
+				flat -= Utilities.Normalize(flat) * deceleration * step;
 
 				int newSign = Math.Sign(flat.x != 0 ? flat.x : flat.y);
 

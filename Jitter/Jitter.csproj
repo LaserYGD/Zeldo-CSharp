@@ -95,6 +95,7 @@
     <Compile Include="ResourcePool.cs" />
     <Compile Include="Dynamics\SoftBody.cs" />
     <Compile Include="ThreadManager.cs" />
+    <Compile Include="JitterUtilities.cs" />
     <Compile Include="World.cs" />
   </ItemGroup>
   <ItemGroup>

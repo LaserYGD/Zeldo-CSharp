@@ -24,7 +24,7 @@ namespace Engine.Core
 
 		// Flags are designed to be persistent (as long as the parent entity is loaded).
 		public bool IsComplete => false;
-		public bool Value => isPaused ? !defaultValue : defaultValue;
+		public bool Value => isPaused ? defaultValue : !defaultValue;
 
 		public Action OnExpiration { private get; set; }
 

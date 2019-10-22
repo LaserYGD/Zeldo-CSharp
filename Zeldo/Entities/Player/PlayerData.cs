@@ -12,7 +12,6 @@ namespace Zeldo.Entities.Player
 			JumpDeceleration = Properties.GetFloat("player.jump.deceleration");
 			DoubleJumpSpeed = Properties.GetFloat("player.double.jump.speed");
 			DoubleJumpLimit = Properties.GetFloat("player.double.jump.limit");
-			EdgeForgiveness = Properties.GetFloat("player.edge.forgiveness");
 			CoyoteJumpTime = Properties.GetFloat("player.coyote.time");
 
 			// Ascend
@@ -27,6 +26,7 @@ namespace Zeldo.Entities.Player
 
 			// Other
 			SlideThreshold = Properties.GetFloat("player.slide.threshold");
+			IdleTime = Properties.GetFloat("player.idle.time");
 			KillPlane = Properties.GetInt("kill.plane");
 		}
 
@@ -40,7 +40,6 @@ namespace Zeldo.Entities.Player
 		// future-proof to keep them separate. Jump deceleration, in constrast, is assumed the same between single and
 		// double jumps.
 		public float DoubleJumpLimit { get; }
-		public float EdgeForgiveness { get; }
 		public float CoyoteJumpTime { get; }
 
 		// Ascend
@@ -55,6 +54,8 @@ namespace Zeldo.Entities.Player
 
 		// Other
 		public float SlideThreshold { get; }
+		public float IdleTime { get; }
+
 		public int KillPlane { get; }
 	}
 }

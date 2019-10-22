@@ -196,9 +196,9 @@
 
 - For larger boss health bars, consider visually moving the bar from center to bottom (to make sure newer players notice)
 
- 
+- Make sure that swimming has a variety of movement options just like platforming movement (along with Metroidvania upgrades and skills) => Inspired by Matthewmatosis's video on Mario 64, when he mentions that Mario's moveset underwater is much more limited than on the ground
 
-
+- Consider some kind of last stand mechanic that allows survival after a fatal blow (inspired by one of Ela's Code Vein videos, where I mistakenly thought the stamina bar was health, so it looked like health ran out and you could keep going to save yourself) => Could be an upgrade?
 
 
 

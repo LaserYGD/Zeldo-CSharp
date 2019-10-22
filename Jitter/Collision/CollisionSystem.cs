@@ -255,8 +255,8 @@ namespace Jitter.Collision
         private void DetectRigidRigid(RigidBody body1, RigidBody body2)
         {
 			// CUSTOM: Added custom detection callbacks (primarily to accommodate actor movement on surfaces).
-	        var callback1 = body1.ShouldCollideWith;
-	        var callback2 = body2.ShouldCollideWith;
+	        var callback1 = body1.ShouldGenerateContact;
+	        var callback2 = body2.ShouldGenerateContact;
 
             bool b1IsMulti = (body1.Shape is Multishape);
             bool b2IsMulti = (body2.Shape is Multishape);

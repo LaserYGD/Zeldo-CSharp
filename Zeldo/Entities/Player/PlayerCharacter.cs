@@ -5,8 +5,6 @@ using Engine;
 using Engine.Core;
 using Engine.Interfaces._3D;
 using Engine.Physics;
-using Engine.Sensors;
-using Engine.Shapes._3D;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
@@ -15,7 +13,6 @@ using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;
 using Zeldo.Control;
 using Zeldo.Entities.Core;
-using Zeldo.Entities.Grabbable;
 using Zeldo.Entities.Weapons;
 using Zeldo.Interfaces;
 using Zeldo.Items;
@@ -42,59 +39,39 @@ namespace Zeldo.Entities.Player
 		private PlayerControls controls;
 		private PlayerController controller;
 		private PlayerHealthDisplay healthDisplay;
-		private DebugView debugView;
-		private Sensor sensor;
 		private Weapon<PlayerCharacter> weapon;
+		private WallController wallController;
+		private DebugView debugView;
+
+		private PlayerStates state;
 
 		// Flags
 		private TimedFlag coyoteFlag;
 
-		// Controllers
-		private AerialController aerialController;
-		private LadderController ladderController;
-
-		private IInteractive interactionTarget;
-		private IAscendable ascensionTarget;
+		//private IInteractive interactionTarget;
+		//private IAscendable ascensionTarget;
 		
 		private bool[] skillsUnlocked;
-		private bool[] skillsEnabled;
-
-		// This is kept as a separate boolean rather than a new state (to simplify those states).
 		private bool isJumpDecelerating;
 
-		// The game has double jumping, but is coded to accommodate any number of extra jumps.
+		// The game is designed for double jumping, but is coded to accommodate any number of extra jumps.
 		private int jumpsRemaining;
 		private float capsuleRadius;
-
-		// Wall control is more complex than ground movement since the capsule can be in contact with multiple
-		// triangles at once.
-		private List<SurfaceTriangle> walls;
-		private SurfaceTriangle ground;
-
-		private vec2 facing;
 
 		public PlayerCharacter(ControlSettings settings) : base(EntityGroups.Player)
 		{
 			controls = new PlayerControls();
 			playerData = new PlayerData();
-
-			int skillCount = Utilities.EnumCount<PlayerSkills>();
+			state = PlayerStates.Airborne;
 
 			// Flags
 			coyoteFlag = Components.Add(new TimedFlag(playerData.CoyoteJumpTime, false));
-			coyoteFlag.OnExpiration = () =>
-			{
-				jumpsRemaining--;
-				skillsEnabled[JumpIndex] = false;
-			};
+			coyoteFlag.OnExpiration = () => { jumpsRemaining--; };
+
+			int skillCount = Utilities.EnumCount<PlayerSkills>();
 
 			skillsUnlocked = new bool[skillCount];
-			skillsEnabled = new bool[skillCount];
 			controller = new PlayerController(this, playerData, controls, settings, CreateControllers());
-			facing = vec2.UnitX;
-			walls = new List<SurfaceTriangle>();
-
-			Swap(aerialController);
 		}
 
 		public override vec3 Position
@@ -115,6 +92,7 @@ namespace Zeldo.Entities.Player
 			}
 		}
 
+		// TODO: Could this be cleaned up?
 		// This is required to move in the direction of camera aim (passed through to the controller class).
 		public FollowController FollowController
 		{
@@ -123,79 +101,75 @@ namespace Zeldo.Entities.Player
 
 		// The player owns their own inventory.
 		public Inventory Inventory { get; }
+		public SurfaceTriangle Wall { get; private set; }
 
-		// States are used by the controller class to more easily determine when to apply certain actions.
-		public PlayerStates State { get; private set; }
+		// States are used by the controller class to more easily determine when to apply certain actions. Using a
+		// single bitfield is more efficient than many booleans.
+		public PlayerStates State => state;
 
 		// This is used by the player controller.
-		public bool[] SkillsEnabled => skillsEnabled;
-		public bool IsBlocking { get; private set; }
-		public bool IsOnLadder => ladderController.Ladder != null;
-
 		public int JumpsRemaining => jumpsRemaining;
 
 		private AbstractController[] CreateControllers()
 		{
-			// Running
-			float runAcceleration = Properties.GetFloat("player.run.acceleration");
-			float runDeceleration = Properties.GetFloat("player.run.deceleration");
-			float runMaxSpeed = Properties.GetFloat("player.run.max.speed");
+			// Air movement
+			float airAcceleration = Properties.GetFloat("player.air.acceleration");
+			float airDeceleration = Properties.GetFloat("player.air.deceleration");
+			float airMaxSpeed = Properties.GetFloat("player.air.max.speed");
 
-			// Ladders
+			aerialController.Initialize(airAcceleration, airDeceleration, airMaxSpeed);
+
+			// Ground movement
+			float groundAcceleration = Properties.GetFloat("player.ground.acceleration");
+			float groundDeceleration = Properties.GetFloat("player.ground.deceleration");
+			float groundMaxSpeed = Properties.GetFloat("player.ground.max.speed");
+
+			groundController.Initialize(groundAcceleration, groundDeceleration, groundMaxSpeed);
+
+			// Wall movement
+			wallController = new WallController(this);
+
+			// Ladder movement
 			float ladderAcceleration = Properties.GetFloat("player.ladder.climb.acceleration");
 			float ladderDeceleration = Properties.GetFloat("player.ladder.climb.deceleration");
 			float ladderMaxSpeed = Properties.GetFloat("player.ladder.climb.max.speed");
 			float ladderDistance = Properties.GetFloat("player.ladder.distance");
 
-			// Ladder climb distance is defined as the spacing between the player capsule and the ladder's body.
-			float radius = Properties.GetFloat("player.capsule.radius");
-
 			// Create controllers.
-			aerialController = new AerialController(this);
-			aerialController.Acceleration = runAcceleration;
-			aerialController.Deceleration = runDeceleration;
-			aerialController.MaxSpeed = runMaxSpeed;
-
+			/*
 			ladderController = new LadderController(this);
 			ladderController.ClimbAcceleration = ladderAcceleration;
 			ladderController.ClimbDeceleration = ladderDeceleration;
 			ladderController.ClimbMaxSpeed = ladderMaxSpeed;
 
 			// TODO: Use half ladder depth (rather than hardcoded).
-			ladderController.ClimbDistance = ladderDistance + radius + 0.05f;
+			ladderController.ClimbDistance = ladderDistance + capsuleRadius + 0.05f;
+			*/
 
-			surfaceController = new SurfaceController(this);
-
-			var controllers = new AbstractController[4];
-			controllers[ControllerIndexes.Aerial] = aerialController;
-			controllers[ControllerIndexes.Ladder] = ladderController;
-			controllers[ControllerIndexes.Surface] = surfaceController;
+			var controllers = new AbstractController[5];
+			controllers[ControllerIndexes.Air] = aerialController;
+			controllers[ControllerIndexes.Ground] = groundController;
+			controllers[ControllerIndexes.Wall] = wallController;
+			controllers[ControllerIndexes.Ladder] = null; //ladderController;
+			controllers[ControllerIndexes.Swim] = null; //swimController;
 
 			return controllers;
 		}
 
 		public override void Initialize(Scene scene, JToken data)
 		{
-			// The height here is the height of the cylinder (excluding the two rounded caps).
+			// This is the height of the cylinder (excluding the two rounded caps).
 			var capsuleHeight = Properties.GetFloat("player.capsule.height");
 
-			// Radius is also used for wall processing.
+			// Radius is also used for wall processing (which is why it's stored in the class).
 			capsuleRadius = Properties.GetFloat("player.capsule.radius");
-
 			Height = capsuleHeight + capsuleRadius * 2;
 
 			CreateModel(scene, "Capsule.obj");
-
-			var body = CreateKinematicBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius));
-			body.AllowDeactivation = false;
-			body.PreStep = PreStep;
-			body.PostStep = PostStep;
-
-			// TODO: Should all actor sensors be axis-aligned?
-			var shape = new Cylinder(Height, capsuleRadius);
-			shape.IsAxisAligned = true;
-
-			sensor = CreateSensor(scene, shape, SensorGroups.Player);
+			CreateMasterBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius));
+				
+			controllingBody.IsAffectedByGravity = false;
+			//controllingBody.LinearVelocity = new JVector(0, -60, 0);
 
 			var canvas = scene.Canvas;
 			healthDisplay = canvas.GetElement<PlayerHealthDisplay>();
@@ -204,59 +178,39 @@ namespace Zeldo.Entities.Player
 			base.Initialize(scene, data);
 		}
 
-		// TODO: Move some of this code to the base Actor class as well.
+		protected override bool ShouldGenerateContact(RigidBody body, JVector[] triangle)
+		{
+			return base.ShouldGenerateContact(body, triangle);
+
+			/*
+			// While grounded or airborne, the same base logic applies.
+			if (Wall == null)
+			{
+				return base.ShouldGenerateContact(body, triangle);
+			}
+
+			var surfaceType = SurfaceTriangle.ComputeSurfaceType(triangle, WindingTypes.CounterClockwise);
+
+			switch (surfaceType)
+			{
+				case SurfaceTypes.Ceiling: return true;
+				case SurfaceTypes.Floor: return false;
+			}
+			*/
+		}
+
 		public override void OnCollision(Entity entity, vec3 point, vec3 normal, float penetration)
 		{
-			var onSurface = OnSurface;
+			bool isAirborne = (state & (PlayerStates.Airborne | PlayerStates.Jumping)) > 0;
 
-			// TODO: Handle vaulting when near the top of a body.
 			// The player can attach to ladders by jumping towards them (from any side).
-			if (!onSurface && entity is Ladder ladder && IsFacing(ladder))
+			if (isAirborne && entity is Ladder ladder && IsFacing(ladder))
 			{
 				Mount(ladder);
-
-				return;
-			}
-
-			if (onSurface && entity.IsStatic)
-			{
-				// TODO: Process other kinds of collisions against static entities (steps, vaults, wall presses, etc.).
-				//OnGroundedSurfaceCollision(normal, penetration);
 			}
 		}
 
-		// TODO: Move some of this code down to the base Actor class (so that other actors can properly traverse the environment too).
-		public override void OnCollision(vec3 p, vec3 normal, vec3[] triangle, float penetration)
-		{
-			var surface = new SurfaceTriangle(triangle, normal, 0);
-			var isFloor = surface.SurfaceType == SurfaceTypes.Floor;
-			var isWall = surface.SurfaceType == SurfaceTypes.Wall;
-
-			// This situation can only occur if the triangle represents a different kind of surface (e.g. while
-			// running on the ground, you might hit a wall).
-			if (OnSurface)
-			{
-				var onGround = surfaceController.Surface.SurfaceType == SurfaceTypes.Floor;
-
-				// TODO: Process sliding from a wall back onto the ground.
-				if (onGround)
-				{
-					if (isWall)
-					{
-						OnGroundedWallCollision(p, normal);
-					}
-				}
-				// Since the player can't traverse ceilings, if the player is on a surface and *not* on the ground,
-				// they must be on a wall.
-				else if (isFloor)
-				{
-					//OnWallLanding();
-				}
-
-				return;
-			}
-		}
-
+		/*
 		private void OnGroundedWallCollision(vec3 p, vec3 normal)
 		{
 			// TODO: Should probably override ShouldCollideWith instead (to negate the step collision entirely).
@@ -280,84 +234,111 @@ namespace Zeldo.Entities.Player
 				PressAgainstWall();
 			}
 		}
+		*/
+
+		protected override void OnLanding(vec3 p, SurfaceTriangle surface)
+		{
+			base.OnLanding(p, surface);
+
+			// Ordinarily, it shouldn't be possible for the player to be in the Jumping state when landing (since, by
+			// definition, velocity must be downward). Could still happen for upward-moving platforms, though (if that
+			// platform is moving more quickly than the player's jumping speed).
+			state |= PlayerStates.OnGround;
+			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping);
+
+			RefreshJumps();
+			controller.OnLanding();
+		}
+
+		private void OnWallControlGained()
+		{
+			activeController = wallController;
+
+			var v = controllingBody.LinearVelocity;
+			controllingBody.IsAffectedByGravity = false;
+			controllingBody.LinearVelocity = v;
+
+			state |= PlayerStates.OnWall;
+			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.Vaulting);
+		}
 
 		private void OnWallLanding()
 		{
 		}
 
-		private void PreStep(float step)
+		public override void BecomeAirborneFromGround()
 		{
-			if (ground != null)
+			state |= PlayerStates.Airborne;
+			state &= ~(PlayerStates.OnGround | PlayerStates.Running | PlayerStates.Sliding);
+
+			coyoteFlag.Refresh();
+
+			base.BecomeAirborneFromGround();
+		}
+
+		protected override void PreStep(float step)
+		{
+			base.PreStep(step);
+
+			var v = controllingBody.LinearVelocity;
+
+			// The player is considered running if grounded and moving (but not sliding).
+			if (Ground != null && v.LengthSquared() > 0 && (state & PlayerStates.Sliding) == 0)
 			{
-				ProcessGroundMovement(step);
-			}
-			else if (walls.Count > 0)
-			{
-				ProcessWallMovement(step);
+				state |= PlayerStates.Running;
 			}
 			else
 			{
-				ProcessAerialWallContacts();
+				state &= ~PlayerStates.Running;
+			}
+
+			// Process jumps.
+			if (isJumpDecelerating && DecelerateJump(step))
+			{
+				isJumpDecelerating = false;
+			}
+			// If the player's velocity moves below the limit (even while holding the jump button), state is
+			// transitioned to pure airborne.
+			else if ((state & PlayerStates.Jumping) > 0 && v.Y <= playerData.JumpLimit)
+			{
+				state &= ~PlayerStates.Jumping;
+			}
+
+			if ((state & PlayerStates.Airborne) > 0 && ProcessAerialWallContacts())
+			{
+				OnWallControlGained();
 			}
 		}
 
-		private void ProcessGroundMovement(float step)
+		private bool DecelerateJump(float step)
 		{
-			// TODO: Should velocity be applied here?
-			controllingBody.LinearVelocity = controller.AdjustRunningVelocity(controller.FlatDirection, step).ToJVector();
+			var v = controllingBody.LinearVelocity;
+			var limit = playerData.JumpLimit;
 
-			var vectors = new List<vec3>();
+			v.Y -= playerData.JumpDeceleration * step;
 
-			foreach (Arbiter arbiter in controllingBody.Arbiters)
+			bool result = false;
+
+			if (v.Y <= limit)
 			{
-				var contacts = arbiter.ContactList;
+				v.Y = limit;
 
-				// Before the physics step occurs, all static contacts are aggregated together and manually applied
-				// (based on surface normal).
-				for (int i = contacts.Count - 1; i >= 0; i--)
-				{
-					var contact = contacts[i];
-					var b1 = contact.Body1;
-					var b2 = contact.Body2;
-
-					if (!(b1.IsStatic || b2.IsStatic))
-					{
-						continue;
-					}
-
-					var n = contact.Normal.ToVec3();
-
-					if (controllingBody == b1)
-					{
-						n *= -1;
-					}
-
-					var v = Utilities.Normalize(Utilities.ProjectOntoPlane(n, ground.Normal));
-					var angle = Utilities.Angle(n, v);
-					var l = contact.Penetration / (float)Math.Cos(angle);
-
-					vectors.Add(v * l);
-					contacts.RemoveAt(i);
-				}
+				// Returning true means that the jump has finished decelerating.
+				result = true;
 			}
 
-			if (vectors.Count > 0)
-			{
-				ResolveSurfaceVectors(vectors, step);
-			}
+			controllingBody.LinearVelocity = v;
+
+			return result;
 		}
 
-		private void ProcessWallMovement(float step)
+		private void PressAgainstWall()
 		{
 		}
 
-		private void ProcessAerialWallContacts()
+		// This function is only called if the player isn't currently on a wall.
+		private bool ProcessAerialWallContacts()
 		{
-			if (walls.Count > 0)
-			{
-				return;
-			}
-
 			var velocity = controllingBody.LinearVelocity.ToVec3();
 
 			foreach (Arbiter arbiter in controllingBody.Arbiters)
@@ -408,125 +389,25 @@ namespace Zeldo.Entities.Player
 						controllingBody.Position = result.ToJVector();
 						controllingBody.LinearVelocity = JVector.Zero;
 
-						walls.Add(surface);
+						Wall = surface;
+
+						// Returning true means the player did successfully collide with a wall.
+						return true;
 					}
 				}
 			}
+
+			return false;
 		}
-
-		private void ResolveSurfaceVectors(List<vec3> vectors, float step)
-		{
-			var final = vec3.Zero;
-
-			for (int i = 0; i < vectors.Count; i++)
-			{
-				var v = vectors[i];
-				final += v;
-
-				for (int j = i + 1; j < vectors.Count; j++)
-				{
-					vectors[j] -= Utilities.Project(v, vectors[j]);
-				}
-			}
-
-			if (Utilities.LengthSquared(final) > 0.001f)
-			{
-				var v = controllingBody.LinearVelocity.ToVec3();
-
-				Position += v * step + final;
-				controllingBody.LinearVelocity -= Utilities.Project(v, final).ToJVector();
-			}
-		}
-
-		private void PostStep(float step)
-		{
-			if (!OnSurface)
-			{
-				return;
-			}
-
-			var p = controllingBody.Position.ToVec3() - new vec3(0, Height / 2, 0);
-			var surface = surfaceController.Surface;
-
-			// If the projection returns true, that means the actor is still within the current triangle.
-			if (surface.Project(p, out vec3 result))
-			{
-				GroundPosition = result;
-
-				return;
-			}
-
-			// TODO: Store a reference to the physics map separately (rather than querying the world every frame).
-			var world = Scene.World;
-			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
-			var normal = surface.Normal;
-
-			// The raycast needs to be offset upward enough to catch steps.
-			// TODO: Use properties for these raycast values.
-			var results = PhysicsUtilities.Raycast(world, map, p + normal, -normal, 1.2f);
-
-			// This means the actor moved to another triangle.
-			if (results?.Triangle != null)
-			{
-				surface = new SurfaceTriangle(results.Triangle, results.Normal, 0);
-				surface.Project(results.Position, out result);
-
-				// TODO: Signal the actor of the surface transition (if needed).
-				GroundPosition = result;
-				OnSurfaceTransition(surface);
-
-				return;
-			}
-
-			// If the actor has moved past a surface triangle (without transitioning to another one), a very small
-			// forgiveness distance is checked before signalling the actor to become airborne. This distance is small
-			// enough to not be noticeable during gameplay, but protects against potential floating-point errors near
-			// the seams of triangles.
-			// TODO: Use a constant.
-			if (ComputeForgiveness(p, surface) > Properties.GetFloat("edge.forgiveness"))
-			{
-				BecomeAirborneFromLedge();
-			}
-		}
-
-		private float ComputeForgiveness(vec3 p, SurfaceTriangle surface)
-		{
-			// To compute the shortest distance to an edge of the triangle, points are rotated to a flat plane first
-			// (using the surface normal).
-			var q = Utilities.Orientation(surface.Normal, vec3.UnitY);
-			var flatP = (q * p).swizzle.xz;
-			var flatPoints = surface.Points.Select(v => (q * v).swizzle.xz).ToArray();
-			var d = float.MaxValue;
-
-			for (int i = 0; i < flatPoints.Length; i++)
-			{
-				var p1 = flatPoints[i];
-				var p2 = flatPoints[(i + 1) % 3];
-
-				d = Math.Min(d, Utilities.DistanceToLine(flatP, p1, p2));
-			}
-
-			return d;
-		}
-
+		
 		private void Respawn()
 		{
 		}
 
-		protected override void OnLanding(vec3 p, SurfaceTriangle surface)
+		// TODO: Re-enable sliding later (if sliding is actually kept in the game).
+		/*
+		protected override void OnGroundTransition(SurfaceTriangle surface)
 		{
-			base.OnLanding(p, surface);
-
-			RefreshJumps();
-
-			// TODO: Re-examine this (should all actors avoid the surface controller?)
-			Swap(null);
-		}
-
-		public override void OnSurfaceTransition(SurfaceTriangle surface)
-		{
-			// TODO: Re-enable sliding later (if sliding is actually kept in the game).
-			/*
 			// Moving to a surface flat enough for normal running.
 			if (surface.Slope < playerData.SlideThreshold)
 			{
@@ -537,37 +418,13 @@ namespace Zeldo.Entities.Player
 
 			// Moving to a surface steep enough to cause sliding.
 			State = PlayerStates.Sliding;
-			*/
-
-			base.OnSurfaceTransition(surface);
 		}
-
-		private void PressAgainstWall()
-		{
-		}
-
-		// This is called when the player runs or walks off an edge (without jumping).
-		public override void BecomeAirborneFromLedge()
-		{
-			// TODO: Move some of this to the base class.
-			surfaceController.Surface = null;
-			controllingBody.IsAffectedByGravity = true;
-			surfaceController.Surface = null;
-			coyoteFlag.Refresh();
-
-			Swap(aerialController);
-		}
+		*/
 
 		public void Jump()
 		{
 			// Jumps are decremented regardless of single vs. double jump.
 			jumpsRemaining--;
-
-			// The player can jump off ladders.
-			if (IsOnLadder)
-			{
-				ladderController.Ladder = null;
-			}
 
 			if (!skillsUnlocked[DoubleJumpIndex] || jumpsRemaining == TargetJumps - 1)
 			{
@@ -578,38 +435,42 @@ namespace Zeldo.Entities.Player
 				DoubleJump();
 			}
 
-			State = PlayerStates.Jumping;
+			state |= PlayerStates.Jumping | PlayerStates.Airborne;
 		}
 
 		private void SingleJump()
 		{
-			// TODO: Set velocity accordingly when jumping from different states (like climbing a ladder).
-			// On jump, the controlling body inherits surface velocity.
-			controllingBody.LinearVelocity = new JVector(SurfaceVelocity.x, playerData.JumpSpeed, SurfaceVelocity.z);
-			controllingBody.IsAffectedByGravity = true;
-
 			var v = controllingBody.LinearVelocity;
-			v.Y = playerData.JumpSpeed;
+			var isGrounded = Ground != null;
 
-			// This single jump function can be triggered from multiple scenarios (including normal jumps off the
-			// ground, jumping off ladders and ropes, or jumping from an ascend).
-			// TODO: Process jumps from other scenarios (like ropes and ascend).
-			if (!OnSurface)
+			if (isGrounded || coyoteFlag.Value)
+			{
+				v.Y = playerData.JumpSpeed;
+
+				if (isGrounded)
+				{
+					Ground = null;
+					state &= ~(PlayerStates.OnGround | PlayerStates.Running | PlayerStates.Sliding);
+				}
+			}
+			// TODO: Finish ladder jumping.
+			else if ((state & PlayerStates.OnLadder) > 0)
+			{
+			}
+			// TODO: Finish ascend jumping.
+			else if ((state & PlayerStates.Ascending) > 0)
 			{
 			}
 
 			controllingBody.LinearVelocity = v;
-			surfaceController.Surface = null;
-			skillsEnabled[JumpIndex] = false;
-			coyoteFlag.Reset();
+			controllingBody.IsAffectedByGravity = true;
+			activeController = aerialController;
 
-			Swap(aerialController);
+			coyoteFlag.Reset();
 		}
 
 		private void DoubleJump()
 		{
-			skillsEnabled[DoubleJumpIndex] = jumpsRemaining > 0;
-
 			var v = controllingBody.LinearVelocity;
 			v.Y = playerData.DoubleJumpSpeed;
 			controllingBody.LinearVelocity = v;
@@ -617,23 +478,15 @@ namespace Zeldo.Entities.Player
 
 		// This function is only called when limiting actually has to occur (i.e. the player's velocity is checked in
 		// advance).
-		public void LimitJump(float dt)
+		public void LimitJump()
 		{
-			if (!DecelerateJump(dt))
-			{
-				isJumpDecelerating = true;
-			}
-			
-			State = PlayerStates.Airborne;
+			isJumpDecelerating = true;
+			state &= ~PlayerStates.Jumping;
 		}
 
 		private void RefreshJumps()
 		{
-			var djUnlocked = skillsUnlocked[DoubleJumpIndex];
-
-			skillsEnabled[JumpIndex] = skillsUnlocked[JumpIndex];
-			skillsEnabled[DoubleJumpIndex] = djUnlocked;
-			jumpsRemaining = djUnlocked ? TargetJumps : 1;
+			jumpsRemaining = skillsUnlocked[DoubleJumpIndex] ? TargetJumps : 1;
 			isJumpDecelerating = false;
 
 			// I'm pretty sure this logic is correct (whenever jumps are refreshed, the coyote flag should be reset as
@@ -644,13 +497,16 @@ namespace Zeldo.Entities.Player
 		public bool TryAscend()
 		{
 			// The player can ascend while climbing ladders normally.
-			if (IsOnLadder)
+			if ((state & PlayerStates.OnLadder) > 0)
 			{
-				Ascend(ladderController.Ladder);
+				// TODO: Trigger the ascension.
+				//Ascend(ladderController.Ladder);
+				state &= ~PlayerStates.OnLadder;
 
 				return true;
 			}
 
+			/*
 			foreach (var contact in sensor.Contacts)
 			{
 				if (contact.Owner is IAscendable target)
@@ -660,35 +516,41 @@ namespace Zeldo.Entities.Player
 					return true;
 				}
 			}
+			*/
 
 			return false;
 		}
 
+		// TODO: Finish the ascend skill.
 		private void Ascend(IAscendable target)
 		{
+			state |= PlayerStates.Ascending;
+
+			/*
 			ascensionTarget = target;
 			State = PlayerStates.Ascending;
 			skillsEnabled[AscendIndex] = false;
-			
+			*/
+
 			RefreshJumps();
 		}
 
 		public void BreakAscend()
 		{
-			// Breaking out of an ascend uses variable height as well, meaning that similar jump logic can be reused.
-			State = PlayerStates.Jumping;
 		}
 
 		public bool TryGrab()
 		{
+			/*
 			// The player must be facing the target in order to grab it.
 			if (!sensor.GetContact(out IGrabbable target) || !IsFacing(target))
 			{
 				return false;
 			}
+			*/
 
-			// TODO: Play the appropriate grab animation.
-			State = PlayerStates.Grabbing;
+			state |= PlayerStates.Grabbing;
+			state &= ~PlayerStates.Running;
 
 			return true;
 		}
@@ -700,6 +562,7 @@ namespace Zeldo.Entities.Player
 		public void TryInteract()
 		{
 			// TODO: Handle multiple interactive targets (likely with a swap, similar to Dark Souls).
+			/*
 			if (!sensor.GetContact(out IInteractive target) || !target.IsInteractionEnabled)
 			{
 				return;
@@ -709,6 +572,10 @@ namespace Zeldo.Entities.Player
 			{
 				target.OnInteract(this);
 			}
+			*/
+
+			state |= PlayerStates.Interacting;
+			state &= ~PlayerStates.Running;
 		}
 
 		private bool IsFacing(IPositionable3D target)
@@ -722,6 +589,12 @@ namespace Zeldo.Entities.Player
 			this.weapon = weapon;
 		}
 
+		public bool IsUnlocked(PlayerSkills skill)
+		{
+			return skillsUnlocked[(int)skill];
+		}
+
+		/*
 		public void Block()
 		{
 			IsBlocking = true;
@@ -734,60 +607,72 @@ namespace Zeldo.Entities.Player
 
 		public void Parry()
 		{
-			// TODO: Check player direction (to see if the parry should trigger).
 		}
+		*/
 
 		public void Mount(Ladder ladder)
 		{
 			// TODO: Whip around as appropriate.
 			Proximities proximity = ladder.ComputeProximity(position);
 
+			/*
 			ladderController.OnMount(ladder, this);
 			Swap(ladderController);
+			*/
+
 			RefreshJumps();
 
 			controllingBody.IsAffectedByGravity = false;
+
+			// This covers mounting the ladder from any situation.
+			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.Running | PlayerStates.Vaulting);
+			state |= PlayerStates.OnLadder;
 		}
 
 		public void UnlockSkill(PlayerSkills skill)
 		{
-			int index = (int)skill;
+			skillsUnlocked[(int)skill] = true;
 
-			skillsUnlocked[index] = true;
-			skillsEnabled[index] = IsSkillEnabledOnUnlock(skill);
-		}
-
-		private bool IsSkillEnabledOnUnlock(PlayerSkills skill)
-		{
 			switch (skill)
 			{
-				case PlayerSkills.Grab: return false;
+				case PlayerSkills.Jump:
+				case PlayerSkills.DoubleJump:
+					// This covers any non-airborne situation (all of which refresh jumps).
+					if ((state & PlayerStates.Airborne) == 0)
+					{
+						jumpsRemaining = skill == PlayerSkills.Jump ? 1 : TargetJumps;
+					}
 
-				// TODO: Make sure this works if you're standing on an entity (rather than a mesh).
-				case PlayerSkills.Jump: return OnSurface &&
-					surfaceController.Surface.SurfaceType == SurfaceTypes.Floor;
+					break;
 			}
-
-			return true;
 		}
 
 		public override void Update(float dt)
 		{
-			if (isJumpDecelerating && DecelerateJump(dt))
-			{
-				isJumpDecelerating = false;
-			}
-			else switch (State)
+			// TODO: Limit jumps and update ascends (should these happen during the physics step instead?)
+			/*
+			else switch (state)
 			{
 				case PlayerStates.Jumping when controllingBody.LinearVelocity.Y <= playerData.JumpLimit:
 					State = PlayerStates.Airborne;
 					break;
 
+
 				case PlayerStates.Ascending:
 					UpdateAscend(dt);
 					break;
 			}
+			*/
 
+			base.Update(dt);
+
+			var list = debugView.GetGroup("Player");
+			list.Add("State: " + State);
+			list.Add("Arbiters: " + controllingBody.Arbiters.Count);
+			list.Add("Contacts: " + controllingBody.Arbiters.Sum(a => a.ContactList.Count));
+			list.Add("Velocity: " + controllingBody.LinearVelocity);
+
+			/*
 			var p = controllingBody.Position.ToVec3();
 			var v = controllingBody.LinearVelocity.ToVec3();
 			var entries = new []
@@ -815,29 +700,10 @@ namespace Zeldo.Entities.Player
 			}
 
 			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(facing.x, 0, facing.y), Color.Cyan);
+			*/
 		}
 
-		private bool DecelerateJump(float dt)
-		{
-			var v = controllingBody.LinearVelocity;
-			var limit = playerData.JumpLimit;
-
-			v.Y -= playerData.JumpDeceleration * dt;
-
-			if (v.Y <= limit)
-			{
-				v.Y = limit;
-				isJumpDecelerating = false;
-
-				// Returning true means that the jump has finished decelerating.
-				return true;
-			}
-
-			controllingBody.LinearVelocity = v;
-
-			return false;
-		}
-
+		/*
 		private void UpdateAscend(float dt)
 		{
 			// The body's linear velocity is reused for ascension.
@@ -851,13 +717,15 @@ namespace Zeldo.Entities.Player
 
 			controllingBody.LinearVelocity = v;
 		}
+		*/
 
 		public static class ControllerIndexes
 		{
-			public const int Aerial = 0;
-			public const int Ladder = 1;
-			public const int Surface = 2;
-			public const int Swim = 3;
+			public const int Air = 0;
+			public const int Ground = 1;
+			public const int Wall = 2;
+			public const int Ladder = 3;
+			public const int Swim = 4;
 		}
 	}
 }

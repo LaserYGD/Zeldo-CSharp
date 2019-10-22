@@ -233,8 +233,9 @@
     <Compile Include="Control\AerialController.cs" />
     <Compile Include="Control\AbstractController.cs" />
     <Compile Include="Control\LadderController.cs" />
-    <Compile Include="Control\SurfaceController.cs" />
+    <Compile Include="Control\GroundController.cs" />
     <Compile Include="Control\SwimController.cs" />
+    <Compile Include="Control\WallController.cs" />
     <Compile Include="CustomMessageTypes.cs" />
     <Compile Include="Data\SaveSlot.cs" />
     <Compile Include="Entities\Bosses\Boss.cs" />
@@ -257,7 +258,7 @@
     <Compile Include="Entities\Core\Scene.cs" />
     <Compile Include="Entities\Core\SceneFragment.cs" />
     <Compile Include="Entities\DummyCapsule.cs" />
-    <Compile Include="Entities\DummyObject.cs" />
+    <Compile Include="Entities\DummyCube.cs" />
     <Compile Include="Entities\Enemies\Enemy.cs" />
     <Compile Include="Entities\Enemies\Groot.cs" />
     <Compile Include="Entities\Enemies\HealthBar.cs" />
@@ -283,6 +284,7 @@
     <Compile Include="Entities\Player\PlayerController.cs" />
     <Compile Include="Entities\Player\PlayerData.cs" />
     <Compile Include="Entities\Player\PlayerStates.cs" />
+    <Compile Include="Entities\Player\PlayerUpgrades.cs" />
     <Compile Include="Entities\Weapons\MeleeWeapon.cs" />
     <Compile Include="Entities\Weapons\Twinblade.cs" />
     <Compile Include="Entities\Player\PlayerCharacter.cs" />
@@ -307,6 +309,7 @@
     <Compile Include="Items\UsableItem.cs" />
     <Compile Include="JumpTester.cs" />
     <Compile Include="JumpTester2.cs" />
+    <Compile Include="Physics\PhysicsConstants.cs" />
     <Compile Include="Physics\SurfaceMaterials.cs" />
     <Compile Include="Physics\SurfaceTriangle.cs" />
     <Compile Include="Physics\SurfaceTypes.cs" />

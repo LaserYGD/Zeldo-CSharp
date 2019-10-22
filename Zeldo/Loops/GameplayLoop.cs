@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Engine;
 using Engine.Core._2D;
@@ -108,6 +109,8 @@ namespace Zeldo.Loops
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
 
+			CreateDebugCubes();
+
 			var fragment = scene.LoadFragment("Demo.json");
 			player.Position = fragment.Origin + fragment.Spawn;
 
@@ -137,6 +140,23 @@ namespace Zeldo.Loops
 		}
 
 		public List<MessageHandle> MessageHandles { get; set; }
+
+		private void CreateDebugCubes()
+		{
+			var random = new Random();
+
+			for (int i = 0; i < 40; i++)
+			{
+				float x = (float)random.NextDouble() * 10 - 5 + 10;
+				float y = (float)random.NextDouble() * 5 + 10;
+				float z = (float)random.NextDouble() * 10 - 5;
+
+				var cube = new DummyCube(RigidBodyTypes.Dynamic, true);
+				cube.Position = new vec3(x, y, z);
+
+				scene.Add(cube);
+			}
+		}
 
 		// TODO: With the changes to surface processing within Jitter, does penetration need to be passed to entities?
 		private void OnCollision(RigidBody body1, RigidBody body2, JVector point1, JVector point2, JVector normal,

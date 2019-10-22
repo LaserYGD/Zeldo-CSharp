@@ -535,43 +535,19 @@ namespace Jitter
         {
             this.timestep = timestep;
 
-            // yeah! nothing to do!
-            if (timestep == 0.0f) return;
+            if (timestep == 0)
+            {
+                return;
+            }
 
-            // throw exception if the timestep is smaller zero.
-            if (timestep < 0.0f) throw new ArgumentException("The timestep can't be negative.", "timestep");
+            Debug.Assert(timestep > 0, "Timestep can't be negative.");
 
-            // Calculate this
             currentAngularDampFactor = (float)Math.Pow(angularDamping, timestep);
             currentLinearDampFactor = (float)Math.Pow(linearDamping, timestep);
 
-#if(WINDOWS_PHONE)
-            events.RaiseWorldPreStep(timestep);
-            foreach (RigidBody body in rigidBodies) body.PreStep(timestep);
-            UpdateContacts();
-
-            while (removedArbiterQueue.Count > 0) islands.ArbiterRemoved(removedArbiterQueue.Dequeue());
-
-            foreach (SoftBody body in softbodies)
-            {
-                body.Update(timestep);
-                body.DoSelfCollision(collisionDetectionHandler);
-            }
-
-            CollisionSystem.Detect(multithread);
-           
-            while (addedArbiterQueue.Count > 0) islands.ArbiterCreated(addedArbiterQueue.Dequeue());
-
-            CheckDeactivation();
-
-            IntegrateForces();
-            HandleArbiter(contactIterations, multithread);
-            Integrate(multithread);
-
-            foreach (RigidBody body in rigidBodies) body.PostStep(timestep);
-            events.RaiseWorldPostStep(timestep);
-#else
-            sw.Reset(); sw.Start();
+            // Pre-step (world first, then bodies).
+            sw.Reset();
+            sw.Start();
             events.RaiseWorldPreStep(timestep);
 
             foreach (RigidBody body in rigidBodies)
@@ -579,52 +555,93 @@ namespace Jitter
                 body.PreStep?.Invoke(timestep);
             }
 
-            sw.Stop(); debugTimes[(int)DebugType.PreStep] = sw.Elapsed.TotalMilliseconds;
+            sw.Stop();
+            debugTimes[(int)DebugType.PreStep] = sw.Elapsed.TotalMilliseconds;
 
-            sw.Reset(); sw.Start();
+            // Update existing contacts.
+            sw.Reset();
+            sw.Start();
             UpdateContacts();
-            sw.Stop(); debugTimes[(int)DebugType.UpdateContacts] = sw.Elapsed.TotalMilliseconds;
+            sw.Stop();
+            debugTimes[(int)DebugType.UpdateContacts] = sw.Elapsed.TotalMilliseconds;
 
-            sw.Reset(); sw.Start();
-            double ms = 0;
-            while (removedArbiterQueue.Count > 0) islands.ArbiterRemoved(removedArbiterQueue.Dequeue());
-            sw.Stop(); ms = sw.Elapsed.TotalMilliseconds;
+            // Remove arbiters (based on dead contacts).
+            sw.Reset();
+            sw.Start();
 
-            sw.Reset(); sw.Start();
+            while (removedArbiterQueue.Count > 0)
+            {
+                islands.ArbiterRemoved(removedArbiterQueue.Dequeue());
+            }
+
+            sw.Stop();
+
+            var ms = sw.Elapsed.TotalMilliseconds;
+
+            // Update soft bodies.
+            sw.Reset();
+            sw.Start();
+
             foreach (SoftBody body in softbodies)
             {
                 body.Update(timestep);
                 body.DoSelfCollision(collisionDetectionHandler);
             }
-            sw.Stop(); debugTimes[(int)DebugType.ClothUpdate] = sw.Elapsed.TotalMilliseconds;
 
-            sw.Reset(); sw.Start();
+            sw.Stop();
+            debugTimes[(int)DebugType.ClothUpdate] = sw.Elapsed.TotalMilliseconds;
+
+            // Detect collisions.
+            sw.Reset();
+            sw.Start();
             CollisionSystem.Detect(multithread);
-            sw.Stop(); debugTimes[(int)DebugType.CollisionDetect] = sw.Elapsed.TotalMilliseconds;
+            sw.Stop();
+            debugTimes[(int)DebugType.CollisionDetect] = sw.Elapsed.TotalMilliseconds;
 
-            sw.Reset(); sw.Start();
+            // Add arbiters (that were detected).
+            sw.Reset();
+            sw.Start();
 
-            while (addedArbiterQueue.Count > 0) islands.ArbiterCreated(addedArbiterQueue.Dequeue());
+            while (addedArbiterQueue.Count > 0)
+            {
+                islands.ArbiterCreated(addedArbiterQueue.Dequeue());
+            }
 
-            sw.Stop(); debugTimes[(int)DebugType.BuildIslands] = sw.Elapsed.TotalMilliseconds + ms;
+            sw.Stop();
+            debugTimes[(int)DebugType.BuildIslands] = sw.Elapsed.TotalMilliseconds + ms;
 
-            sw.Reset(); sw.Start();
+            // Check deactivation (i.e. sleep bodies as applicable).
+            sw.Reset();
+            sw.Start();
             CheckDeactivation();
-            sw.Stop(); debugTimes[(int)DebugType.DeactivateBodies] = sw.Elapsed.TotalMilliseconds;
+            sw.Stop();
+            debugTimes[(int)DebugType.DeactivateBodies] = sw.Elapsed.TotalMilliseconds;
 
-            sw.Reset(); sw.Start();
+            // Integrate forces (changes linear and angular velocity on relevant bodies).
+            sw.Reset();
+            sw.Start();
             IntegrateForces();
-            sw.Stop(); debugTimes[(int)DebugType.IntegrateForces] = sw.Elapsed.TotalMilliseconds;
+            sw.Stop();
+            debugTimes[(int)DebugType.IntegrateForces] = sw.Elapsed.TotalMilliseconds;
 
-            sw.Reset(); sw.Start();
+            // Iterate contacts (modifies linear and angular velocity on relevant bodies, but does NOT change position
+            // directly).
+            sw.Reset();
+            sw.Start();
             HandleArbiter(contactIterations, multithread);
-            sw.Stop(); debugTimes[(int)DebugType.HandleArbiter] = sw.Elapsed.TotalMilliseconds;
+            sw.Stop();
+            debugTimes[(int)DebugType.HandleArbiter] = sw.Elapsed.TotalMilliseconds;
 
-            sw.Reset(); sw.Start();
+            // Integrate bodies (by applying linear and angular velocity). Also updates bounding boxes.
+            sw.Reset();
+            sw.Start();
             Integrate(multithread);
-            sw.Stop(); debugTimes[(int)DebugType.Integrate] = sw.Elapsed.TotalMilliseconds;
+            sw.Stop();
+            debugTimes[(int)DebugType.Integrate] = sw.Elapsed.TotalMilliseconds;
 
-            sw.Reset(); sw.Start();
+            // Post-step (bodies first, then the world).
+            sw.Reset();
+            sw.Start();
 
             foreach (RigidBody body in rigidBodies)
             {
@@ -632,8 +649,8 @@ namespace Jitter
             }
 
             events.RaiseWorldPostStep(timestep);
-            sw.Stop(); debugTimes[(int)DebugType.PostStep] = sw.Elapsed.TotalMilliseconds;
-#endif
+            sw.Stop();
+            debugTimes[(int)DebugType.PostStep] = sw.Elapsed.TotalMilliseconds;
         }
 
         private float accumulatedTime = 0.0f;
@@ -729,14 +746,13 @@ namespace Jitter
 
         }
 
-        #region private void ArbiterCallback(object obj)
         private void ArbiterCallback(object obj)
         {
             CollisionIsland island = obj as CollisionIsland;
 
-            int thisIterations;
-            if (island.Bodies.Count + island.Constraints.Count > 3) thisIterations = contactIterations;
-            else thisIterations = smallIterations;
+            var thisIterations = island.Bodies.Count + island.Constraints.Count > 3
+                ? contactIterations
+                : smallIterations;
 
             for (int i = -1; i < thisIterations; i++)
             {
@@ -744,10 +760,17 @@ namespace Jitter
                 foreach (Arbiter arbiter in island.arbiter)
                 {
                     int contactCount = arbiter.contactList.Count;
+
                     for (int e = 0; e < contactCount; e++)
                     {
-                        if (i == -1) arbiter.contactList[e].PrepareForIteration(timestep);
-                        else arbiter.contactList[e].Iterate();
+                        if (i == -1)
+                        {
+                            arbiter.contactList[e].PrepareForIteration(timestep);
+                        }
+                        else
+                        {
+                            arbiter.contactList[e].Iterate();
+                        }
                     }
                 }
 
@@ -755,34 +778,45 @@ namespace Jitter
                 foreach (Constraint c in island.constraints)
                 {
                     if (c.body1 != null && !c.body1.IsActive && c.body2 != null && !c.body2.IsActive)
+                    {
                         continue;
+                    }
 
-                    if (i == -1) c.PrepareForIteration(timestep);
-                    else c.Iterate();
+                    if (i == -1)
+                    {
+                        c.PrepareForIteration(timestep);
+                    }
+                    else
+                    {
+                        c.Iterate();
+                    }
                 }
-
             }
         }
-        #endregion
 
         private void HandleArbiter(int iterations, bool multiThreaded)
         {
             if (multiThreaded)
             {
-                for (int i = 0; i < islands.Count; i++)
+                foreach (var island in islands)
                 {
-                    if(islands[i].IsActive()) threadManager.AddTask(arbiterCallback, islands[i]);
+                    if (island.IsActive())
+                    {
+                        threadManager.AddTask(arbiterCallback, island);
+                    }
                 }
 
                 threadManager.Execute();
             }
             else
             {
-                for (int i = 0; i < islands.Count; i++)
+                foreach (var island in islands)
                 {
-                    if (islands[i].IsActive()) arbiterCallback(islands[i]);
+                    if (island.IsActive())
+                    {
+                        arbiterCallback(island);
+                    }
                 }
-
             }
         }
 
@@ -816,11 +850,11 @@ namespace Jitter
             }
         }
 
-        #region private void IntegrateCallback(object obj)
         private void IntegrateCallback(object obj)
         {
             RigidBody body = obj as RigidBody;
 
+            // Apply linear velocity.
 	        JVector.Multiply(ref body.linearVelocity, timestep, out var temp);
             JVector.Add(ref temp, ref body.position, out body.position);
 
@@ -828,7 +862,6 @@ namespace Jitter
 
             if (!body.isParticle && !isRotationFixed)
             {
-
                 //exponential map
                 JVector axis;
                 float angle = body.angularVelocity.Length();
@@ -871,7 +904,6 @@ namespace Jitter
 		        body.SweptExpandBoundingBox(timestep);
 			}
         }
-        #endregion
 
         private void Integrate(bool multithread)
         {
@@ -953,33 +985,40 @@ namespace Jitter
 
             foreach (CollisionIsland island in islands)
             {
-                bool deactivateIsland = true;
+                bool shouldDeactivateIsland = true;
 
-                // global allowdeactivation
-                if (!this.AllowDeactivation) deactivateIsland = false;
+                // Global allow deactivation.
+                if (!AllowDeactivation)
+                {
+                    shouldDeactivateIsland = false;
+                }
                 else
                 {
                     foreach (RigidBody body in island.bodies)
                     {
-                        // body allowdeactivation
-                        if (body.AllowDeactivation && (body.angularVelocity.LengthSquared() < inactiveAngularThresholdSq &&
-                        (body.linearVelocity.LengthSquared() < inactiveLinearThresholdSq)))
+                        // Body allow deactivation.
+                        if (body.AllowDeactivation &&
+                            body.angularVelocity.LengthSquared() < inactiveAngularThresholdSq &&
+                            body.linearVelocity.LengthSquared() < inactiveLinearThresholdSq)
                         {
                             body.inactiveTime += timestep;
+
                             if (body.inactiveTime < deactivationTime)
-                                deactivateIsland = false;
+                            {
+                                shouldDeactivateIsland = false;
+                            }
                         }
                         else
                         {
-                            body.inactiveTime = 0.0f;
-                            deactivateIsland = false;
+                            body.inactiveTime = 0;
+                            shouldDeactivateIsland = false;
                         }
                     }
                 }
 
                 foreach (RigidBody body in island.bodies)
                 {
-                    if (body.isActive == deactivateIsland)
+                    if (body.isActive == shouldDeactivateIsland)
                     {
                         if (body.isActive)
                         {

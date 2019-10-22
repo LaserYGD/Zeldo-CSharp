@@ -79,6 +79,7 @@ namespace Zeldo.Entities.Core
 		// instead remains loaded. This allows the entity to continue updating even when not visible and far away.
 		public bool IsPersistent { get; protected set; }
 
+		// TODO: Is this needed? Could all static objects be replaced with a regular part of the physics mesh?
 		// This is used by actors (like the player) to determine when an entity collision should cause a stop.
 		public bool IsStatic { get; private set; }
 

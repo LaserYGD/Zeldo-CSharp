@@ -542,6 +542,7 @@ namespace Jitter.Dynamics
 	        set => isAffectedByGravity = value;
         }
 
+        // TODO: Modify this to be IsFixedVertical.
 	    public bool IsRotationFixed
 	    {
 		    get => isRotationFixed;
@@ -585,9 +586,11 @@ namespace Jitter.Dynamics
 	    public int BroadphaseTag { get; set; }
 
         // TODO: Consider adding normal to this callback (to avoid having to recompute it later).
-		public Func<RigidBody, JVector[], bool> ShouldCollideWith { get; set; }
+		public Func<RigidBody, JVector[], bool> ShouldGenerateContact { get; set; }
 
+        // Mid-step occurs after contacts are generated, but before they're resolved.
         public Action<float> PreStep { get; set; }
+        public Action<float> MidStep { get; set; }
         public Action<float> PostStep { get; set; }
 
 		#endregion

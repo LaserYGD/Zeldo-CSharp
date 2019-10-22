@@ -6,12 +6,12 @@ using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities
 {
-	public class DummyObject : Entity
+	public class DummyCube : Entity
 	{
 		private RigidBodyTypes bodyType;
 		private bool affectedByGravity;
 
-		public DummyObject(RigidBodyTypes bodyType, bool affectedByGravity) : base(EntityGroups.Object)
+		public DummyCube(RigidBodyTypes bodyType, bool affectedByGravity) : base(EntityGroups.Object)
 		{
 			this.bodyType = bodyType;
 			this.affectedByGravity = affectedByGravity;

@@ -8,7 +8,7 @@ namespace Zeldo.Control
 		{
 		}
 
-		public override void Update(float dt)
+		public override void PreStep(float dt)
 		{
 		}
 	}
