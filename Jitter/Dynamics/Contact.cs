@@ -277,7 +277,10 @@ namespace Jitter.Dynamics
                 body1.linearVelocity.Y -= (impulse.Y * body1.inverseMass);
                 body1.linearVelocity.Z -= (impulse.Z * body1.inverseMass);
 
-                if (!body1IsMassPoint && !body1.isRotationFixed)
+                // Bodies that are fixed vertical are assumed to be actors, which means their movement is largely
+                // controlled manually (via controllers). As such, the rotation effects of contacts can be ignored in
+                // those cases.
+                if (!body1IsMassPoint && !body1.isFixedVertical)
                 {
                     var num0 = relativePos1.Y * impulse.Z - relativePos1.Z * impulse.Y;
                     var num1 = relativePos1.Z * impulse.X - relativePos1.X * impulse.Z;
@@ -311,7 +314,7 @@ namespace Jitter.Dynamics
                 body2.linearVelocity.Y += (impulse.Y * body2.inverseMass);
                 body2.linearVelocity.Z += (impulse.Z * body2.inverseMass);
 
-                if (!body2IsMassPoint && !body2.isRotationFixed)
+                if (!body2IsMassPoint && !body2.isFixedVertical)
                 {
                     var num0 = relativePos2.Y * impulse.Z - relativePos2.Z * impulse.Y;
                     var num1 = relativePos2.Z * impulse.X - relativePos2.X * impulse.Z;

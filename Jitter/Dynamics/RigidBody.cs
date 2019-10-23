@@ -90,7 +90,7 @@ namespace Jitter.Dynamics
 
 		internal bool isActive = true;
         internal bool isAffectedByGravity = true;
-	    internal bool isRotationFixed;
+	    internal bool isFixedVertical;
 	    internal bool isParticle;
 
 		internal List<RigidBody> connections = new List<RigidBody>();
@@ -110,7 +110,7 @@ namespace Jitter.Dynamics
         /// If true, the body as no angular movement.
         /// </summary>
         public bool IsParticle { 
-            get { return isParticle; }
+            get => isParticle;
             set
             {
                 if (isParticle && !value)
@@ -280,18 +280,16 @@ namespace Jitter.Dynamics
         public void ApplyImpulse(JVector impulse, JVector relativePosition)
 		{
 			Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't apply an impulse to a static body.");
+			Debug.Assert(!isFixedVertical, "Can't apply an impulse to a body that's fixed vertical.");
 
+            // Linear velocity.
 			JVector.Multiply(ref impulse, inverseMass, out var temp);
             JVector.Add(ref linearVelocity, ref temp, out linearVelocity);
 
-			// Similar to applying forces, applying an impulse at a relative point when rotation is fixed causes torque
-			// to be ignored.
-			if (!isRotationFixed)
-			{
-				JVector.Cross(ref relativePosition, ref impulse, out temp);
-				JVector.Transform(ref temp, ref invInertiaWorld, out temp);
-				JVector.Add(ref angularVelocity, ref temp, out angularVelocity);
-			}
+            // Angular velocity.
+			JVector.Cross(ref relativePosition, ref impulse, out temp);
+			JVector.Transform(ref temp, ref invInertiaWorld, out temp);
+			JVector.Add(ref angularVelocity, ref temp, out angularVelocity);
         }
 
         /// <summary>
@@ -316,16 +314,15 @@ namespace Jitter.Dynamics
         /// <param name="pos">The position where the force is applied.</param>
         public void AddForce(JVector force, JVector pos)
         {
-            JVector.Add(ref this.force, ref force, out this.force);
+            Debug.Assert(!isFixedVertical, "Can't apply forces to a body that's fixed vertical.");
 
-			// If the body's rotation is fixed, applying force at any position ignores torque (equivalent to applying
-			// the force at the body's center of mass).
-	        if (!isRotationFixed)
-	        {
-		        JVector.Subtract(ref pos, ref position, out pos);
-		        JVector.Cross(ref pos, ref force, out pos);
-		        JVector.Add(ref pos, ref torque, out torque);
-			}
+            // Force.
+            JVector.Add(ref this.force, ref force, out this.force);
+            
+            // Torque.
+		    JVector.Subtract(ref pos, ref position, out pos);
+		    JVector.Cross(ref pos, ref force, out pos);
+		    JVector.Add(ref pos, ref torque, out torque);
         }
 
         /// <summary>
@@ -351,7 +348,7 @@ namespace Jitter.Dynamics
         /// <param name="torque">The torque to add next <see cref="World.Step"/>.</param>
         public void AddTorque(JVector torque)
         {
-			Debug.Assert(!isRotationFixed, "Can't apply torque to a body with fixed rotation.");
+			Debug.Assert(!isFixedVertical, "Can't apply torque to a body that's fixed vertical.");
 
             JVector.Add(ref torque, ref this.torque, out this.torque);
         }
@@ -490,7 +487,7 @@ namespace Jitter.Dynamics
 	        set
             {
 				Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't set angular velocity on a static body.");
-				Debug.Assert(!isRotationFixed, "Can't set angular velocity on a body with fixed rotation.");
+				Debug.Assert(!isFixedVertical, "Can't set angular velocity on a body that's fixed vertical.");
 
 	            angularVelocity = value;
             }
@@ -513,8 +510,6 @@ namespace Jitter.Dynamics
             get => orientation;
 	        set
 	        {
-                Debug.Assert(!isRotationFixed, "Can't set orientation on a body with fixed rotation.");
-
 		        orientation = value;
 		        Update();
 	        }
@@ -546,14 +541,19 @@ namespace Jitter.Dynamics
 	        set => isAffectedByGravity = value;
         }
 
-        // TODO: Modify this to be IsFixedVertical.
-	    public bool IsRotationFixed
+	    public bool IsFixedVertical
 	    {
-		    get => isRotationFixed;
+		    get => isFixedVertical;
 		    set
 		    {
-			    isRotationFixed = value;
-				angularVelocity.MakeZero();
+		        isFixedVertical = value;
+
+		        if (value)
+		        {
+                    // If a body is fixed vertical, it's assumed its orientation will be set manually (via control
+                    // code). As such, angular velocity is disallowed.
+		            angularVelocity.MakeZero();
+                }
 		    }
 	    }
 

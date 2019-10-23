@@ -250,12 +250,7 @@ namespace Zeldo.Entities.Core
 		    {
 		        selfUpdate = true;
 		        Position = controllingBody.Position.ToVec3();
-
-			    if (!controllingBody.IsRotationFixed)
-			    {
-				    Orientation = controllingBody.Orientation.ToQuat();
-				}
-
+				Orientation = controllingBody.Orientation.ToQuat();
 		        selfUpdate = false;
 		    }
 		}

@@ -1,4 +1,5 @@
-﻿using Jitter.Dynamics;
+﻿using Engine.Physics;
+using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Entities.Core;
 
@@ -14,9 +15,12 @@ namespace Zeldo.Control
 
 		public override void PreStep(float step)
 		{
-			// TODO: Consider optimizing the orientation transform by making the platform entity as fixed rotation.
-			Parent.ControllingBody.Position = Platform.Position + JVector.Transform(Parent.PlatformPosition,
-				Platform.Orientation);
+			var body = Parent.ControllingBody;
+			var orientation = Platform.Orientation;
+
+			// TODO: Consider optimizing the orientation transform by marking the platform entity as fixed rotation.
+			body.Position = Platform.Position + JVector.Transform(Parent.PlatformPosition, orientation);
+			Parent.BodyYaw = orientation.ComputeYaw() + Parent.PlatformYaw;
 		}
 	}
 }

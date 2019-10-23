@@ -17,6 +17,7 @@ namespace Zeldo.Entities.Core
 	public abstract class Actor : LivingEntity
 	{
 		private bool isOldPositionUnset;
+		private float yaw;
 
 		protected AbstractController activeController;
 		protected AerialController aerialController;
@@ -52,6 +53,18 @@ namespace Zeldo.Entities.Core
 
 		public float Height { get; set; }
 
+		// Actors can rotate around the Y axis, but that rotation is controlled manually. Storing yaw directly is more
+		// efficient than recomputing it every step.
+		public float BodyYaw
+		{
+			get => yaw;
+			set
+			{
+				yaw = value;
+				controllingBody.Orientation = JMatrix.CreateFromAxisAngle(JVector.Up, value);
+			}
+		}
+
 		public override vec3 Position
 		{
 			get => base.Position;
@@ -69,10 +82,10 @@ namespace Zeldo.Entities.Core
 
 		// This is used by the ground controller.
 		public SurfaceTriangle Ground { get; protected set; }
-
-		// This is used for moving platforms (representing position relative to the platform). While on a moving
-		// platform, actor orientation remains fixed upright.
 		public JVector PlatformPosition { get; set; }
+
+		// Since actors are fixed vertically, only relative yaw (i.e. rotation around the Y axis) needs to be stored.
+		public float PlatformYaw { get; set; }
 
 		protected virtual bool ShouldGenerateContact(RigidBody body, JVector[] triangle)
 		{
@@ -208,9 +221,11 @@ namespace Zeldo.Entities.Core
 				controllingBody.Position = (p + new vec3(0, Height / 2, 0)).ToJVector();
 				controllingBody.IsAffectedByGravity = false;
 
-				// TODO: Track orientation as well.
+				var orientation = platform.Orientation;
+
 				PlatformPosition = JVector.Transform(controllingBody.Position - platform.Position,
-					JMatrix.Inverse(platform.Orientation));
+					JMatrix.Inverse(orientation));
+				PlatformYaw = yaw - orientation.ComputeYaw();
 				platformController.Platform = platform;
 				activeController = platformController;
 
@@ -259,7 +274,7 @@ namespace Zeldo.Entities.Core
 			body.ShouldGenerateContact = ShouldGenerateContact;
 			body.PreStep = PreStep;
 			body.PostStep = PostStep;
-			body.IsRotationFixed = true;
+			body.IsFixedVertical = true;
 
 			// TODO: Is this needed?
 			body.AllowDeactivation = false;
@@ -275,18 +290,6 @@ namespace Zeldo.Entities.Core
 
 		public void PlayAnimation(string animation)
 		{
-		}
-
-		public override void Update(float dt)
-		{
-			// TODO: Verify the ordering of method calls here.
-			Components.Update(dt);
-			selfUpdate = true;
-			Position = controllingBody.Position.ToVec3();
-			selfUpdate = false;
-
-			// Note that the base Update function is intentionally not called (it's easier to just duplicate a bit of
-			// code here).
 		}
 	}
 }

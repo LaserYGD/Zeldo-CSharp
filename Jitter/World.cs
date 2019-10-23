@@ -671,9 +671,7 @@ namespace Jitter
                 JVector.Multiply(ref effectiveLinear, timestep, out var temp);
                 JVector.Add(ref temp, ref body.position, out body.position);
 
-                bool isRotationFixed = body.isRotationFixed;
-
-                if (!body.isParticle && !isRotationFixed)
+                if (!body.isParticle && !body.isFixedVertical)
                 {
                     //exponential map
                     JVector axis;
@@ -897,9 +895,7 @@ namespace Jitter
             {
                 if (!body.IsStatic && body.IsActive)
                 {
-                    // Modify linear velocity.
-                    JVector.Multiply(ref body.force, body.inverseMass * timestep, out var temp);
-                    JVector.Add(ref temp, ref body.linearVelocity, out body.linearVelocity);
+                    JVector temp;
 
                     if (body.isAffectedByGravity)
                     {
@@ -907,8 +903,19 @@ namespace Jitter
                         JVector.Add(ref body.linearVelocity, ref temp, out body.linearVelocity);
                     }
 
+                    // It's assumed that fixed-vertical bodies will never have forces applied (gravity still applies
+                    // though).
+                    if (body.isFixedVertical)
+                    {
+                        continue;
+                    }
+
+                    // Modify linear velocity.
+                    JVector.Multiply(ref body.force, body.inverseMass * timestep, out temp);
+                    JVector.Add(ref temp, ref body.linearVelocity, out body.linearVelocity);
+
                     // Modify angular velocity.
-                    if (!body.isParticle && !body.isRotationFixed)
+                    if (!body.isParticle)
                     {
                         JVector.Multiply(ref body.torque, timestep, out temp);
                         JVector.Transform(ref temp, ref body.invInertiaWorld, out temp);
@@ -929,9 +936,9 @@ namespace Jitter
             JVector.Multiply(ref body.linearVelocity, timestep, out var temp);
             JVector.Add(ref temp, ref body.position, out body.position);
 
-            bool isRotationFixed = body.isRotationFixed;
+            bool isFixedVertical = body.isFixedVertical;
 
-            if (!body.isParticle && !isRotationFixed)
+            if (!body.isParticle && !isFixedVertical)
             {
                 //exponential map
                 JVector axis;
@@ -963,7 +970,7 @@ namespace Jitter
                 JVector.Multiply(ref body.linearVelocity, currentLinearDampFactor, out body.linearVelocity);
             }
 
-            if (!isRotationFixed && (body.Damping & RigidBody.DampingType.Angular) != 0)
+            if (!isFixedVertical && (body.Damping & RigidBody.DampingType.Angular) != 0)
             {
                 JVector.Multiply(ref body.angularVelocity, currentAngularDampFactor, out body.angularVelocity);
             }

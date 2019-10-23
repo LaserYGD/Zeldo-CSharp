@@ -121,7 +121,7 @@ namespace Engine.Physics
 			for (int i = 0; i < Segments; i++)
 			{
 				vec2 d = Utilities.Direction(Constants.TwoPi / Segments * i) * r;
-				vec3 point = new vec3(d.x, 0, d.y) * orientation + p;
+				vec3 point = orientation * new vec3(d.x, 0, d.y)  + p;
 
 				primitives.DrawLine(point + v * l, point - v * l, color);
 			}

@@ -684,11 +684,15 @@ namespace Zeldo.Entities.Player
 
 			base.Update(dt);
 
+			var platform = platformController.Platform;
+
 			var list = debugView.GetGroup("Player");
 			list.Add("State: " + State);
 			list.Add("Arbiters: " + controllingBody.Arbiters.Count);
 			list.Add("Contacts: " + controllingBody.Arbiters.Sum(a => a.ContactList.Count));
 			list.Add("Velocity: " + controllingBody.LinearVelocity);
+			list.Add("Yaw (platform): " + (platform == null ? "null" : platform.Orientation.ComputeYaw().ToString()));
+			list.Add("Yaw (player): " + BodyYaw);
 
 			/*
 			var p = controllingBody.Position.ToVec3();
