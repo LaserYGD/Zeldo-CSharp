@@ -3,7 +3,7 @@ using Engine.UI;
 
 namespace Zeldo.UI.Hud
 {
-	public class PlayerHealthDisplay : CanvasElement
+	public class PlayerOxygenDisplay : CanvasElement
 	{
 		public override void Draw(SpriteBatch sb)
 		{

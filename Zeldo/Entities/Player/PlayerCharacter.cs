@@ -52,6 +52,7 @@ namespace Zeldo.Entities.Player
 		//private IAscendable ascensionTarget;
 		
 		private bool[] skillsUnlocked;
+		private bool[] upgradesUnlocked;
 		private bool isJumpDecelerating;
 
 		// The game is designed for double jumping, but is coded to accommodate any number of extra jumps.
@@ -69,8 +70,10 @@ namespace Zeldo.Entities.Player
 			coyoteFlag.OnExpiration = () => { jumpsRemaining--; };
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
+			int upgradeCount = Utilities.EnumCount<PlayerUpgrades>();
 
 			skillsUnlocked = new bool[skillCount];
+			upgradesUnlocked = new bool[upgradeCount];
 			controller = new PlayerController(this, playerData, controls, settings, CreateControllers());
 		}
 
@@ -199,7 +202,7 @@ namespace Zeldo.Entities.Player
 			*/
 		}
 
-		public override void OnCollision(Entity entity, vec3 point, vec3 normal, float penetration)
+		public override void OnCollision(Entity entity, vec3 p, vec3 normal, float penetration)
 		{
 			bool isAirborne = (state & (PlayerStates.Airborne | PlayerStates.Jumping)) > 0;
 
@@ -208,6 +211,8 @@ namespace Zeldo.Entities.Player
 			{
 				Mount(ladder);
 			}
+
+			base.OnCollision(entity, p, normal, penetration);
 		}
 
 		/*
@@ -629,7 +634,7 @@ namespace Zeldo.Entities.Player
 			state |= PlayerStates.OnLadder;
 		}
 
-		public void UnlockSkill(PlayerSkills skill)
+		public void Unlock(PlayerSkills skill)
 		{
 			skillsUnlocked[(int)skill] = true;
 
@@ -645,6 +650,10 @@ namespace Zeldo.Entities.Player
 
 					break;
 			}
+		}
+
+		public void Unlock(PlayerUpgrades upgrade)
+		{
 		}
 
 		public override void Update(float dt)

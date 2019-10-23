@@ -346,6 +346,7 @@
     <Compile Include="UI\Hud\BossHealthBar.cs" />
     <Compile Include="UI\Hud\ItemShowcaseDisplay.cs" />
     <Compile Include="UI\Hud\PlayerHealthDisplay.cs" />
+    <Compile Include="UI\Hud\PlayerOxygenDisplay.cs" />
     <Compile Include="UI\Hud\WatchDisplay.cs" />
     <Compile Include="UI\Letterbox.cs" />
     <Compile Include="UI\DebugView.cs" />

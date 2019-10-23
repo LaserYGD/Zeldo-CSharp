@@ -65,11 +65,14 @@ namespace Zeldo.Entities.Core
 		// This is used by the ground controller.
 		public SurfaceTriangle Ground { get; protected set; }
 
+		// These values are used for moving platforms (representing position and orientation relative to the platform).
+		public vec3 RelativePosition { get; set; }
+		public quat RelativeOrientation { get; set; }
+
 		protected virtual bool ShouldGenerateContact(RigidBody body, JVector[] triangle)
 		{
-			return true;
-
-			// Triangles are only sent into the callback for triangle mesh and terrain collisions.
+			// Triangles are only sent into the callback for triangle mesh and terrain collisions. All non-mesh
+			// contacts should be generated.
 			if (triangle == null)
 			{
 				return true;
@@ -167,6 +170,10 @@ namespace Zeldo.Entities.Core
 
 			// Actors can only land on the ground (not on top of ceilings, which would be back-facing).
 			return SurfaceTriangle.ComputeSurfaceType(results.Normal) == SurfaceTypes.Floor;
+		}
+
+		public override void OnCollision(Entity entity, vec3 p, vec3 normal, float penetration)
+		{
 		}
 
 		// This function is called via manual raycasting during the physics step.

@@ -872,16 +872,9 @@ namespace Jitter.Dynamics
 	            var type1 = body1.BodyType;
 	            var type2 = body2.BodyType;
 
-	            if (type1 == type2 && type1 == RigidBodyTypes.Dynamic)
-	            {
-		            isBody1Movable = true;
-		            isBody2Movable = true;
-	            }
-	            else
-	            {
-		            isBody1Movable = type1 < type2;
-		            isBody2Movable = type2 < type1;
-	            }
+                // Kinematic bodies cannot be moved by dynamic bodies. Otherwise, all collisions occur.
+		        isBody1Movable = type1 <= type2;
+		        isBody2Movable = type2 <= type1;
 
                 accumulatedNormalImpulse = 0.0f;
                 accumulatedTangentImpulse = 0.0f;

@@ -9,6 +9,8 @@ namespace Zeldo.Entities.Player
 	public enum PlayerUpgrades
 	{
 		BufferedReflect,
-		OmnidirectionalReflect
+		OmnidirectionalReflect,
+		UnderwaterBreathing,
+		WaterfallAscend
 	}
 }

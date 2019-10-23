@@ -241,7 +241,7 @@ namespace Zeldo.Entities.Core
 			Orientation = orientation;
 		}
 
-		public virtual void OnCollision(Entity entity, vec3 point, vec3 normal, float penetration)
+		public virtual void OnCollision(Entity entity, vec3 p, vec3 normal, float penetration)
 		{
 		}
 

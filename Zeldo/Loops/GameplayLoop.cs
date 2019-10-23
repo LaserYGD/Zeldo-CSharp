@@ -59,7 +59,7 @@ namespace Zeldo.Loops
 
 			cubeTimer = new RepeatingTimer(progress =>
 			{
-				var cube = new DummyCube(RigidBodyTypes.Dynamic, true);
+				var cube = new DummyCube(RigidBodyTypes.Kinematic, true);
 				cube.Position = scene.GetEntities<PlayerCharacter>(EntityGroups.Player)[0].Position +
 					new vec3(0.1f, 5, 0.6f);
 
@@ -112,14 +112,14 @@ namespace Zeldo.Loops
 			// TODO: Set player position from a save slot.
 			PlayerCharacter player = new PlayerCharacter(settings);
 			player.Equip(new Sword(player));
-			player.UnlockSkill(PlayerSkills.Grab);
-			player.UnlockSkill(PlayerSkills.Jump);
-			player.UnlockSkill(PlayerSkills.DoubleJump);
-			player.UnlockSkill(PlayerSkills.Ascend);
+			player.Unlock(PlayerSkills.Grab);
+			player.Unlock(PlayerSkills.Jump);
+			player.Unlock(PlayerSkills.DoubleJump);
+			player.Unlock(PlayerSkills.Ascend);
 
 			// Combat skills.
-			player.UnlockSkill(PlayerSkills.Block);
-			player.UnlockSkill(PlayerSkills.Parry);
+			player.Unlock(PlayerSkills.Block);
+			player.Unlock(PlayerSkills.Parry);
 
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
@@ -257,6 +257,7 @@ namespace Zeldo.Loops
 			{
 				sprite.Orientation *= quat.FromAxisAngle(dt, vec3.UnitY);
 
+				// TODO: Should physics be multithreaded? Doing so caused physics to become inconsistent across multiple runs.
 				world.Step(dt, false, PhysicsStep, physicsMaxIterations);
 				space.Update();
 				scene.Update(dt);

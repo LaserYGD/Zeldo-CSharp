@@ -168,19 +168,9 @@ namespace Jitter.Collision
 	        var type1 = body1.BodyType;
 	        var type2 = body2.BodyType;
 
-	        bool isBody1Movable;
-	        bool isBody2Movable;
-
-	        if (type1 == type2 && type1 == RigidBodyTypes.Dynamic)
-	        {
-		        isBody1Movable = true;
-		        isBody2Movable = true;
-	        }
-	        else
-	        {
-		        isBody1Movable = type1 < type2;
-		        isBody2Movable = type2 < type1;
-	        }
+            // Kinematic bodies cannot be moved by dynamic bodies.
+            bool isBody1Movable = type1 <= type2;
+            bool isBody2Movable = type2 <= type1;
 
 	        if (!(isBody1Movable || isBody2Movable))
 	        {

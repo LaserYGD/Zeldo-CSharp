@@ -200,8 +200,11 @@
 
 - Consider some kind of last stand mechanic that allows survival after a fatal blow (inspired by one of Ela's Code Vein videos, where I mistakenly thought the stamina bar was health, so it looked like health ran out and you could keep going to save yourself) => Could be an upgrade?
 
+- Should have some more vertically-oriented forms of fast travel as well (like a ski lift car that helps reach a village in the mountains, or an elevator to an underwater dungeon)
 
+- Upgrade that lets you ascend up waterfalls (thin or taller, as another pseudo-form of vertical fast travel)
 
+- "Keyshroom" item in the forest (key item that unlocks a special door)
 
 
 
