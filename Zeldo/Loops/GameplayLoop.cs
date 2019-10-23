@@ -59,7 +59,7 @@ namespace Zeldo.Loops
 
 			cubeTimer = new RepeatingTimer(progress =>
 			{
-				var cube = new DummyCube(RigidBodyTypes.Kinematic, true);
+				var cube = new DummyCube(RigidBodyTypes.Dynamic, true);
 				cube.Position = scene.GetEntities<PlayerCharacter>(EntityGroups.Player)[0].Position +
 					new vec3(0.1f, 5, 0.6f);
 
@@ -74,12 +74,12 @@ namespace Zeldo.Loops
 		{
 			CollisionSystem system = new CollisionSystemSAP();
 			system.UseTriangleMeshNormal = true;
-			system.CollisionDetected += OnCollision;
 
 			// TODO: Should damping factors be left in their default states? (they were changed while adding kinematic bodies)
 			world = new World(system);
 			world.Gravity = new JVector(0, -Properties.GetInt("gravity"), 0);
 			world.SetDampingFactors(1, 1);
+			world.Events.ContactCreated += OnContact;
 
 			space = new Space();
 			scene = new Scene
@@ -121,13 +121,16 @@ namespace Zeldo.Loops
 			player.Unlock(PlayerSkills.Block);
 			player.Unlock(PlayerSkills.Parry);
 
+			var platform = new MovingPlatform(new vec3(3, 0.5f, 3), new vec3(0, 2.5f, 0));
+
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
+			scene.Add(platform);
 
 			var fragment = scene.LoadFragment("Demo.json");
 			player.Position = fragment.Origin + fragment.Spawn;
 
-			CreateDebugCubes();
+			//CreateDebugCubes();
 
 			camera.Attach(new FollowController(player, settings));
 
@@ -175,8 +178,7 @@ namespace Zeldo.Loops
 			*/
 		}
 
-		// TODO: With the changes to surface processing within Jitter, does penetration need to be passed to entities?
-		private void OnCollision(RigidBody body1, RigidBody body2, JVector point1, JVector point2, JVector normal,
+		private bool OnContact(RigidBody body1, RigidBody body2, JVector point1, JVector point2, JVector normal,
 			JVector[] triangle, float penetration)
 		{
 			// By design, all physics objects have entities attached, with the exception of static parts of the map. In
@@ -188,9 +190,9 @@ namespace Zeldo.Loops
 			vec3 p1 = point1.ToVec3();
 			vec3 p2 = point2.ToVec3();
 
-			// TODO: If normals are flipped on the static triangle mesh, this will likely have to be removed.
 			// The normal needs to be flipped based on how Jitter handles triangle winding.
-			vec3 n = Utilities.Normalize(-normal.ToVec3());
+			//vec3 n = Utilities.Normalize(-normal.ToVec3());
+			vec3 n = Utilities.Normalize(normal.ToVec3());
 
 			// A triangle will only be given in the case of collisions with a triangle mesh (or terrain).
 			if (triangle != null)
@@ -199,13 +201,14 @@ namespace Zeldo.Loops
 				var point = entity1 != null ? p2 : p1;
 				var tArray = triangle.Select(t => t.ToVec3()).ToArray();
 
-				entity.OnCollision(point, n, tArray, penetration);
-
-				return;
+				return entity.OnContact(point, n, tArray, penetration);
 			}
 
-			entity1?.OnCollision(entity2, p1, -n, penetration);
-			entity2?.OnCollision(entity1, p2, n, penetration);
+			bool b1 = entity1?.OnContact(entity2, p1, -n, penetration) ?? true;
+			bool b2 = entity2?.OnContact(entity1, p2, n, penetration) ?? true;
+
+			// Either entity can negate the contact.
+			return b1 && b2;
 		}
 
 		public override void Dispose()
@@ -251,7 +254,7 @@ namespace Zeldo.Loops
 
 		public override void Update(float dt)
 		{
-			cubeTimer.Update(dt);
+			//cubeTimer.Update(dt);
 
 			if (!isFrameAdvanceEnabled || isFrameAdvanceReady)
 			{

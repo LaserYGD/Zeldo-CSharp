@@ -79,10 +79,6 @@ namespace Zeldo.Entities.Core
 		// instead remains loaded. This allows the entity to continue updating even when not visible and far away.
 		public bool IsPersistent { get; protected set; }
 
-		// TODO: Is this needed? Could all static objects be replaced with a regular part of the physics mesh?
-		// This is used by actors (like the player) to determine when an entity collision should cause a stop.
-		public bool IsStatic { get; private set; }
-
 		public virtual void Dispose()
 		{
 			foreach (var attachment in attachments)
@@ -164,12 +160,6 @@ namespace Zeldo.Entities.Core
 			body.BodyType = bodyType;
 			body.Tag = this;
 
-			if (bodyType == RigidBodyTypes.Static)
-			{
-				// Entities are considered static if any static bodies are created.
-				IsStatic = true;
-			}
-
             // Note that the controlling body is intentionally not attached as a regular attachment. Doing so would
             // complicate transform sets by that body.
 			scene.World.AddBody(body);
@@ -241,13 +231,15 @@ namespace Zeldo.Entities.Core
 			Orientation = orientation;
 		}
 
-		public virtual void OnCollision(Entity entity, vec3 p, vec3 normal, float penetration)
+		public virtual bool OnContact(Entity entity, vec3 p, vec3 normal, float penetration)
 		{
+			return true;
 		}
 
 		// Note that for this callback, the point is the position on the triangle, not the entity.
-		public virtual void OnCollision(vec3 p, vec3 normal, vec3[] triangle, float penetration)
+		public virtual bool OnContact(vec3 p, vec3 normal, vec3[] triangle, float penetration)
 		{
+			return true;
 		}
 
 		public virtual void Update(float dt)

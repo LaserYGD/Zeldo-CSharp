@@ -234,6 +234,7 @@
     <Compile Include="Control\AbstractController.cs" />
     <Compile Include="Control\LadderController.cs" />
     <Compile Include="Control\GroundController.cs" />
+    <Compile Include="Control\PlatformController.cs" />
     <Compile Include="Control\SwimController.cs" />
     <Compile Include="Control\WallController.cs" />
     <Compile Include="CustomMessageTypes.cs" />
@@ -251,6 +252,7 @@
     <Compile Include="Entities\Characters\LeviathonTentacle.cs" />
     <Compile Include="Entities\Characters\Watchmaker.cs" />
     <Compile Include="Entities\Core\Actor.cs" />
+    <Compile Include="Entities\Core\ActorFlags.cs" />
     <Compile Include="Entities\Core\Entity.cs" />
     <Compile Include="Entities\Core\EntityAttachment.cs" />
     <Compile Include="Entities\Core\EntityAttachmentTypes.cs" />
@@ -274,6 +276,7 @@
     <Compile Include="Entities\Hazards\PoisonBush.cs" />
     <Compile Include="Entities\JesterWall.cs" />
     <Compile Include="Entities\Mechanisms\Lever.cs" />
+    <Compile Include="Entities\MovingPlatform.cs" />
     <Compile Include="Entities\Objects\Book.cs" />
     <Compile Include="Entities\Objects\Cannon.cs" />
     <Compile Include="Entities\Objects\Cannonball.cs" />

@@ -29,10 +29,6 @@ using System.Diagnostics;
 
 namespace Jitter.Dynamics
 {
-
-
-
-
     /// <summary>
     /// Represents a list of contacts. Every ContactList 
     /// has a maximum of four contacts.
@@ -99,20 +95,22 @@ namespace Jitter.Dynamics
     /// </summary>
     public class Arbiter
     {
+        public static World World { get; set; }
+
         /// <summary>
         /// The first body.
         /// </summary>
-        public RigidBody Body1 { get { return body1; } }
+        public RigidBody Body1 => body1;
 
         /// <summary>
         /// The second body.
         /// </summary>
-        public RigidBody Body2 { get { return body2; } }
+        public RigidBody Body2 => body2;
 
         /// <summary>
         /// The contact list containing all contacts of both bodies.
         /// </summary>
-        public ContactList ContactList { get { return contactList; } }
+        public ContactList ContactList => contactList;
 
         /// <summary>
         /// </summary>
@@ -160,7 +158,7 @@ namespace Jitter.Dynamics
         /// <param name="point2">Point on body2. In world space.</param>
         /// <param name="normal">The normal pointing to body2.</param>
         /// <param name="penetration">The estimated penetration depth.</param>
-        public Contact AddContact(JVector point1, JVector point2, JVector normal, JVector[] triangle,
+        public void AddContact(JVector point1, JVector point2, JVector normal, JVector[] triangle,
             float penetration, ContactSettings contactSettings)
         {
             JVector.Subtract(ref point1, ref body1.position, out var relPos1);
@@ -173,8 +171,6 @@ namespace Jitter.Dynamics
                 {
                     index = SortCachedPoints(ref relPos1, penetration);
                     ReplaceContact(ref point1, ref point2, ref normal, triangle, penetration, index, contactSettings);
-                    
-                    return null;
                 }
 
                 index = GetCacheEntry(ref relPos1, contactSettings.breakThreshold);
@@ -182,16 +178,19 @@ namespace Jitter.Dynamics
                 if (index >= 0)
                 {
                     ReplaceContact(ref point1, ref point2, ref normal, triangle, penetration, index, contactSettings);
-                   
-                    return null;
+                }
+
+                // Returning false means that the contact doesn't need to be kept (likely because data from the contact
+                // was used to manually update controllers).
+                if (!World.Events.RaiseContactCreated(body1, body2, point1, point2, normal, triangle, penetration))
+                {
+                    return;
                 }
 
                 Contact contact = Contact.Pool.GetNew();
                 contact.Initialize(body1, body2, ref point1, ref point2, ref normal, triangle, penetration, true,
                     contactSettings);
                 contactList.Add(contact);
-
-                return contact;
             }
         }
 

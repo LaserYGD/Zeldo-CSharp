@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
+using Engine;
 using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
@@ -19,14 +21,17 @@ namespace Zeldo.Entities.Core
 		protected AbstractController activeController;
 		protected AerialController aerialController;
 		protected GroundController groundController;
+		protected PlatformController platformController;
 
 		// TODO: Set this appropriately for all entities.
 		protected vec2 facing;
 
+		// TODO: Use actor flags to optimize controller creation (and to return early from some functions).
 		protected Actor(EntityGroups group, bool canTraverseGround = true) : base(group)
 		{
 			isOldPositionUnset = true;
 			aerialController = new AerialController(this);
+			platformController = new PlatformController(this);
 
 			// Some actors can't run on the ground (like flying enemies), so it would be wasteful to create the ground
 			// controller.
@@ -65,17 +70,17 @@ namespace Zeldo.Entities.Core
 		// This is used by the ground controller.
 		public SurfaceTriangle Ground { get; protected set; }
 
-		// These values are used for moving platforms (representing position and orientation relative to the platform).
-		public vec3 RelativePosition { get; set; }
-		public quat RelativeOrientation { get; set; }
+		// This is used for moving platforms (representing position relative to the platform). While on a moving
+		// platform, actor orientation remains fixed upright.
+		public JVector PlatformPosition { get; set; }
 
 		protected virtual bool ShouldGenerateContact(RigidBody body, JVector[] triangle)
 		{
-			// Triangles are only sent into the callback for triangle mesh and terrain collisions. All non-mesh
-			// contacts should be generated.
+			// Triangles are only sent into the callback for triangle mesh and terrain collisions.
 			if (triangle == null)
 			{
-				return true;
+				// While on a moving platform, contacts should not be generated with that platform.
+				return platformController != null && body != platformController.Platform;
 			}
 
 			// Flying actors should collide with all static triangles (since they don't use surface control).
@@ -129,7 +134,7 @@ namespace Zeldo.Entities.Core
 			if (groundController != null && Ground == null && CastGround(out var results))
 			{
 				// TODO: Retrieve material as well.
-				OnLanding(results.Position, new SurfaceTriangle(results.Triangle, results.Normal, 0));
+				OnLanding(results.Position, null, new SurfaceTriangle(results.Triangle, results.Normal, 0));
 			}
 			// If the above condition is true, the ground controller will be active, and for the ground controller,
 			// there's nothing to be done (in post-step) on the step the actor lands.
@@ -172,13 +177,46 @@ namespace Zeldo.Entities.Core
 			return SurfaceTriangle.ComputeSurfaceType(results.Normal) == SurfaceTypes.Floor;
 		}
 
-		public override void OnCollision(Entity entity, vec3 p, vec3 normal, float penetration)
+		public override bool OnContact(Entity entity, vec3 p, vec3 normal, float penetration)
 		{
+			// For the time being, it's assumed that all static entity collisions will effectively act as moving
+			// platforms.
+			var body = entity.ControllingBody;
+
+			// TODO: Check relative velocity (in case the platform is moving up).
+			// Actors can land on portions of any platform that are flat enough to be considered a floor.
+			if (!body.IsStatic || normal.y < 0 || controllingBody.LinearVelocity.Y > 0 ||
+			    Math.Abs(Constants.PiOverTwo - Utilities.Angle(normal, vec3.UnitY)) <= PhysicsConstants.WallThreshold)
+			{
+				return true;
+			}
+
+			OnLanding(p, body, null);
+
+			return false;
 		}
 
-		// This function is called via manual raycasting during the physics step.
-		protected virtual void OnLanding(vec3 p, SurfaceTriangle surface)
+		// This function is called both from landing on static entities (i.e. moving platforms) and via manual
+		// raycasting during the physics step.
+		protected virtual void OnLanding(vec3 p, RigidBody platform, SurfaceTriangle surface)
 		{
+			// Platform and surface are mutually-exclusive here.
+			if (platform != null)
+			{
+				// TODO: Transfer velocity.
+				controllingBody.LinearVelocity = JVector.Zero;
+				controllingBody.Position = (p + new vec3(0, Height / 2, 0)).ToJVector();
+				controllingBody.IsAffectedByGravity = false;
+
+				// TODO: Track orientation as well.
+				PlatformPosition = JVector.Transform(controllingBody.Position - platform.Position,
+					JMatrix.Inverse(platform.Orientation));
+				platformController.Platform = platform;
+				activeController = platformController;
+
+				return;
+			}
+
 			// TODO: When jumping straight up and down on a sloped surface, XZ position can start to change very slowly. Should be fixed.
 			Ground = surface;
 			Ground.Project(p, out vec3 result);
@@ -200,12 +238,18 @@ namespace Zeldo.Entities.Core
 			Ground = ground;
 		}
 
-		// This is called when the actor runs or walks off an edge (without jumping).
-		public virtual void BecomeAirborneFromGround()
+		// This is called when the actor runs or walks off an edge (without jumping). Applies to both the normal ground
+		// and moving platform.s
+		public virtual void BecomeAirborneFromLedge()
 		{
 			Ground = null;
 			controllingBody.IsAffectedByGravity = true;
 			activeController = aerialController;
+
+			if (platformController != null)
+			{
+				platformController.Platform = null;
+			}
 		}
 
 		// TODO: Should a CreateMasterSensor function be created as well?
@@ -213,8 +257,8 @@ namespace Zeldo.Entities.Core
 		{
 			var body = CreateBody(scene, shape, RigidBodyTypes.Kinematic);
 			body.ShouldGenerateContact = ShouldGenerateContact;
-			//body.PreStep = PreStep;
-			//body.PostStep = PostStep;
+			body.PreStep = PreStep;
+			body.PostStep = PostStep;
 			body.IsRotationFixed = true;
 
 			// TODO: Is this needed?

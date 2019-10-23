@@ -217,7 +217,7 @@ namespace Zeldo.Control
 			// the seams of triangles.
 			if (SurfaceTriangle.ComputeForgiveness(p, ground) > EdgeForgiveness)
 			{
-				Parent.BecomeAirborneFromGround();
+				Parent.BecomeAirborneFromLedge();
 			}
 		}
 	}

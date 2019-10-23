@@ -40,6 +40,8 @@ namespace Jitter
     /// </summary>
     public class World
     {
+        public delegate bool ContactCreationHandler(RigidBody body1, RigidBody body2, JVector p1, JVector p2,
+            JVector normal, JVector[] triangle, float penetration);
         public delegate void WorldStep(float timestep);
 
         public class WorldEvents
@@ -59,7 +61,9 @@ namespace Jitter
             // Collision
             public event Action<RigidBody, RigidBody> BodiesBeginCollide;
             public event Action<RigidBody, RigidBody> BodiesEndCollide;
-            public event Action<Contact> ContactCreated;
+
+            // CUSTOM: The return value indicates whether the contact should be kept.
+            public event ContactCreationHandler ContactCreated;
 
             // Deactivation
             public event Action<RigidBody> DeactivatedBody;
@@ -129,9 +133,10 @@ namespace Jitter
                 if (DeactivatedBody != null) DeactivatedBody(body);
             }
 
-            internal void RaiseContactCreated(Contact contact)
+            internal bool RaiseContactCreated(RigidBody body1, RigidBody body2, JVector p1, JVector p2, JVector normal,
+                JVector[] triangle, float penetration)
             {
-                if (ContactCreated != null) ContactCreated(contact);
+                return ContactCreated?.Invoke(body1, body2, p1, p2, normal, triangle, penetration) ?? true;
             }
 
             #endregion
@@ -148,20 +153,22 @@ namespace Jitter
 
         private int contactIterations = 10;
         private int smallIterations = 4;
-        private float timestep = 0.0f;
+        private float timestep;
 
-        private Jitter.Collision.IslandManager islands = new IslandManager();
+        private IslandManager islands = new IslandManager();
 
         private HashSet<RigidBody> rigidBodies = new HashSet<RigidBody>();
         private HashSet<Constraint> constraints = new HashSet<Constraint>();
         private HashSet<SoftBody> softbodies = new HashSet<SoftBody>();
 
-        public ReadOnlyHashset<RigidBody> RigidBodies { get; private set; }
-        public ReadOnlyHashset<Constraint> Constraints { get; private set; }
-        public ReadOnlyHashset<SoftBody> SoftBodies { get; private set; }
+        public ReadOnlyHashset<RigidBody> RigidBodies { get; }
+        public ReadOnlyHashset<Constraint> Constraints { get; }
+        public ReadOnlyHashset<SoftBody> SoftBodies { get; }
 
         private WorldEvents events = new WorldEvents();
-        public WorldEvents Events { get { return events; } }
+        
+        // Used by arbiters to trigger the contact creation event.
+        public WorldEvents Events => events;
 
         private ThreadManager threadManager = ThreadManager.Instance;
 
@@ -169,7 +176,8 @@ namespace Jitter
         /// Holds a list of <see cref="Arbiter"/>. All currently
         /// active arbiter in the <see cref="World"/> are stored in this map.
         /// </summary>
-        public ArbiterMap ArbiterMap { get { return arbiterMap; } }
+        public ArbiterMap ArbiterMap => arbiterMap;
+
         private ArbiterMap arbiterMap;
 
         private Queue<Arbiter> removedArbiterQueue = new Queue<Arbiter>();
@@ -177,13 +185,13 @@ namespace Jitter
 
         private JVector gravity = new JVector(0, -9.81f, 0);
 
-        public ContactSettings ContactSettings { get { return contactSettings; } }
+        public ContactSettings ContactSettings => contactSettings;
 
         /// <summary>
         /// Gets a read only collection of the <see cref="Jitter.Collision.CollisionIsland"/> objects managed by
         /// this class.
         /// </summary>
-        public ReadOnlyCollection<CollisionIsland> Islands { get { return islands; } }
+        public ReadOnlyCollection<CollisionIsland> Islands => islands;
 
         private Action<object> arbiterCallback;
         private Action<object> integrateCallback;
@@ -197,20 +205,21 @@ namespace Jitter
         /// collisions. See for example: <see cref="CollisionSystemSAP"/>
         /// or <see cref="CollisionSystemBrute"/>.
         /// </param>
-        public World(CollisionSystem collision)
+        public World(CollisionSystem system)
         {
-            if (collision == null)
-                throw new ArgumentNullException("The CollisionSystem can't be null.", "collision");
+            Debug.Assert(system != null, "Collision system can't be null.");
 
-            arbiterCallback = new Action<object>(ArbiterCallback);
-            integrateCallback = new Action<object>(IntegrateCallback);
+            Arbiter.World = this;
+
+            arbiterCallback = ArbiterCallback;
+            integrateCallback = IntegrateCallback;
 
             // Create the readonly wrappers
             this.RigidBodies = new ReadOnlyHashset<RigidBody>(rigidBodies);
             this.Constraints = new ReadOnlyHashset<Constraint>(constraints);
             this.SoftBodies = new ReadOnlyHashset<SoftBody>(softbodies);
 
-            this.CollisionSystem = collision;
+            this.CollisionSystem = system;
 
             collisionDetectionHandler = new CollisionDetectedHandler(CollisionDetected);
 
@@ -1020,22 +1029,12 @@ namespace Jitter
                 }
             }
 
-            Contact contact;
-
             if (arbiter.body1 == body1)
             {
                 JVector.Negate(ref normal, out normal);
-                contact = arbiter.AddContact(point1, point2, normal, triangle, penetration, contactSettings);
-            }
-            else
-            {
-                contact = arbiter.AddContact(point2, point1, normal, triangle, penetration, contactSettings);
             }
 
-            if (contact != null)
-            {
-                events.RaiseContactCreated(contact);
-            }
+            arbiter.AddContact(point1, point2, normal, triangle, penetration, contactSettings);
         }
 
         private void CheckDeactivation()

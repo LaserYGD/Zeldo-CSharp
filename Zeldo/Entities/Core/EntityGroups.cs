@@ -18,6 +18,7 @@ namespace Zeldo.Entities.Core
 		Mechanism,
 		Object,
 		Player,
+		Platform,
 		Projectile,
 		Weapon
 	}

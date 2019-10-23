@@ -171,9 +171,6 @@ namespace Zeldo.Entities.Player
 			CreateModel(scene, "Capsule.obj");
 			CreateMasterBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius));
 				
-			controllingBody.IsAffectedByGravity = false;
-			//controllingBody.LinearVelocity = new JVector(0, -60, 0);
-
 			var canvas = scene.Canvas;
 			healthDisplay = canvas.GetElement<PlayerHealthDisplay>();
 			debugView = canvas.GetElement<DebugView>();
@@ -202,7 +199,7 @@ namespace Zeldo.Entities.Player
 			*/
 		}
 
-		public override void OnCollision(Entity entity, vec3 p, vec3 normal, float penetration)
+		public override bool OnContact(Entity entity, vec3 p, vec3 normal, float penetration)
 		{
 			bool isAirborne = (state & (PlayerStates.Airborne | PlayerStates.Jumping)) > 0;
 
@@ -210,9 +207,11 @@ namespace Zeldo.Entities.Player
 			if (isAirborne && entity is Ladder ladder && IsFacing(ladder))
 			{
 				Mount(ladder);
+
+				return false;
 			}
 
-			base.OnCollision(entity, p, normal, penetration);
+			return base.OnContact(entity, p, normal, penetration);
 		}
 
 		/*
@@ -241,14 +240,14 @@ namespace Zeldo.Entities.Player
 		}
 		*/
 
-		protected override void OnLanding(vec3 p, SurfaceTriangle surface)
+		protected override void OnLanding(vec3 p, RigidBody platform, SurfaceTriangle surface)
 		{
-			base.OnLanding(p, surface);
+			base.OnLanding(p, platform, surface);
 
 			// Ordinarily, it shouldn't be possible for the player to be in the Jumping state when landing (since, by
 			// definition, velocity must be downward). Could still happen for upward-moving platforms, though (if that
 			// platform is moving more quickly than the player's jumping speed).
-			state |= PlayerStates.OnGround;
+			state |= (platform != null ? PlayerStates.OnPlatform : PlayerStates.OnGround);
 			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping);
 
 			RefreshJumps();
@@ -271,14 +270,14 @@ namespace Zeldo.Entities.Player
 		{
 		}
 
-		public override void BecomeAirborneFromGround()
+		public override void BecomeAirborneFromLedge()
 		{
 			state |= PlayerStates.Airborne;
-			state &= ~(PlayerStates.OnGround | PlayerStates.Running | PlayerStates.Sliding);
+			state &= ~(PlayerStates.OnGround | PlayerStates.OnPlatform | PlayerStates.Running | PlayerStates.Sliding);
 
 			coyoteFlag.Refresh();
 
-			base.BecomeAirborneFromGround();
+			base.BecomeAirborneFromLedge();
 		}
 
 		protected override void PreStep(float step)
@@ -353,6 +352,13 @@ namespace Zeldo.Entities.Player
 				for (int i = contacts.Count - 1; i >= 0; i--)
 				{
 					var contact = contacts[i];
+
+					// TODO: The player should be able to wall jump off the side of moving platforms as well.
+					if (contact.Triangle == null)
+					{
+						continue;
+					}
+
 					var b1 = contact.Body1;
 					var b2 = contact.Body2;
 
@@ -446,7 +452,7 @@ namespace Zeldo.Entities.Player
 		private void SingleJump()
 		{
 			var v = controllingBody.LinearVelocity;
-			var isGrounded = Ground != null;
+			var isGrounded = (state & (PlayerStates.OnGround | PlayerStates.OnPlatform)) > 0;
 
 			if (isGrounded || coyoteFlag.Value)
 			{
@@ -454,8 +460,11 @@ namespace Zeldo.Entities.Player
 
 				if (isGrounded)
 				{
+					// TODO: Transfer platform velocity (if applicable).
 					Ground = null;
-					state &= ~(PlayerStates.OnGround | PlayerStates.Running | PlayerStates.Sliding);
+					platformController.Platform = null;
+					state &= ~(PlayerStates.OnGround | PlayerStates.OnPlatform | PlayerStates.Running |
+						PlayerStates.Sliding);
 				}
 			}
 			// TODO: Finish ladder jumping.

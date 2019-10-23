@@ -15,9 +15,10 @@ namespace Zeldo.Entities.Player
 		Jumping = 1<<7,
 		OnGround = 1<<8,
 		OnLadder = 1<<9,
-		OnWall = 1<<10,
-		Running = 1<<11,
-		Sliding = 1<<12,
-		Vaulting = 1<<13
+		OnPlatform = 1<<10,
+		OnWall = 1<<11,
+		Running = 1<<12,
+		Sliding = 1<<13,
+		Vaulting = 1<<14
 	}
 }
