@@ -17,7 +17,6 @@
 *  3. This notice may not be removed or altered from any source distribution. 
 */
 
-#region Using Statements
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,7 +28,6 @@ using Jitter.Collision.Shapes;
 using Jitter.Collision;
 using Jitter.Dynamics.Constraints;
 using Jitter.DataStructures;
-#endregion
 
 namespace Jitter.Dynamics
 {
@@ -48,25 +46,22 @@ namespace Jitter.Dynamics
 
 		private static int instanceCount;
 
-		private bool enableDebugDraw;
-	    private bool isSpawnPositionSet;
-
 		private int instance;
-		private int hashCode;
+        private readonly int hashCode;
 
-	    private RigidBodyTypes bodyType;
+        private RigidBodyTypes bodyType;
 
 		private Shape shape;
 		private ShapeUpdatedHandler updatedHandler;
 
-		private List<JVector> hullPoints = new List<JVector>();
-
+        // TODO: Consider removing (if shapes never change).
 		protected bool useShapeMassProperties = true;
 
 		internal JMatrix inertia;
         internal JMatrix invInertia;
         internal JMatrix invInertiaWorld;
         internal JMatrix orientation;
+        internal JMatrix oldOrientation;
         internal JMatrix invOrientation;
 
         internal JVector position;
@@ -75,7 +70,7 @@ namespace Jitter.Dynamics
         internal JVector angularVelocity;
 	    internal JVector force;
 	    internal JVector torque;
-		internal JVector sweptDirection = JVector.Zero;
+		internal JVector sweptDirection;
 
         // CUSTOM: Let's see if this works.
 	    internal JVector storedLinear;
@@ -90,63 +85,27 @@ namespace Jitter.Dynamics
 		internal float inactiveTime;
 	    internal float inverseMass;
 
-		internal bool isActive = true;
-        internal bool isAffectedByGravity = true;
-	    internal bool isFixedVertical;
-	    internal bool isParticle;
+        internal RigidBodyFlags flags;
 
 		internal List<RigidBody> connections = new List<RigidBody>();
-
         internal HashSet<Arbiter> arbiters = new HashSet<Arbiter>();
         internal HashSet<Constraint> constraints = new HashSet<Constraint>();
 
         private ReadOnlyHashset<Arbiter> readOnlyArbiters;
         private ReadOnlyHashset<Constraint> readOnlyConstraints;
 
-        public RigidBody(Shape shape, RigidBodyTypes bodyType)
-            : this(shape, bodyType, new Material(), false)
+        public RigidBody(Shape shape, RigidBodyTypes bodyType, RigidBodyFlags flags = RigidBodyFlags.IsActive)
+            : this(shape, bodyType, new Material(), flags)
         {
         }
 
-        /// <summary>
-        /// If true, the body as no angular movement.
-        /// </summary>
-        public bool IsParticle { 
-            get => isParticle;
-            set
-            {
-                if (isParticle && !value)
-                {
-                    updatedHandler = new ShapeUpdatedHandler(ShapeUpdated);
-                    this.Shape.ShapeUpdated += updatedHandler;
-                    SetMassProperties();
-                    isParticle = false;
-                }
-                else if (!isParticle && value)
-                {
-                    this.inertia = JMatrix.Zero;
-                    this.invInertia = this.invInertiaWorld = JMatrix.Zero;
-                    this.invOrientation = this.orientation = JMatrix.Identity;
-                    inverseMass = 1.0f;
-
-                    this.Shape.ShapeUpdated -= updatedHandler;
-
-                    isParticle = true;
-                }
-
-                Update();
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the RigidBody class.
-        /// </summary>
-        /// <param name="shape">The shape of the body.</param>
-        /// <param name="isParticle">If set to true the body doesn't rotate. 
-        /// Also contacts are only solved for the linear motion part.</param>
-        public RigidBody(Shape shape, RigidBodyTypes bodyType, Material material, bool isParticle)
+        public RigidBody(Shape shape, RigidBodyTypes bodyType, Material material,
+            RigidBodyFlags flags = RigidBodyFlags.IsActive)
         {
             this.bodyType = bodyType;
+            this.flags = flags;
+
+            Damping = DampingType.Angular | DampingType.Linear;
 
             readOnlyArbiters = new ReadOnlyHashset<Arbiter>(arbiters);
             readOnlyConstraints = new ReadOnlyHashset<Constraint>(constraints);
@@ -154,13 +113,13 @@ namespace Jitter.Dynamics
             instance = Interlocked.Increment(ref instanceCount);
             hashCode = CalculateHash(instance);
 
-            this.Shape = shape;
+            Shape = shape;
             orientation = JMatrix.Identity;
 
             if (!isParticle)
             {
-                updatedHandler = new ShapeUpdatedHandler(ShapeUpdated);
-                this.Shape.ShapeUpdated += updatedHandler;
+                updatedHandler = ShapeUpdated;
+                Shape.ShapeUpdated += updatedHandler;
                 SetMassProperties();
             }
             else
@@ -181,12 +140,6 @@ namespace Jitter.Dynamics
             Update();
         }
 
-        /// <summary>
-        /// Calculates a hashcode for this RigidBody.
-        /// The hashcode should be unique as possible
-        /// for every body.
-        /// </summary>
-        /// <returns>The hashcode.</returns>
         public override int GetHashCode()
         {
             return hashCode;
@@ -203,6 +156,39 @@ namespace Jitter.Dynamics
         public bool EnableSpeculativeContacts { get; set; }
         public bool RequiresResolution { get; set; }
 
+        // TODO: Consider removing (if unused).
+        /// <summary>
+        /// If true, the body as no angular movement.
+        /// </summary>
+        public bool IsParticle
+        {
+            get => (flags & RigidBodyFlags.IsParticle) > 0;
+            set
+            {
+                var isParticle = (flags & RigidBodyFlags.IsParticle) > 0;
+
+                if (isParticle && !value)
+                {
+                    updatedHandler = ShapeUpdated;
+                    Shape.ShapeUpdated += updatedHandler;
+                    SetMassProperties();
+                    flags &= ~RigidBodyFlags.IsParticle;
+                }
+                else if (!isParticle && value)
+                {
+                    inertia = JMatrix.Zero;
+                    invInertia = invInertiaWorld = JMatrix.Zero;
+                    invOrientation = orientation = JMatrix.Identity;
+                    inverseMass = 1.0f;
+
+                    Shape.ShapeUpdated -= updatedHandler;
+                    flags |= RigidBodyFlags.IsParticle;
+                }
+
+                Update();
+            }
+        }
+
         /// <summary>
         /// The axis aligned bounding box of the body.
         /// </summary>
@@ -211,10 +197,11 @@ namespace Jitter.Dynamics
         private int CalculateHash(int a)
         {
             a = (a ^ 61) ^ (a >> 16);
-            a = a + (a << 3);
-            a = a ^ (a >> 4);
-            a = a * 0x27d4eb2d;
-            a = a ^ (a >> 15);
+            a += (a << 3);
+            a ^= (a >> 4);
+            a *= 0x27d4eb2d;
+            a ^= (a >> 15);
+            
             return a;
         }
 
@@ -222,35 +209,6 @@ namespace Jitter.Dynamics
         /// Gets the current collision island the body is in.
         /// </summary>
         public CollisionIsland CollisionIsland => island;
-
-	    /// <summary>
-        /// If set to false the velocity is set to zero,
-        /// the body gets immediately freezed.
-        /// </summary>
-        public bool IsActive
-        {
-            get 
-            {
-                return isActive;
-            }
-            set
-            {
-                if (!isActive && value)
-                {
-                    // if inactive and should be active
-                    inactiveTime = 0.0f;
-                }
-                else if (isActive && !value)
-                {
-                    // if active and should be inactive
-                    inactiveTime = float.PositiveInfinity;
-                    this.angularVelocity.MakeZero();
-                    this.linearVelocity.MakeZero();
-                }
-
-                isActive = value;
-            }
-        }
 
         /// <summary>
         /// Applies an impulse on the center of the body. Changing
@@ -403,9 +361,6 @@ namespace Jitter.Dynamics
             UpdateHullData();
         }
 
-        /// <summary>
-        /// Allows to set a user defined value to the body.
-        /// </summary>
         public object Tag { get; set; }
 
         /// <summary>
@@ -428,15 +383,7 @@ namespace Jitter.Dynamics
             } 
         }
 
-        #region Properties
-
-        private DampingType damping = DampingType.Angular | DampingType.Linear;
-
-        public DampingType Damping
-        {
-	        get => damping;
-	        set => damping = value;
-        }
+        public DampingType Damping { get; set; }
 
         public Material Material
         {
@@ -467,7 +414,9 @@ namespace Jitter.Dynamics
             get => linearVelocity;
 	        set 
             {
-				Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't set velocity on a static body.");
+				Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't set linear velocity on a static body.");
+				Debug.Assert(!IsOnPlatform, "Can't set linear velocity directly on a body that's on a platform (use " +
+                    "SetTransform with a timestep instead).");
 
 	            linearVelocity = value;
             }
@@ -482,13 +431,14 @@ namespace Jitter.Dynamics
 	        set
             {
 				Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't set angular velocity on a static body.");
-				Debug.Assert(!isFixedVertical, "Can't set angular velocity on a body that's fixed vertical.");
+				Debug.Assert(!isFixedVertical, "Can't set angular velocity on a body that's fixed-vertical.");
+				Debug.Assert(!IsOnPlatform, "Can't set angular velocity directly on a body that's on a platform (use" +
+                    "SetTransform with a timestep instead).");
 
 	            angularVelocity = value;
             }
         }
 
-        // TODO: Add a SetTransform function to set both position and orientation at the same time (without updating twice).
         /// <summary>
         /// The current position of the body.
         /// </summary>
@@ -497,15 +447,15 @@ namespace Jitter.Dynamics
             get => position;
             set
             {
-                Debug.Assert(!(bodyType == RigidBodyTypes.PseudoStatic && isSpawnPositionSet), "Can't set position " +
+                Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't set position on a static body." +
                     "directly on a pseudo-static body (use SetPosition instead).");
-                Debug.Assert(!(IgnoreVelocity && isSpawnPositionSet), "Can't set position directly on a body with " +
+                Debug.Assert(!(IsOnPlatform && isSpawnTransformSet), "Can't set position directly on a body with " +
                     "the IgnoreVelocity flag set (use SetPosition instead).");
 
-                if (!isSpawnPositionSet)
+                if (!isSpawnTransformSet)
                 {
                     oldPosition = value;
-                    isSpawnPositionSet = true;
+                    isSpawnTransformSet = true;
                 }
                 else
                 {
@@ -526,43 +476,83 @@ namespace Jitter.Dynamics
         {
             get => orientation;
 	        set
-	        {
-		        orientation = value;
+            {
+                // Pseudo-static bodies can have their position set once directly (on spawn), but afterwards should
+                // use SetTransform instead (same logic applies to bodies on platforms).
+                Debug.Assert(!(bodyType == RigidBodyTypes.PseudoStatic && isSpawnPositionSet), "Can't set position " +
+                    "directly on a pseudo-static body (use SetPosition instead).");
+                Debug.Assert(!(IsOnPlatform && isSpawnPositionSet), "Can't set position directly on a body with " +
+                    "the IgnoreVelocity flag set (use SetPosition instead).");
+
+                orientation = value;
 		        Update();
 	        }
         }
 
-	    /// <summary>
-	    /// Whether the body is static (or pseudo-static, since the latter behaves identically to static in almost all
-	    /// cases).
-	    /// </summary>
-	    public bool IsStatic => (int)bodyType >= (int)RigidBodyTypes.PseudoStatic;
-		
+        /// <summary>
+        /// If set to false, velocities are set to zero and the body gets immediately frozen.
+        /// </summary>
+        public bool IsActive
+        {
+            get => (flags & RigidBodyFlags.IsActive) > 0;
+            set
+            {
+                bool isActive = (flags & RigidBodyFlags.IsActive) > 0;
+
+                if (!isActive && value)
+                {
+                    inactiveTime = 0;
+                    flags |= RigidBodyFlags.IsActive;
+                }
+                else if (isActive && !value)
+                {
+                    inactiveTime = float.PositiveInfinity;
+                    angularVelocity.MakeZero();
+                    linearVelocity.MakeZero();
+                    flags &= ~RigidBodyFlags.IsActive;
+                }
+            }
+        }
+
+        public bool IsStatic => (int)bodyType >= (int)RigidBodyTypes.PseudoStatic;
+        public bool IsStaticOrInactive => IsStatic || !IsActive;
+
         public bool IsAffectedByGravity
         {
-	        get => isAffectedByGravity;
-	        set => isAffectedByGravity = value;
+	        get => (flags & RigidBodyFlags.IsAffectedByGravity) > 0;
+	        set
+            {
+                if (value)
+                {
+                    flags |= RigidBodyFlags.IsAffectedByGravity;
+                }
+                else
+                {
+                    flags &= ~RigidBodyFlags.IsAffectedByGravity;
+                }
+            }
         }
 
 	    public bool IsFixedVertical
 	    {
-		    get => isFixedVertical;
+		    get => (flags & RigidBodyFlags.IsFixedVertical) > 0;
 		    set
 		    {
-		        isFixedVertical = value;
-
 		        if (value)
-		        {
-                    // If a body is fixed vertical, it's assumed its orientation will be set manually (via control
+                {
+                    flags |= RigidBodyFlags.IsFixedVertical;
+                    // If a body is fixed-vertical, it's assumed its orientation will be set manually (via control
                     // code). As such, angular velocity is disallowed.
 		            angularVelocity.MakeZero();
+                }
+                else
+                {
+                    flags &= ~RigidBodyFlags.IsFixedVertical;
                 }
 		    }
 	    }
 
-        // This is useful for objects on moving platforms (since their velocity is essentially fake and shouldn't be
-        // applied normally).
-        public bool IgnoreVelocity { get; set; }
+        public bool IsOnPlatform { get; set; }
 
 		public RigidBodyTypes BodyType
 	    {
@@ -615,13 +605,19 @@ namespace Jitter.Dynamics
         public Action<float> MidStep { get; set; }
         public Action<float> PostStep { get; set; }
 
-		#endregion
+        public void SetTransform(JVector position, JMatrix orientation)
+        {
+            this.position = position;
+            this.orientation = orientation;
+
+            Update();
+        }
 
         // TODO: Compute fake angular velocity as well (and rename this to something like SetTransformWithFakeVelocities).
-	    public void SetPosition(JVector position, float step)
+	    public void SetTransform(JVector position, JMatrix orientation, float step)
 	    {
-            Debug.Assert(bodyType == RigidBodyTypes.PseudoStatic || IgnoreVelocity, "This function should only be " +
-                "called for pseudo-static bodies (or bodies that ignore velocity).");
+            Debug.Assert(bodyType == RigidBodyTypes.PseudoStatic || IsOnPlatform, "This function should only be " +
+                "called for pseudo-static bodies or bodies on platforms.");
 
 	        oldPosition = this.position;
 	        this.position = position;
@@ -709,48 +705,6 @@ namespace Jitter.Dynamics
 	        }
 
             return other.instance > instance ? 1 : 0;
-        }
-	
-		public bool IsStaticOrInactive => !isActive || bodyType == RigidBodyTypes.Static;
-
-        public bool EnableDebugDraw
-        {
-            get => enableDebugDraw;
-	        set
-            {
-                enableDebugDraw = value;
-                UpdateHullData();
-            }
-        }
-
-        private void UpdateHullData()
-        {
-            hullPoints.Clear();
-
-            if(enableDebugDraw) shape.MakeHull(ref hullPoints, 3);
-        }
-
-        public void DebugDraw(IDebugDrawer drawer)
-        {
-            JVector pos1,pos2,pos3;
-
-            for(int i = 0;i<hullPoints.Count;i+=3)
-            {
-                pos1 = hullPoints[i + 0];
-                pos2 = hullPoints[i + 1];
-                pos3 = hullPoints[i + 2];
-
-                JVector.Transform(ref pos1, ref orientation, out pos1);
-                JVector.Add(ref pos1, ref position, out pos1);
-
-                JVector.Transform(ref pos2, ref orientation, out pos2);
-                JVector.Add(ref pos2, ref position, out pos2);
-
-                JVector.Transform(ref pos3, ref orientation, out pos3);
-                JVector.Add(ref pos3, ref position, out pos3);
-
-                drawer.DrawTriangle(pos1, pos2, pos3);
-            }
         }
     }
 }
