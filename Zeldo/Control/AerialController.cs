@@ -15,11 +15,26 @@ namespace Zeldo.Control
 		private float deceleration;
 		private float maxSpeed;
 
+		private vec2 flatDirection;
+
 		public AerialController(Actor parent) : base(parent)
 		{
 		}
 
-		public vec2 FlatDirection { get; set; }
+		public vec2 FlatDirection
+		{
+			get => flatDirection;
+			set
+			{
+				flatDirection = value;
+
+				// TODO: Improve this (should be able to continue pressing in the direction of movement without losing momentum).
+				if (Utilities.LengthSquared(value) > 0)
+				{
+					IgnoreDeceleration = false;
+				}
+			}
+		}
 
 		// TODO: Cancel this boolean when appropriate.
 		// This allows actors (like the player) to maintain momentum when jumping off moving objects (like platforms).
@@ -40,9 +55,9 @@ namespace Zeldo.Control
 
 			// Acceleration. This code (plus the deceleration code below) is very similar to how velocity is adjusted
 			// for ground movement, but restricted to the flat XZ plane (Y is influenced by gravity instead).
-			if (FlatDirection != vec2.Zero)
+			if (flatDirection != vec2.Zero)
 			{
-				flat += FlatDirection * acceleration * step;
+				flat += flatDirection * acceleration * step;
 
 				float max = maxSpeed;
 

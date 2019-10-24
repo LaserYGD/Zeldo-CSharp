@@ -497,8 +497,10 @@ namespace Jitter.Dynamics
             get => position;
             set
             {
-                //Debug.Assert(!(bodyType == RigidBodyTypes.PseudoStatic && isSpawnPositionSet), "Can't set position " +
-                //    "on a pseudo-static body direction (use SetPosition instead).");
+                Debug.Assert(!(bodyType == RigidBodyTypes.PseudoStatic && isSpawnPositionSet), "Can't set position " +
+                    "directly on a pseudo-static body (use SetPosition instead).");
+                Debug.Assert(!(IgnoreVelocity && isSpawnPositionSet), "Can't set position directly on a body with " +
+                    "the IgnoreVelocity flag set (use SetPosition instead).");
 
                 if (!isSpawnPositionSet)
                 {
@@ -511,12 +513,6 @@ namespace Jitter.Dynamics
                 }
                 
                 position = value;
-
-                if (bodyType == RigidBodyTypes.PseudoStatic)
-                {
-                    linearVelocity = value - oldPosition;
-                }
-
                 Update();
             }
         }
@@ -563,6 +559,10 @@ namespace Jitter.Dynamics
                 }
 		    }
 	    }
+
+        // This is useful for objects on moving platforms (since their velocity is essentially fake and shouldn't be
+        // applied normally).
+        public bool IgnoreVelocity { get; set; }
 
 		public RigidBodyTypes BodyType
 	    {
@@ -617,10 +617,11 @@ namespace Jitter.Dynamics
 
 		#endregion
 
+        // TODO: Compute fake angular velocity as well (and rename this to something like SetTransformWithFakeVelocities).
 	    public void SetPosition(JVector position, float step)
 	    {
-            Debug.Assert(bodyType == RigidBodyTypes.PseudoStatic, "This function should only be called for pseudo-" +
-                "static bodies.");
+            Debug.Assert(bodyType == RigidBodyTypes.PseudoStatic || IgnoreVelocity, "This function should only be " +
+                "called for pseudo-static bodies (or bodies that ignore velocity).");
 
 	        oldPosition = this.position;
 	        this.position = position;

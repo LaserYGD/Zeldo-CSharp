@@ -183,6 +183,7 @@ namespace Zeldo.Entities.Core
 			var p1 = controllingBody.OldPosition.ToVec3() - halfVector;
 			var p2 = controllingBody.Position.ToVec3() - halfVector;
 
+			// TODO: Verify the raycast normal (to make sure it's a floor).
 			if (PhysicsUtilities.Raycast(Scene.World, body, p1, p2, out var results))
 			{
 				OnLanding(results.Position, body, null);
@@ -205,6 +206,7 @@ namespace Zeldo.Entities.Core
 				controllingBody.LinearVelocity = JVector.Zero;
 				controllingBody.Position = jPoint + new JVector(0, Height / 2, 0);
 				controllingBody.IsAffectedByGravity = false;
+				controllingBody.IgnoreVelocity = true;
 
 				var orientation = platform.Orientation;
 

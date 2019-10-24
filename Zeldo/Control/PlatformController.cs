@@ -20,8 +20,8 @@ namespace Zeldo.Control
 			var orientation = Platform.Orientation;
 
 			// TODO: Consider optimizing the orientation transform by marking the platform entity as fixed rotation.
-			body.Position = Platform.Position + JVector.Transform(Parent.PlatformPosition, orientation) +
-				new JVector(0, Parent.Height / 2, 0);
+			body.SetPosition(Platform.Position + JVector.Transform(Parent.PlatformPosition, orientation) +
+				new JVector(0, Parent.Height / 2, 0), step);
 			Parent.BodyYaw = orientation.ComputeYaw() + Parent.PlatformYaw;
 		}
 	}

@@ -668,7 +668,10 @@ namespace Jitter
                 JVector effectiveAngular = body.angularVelocity - body.storedAngular;
 
                 // Apply linear velocity.
-                body.Position += effectiveLinear * timestep;
+                if (!body.IgnoreVelocity)
+                {
+                    body.Position += effectiveLinear * timestep;
+                }
 
                 if (!body.isParticle && !body.isFixedVertical)
                 {
@@ -932,7 +935,10 @@ namespace Jitter
             RigidBody body = obj as RigidBody;
 
             // Apply linear velocity.
-            body.Position += body.linearVelocity * timestep;
+            if (!body.IgnoreVelocity)
+            {
+                body.Position += body.linearVelocity * timestep;
+            }
 
             bool isFixedVertical = body.isFixedVertical;
 

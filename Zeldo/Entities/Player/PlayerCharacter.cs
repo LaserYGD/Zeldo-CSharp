@@ -464,13 +464,9 @@ namespace Zeldo.Entities.Player
 
 					if (platform != null)
 					{
-						var vPlatform = platform.LinearVelocity;
-						v.X = vPlatform.X;
-						v.Z = vPlatform.Z;
-						controllingBody.LinearVelocity = v;
-
 						// The player can maintain momentum when jumping off moving platforms.
 						aerialController.IgnoreDeceleration = true;
+						controllingBody.IgnoreVelocity = false;
 					}
 
 					Ground = null;
@@ -697,11 +693,13 @@ namespace Zeldo.Entities.Player
 			base.Update(dt);
 
 			var v = controllingBody.LinearVelocity;
+			var angular = controllingBody.AngularVelocity;
 			var list = debugView.GetGroup("Player");
 			list.Add("State: " + State);
 			list.Add("Arbiters: " + controllingBody.Arbiters.Count);
 			list.Add("Contacts: " + controllingBody.Arbiters.Sum(a => a.ContactList.Count));
-			list.Add($"Velocity: {v.X:F3} {v.Y:F3} {v.Z:F3}");
+			list.Add($"Linear: {v.X:F3} {v.Y:F3} {v.Z:F3}");
+			list.Add($"Angular: {angular.X:F3} {angular.Y:F3} {angular.Z:F3}");
 
 			/*
 			var p = controllingBody.Position.ToVec3();
