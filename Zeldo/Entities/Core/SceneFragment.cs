@@ -35,9 +35,8 @@ namespace Zeldo.Entities.Core
 			model.Position = origin;
 
 			var shape = TriangleMeshLoader.Load(jPhysics.Value<string>());
-			var body = new RigidBody(shape);
+			var body = new RigidBody(shape, RigidBodyTypes.Static);
 			body.Position = origin.ToJVector();
-			body.IsStatic = true;
 
 			var material = body.Material;
 			material.KineticFriction = 0;

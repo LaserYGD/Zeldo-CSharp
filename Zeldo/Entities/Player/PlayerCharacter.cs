@@ -460,7 +460,19 @@ namespace Zeldo.Entities.Player
 
 				if (isGrounded)
 				{
-					// TODO: Transfer platform velocity (if applicable).
+					var platform = platformController.Platform;
+
+					if (platform != null)
+					{
+						var vPlatform = platform.LinearVelocity;
+						v.X = vPlatform.X;
+						v.Z = vPlatform.Z;
+						controllingBody.LinearVelocity = v;
+
+						// The player can maintain momentum when jumping off moving platforms.
+						aerialController.IgnoreDeceleration = true;
+					}
+
 					Ground = null;
 					platformController.Platform = null;
 					state &= ~(PlayerStates.OnGround | PlayerStates.OnPlatform | PlayerStates.Running |
@@ -684,15 +696,12 @@ namespace Zeldo.Entities.Player
 
 			base.Update(dt);
 
-			var platform = platformController.Platform;
-
+			var v = controllingBody.LinearVelocity;
 			var list = debugView.GetGroup("Player");
 			list.Add("State: " + State);
 			list.Add("Arbiters: " + controllingBody.Arbiters.Count);
 			list.Add("Contacts: " + controllingBody.Arbiters.Sum(a => a.ContactList.Count));
-			list.Add("Velocity: " + controllingBody.LinearVelocity);
-			list.Add("Yaw (platform): " + (platform == null ? "null" : platform.Orientation.ComputeYaw().ToString()));
-			list.Add("Yaw (player): " + BodyYaw);
+			list.Add($"Velocity: {v.X:F3} {v.Y:F3} {v.Z:F3}");
 
 			/*
 			var p = controllingBody.Position.ToVec3();

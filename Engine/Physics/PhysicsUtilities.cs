@@ -8,27 +8,29 @@ namespace Engine.Physics
 {
 	public static class PhysicsUtilities
 	{
-		public static RaycastResults Raycast(World world, vec3 start, vec3 end)
+		public static bool Raycast(World world, vec3 start, vec3 end, out RaycastResults results)
 		{
-			return RaycastInternal(world, null, start, end - start);
+			return RaycastInternal(world, null, start, end - start, out results);
 		}
 
-		public static RaycastResults Raycast(World world, vec3 start, vec3 direction, float range)
+		public static bool Raycast(World world, vec3 start, vec3 direction, float range, out RaycastResults results)
 		{
-			return RaycastInternal(world, null, start, direction * range);
+			return RaycastInternal(world, null, start, direction * range, out results);
 		}
 
-		public static RaycastResults Raycast(World world, RigidBody body, vec3 start, vec3 end)
+		public static bool Raycast(World world, RigidBody body, vec3 start, vec3 end, out RaycastResults results)
 		{
-			return RaycastInternal(world, body, start, end - start);
+			return RaycastInternal(world, body, start, end - start, out results);
 		}
 
-		public static RaycastResults Raycast(World world, RigidBody body, vec3 start, vec3 direction, float range)
+		public static bool Raycast(World world, RigidBody body, vec3 start, vec3 direction, float range,
+			out RaycastResults results)
 		{
-			return RaycastInternal(world, body, start, direction * range);
+			return RaycastInternal(world, body, start, direction * range, out results);
 		}
 
-		private static RaycastResults RaycastInternal(World world, RigidBody body, vec3 start, vec3 ray)
+		private static bool RaycastInternal(World world, RigidBody body, vec3 start, vec3 ray,
+			out RaycastResults results)
 		{
 			JVector jStart = start.ToJVector();
 			
@@ -49,7 +51,9 @@ namespace Engine.Physics
 
 			if (!success || fraction > 1)
 			{
-				return null;
+				results = null;
+
+				return false;
 			}
 
 			vec3[] tVectors = null;
@@ -65,8 +69,10 @@ namespace Engine.Physics
 				}
 			}
 
-			return new RaycastResults(body, start + jDirection.ToVec3() * fraction,
+			results = new RaycastResults(body, start + jDirection.ToVec3() * fraction,
 				Utilities.Normalize(normal.ToVec3()), tVectors);
+
+			return true;
 		}
 	}
 }

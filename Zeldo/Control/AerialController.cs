@@ -21,6 +21,10 @@ namespace Zeldo.Control
 
 		public vec2 FlatDirection { get; set; }
 
+		// TODO: Cancel this boolean when appropriate.
+		// This allows actors (like the player) to maintain momentum when jumping off moving objects (like platforms).
+		public bool IgnoreDeceleration { get; set; }
+
 		public void Initialize(float acceleration, float deceleration, float maxSpeed)
 		{
 			this.acceleration = acceleration;
@@ -49,7 +53,7 @@ namespace Zeldo.Control
 				}
 			}
 			// Deceleration.
-			else if (flat != vec2.Zero)
+			else if (flat != vec2.Zero && !IgnoreDeceleration)
 			{
 				int oldSign = Math.Sign(flat.x != 0 ? flat.x : flat.y);
 

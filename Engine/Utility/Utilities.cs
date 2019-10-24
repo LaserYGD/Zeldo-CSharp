@@ -141,13 +141,7 @@ namespace Engine.Utility
 
 		public static float Clamp(float v, float min, float max)
 		{
-			// Min and max are inclusive.
-			if (v < min)
-			{
-				return min;
-			}
-
-			return v > max ? max : v;
+			return v < min ? min : (v > max ? max : v);
 		}
 
 		public static float Dot(vec2 v1, vec2 v2)

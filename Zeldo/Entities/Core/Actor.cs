@@ -16,7 +16,6 @@ namespace Zeldo.Entities.Core
 	// TODO: Do all actors need to process steps?
 	public abstract class Actor : LivingEntity
 	{
-		private bool isOldPositionUnset;
 		private float yaw;
 
 		protected AbstractController activeController;
@@ -30,7 +29,6 @@ namespace Zeldo.Entities.Core
 		// TODO: Use actor flags to optimize controller creation (and to return early from some functions).
 		protected Actor(EntityGroups group, bool canTraverseGround = true) : base(group)
 		{
-			isOldPositionUnset = true;
 			aerialController = new AerialController(this);
 			platformController = new PlatformController(this);
 
@@ -47,10 +45,6 @@ namespace Zeldo.Entities.Core
 			facing = vec2.UnitX;
 		}
 
-		// Since it's common for multiple physics steps to occur per rendered frame (usually two), it's actually the
-		// body's old position that needs to be stored, not the entity's.
-		protected vec3 OldBodyPosition { get; private set; }
-
 		public float Height { get; set; }
 
 		// Actors can rotate around the Y axis, but that rotation is controlled manually. Storing yaw directly is more
@@ -62,21 +56,6 @@ namespace Zeldo.Entities.Core
 			{
 				yaw = value;
 				controllingBody.Orientation = JMatrix.CreateFromAxisAngle(JVector.Up, value);
-			}
-		}
-
-		public override vec3 Position
-		{
-			get => base.Position;
-			set
-			{
-				if (isOldPositionUnset)
-				{
-					OldBodyPosition = value;
-					isOldPositionUnset = false;
-				}
-
-				base.Position = value;
 			}
 		}
 
@@ -135,10 +114,6 @@ namespace Zeldo.Entities.Core
 
 		protected virtual void PreStep(float step)
 		{
-			Debug.Assert(!isOldPositionUnset, "Actors are expected to have their initial position set on spawn " +
-				"(before physics updates begin).");
-
-			OldBodyPosition = controllingBody.Position.ToVec3();
 			activeController?.PreStep(step);
 		}
 
@@ -159,13 +134,13 @@ namespace Zeldo.Entities.Core
 
 		private bool CastGround(out RaycastResults results)
 		{
-			results = null;
-
 			var v = controllingBody.LinearVelocity;
 
 			// TODO: If moving platforms are added, a relative velocity check will be needed.
 			if (v.Y > 0)
 			{
+				results = null;
+
 				return false;
 			}
 
@@ -176,12 +151,10 @@ namespace Zeldo.Entities.Core
 			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
 
 			vec3 halfVector = new vec3(0, Height / 2, 0);
-			vec3 p1 = OldBodyPosition - halfVector;
+			vec3 p1 = controllingBody.OldPosition.ToVec3() - halfVector;
 			vec3 p2 = controllingBody.Position.ToVec3() - halfVector;
 
-			results = PhysicsUtilities.Raycast(world, map, p1, p2);
-
-			if (results == null)
+			if (!PhysicsUtilities.Raycast(world, map, p1, p2, out results))
 			{
 				return false;
 			}
@@ -197,14 +170,23 @@ namespace Zeldo.Entities.Core
 			var body = entity.ControllingBody;
 
 			// TODO: Check relative velocity (in case the platform is moving up).
-			// Actors can land on portions of any platform that are flat enough to be considered a floor.
+			// Actors can land on portions of any platform that are flat enough to be considered a floor (as long as
+			// the body is either static or pseudo-static).
 			if (!body.IsStatic || normal.y < 0 || controllingBody.LinearVelocity.Y > 0 ||
 			    Math.Abs(Constants.PiOverTwo - Utilities.Angle(normal, vec3.UnitY)) <= PhysicsConstants.WallThreshold)
 			{
 				return true;
 			}
 
-			OnLanding(p, body, null);
+			// Similar to the ground mesh, actors only land on platforms when the bottom-center point touches.
+			var halfVector = new vec3(0, Height / 2, 0);
+			var p1 = controllingBody.OldPosition.ToVec3() - halfVector;
+			var p2 = controllingBody.Position.ToVec3() - halfVector;
+
+			if (PhysicsUtilities.Raycast(Scene.World, body, p1, p2, out var results))
+			{
+				OnLanding(results.Position, body, null);
+			}
 
 			return false;
 		}
@@ -216,15 +198,17 @@ namespace Zeldo.Entities.Core
 			// Platform and surface are mutually-exclusive here.
 			if (platform != null)
 			{
+				var jPoint = p.ToJVector();
+
+				// TODO: Only land when the bottom-center point touches the platform.
 				// TODO: Transfer velocity.
 				controllingBody.LinearVelocity = JVector.Zero;
-				controllingBody.Position = (p + new vec3(0, Height / 2, 0)).ToJVector();
+				controllingBody.Position = jPoint + new JVector(0, Height / 2, 0);
 				controllingBody.IsAffectedByGravity = false;
 
 				var orientation = platform.Orientation;
 
-				PlatformPosition = JVector.Transform(controllingBody.Position - platform.Position,
-					JMatrix.Inverse(orientation));
+				PlatformPosition = JVector.Transform(jPoint - platform.Position, JMatrix.Inverse(orientation));
 				PlatformYaw = yaw - orientation.ComputeYaw();
 				platformController.Platform = platform;
 				activeController = platformController;

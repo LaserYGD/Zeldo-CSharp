@@ -49,6 +49,7 @@ namespace Jitter.Dynamics
 		private static int instanceCount;
 
 		private bool enableDebugDraw;
+	    private bool isSpawnPositionSet;
 
 		private int instance;
 		private int hashCode;
@@ -69,6 +70,7 @@ namespace Jitter.Dynamics
         internal JMatrix invOrientation;
 
         internal JVector position;
+	    internal JVector oldPosition;
         internal JVector linearVelocity;
         internal JVector angularVelocity;
 	    internal JVector force;
@@ -101,8 +103,8 @@ namespace Jitter.Dynamics
         private ReadOnlyHashset<Arbiter> readOnlyArbiters;
         private ReadOnlyHashset<Constraint> readOnlyConstraints;
 
-        public RigidBody(Shape shape)
-            : this(shape, new Material(), false)
+        public RigidBody(Shape shape, RigidBodyTypes bodyType)
+            : this(shape, bodyType, new Material(), false)
         {
         }
 
@@ -140,19 +142,12 @@ namespace Jitter.Dynamics
         /// Initializes a new instance of the RigidBody class.
         /// </summary>
         /// <param name="shape">The shape of the body.</param>
-        public RigidBody(Shape shape, Material material)
-            :this(shape,material,false)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the RigidBody class.
-        /// </summary>
-        /// <param name="shape">The shape of the body.</param>
         /// <param name="isParticle">If set to true the body doesn't rotate. 
         /// Also contacts are only solved for the linear motion part.</param>
-        public RigidBody(Shape shape, Material material, bool isParticle)
+        public RigidBody(Shape shape, RigidBodyTypes bodyType, Material material, bool isParticle)
         {
+            this.bodyType = bodyType;
+
             readOnlyArbiters = new ReadOnlyHashset<Arbiter>(arbiters);
             readOnlyConstraints = new ReadOnlyHashset<Constraint>(constraints);
 
@@ -493,14 +488,40 @@ namespace Jitter.Dynamics
             }
         }
 
+        // TODO: Add a SetTransform function to set both position and orientation at the same time (without updating twice).
         /// <summary>
         /// The current position of the body.
         /// </summary>
         public JVector Position
         {
-            get { return position; }
-            set { position = value ; Update(); }
+            get => position;
+            set
+            {
+                //Debug.Assert(!(bodyType == RigidBodyTypes.PseudoStatic && isSpawnPositionSet), "Can't set position " +
+                //    "on a pseudo-static body direction (use SetPosition instead).");
+
+                if (!isSpawnPositionSet)
+                {
+                    oldPosition = value;
+                    isSpawnPositionSet = true;
+                }
+                else
+                {
+                    oldPosition = position;
+                }
+                
+                position = value;
+
+                if (bodyType == RigidBodyTypes.PseudoStatic)
+                {
+                    linearVelocity = value - oldPosition;
+                }
+
+                Update();
+            }
         }
+
+	    public JVector OldPosition => oldPosition;
 
         /// <summary>
         /// The current oriention of the body.
@@ -514,26 +535,12 @@ namespace Jitter.Dynamics
 		        Update();
 	        }
         }
-        
-        /// <summary>
-        /// If set to true the body can't be moved.
-        /// </summary>
-        public bool IsStatic
-        {
-            get => bodyType == RigidBodyTypes.Static;
-	        set
-            {
-                if (value && bodyType != RigidBodyTypes.Static)
-                {
-	                island?.islandManager.MakeBodyStatic(this);
 
-	                angularVelocity.MakeZero();
-                    linearVelocity.MakeZero();
-                }
-
-	            bodyType = RigidBodyTypes.Static;
-            }
-        }
+	    /// <summary>
+	    /// Whether the body is static (or pseudo-static, since the latter behaves identically to static in almost all
+	    /// cases).
+	    /// </summary>
+	    public bool IsStatic => (int)bodyType >= (int)RigidBodyTypes.PseudoStatic;
 		
         public bool IsAffectedByGravity
         {
@@ -563,9 +570,20 @@ namespace Jitter.Dynamics
 
 			// TODO: If bodies can change type on the fly, additional logic might be needed here.
 			set => bodyType = value;
-		}
 
-	    /// <summary>
+            // The code below was previously in the IsStatic setter.
+            /*
+            if (value && bodyType != RigidBodyTypes.Static)
+            {
+	            island?.islandManager.MakeBodyStatic(this);
+
+	            angularVelocity.MakeZero();
+                linearVelocity.MakeZero();
+            }
+             */
+        }
+
+        /// <summary>
         /// Setting the mass automatically scales the inertia.
         /// To set the mass indepedently from the mass use SetMassProperties.
         /// </summary>
@@ -598,6 +616,18 @@ namespace Jitter.Dynamics
         public Action<float> PostStep { get; set; }
 
 		#endregion
+
+	    public void SetPosition(JVector position, float step)
+	    {
+            Debug.Assert(bodyType == RigidBodyTypes.PseudoStatic, "This function should only be called for pseudo-" +
+                "static bodies.");
+
+	        oldPosition = this.position;
+	        this.position = position;
+
+	        LinearVelocity = JVector.Multiply(position - oldPosition, 1 / step);
+            Update();
+	    }
 
         public void SweptExpandBoundingBox(float timestep)
         {

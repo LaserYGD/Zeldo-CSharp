@@ -220,8 +220,8 @@ namespace Jitter.Dynamics
         {
             public SoftBody SoftBody { get; private set; }
 
-            public MassPoint(Shape shape, SoftBody owner, Material material)
-                : base(shape, material, true)
+            public MassPoint(Shape shape, RigidBodyTypes bodyType, SoftBody owner, Material material)
+                : base(shape, bodyType, material, true)
             {
                 this.SoftBody = owner;
             }
@@ -595,7 +595,7 @@ namespace Jitter.Dynamics
         {
             for (int i = 0; i < vertices.Count; i++)
             {
-                MassPoint point = new MassPoint(sphere, this,material);
+                MassPoint point = new MassPoint(sphere, RigidBodyTypes.Dynamic, this,material);
                 point.Position = vertices[i];
 
                 point.Mass = 0.1f;

@@ -86,9 +86,15 @@ namespace Jitter.Collision
 
         public void MakeBodyStatic(RigidBody body)
         {
+            foreach (RigidBody b in body.connections)
+            {
+                rmStackRb.Push(b);
+            }
 
-            foreach (RigidBody b in body.connections) rmStackRb.Push(b);
-            while (rmStackRb.Count > 0) RemoveConnection(body,rmStackRb.Pop());
+            while (rmStackRb.Count > 0)
+            {
+                RemoveConnection(body,rmStackRb.Pop());
+            }
 
             // A static body doesn't have any connections.
             body.connections.Clear();

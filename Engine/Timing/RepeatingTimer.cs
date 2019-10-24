@@ -12,6 +12,9 @@ namespace Engine.Timing
 			this.trigger = trigger;
 		}
 
+		// In some cases, it's useful to access progress outside of the tick function.
+		public float Progress => Elapsed / Duration;
+
 		public override void Update(float dt)
 		{
 			if (IsPaused || IsComplete)
@@ -43,7 +46,7 @@ namespace Engine.Timing
 				Elapsed -= previousDuration;
 			}
 
-			Tick?.Invoke(Elapsed / Duration);
+			Tick?.Invoke(Progress);
 		}
 	}
 }

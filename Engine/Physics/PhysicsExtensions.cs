@@ -29,7 +29,7 @@ namespace Engine.Physics
 
 			return new JMatrix(m.m00, m.m01, m.m02, m.m10, m.m11, m.m12, m.m20, m.m21, m.m22);
 		}
-
+		
 		// This is primarily used for tracking relative rotation on moving platforms.
 		public static float ComputeYaw(this JMatrix matrix)
 		{

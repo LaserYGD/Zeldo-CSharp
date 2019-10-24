@@ -121,16 +121,16 @@ namespace Zeldo.Loops
 			player.Unlock(PlayerSkills.Block);
 			player.Unlock(PlayerSkills.Parry);
 
-			var platform = new MovingPlatform(new vec3(3, 0.5f, 3), new vec3(0, 2.5f, 0));
+			var platform = new MovingPlatform(new vec3(3, 0.5f, 3), new vec3(0, 3, 0), new vec3(0, 3, 16), 4);
 
 			// TODO: Load fragments from a save slot.
-			scene.Add(player);
 			scene.Add(platform);
+			scene.Add(player);
 
 			var fragment = scene.LoadFragment("Demo.json");
 			player.Position = fragment.Origin + fragment.Spawn;
 
-			//CreateDebugCubes();
+			CreateDebugCubes();
 
 			camera.Attach(new FollowController(player, settings));
 
@@ -161,10 +161,15 @@ namespace Zeldo.Loops
 
 		private void CreateDebugCubes()
 		{
+			var cube = new DummyCube(RigidBodyTypes.Dynamic, false);
+			cube.Position = new vec3(0, 4.2f, 10);
+
+			scene.Add(cube);
+
 			/*
 			var random = new Random();
 
-			for (int i = 0; i < 40; i++)
+			for (int i = 0; i < 1; i++)
 			{
 				float x = (float)random.NextDouble() * 10 - 5 + 10;
 				float y = (float)random.NextDouble() * 5 + 5;

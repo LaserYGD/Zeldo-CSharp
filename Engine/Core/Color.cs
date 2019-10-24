@@ -14,6 +14,7 @@ namespace Engine.Core
 		public static readonly Color Yellow = new Color(255, 255, 0);
 		public static readonly Color Cyan = new Color(0, 255, 255);
 		public static readonly Color Magenta = new Color(255, 0, 255);
+		public static readonly Color Purple = new Color(128, 0, 128);
 		public static readonly Color Transparent = new Color(0, 0, 0, 0);
 
 		public static Color Lerp(Color start, Color end, float t)

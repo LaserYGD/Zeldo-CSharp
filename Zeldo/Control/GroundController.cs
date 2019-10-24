@@ -194,14 +194,13 @@ namespace Zeldo.Control
 			var world = Parent.Scene.World;
 			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
 			var normal = ground.Normal;
-
-			// The raycast needs to be offset upward enough to catch steps.
-			// TODO: Use properties for these raycast values.
-			var results = PhysicsUtilities.Raycast(world, map, p + normal, -normal, 1.2f);
-
-			// This means the actor moved to another triangle.
-			if (results?.Triangle != null)
+			
+			// TODO: Use properties for the raycast length (and offset).
+			// The raycast needs to be offset enough to catch steps.
+			if (PhysicsUtilities.Raycast(world, map, p + normal, -normal, 1.2f, out var results) &&
+				results.Triangle != null)
 			{
+				// This means the actor moved to another triangle.
 				var newGround = new SurfaceTriangle(results.Triangle, results.Normal, 0);
 				newGround.Project(results.Position, out result);
 				body.Position = (result + halfHeight).ToJVector();

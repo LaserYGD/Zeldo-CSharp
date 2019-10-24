@@ -156,8 +156,7 @@ namespace Zeldo.Entities.Core
 			Debug.Assert(shape != null, "Can't create a body with a null shape.");
 			Debug.Assert(!isControlling || controllingBody == null, "Controlling body is already set.");
 
-			RigidBody body = new RigidBody(shape);
-			body.BodyType = bodyType;
+			RigidBody body = new RigidBody(shape, bodyType);
 			body.Tag = this;
 
             // Note that the controlling body is intentionally not attached as a regular attachment. Doing so would
