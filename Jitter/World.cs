@@ -673,12 +673,12 @@ namespace Jitter
                 JVector effectiveAngular = body.angularVelocity - body.storedAngular;
 
                 // Apply linear velocity.
-                if (!body.IsOnPlatform)
+                if (!body.IsManuallyControlled)
                 {
                     body.Position += effectiveLinear * timestep;
                 }
 
-                if (!body.IsParticle && !body.IsFixedVertical && !body.IsOnPlatform)
+                if (!body.IsParticle && !body.IsFixedVertical && !body.IsManuallyControlled)
                 {
                     //exponential map
                     JVector axis;
@@ -919,7 +919,7 @@ namespace Jitter
                     JVector.Add(ref temp, ref body.linearVelocity, out body.linearVelocity);
 
                     // Modify angular velocity.
-                    if (!body.IsParticle && !body.IsOnPlatform)
+                    if (!body.IsParticle && !body.IsManuallyControlled)
                     {
                         JVector.Multiply(ref body.torque, timestep, out temp);
                         JVector.Transform(ref temp, ref body.invInertiaWorld, out temp);
@@ -937,15 +937,15 @@ namespace Jitter
             RigidBody body = obj as RigidBody;
 
             // Apply linear velocity.
-            if (!body.IsOnPlatform)
+            if (!body.IsManuallyControlled)
             {
                 body.Position += body.linearVelocity * timestep;
             }
 
             bool isFixedVertical = body.IsFixedVertical;
-            bool isOnPlatform = body.IsOnPlatform;
+            bool isManuallyControlled = body.IsManuallyControlled;
 
-            if (!body.IsParticle && !isFixedVertical && !isOnPlatform)
+            if (!body.IsParticle && !isFixedVertical && !isManuallyControlled)
             {
                 //exponential map
                 JVector axis;
@@ -973,12 +973,12 @@ namespace Jitter
             }
 
             // Bodies on platforms don't have any damping applied (to either linear or angular velocity).
-            if ((body.Damping & RigidBody.DampingType.Linear) != 0 && !isOnPlatform)
+            if ((body.Damping & RigidBody.DampingType.Linear) != 0 && !isManuallyControlled)
             {
                 JVector.Multiply(ref body.linearVelocity, currentLinearDampFactor, out body.linearVelocity);
             }
 
-            if (!isFixedVertical && (body.Damping & RigidBody.DampingType.Angular) != 0 && !isOnPlatform)
+            if (!isFixedVertical && (body.Damping & RigidBody.DampingType.Angular) != 0 && !isManuallyControlled)
             {
                 JVector.Multiply(ref body.angularVelocity, currentAngularDampFactor, out body.angularVelocity);
             }

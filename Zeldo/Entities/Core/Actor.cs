@@ -202,7 +202,7 @@ namespace Zeldo.Entities.Core
 				controllingBody.LinearVelocity = JVector.Zero;
 				controllingBody.Position = jPoint + new JVector(0, Height / 2, 0);
 				controllingBody.IsAffectedByGravity = false;
-				controllingBody.IsOnPlatform = true;
+				controllingBody.IsManuallyControlled = true;
 
 				var orientation = platform.Orientation;
 

@@ -104,6 +104,13 @@ namespace Jitter.Dynamics
             this.bodyType = bodyType;
             this.material = material;
 
+            // Pseudo-static bodies, by design, are always manually controlled.
+            if (bodyType == RigidBodyTypes.PseudoStatic)
+            {
+                flags |= RigidBodyFlags.IsManuallyControlled;
+            }
+
+            // TODO: Should pseudo-static bodies have deactivation allowed?
             // By default, all bodies start active (and with deactivation allowed).
             this.flags = flags | RigidBodyFlags.IsActive | RigidBodyFlags.IsDeactivationAllowed;
 
@@ -183,9 +190,9 @@ namespace Jitter.Dynamics
             get => linearVelocity;
 	        set 
             {
-				Debug.Assert(!IsStatic, "Can't set linear velocity on a static or pseudo-static body.");
-				Debug.Assert(!IsOnPlatform, "Can't set linear velocity directly on a body that's on a platform (use " +
-                    "SetTransform with a timestep instead).");
+				Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't set linear velocity on a static body.");
+				Debug.Assert(!IsManuallyControlled, "Can't set linear velocity directly on a manually-controlled " +
+                    "body (use SetTransform with a timestep instead).");
 
 	            linearVelocity = value;
             }
@@ -199,10 +206,10 @@ namespace Jitter.Dynamics
             get => angularVelocity;
 	        set
             {
-				Debug.Assert(!IsStatic, "Can't set angular velocity on a static or pseudo-static body.");
+				Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't set angular velocity on a static body.");
 				Debug.Assert(!IsFixedVertical, "Can't set angular velocity on a fixed-vertical body.");
-				Debug.Assert(!IsOnPlatform, "Can't set angular velocity directly on a body that's on a platform (use" +
-                    "SetTransform with a timestep instead).");
+				Debug.Assert(!IsManuallyControlled, "Can't set angular velocity directly on a manually-controlled " +
+                    "body (use SetTransform with a timestep instead).");
 
 	            angularVelocity = value;
             }
@@ -218,12 +225,10 @@ namespace Jitter.Dynamics
             {
                 bool isSpawnPositionUnset = !IsSpawnPositionSet;
 
-                Debug.Assert(bodyType != RigidBodyTypes.Static || isSpawnPositionUnset, "Static body position can " +
-                    "only be set on spawn.");
-                Debug.Assert(bodyType != RigidBodyTypes.PseudoStatic || isSpawnPositionUnset, "Pseudo-static body " +
-                    "position can only be set directly on spawn. After that, use SetTransform with a timestep.");
-                Debug.Assert(!IsOnPlatform || isSpawnPositionUnset, "Bodies on platforms can only have position set " +
-                    "directly on spawn. After that, use SetTransform with a timestep.");
+                Debug.Assert(bodyType != RigidBodyTypes.Static || isSpawnPositionUnset, "Position on static bodies " +
+                    "can only be set on spawn.");
+                Debug.Assert(!IsManuallyControlled || isSpawnPositionUnset, "Position on manually-controlled bodies " +
+                    "can only be set directly on spawn. After that, use SetTransform with a timestep.");
 
                 if (isSpawnPositionUnset)
                 {
@@ -252,13 +257,10 @@ namespace Jitter.Dynamics
             {
                 bool isSpawnOrientationUnset = !IsSpawnOrientationSet;
 
-                Debug.Assert(bodyType != RigidBodyTypes.Static || isSpawnOrientationUnset, "Static body orientation " +
-                    "can only be set on spawn.");
-                Debug.Assert(bodyType != RigidBodyTypes.PseudoStatic || isSpawnOrientationUnset, "Pseudo-static " +
-                    "body orientation can only be set directly on spawn. After that, use SetTransform with a " +
-                    "timestep.");
-                Debug.Assert(!IsOnPlatform || isSpawnOrientationUnset, "Bodies on platforms can only have " +
-                    "orientation set directly on spawn. After that, use SetTransform with a timestep.");
+                Debug.Assert(bodyType != RigidBodyTypes.Static || isSpawnOrientationUnset, "Orientation on static " +
+                    "bodies can only be set on spawn.");
+                Debug.Assert(!IsManuallyControlled || isSpawnOrientationUnset, "Orientation on manually-controlled " +
+                    "bodies can only be set directly on spawn. After that, use SetTransform with a timestep.");
 
                 if (isSpawnOrientationUnset)
                 {
@@ -318,7 +320,7 @@ namespace Jitter.Dynamics
             }
         }
 
-	    public bool IsDeactivationAllowed
+        public bool IsDeactivationAllowed
 	    {
 	        get => (flags & RigidBodyFlags.IsDeactivationAllowed) > 0;
 	        set => ModifyFlag(RigidBodyFlags.IsDeactivationAllowed, value);
@@ -345,24 +347,26 @@ namespace Jitter.Dynamics
                 ModifyFlag(RigidBodyFlags.IsFixedVertical, value);
 		    }
 	    }
+        
+        public bool IsManuallyControlled
+        {
+            get => (flags & RigidBodyFlags.IsManuallyControlled) > 0;
+            set
+            {
+                Debug.Assert(bodyType != RigidBodyTypes.Dynamic && bodyType != RigidBodyTypes.Static, "Can't mark " +
+                    "dynamic or static bodies as manually-controlled.");
+                Debug.Assert(value || bodyType != RigidBodyTypes.PseudoStatic, "Pseudo-static bodies must always " +
+                    "remain manually-controlled.");
 
-	    public bool IsOnPlatform
-	    {
-	        get => (flags & RigidBodyFlags.IsOnPlatform) > 0;
-	        set
-	        {
-                Debug.Assert(bodyType == RigidBodyTypes.Kinematic, "Only kinematic bodies can be marked with " +
-                    "platform handling (dynamic bodies just use regular physics).");
+                ModifyFlag(RigidBodyFlags.IsManuallyControlled, value);
+            }
+        }
 
-	            ModifyFlag(RigidBodyFlags.IsOnPlatform, value);
-	        }
-	    }
-
-	    // TODO: Consider removing (if unused).
-	    /// <summary>
-	    /// If true, the body as no angular movement.
-	    /// </summary>
-	    public bool IsParticle
+        // TODO: Consider removing (if unused).
+        /// <summary>
+        /// If true, the body as no angular movement.
+        /// </summary>
+        public bool IsParticle
 	    {
 	        get => (flags & RigidBodyFlags.IsParticle) > 0;
 	        set
@@ -462,8 +466,8 @@ namespace Jitter.Dynamics
         /// </summary>
         public void ApplyImpulse(JVector impulse)
         {
-            Debug.Assert(!IsStatic, "Can't apply an impulse to a static or pseudo-static body.");
-            Debug.Assert(!IsOnPlatform, "Can't apply an impulse to a body on a platform.");
+            Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't apply impulses to a static body.");
+            Debug.Assert(!IsManuallyControlled, "Can't apply impulses to a manually-controlled body.");
 
             JVector.Multiply(ref impulse, inverseMass, out var temp);
             JVector.Add(ref linearVelocity, ref temp, out linearVelocity);
@@ -475,8 +479,8 @@ namespace Jitter.Dynamics
         /// </summary>
         public void ApplyImpulse(JVector impulse, JVector p)
         {
-            Debug.Assert(!IsStatic, "Can't apply an impulse to a static or pseudo-static body.");
-            Debug.Assert(!IsOnPlatform, "Can't apply an impulse to a body on a platform.");
+            Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't apply an impulse to a static body.");
+            Debug.Assert(!IsManuallyControlled, "Can't apply impulses to a manually-controlled body.");
 
             // Linear velocity.
             JVector.Multiply(ref impulse, inverseMass, out var temp);
@@ -494,8 +498,8 @@ namespace Jitter.Dynamics
         /// </summary>
         public void AddForce(JVector force)
         {
-            Debug.Assert(!IsStatic, "Can't apply a force to a static or pseudo-static body.");
-            Debug.Assert(!IsOnPlatform, "Can't apply a force to a body on a platform.");
+            Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't apply forces to a static body.");
+            Debug.Assert(!IsManuallyControlled, "Can't apply forces to a manually-controlled body.");
 
             JVector.Add(ref force, ref this.force, out this.force);
         }
@@ -505,8 +509,8 @@ namespace Jitter.Dynamics
         /// </summary>
         public void AddForce(JVector force, JVector p)
         {
-            Debug.Assert(!IsStatic, "Can't apply a force to a static or pseudo-static body.");
-            Debug.Assert(!IsOnPlatform, "Can't apply a force to a body on a platform.");
+            Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't apply forces to a static body.");
+            Debug.Assert(!IsManuallyControlled, "Can't apply forces to a manually-controlled body.");
 
             // Force.
             JVector.Add(ref this.force, ref force, out this.force);
@@ -522,9 +526,9 @@ namespace Jitter.Dynamics
         /// </summary>
         public void AddTorque(JVector torque)
         {
-            Debug.Assert(!IsStatic, "Can't apply torque to a static or pseudo-static body.");
+            Debug.Assert(bodyType != RigidBodyTypes.Static, "Can't apply torque to a static body.");
             Debug.Assert(!IsFixedVertical, "Can't apply torque to a fixed-vertical body.");
-            Debug.Assert(!IsOnPlatform, "Can't apply torque to a body on a platform.");
+            Debug.Assert(!IsManuallyControlled, "Can't apply torque to a manually-controlled body.");
 
             JVector.Add(ref torque, ref this.torque, out this.torque);
         }
@@ -613,8 +617,8 @@ namespace Jitter.Dynamics
 
 	    public void SetTransform(JVector position, JMatrix orientation, float step)
 	    {
-            Debug.Assert(bodyType == RigidBodyTypes.PseudoStatic || IsOnPlatform, "This function should only be " +
-                "called for pseudo-static bodies or bodies on platforms.");
+            Debug.Assert(IsManuallyControlled, "This function should only be called for manually-controlled " +
+                "bodies.");
 
 	        SetTransform(position, orientation);
 

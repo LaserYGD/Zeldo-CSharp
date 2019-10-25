@@ -466,7 +466,7 @@ namespace Zeldo.Entities.Player
 					{
 						// The player can maintain momentum when jumping off moving platforms.
 						aerialController.IgnoreDeceleration = true;
-						controllingBody.IsOnPlatform = false;
+						controllingBody.IsManuallyControlled = false;
 					}
 
 					Ground = null;

@@ -11,7 +11,7 @@ namespace Jitter.Dynamics
         IsAffectedByGravity = 1<<2,
         IsDeactivationAllowed = 1<<3,
         IsFixedVertical = 1<<4,
-        IsOnPlatform = 1<<5,
+        IsManuallyControlled = 1<<5,
 
         // TODO: Consider removing (if unused).
         IsParticle = 1<<6,
