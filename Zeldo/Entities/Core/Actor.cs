@@ -58,10 +58,10 @@ namespace Zeldo.Entities.Core
 
 		// This is used by the ground controller.
 		public SurfaceTriangle Ground { get; protected set; }
-		public JVector PlatformPosition { get; set; }
+		public JVector ManualPosition { get; set; }
 
 		// Since actors are fixed vertically, only relative yaw (i.e. rotation around the Y axis) needs to be stored.
-		public float PlatformYaw { get; set; }
+		public float ManualYaw { get; set; }
 
 		protected virtual bool ShouldGenerateContact(RigidBody body, JVector[] triangle)
 		{
@@ -166,11 +166,19 @@ namespace Zeldo.Entities.Core
 			// platforms.
 			var body = entity.ControllingBody;
 
+			// TODO: Should actors be able to land on
 			// TODO: Check relative velocity (in case the platform is moving up).
-			// Actors can land on portions of any platform that are flat enough to be considered a floor (as long as
-			// the body is either static or pseudo-static).
-			if (!body.IsStatic || normal.y < 0 || controllingBody.LinearVelocity.Y > 0 ||
-			    Math.Abs(Constants.PiOverTwo - Utilities.Angle(normal, vec3.UnitY)) <= PhysicsConstants.WallThreshold)
+			// Actors can land on portions of any pseudo-static body that are flat enough to be considered a floor.
+			if (body.BodyType != RigidBodyTypes.PseudoStatic)
+			{
+				return true;
+			}
+
+			// This accounts for the situation where the body is moving upward more quickly than the player (like an
+			// elevator).
+			float relativeY = controllingBody.LinearVelocity.Y - body.LinearVelocity.Y;
+
+			if (relativeY > 0)
 			{
 				return true;
 			}
@@ -180,10 +188,16 @@ namespace Zeldo.Entities.Core
 			var p1 = controllingBody.OldPosition.ToVec3() - halfVector;
 			var p2 = controllingBody.Position.ToVec3() - halfVector;
 
-			// TODO: Verify the raycast normal (to make sure it's a floor).
+			// Verifying the result normal prevents false landings (often near the sides of platforms).
 			if (PhysicsUtilities.Raycast(Scene.World, body, p1, p2, out var results))
 			{
-				OnLanding(results.Position, body, null);
+				// TODO: Consider using dot products to determine surface type (rather than angle, which I think is more expensive).
+				float angle = Math.Abs(Constants.PiOverTwo - Utilities.Angle(normal, vec3.UnitY));
+
+				if (angle > PhysicsConstants.WallThreshold)
+				{
+					OnLanding(results.Position, body, null);
+				}
 			}
 
 			return false;
@@ -206,8 +220,8 @@ namespace Zeldo.Entities.Core
 
 				var orientation = platform.Orientation;
 
-				PlatformPosition = JVector.Transform(jPoint - platform.Position, JMatrix.Inverse(orientation));
-				PlatformYaw = bodyYaw - orientation.ComputeYaw();
+				ManualPosition = JVector.Transform(jPoint - platform.Position, JMatrix.Inverse(orientation));
+				ManualYaw = bodyYaw - orientation.ComputeYaw();
 				platformController.Platform = platform;
 				activeController = platformController;
 

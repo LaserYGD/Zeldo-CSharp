@@ -462,8 +462,10 @@ namespace Zeldo.Entities.Player
 				{
 					var platform = platformController.Platform;
 
+					// TODO: If the platform is moving up (faster than a threshold), apply an additional upward boost on jump.
 					if (platform != null)
 					{
+						// TODO: Consider only preserving XZ momentum if speed is fast enough (to prevent the equivalent of an ultra-slow bash glide).
 						// The player can maintain momentum when jumping off moving platforms.
 						aerialController.IgnoreDeceleration = true;
 						controllingBody.IsManuallyControlled = false;
