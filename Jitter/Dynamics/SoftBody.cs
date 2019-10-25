@@ -206,12 +206,6 @@ namespace Jitter.Dynamics
                     JVector.Add(ref temp, ref body2.linearVelocity, out body2.linearVelocity);
                 }
             }
-
-            public override void DebugDraw(IDebugDrawer drawer)
-            {
-                drawer.DrawLine(body1.position, body2.position);
-            }
-
         }
         #endregion
 
@@ -220,8 +214,9 @@ namespace Jitter.Dynamics
         {
             public SoftBody SoftBody { get; private set; }
 
-            public MassPoint(Shape shape, RigidBodyTypes bodyType, SoftBody owner, Material material)
-                : base(shape, bodyType, material, true)
+            public MassPoint(Shape shape, RigidBodyTypes bodyType, RigidBodyFlags flags, SoftBody owner,
+                Material material) :
+                base(shape, bodyType, material, flags)
             {
                 this.SoftBody = owner;
             }
@@ -595,7 +590,8 @@ namespace Jitter.Dynamics
         {
             for (int i = 0; i < vertices.Count; i++)
             {
-                MassPoint point = new MassPoint(sphere, RigidBodyTypes.Dynamic, this,material);
+                MassPoint point = new MassPoint(sphere, RigidBodyTypes.Dynamic, RigidBodyFlags.IsDeactivationAllowed,
+                    this, material);
                 point.Position = vertices[i];
 
                 point.Mass = 0.1f;
@@ -660,7 +656,7 @@ namespace Jitter.Dynamics
             foreach (MassPoint point in points)
             {
 				// CUSTOM: Modified to use the IsStatic property.
-                if (point.isActive && !point.IsStatic) { active = true; break; }
+                if (point.IsActive && !point.IsStatic) { active = true; break; }
             }
 
             if(!active) return;

@@ -200,13 +200,12 @@ namespace Zeldo.Entities.Core
 			if (platform != null)
 			{
 				var jPoint = p.ToJVector();
-
-				// TODO: Only land when the bottom-center point touches the platform.
+				
 				// TODO: Transfer velocity.
 				controllingBody.LinearVelocity = JVector.Zero;
 				controllingBody.Position = jPoint + new JVector(0, Height / 2, 0);
 				controllingBody.IsAffectedByGravity = false;
-				controllingBody.IgnoreVelocity = true;
+				controllingBody.IsOnPlatform = true;
 
 				var orientation = platform.Orientation;
 
@@ -254,16 +253,23 @@ namespace Zeldo.Entities.Core
 		}
 
 		// TODO: Should a CreateMasterSensor function be created as well?
-		protected RigidBody CreateMasterBody(Scene scene, Shape shape)
+		protected RigidBody CreateMasterBody(Scene scene, Shape shape, bool isAffectedByGravity)
 		{
-			var body = CreateBody(scene, shape, RigidBodyTypes.Kinematic);
+			var flags = RigidBodyFlags.IsFixedVertical;
+
+			if (isAffectedByGravity)
+			{
+				flags |= RigidBodyFlags.IsAffectedByGravity;
+			}
+
+			var body = CreateBody(scene, shape, RigidBodyTypes.Kinematic, flags);
 			body.ShouldGenerateContact = ShouldGenerateContact;
 			body.PreStep = PreStep;
 			body.PostStep = PostStep;
 			body.IsFixedVertical = true;
 
 			// TODO: Is this needed?
-			body.AllowDeactivation = false;
+			body.IsDeactivationAllowed = false;
 			body.Damping = RigidBody.DampingType.None;
 
 			// Restitution defaults to zero.

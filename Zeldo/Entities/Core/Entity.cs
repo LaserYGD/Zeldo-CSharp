@@ -151,12 +151,13 @@ namespace Zeldo.Entities.Core
 		}
 
 		protected RigidBody CreateBody(Scene scene, Shape shape, RigidBodyTypes bodyType = RigidBodyTypes.Dynamic,
-			bool isControlling = true, vec3? position = null, quat? orientation = null)
+			RigidBodyFlags flags = RigidBodyFlags.IsDeactivationAllowed, bool isControlling = true,
+			vec3? position = null, quat? orientation = null)
 		{
 			Debug.Assert(shape != null, "Can't create a body with a null shape.");
 			Debug.Assert(!isControlling || controllingBody == null, "Controlling body is already set.");
 
-			RigidBody body = new RigidBody(shape, bodyType);
+			RigidBody body = new RigidBody(shape, bodyType, flags);
 			body.Tag = this;
 
             // Note that the controlling body is intentionally not attached as a regular attachment. Doing so would

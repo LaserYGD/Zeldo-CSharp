@@ -183,7 +183,6 @@ namespace Jitter.LinearMath
             return matrix;
         }
 
-
         public static void CreateRotationZ(float radians, out JMatrix result)
         {
             float num2 = (float)Math.Cos((double)radians);
@@ -198,7 +197,6 @@ namespace Jitter.LinearMath
             result.M32 = 0f;
             result.M33 = 1f;
         }
-
 
         /// <summary>
         /// Initializes a new instance of the matrix structure.
@@ -524,7 +522,6 @@ namespace Jitter.LinearMath
         }
         #endregion
 
-
         public float Trace()
         {
             return this.M11 + this.M22 + this.M33;
@@ -558,7 +555,6 @@ namespace Jitter.LinearMath
             return result;
         }
         #endregion
-
 
         /// <summary>
         /// Creates a matrix which rotates around the given axis by the given angle.
@@ -604,6 +600,5 @@ namespace Jitter.LinearMath
         }
 
         #endregion
-
     }
 }

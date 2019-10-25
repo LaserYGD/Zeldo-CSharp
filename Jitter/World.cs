@@ -668,12 +668,12 @@ namespace Jitter
                 JVector effectiveAngular = body.angularVelocity - body.storedAngular;
 
                 // Apply linear velocity.
-                if (!body.IgnoreVelocity)
+                if (!body.IsOnPlatform)
                 {
                     body.Position += effectiveLinear * timestep;
                 }
 
-                if (!body.isParticle && !body.isFixedVertical)
+                if (!body.IsParticle && !body.IsFixedVertical && !body.IsOnPlatform)
                 {
                     //exponential map
                     JVector axis;
@@ -899,15 +899,14 @@ namespace Jitter
                 {
                     JVector temp;
 
-                    if (body.isAffectedByGravity)
+                    if (body.IsAffectedByGravity)
                     {
                         JVector.Multiply(ref gravity, timestep, out temp);
                         JVector.Add(ref body.linearVelocity, ref temp, out body.linearVelocity);
                     }
 
-                    // It's assumed that fixed-vertical bodies will never have forces applied (gravity still applies
-                    // though).
-                    if (body.isFixedVertical)
+                    // Fixed-vertical bodies can't have forces applied (gravity still applies though).
+                    if (body.IsFixedVertical)
                     {
                         continue;
                     }
@@ -917,7 +916,7 @@ namespace Jitter
                     JVector.Add(ref temp, ref body.linearVelocity, out body.linearVelocity);
 
                     // Modify angular velocity.
-                    if (!body.isParticle)
+                    if (!body.IsParticle && !body.IsOnPlatform)
                     {
                         JVector.Multiply(ref body.torque, timestep, out temp);
                         JVector.Transform(ref temp, ref body.invInertiaWorld, out temp);
@@ -935,14 +934,15 @@ namespace Jitter
             RigidBody body = obj as RigidBody;
 
             // Apply linear velocity.
-            if (!body.IgnoreVelocity)
+            if (!body.IsOnPlatform)
             {
                 body.Position += body.linearVelocity * timestep;
             }
 
-            bool isFixedVertical = body.isFixedVertical;
+            bool isFixedVertical = body.IsFixedVertical;
+            bool isOnPlatform = body.IsOnPlatform;
 
-            if (!body.isParticle && !isFixedVertical)
+            if (!body.IsParticle && !isFixedVertical && !isOnPlatform)
             {
                 //exponential map
                 JVector axis;
@@ -969,19 +969,20 @@ namespace Jitter
                 JMatrix.CreateFromQuaternion(ref dorn, out body.orientation);
             }
 
-            if ((body.Damping & RigidBody.DampingType.Linear) != 0)
+            // Bodies on platforms don't have any damping applied (to either linear or angular velocity).
+            if ((body.Damping & RigidBody.DampingType.Linear) != 0 && !isOnPlatform)
             {
                 JVector.Multiply(ref body.linearVelocity, currentLinearDampFactor, out body.linearVelocity);
             }
 
-            if (!isFixedVertical && (body.Damping & RigidBody.DampingType.Angular) != 0)
+            if (!isFixedVertical && (body.Damping & RigidBody.DampingType.Angular) != 0 && !isOnPlatform)
             {
                 JVector.Multiply(ref body.angularVelocity, currentAngularDampFactor, out body.angularVelocity);
             }
 
             body.Update();
 
-            if (CollisionSystem.EnableSpeculativeContacts || body.EnableSpeculativeContacts)
+            if (CollisionSystem.EnableSpeculativeContacts || body.AreSpeculativeContactsEnabled)
             {
                 body.SweptExpandBoundingBox(timestep);
             }
@@ -1069,7 +1070,7 @@ namespace Jitter
                     foreach (RigidBody body in island.bodies)
                     {
                         // Body allow deactivation.
-                        if (body.AllowDeactivation &&
+                        if (body.IsDeactivationAllowed &&
                             body.angularVelocity.LengthSquared() < inactiveAngularThresholdSq &&
                             body.linearVelocity.LengthSquared() < inactiveLinearThresholdSq)
                         {
@@ -1090,9 +1091,11 @@ namespace Jitter
 
                 foreach (RigidBody body in island.bodies)
                 {
-                    if (body.isActive == shouldDeactivateIsland)
+                    bool isActive = body.IsActive;
+
+                    if (isActive == shouldDeactivateIsland)
                     {
-                        if (body.isActive)
+                        if (isActive)
                         {
                             body.IsActive = false;
                             events.RaiseDeactivatedBody(body);

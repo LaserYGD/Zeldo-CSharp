@@ -169,7 +169,7 @@ namespace Zeldo.Entities.Player
 			Height = capsuleHeight + capsuleRadius * 2;
 
 			CreateModel(scene, "Capsule.obj");
-			CreateMasterBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius));
+			CreateMasterBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius), true);
 				
 			var canvas = scene.Canvas;
 			healthDisplay = canvas.GetElement<PlayerHealthDisplay>();
@@ -466,7 +466,7 @@ namespace Zeldo.Entities.Player
 					{
 						// The player can maintain momentum when jumping off moving platforms.
 						aerialController.IgnoreDeceleration = true;
-						controllingBody.IgnoreVelocity = false;
+						controllingBody.IsOnPlatform = false;
 					}
 
 					Ground = null;

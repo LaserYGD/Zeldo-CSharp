@@ -139,12 +139,5 @@ namespace Jitter.Dynamics.Constraints.SingleBody
                 body1.angularVelocity += JVector.Transform(lambda * jacobian[1], body1.invInertiaWorld);
             }
         }
-
-        public override void DebugDraw(IDebugDrawer drawer)
-        {
-            drawer.DrawPoint(anchor);
-        }
-
     }
-
 }

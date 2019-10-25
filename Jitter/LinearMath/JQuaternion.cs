@@ -95,10 +95,7 @@ namespace Jitter.LinearMath
             result.Z = ((num * num3) * num6) - ((num2 * num4) * num5);
             result.W = ((num * num3) * num5) + ((num2 * num4) * num6);
         }
-
  
-
-
         /// <summary>
         /// Quaternions are added.
         /// </summary>

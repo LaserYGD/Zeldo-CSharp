@@ -83,7 +83,7 @@ namespace Jitter.Collision
             enumerator.MoveNext();
 
             if (enumerator.Current == null) return false;
-            else return enumerator.Current.isActive;
+            else return enumerator.Current.IsActive;
         }
 
         /// <summary>

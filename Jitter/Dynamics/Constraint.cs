@@ -46,7 +46,7 @@ namespace Jitter.Dynamics.Constraints
     /// <summary>
     /// A constraints forces a body to behave in a specific way.
     /// </summary>
-    public abstract class Constraint : IConstraint, IDebugDrawable, IComparable<Constraint>
+    public abstract class Constraint : IConstraint, IComparable<Constraint>
     {
         internal RigidBody body1;
         internal RigidBody body2;
@@ -101,11 +101,6 @@ namespace Jitter.Dynamics.Constraints
             if (other.instance < this.instance) return -1;
             else if (other.instance > this.instance) return 1;
             else return 0;
-        }
-
-        public virtual void DebugDraw(IDebugDrawer drawer)
-        {
-            //throw new NotImplementedException();
         }
     }
 }

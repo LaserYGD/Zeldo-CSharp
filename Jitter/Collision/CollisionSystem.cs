@@ -262,7 +262,7 @@ namespace Jitter.Collision
             bool b2IsMulti = (body2.Shape is Multishape);
 
             bool speculative = speculativeContacts ||
-                (body1.EnableSpeculativeContacts || body2.EnableSpeculativeContacts);
+                (body1.AreSpeculativeContactsEnabled || body2.AreSpeculativeContactsEnabled);
 
             JVector point, normal;
             float penetration;
