@@ -48,7 +48,7 @@ namespace Zeldo.Entities
 			FacingDirection = Utilities.Direction(facing);
 
 			// TODO: Compute dimensions based on mesh bounds and number of segments.
-			CreateBody(scene, new BoxShape(0.1f, 15, 1), RigidBodyTypes.Static, false);
+			CreateBody(scene, new BoxShape(0.1f, 15, 1), RigidBodyTypes.Static);
 
 			base.Initialize(scene, data);
 		}

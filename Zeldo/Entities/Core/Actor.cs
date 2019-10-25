@@ -16,7 +16,7 @@ namespace Zeldo.Entities.Core
 	// TODO: Do all actors need to process steps?
 	public abstract class Actor : LivingEntity
 	{
-		private float yaw;
+		private float bodyYaw;
 
 		protected AbstractController activeController;
 		protected AerialController aerialController;
@@ -47,16 +47,13 @@ namespace Zeldo.Entities.Core
 
 		public float Height { get; set; }
 
+		// TODO: Is this the best approach?
 		// Actors can rotate around the Y axis, but that rotation is controlled manually. Storing yaw directly is more
 		// efficient than recomputing it every step.
 		public float BodyYaw
 		{
-			get => yaw;
-			set
-			{
-				yaw = value;
-				controllingBody.Orientation = JMatrix.CreateFromAxisAngle(JVector.Up, value);
-			}
+			get => bodyYaw;
+			set => bodyYaw = value;
 		}
 
 		// This is used by the ground controller.
@@ -210,7 +207,7 @@ namespace Zeldo.Entities.Core
 				var orientation = platform.Orientation;
 
 				PlatformPosition = JVector.Transform(jPoint - platform.Position, JMatrix.Inverse(orientation));
-				PlatformYaw = yaw - orientation.ComputeYaw();
+				PlatformYaw = bodyYaw - orientation.ComputeYaw();
 				platformController.Platform = platform;
 				activeController = platformController;
 

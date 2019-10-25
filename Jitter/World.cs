@@ -150,10 +150,11 @@ namespace Jitter
 
         private float angularDamping = 0.85f;
         private float linearDamping = 0.85f;
+        private float accumulatedTime;
+        private float timestep;
 
         private int contactIterations = 10;
         private int smallIterations = 4;
-        private float timestep;
 
         private IslandManager islands = new IslandManager();
 
@@ -340,7 +341,11 @@ namespace Jitter
         /// Gets or sets the gravity in this <see cref="World"/>. The default gravity
         /// is (0,-9.81,0)
         /// </summary>
-        public JVector Gravity { get { return gravity; } set { gravity = value; } }
+        public JVector Gravity 
+        { 
+            get => gravity;
+            set => gravity = value;
+        }
 
         /// <summary>
         /// Global sets or gets if a body is able to be temporarily deactivated by the engine to
@@ -723,8 +728,6 @@ namespace Jitter
             sw.Stop();
             debugTimes[(int)DebugType.PostStep] = sw.Elapsed.TotalMilliseconds;
         }
-
-        private float accumulatedTime = 0.0f;
 
         /// <summary>
         /// Integrates the whole world several fixed timestep further in time.

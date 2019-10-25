@@ -15,14 +15,15 @@ namespace Zeldo.Control
 
 		public override void PreStep(float step)
 		{
-			// TODO: Project onto the platform while moving.
 			var body = Parent.ControllingBody;
 			var orientation = Platform.Orientation;
+			var p = Platform.Position + JVector.Transform(Parent.PlatformPosition, orientation) +
+				new JVector(0, Parent.Height / 2, 0);
+			var yaw = orientation.ComputeYaw() + Parent.PlatformYaw;
 
 			// TODO: Consider optimizing the orientation transform by marking the platform entity as fixed rotation.
-			body.SetPosition(Platform.Position + JVector.Transform(Parent.PlatformPosition, orientation) +
-				new JVector(0, Parent.Height / 2, 0), step);
-			Parent.BodyYaw = orientation.ComputeYaw() + Parent.PlatformYaw;
+			body.SetTransform(p, JMatrix.CreateFromAxisAngle(JVector.Up, yaw), step);
+			Parent.BodyYaw = yaw;
 		}
 	}
 }

@@ -104,8 +104,8 @@ namespace Jitter.Dynamics
             this.bodyType = bodyType;
             this.material = material;
 
-            // By default, all bodies have deactivation allowed.
-            this.flags = flags | RigidBodyFlags.IsDeactivationAllowed;
+            // By default, all bodies start active (and with deactivation allowed).
+            this.flags = flags | RigidBodyFlags.IsActive | RigidBodyFlags.IsDeactivationAllowed;
 
             readOnlyArbiters = new ReadOnlyHashset<Arbiter>(arbiters);
             readOnlyConstraints = new ReadOnlyHashset<Constraint>(constraints);
@@ -133,18 +133,6 @@ namespace Jitter.Dynamics
             
             Update();
         }
-
-	    private bool IsSpawnPositionSet
-	    {
-	        get => (flags & RigidBodyFlags.IsSpawnPositionSet) > 0;
-	        set => ModifyFlag(RigidBodyFlags.IsSpawnPositionSet, value);
-	    }
-
-	    private bool IsSpawnOrientationSet
-	    {
-	        get => (flags & RigidBodyFlags.IsSpawnOrientationSet) > 0;
-	        set => ModifyFlag(RigidBodyFlags.IsSpawnOrientationSet, value);
-	    }
 
         public JBBox BoundingBox => boundingBox;
 	    public CollisionIsland CollisionIsland => island;
@@ -244,7 +232,7 @@ namespace Jitter.Dynamics
                 }
                 else
                 {
-                    oldPosition = value;
+                    oldPosition = position;
                 }
 
                 position = value;
@@ -405,7 +393,19 @@ namespace Jitter.Dynamics
 	        }
 	    }
 
-	    public bool IsStatic => (int)bodyType >= (int)RigidBodyTypes.PseudoStatic;
+        public bool IsSpawnPositionSet
+        {
+            get => (flags & RigidBodyFlags.IsSpawnPositionSet) > 0;
+            private set => ModifyFlag(RigidBodyFlags.IsSpawnPositionSet, value);
+        }
+
+        public bool IsSpawnOrientationSet
+        {
+            get => (flags & RigidBodyFlags.IsSpawnOrientationSet) > 0;
+            private set => ModifyFlag(RigidBodyFlags.IsSpawnOrientationSet, value);
+        }
+
+        public bool IsStatic => (int)bodyType >= (int)RigidBodyTypes.PseudoStatic;
 	    public bool IsStaticOrInactive => IsStatic || !IsActive;
 
         // TODO: If kept, this should be a flag as well.
@@ -414,7 +414,7 @@ namespace Jitter.Dynamics
         // TODO: Allow body type to be changed after creation (if necessary).
         public RigidBodyTypes BodyType => bodyType;
 
-	    // The code below was previously in the IsStatic setter.
+	    // The code below was previously in the IsStatic setter. Might need it later.
         /*
         if (value && bodyType != RigidBodyTypes.Static)
         {
@@ -611,7 +611,6 @@ namespace Jitter.Dynamics
             Update();
         }
 
-        // TODO: Compute fake angular velocity as well (and rename this to something like SetTransformWithFakeVelocities).
 	    public void SetTransform(JVector position, JMatrix orientation, float step)
 	    {
             Debug.Assert(bodyType == RigidBodyTypes.PseudoStatic || IsOnPlatform, "This function should only be " +
@@ -620,8 +619,15 @@ namespace Jitter.Dynamics
 	        SetTransform(position, orientation);
 
 	        linearVelocity = JVector.Multiply(position - oldPosition, 1 / step);
-            //angularVelocity = JQuaternion.CreateFromMatrix(orientation - oldOrientation).
-	    }
+
+            // TODO: Consider optimizing this (maybe this? https://stackoverflow.com/a/22172503).
+            // See https://stackoverflow.com/a/22167097.
+            var q1 = JQuaternion.CreateFromMatrix(orientation);
+            var q2 = JQuaternion.CreateFromMatrix(oldOrientation);
+            var diff = q2 * JQuaternion.Conjugate(q1);
+
+            angularVelocity = diff.ComputeEulerAngles() * (1 / step);
+        }
 
         public void SweptExpandBoundingBox(float timestep)
         {

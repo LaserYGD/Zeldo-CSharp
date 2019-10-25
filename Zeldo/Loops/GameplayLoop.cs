@@ -161,15 +161,17 @@ namespace Zeldo.Loops
 
 		private void CreateDebugCubes()
 		{
+			/*
 			var cube = new DummyCube(RigidBodyTypes.Dynamic, false);
 			cube.Position = new vec3(0, 4.2f, 10);
 
 			scene.Add(cube);
+			*/
 
 			/*
 			var random = new Random();
 
-			for (int i = 0; i < 1; i++)
+			for (int i = 0; i < 20; i++)
 			{
 				float x = (float)random.NextDouble() * 10 - 5 + 10;
 				float y = (float)random.NextDouble() * 5 + 5;

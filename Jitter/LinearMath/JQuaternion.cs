@@ -340,5 +340,26 @@ namespace Jitter.LinearMath
         }
         #endregion
 
+        public JVector ComputeEulerAngles()
+        {
+            // See https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_Angles_Conversion.
+            const float HalfPi = 1.57079632679f;
+
+            // Compute X.
+            float s1 = (W * X + Y * Z) * 2;
+            float c1 = 1 - (X * X + Y * Y) * 2;
+            float x = (float)Math.Atan2(s1, c1);
+
+            // Compute Y.
+            float s2 = (W * Y - Z * X) * 2;
+            float y = Math.Abs(s2) >= 1 ? HalfPi * Math.Sign(s2) : -(float)Math.Asin(s2);
+
+            // Compute Z.
+            float s3 = (W * Z + X * Y) * 2;
+            float c3 = 1 - (Y * Y + Z * Z) * 2;
+            float z = (float)Math.Atan2(s3, c3);
+
+            return new JVector(x, y, z);
+        }
     }
 }

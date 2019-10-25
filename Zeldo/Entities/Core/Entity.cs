@@ -17,10 +17,16 @@ using Newtonsoft.Json.Linq;
 
 namespace Zeldo.Entities.Core
 {
+	// TODO: Consider adding a flag to disable updates (for things like non-moving ladders).
 	public abstract class Entity : ITransformable3D, IDynamic, IDisposable
 	{
 		private quat orientation;
 		private List<EntityAttachment> attachments;
+
+		// Using these variables helps ensure that static (and pseudo-static) physics bodies don't have their
+		// transforms set twice.
+		private bool isSpawnPositionSet;
+		private bool isSpawnOrientationSet;
 
 		protected vec3 position;
 		protected RigidBody controllingBody;
@@ -50,10 +56,16 @@ namespace Zeldo.Entities.Core
 			get => position;
 			set
 			{
+				Debug.Assert(!(controllingBody != null && controllingBody.BodyType == RigidBodyTypes.Static &&
+					isSpawnPositionSet), "For static entities (i.e. entities with a static controlling body), " +
+					"position can only be set on spawn.");
+
 				position = value;
 				attachments.ForEach(a => a.Target.Position = value + a.Position);
+				isSpawnPositionSet = true;
 
-			    if (controllingBody != null && !selfUpdate)
+				// Pseudo-static bodies (like moving platforms) shouldn't have position set directly.
+			    if (controllingBody != null && controllingBody.BodyType != RigidBodyTypes.PseudoStatic && !selfUpdate)
 			    {
 					controllingBody.Position = value.ToJVector();
 			    }
@@ -65,10 +77,16 @@ namespace Zeldo.Entities.Core
 			get => orientation;
 			set
 			{
+				Debug.Assert(!(controllingBody != null && controllingBody.BodyType == RigidBodyTypes.Static && 
+					isSpawnOrientationSet), "For static entities (i.e. entities with a static controlling body), " +
+					"orientation can only be set on spawn.");
+
 				orientation = value;
 				attachments.ForEach(a => a.Target.Orientation = value * a.Orientation);
+				isSpawnOrientationSet = true;
 
-			    if (controllingBody != null && !selfUpdate)
+				// Pseudo-static bodies (like moving platforms) shouldn't have position set directly.
+				if (controllingBody != null && controllingBody.BodyType != RigidBodyTypes.PseudoStatic && !selfUpdate)
 			    {
 				    controllingBody.Orientation = value.ToJMatrix();
 			    }
@@ -156,6 +174,8 @@ namespace Zeldo.Entities.Core
 		{
 			Debug.Assert(shape != null, "Can't create a body with a null shape.");
 			Debug.Assert(!isControlling || controllingBody == null, "Controlling body is already set.");
+			Debug.Assert(isControlling || bodyType != RigidBodyTypes.Static, "Can't create a non-controlling " +
+				"static body.");
 
 			RigidBody body = new RigidBody(shape, bodyType, flags);
 			body.Tag = this;
@@ -166,8 +186,16 @@ namespace Zeldo.Entities.Core
 
 		    if (isControlling)
 		    {
-			    body.Position = this.position.ToJVector();
-			    body.Orientation = this.orientation.ToJMatrix();
+				if (isSpawnPositionSet)
+				{
+					body.Position = this.position.ToJVector();
+				}
+
+				if (isSpawnOrientationSet)
+				{
+					body.Orientation = this.orientation.ToJMatrix();
+				}
+
 			    controllingBody = body;
 		    }
 		    else
@@ -246,7 +274,8 @@ namespace Zeldo.Entities.Core
 		{
 			Components.Update(dt);
 
-		    if (controllingBody != null)
+			// Static bodies can't move, so there'd be no point updating transform.
+		    if (controllingBody != null && controllingBody.BodyType != RigidBodyTypes.Static)
 		    {
 		        selfUpdate = true;
 		        Position = controllingBody.Position.ToVec3();

@@ -151,7 +151,7 @@ namespace Jitter.Collision
         /// <summary>
         /// Initializes a new instance of the CollisionSystem.
         /// </summary>
-        public CollisionSystem()
+        protected CollisionSystem()
         {
         }
 

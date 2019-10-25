@@ -210,7 +210,6 @@ namespace Jitter.LinearMath
         /// <param name="m31">m31</param>
         /// <param name="m32">m32</param>
         /// <param name="m33">m33</param>
-        #region public JMatrix(float m11, float m12, float m13, float m21, float m22, float m23,float m31, float m32, float m33)
         public JMatrix(float m11, float m12, float m13, float m21, float m22, float m23,float m31, float m32, float m33)
         {
             this.M11 = m11;
@@ -223,18 +222,15 @@ namespace Jitter.LinearMath
             this.M32 = m32;
             this.M33 = m33;
         }
-        #endregion
 
         /// <summary>
         /// Gets the determinant of the matrix.
         /// </summary>
         /// <returns>The determinant of the matrix.</returns>
-        #region public float Determinant()
         //public float Determinant()
         //{
         //    return M11 * M22 * M33 -M11 * M23 * M32 -M12 * M21 * M33 +M12 * M23 * M31 + M13 * M21 * M32 - M13 * M22 * M31;
         //}
-        #endregion
 
         /// <summary>
         /// Multiply two matrices. Notice: matrix multiplication is not commutative.
@@ -242,7 +238,6 @@ namespace Jitter.LinearMath
         /// <param name="matrix1">The first matrix.</param>
         /// <param name="matrix2">The second matrix.</param>
         /// <returns>The product of both matrices.</returns>
-        #region public static JMatrix Multiply(JMatrix matrix1, JMatrix matrix2)
         public static JMatrix Multiply(JMatrix matrix1, JMatrix matrix2)
         {
             JMatrix result;
@@ -278,7 +273,6 @@ namespace Jitter.LinearMath
             result.M32 = num7;
             result.M33 = num8;
         }
-        #endregion
 
         /// <summary>
         /// Matrices are added.
@@ -286,7 +280,6 @@ namespace Jitter.LinearMath
         /// <param name="matrix1">The first matrix.</param>
         /// <param name="matrix2">The second matrix.</param>
         /// <returns>The sum of both matrices.</returns>
-        #region public static JMatrix Add(JMatrix matrix1, JMatrix matrix2)
         public static JMatrix Add(JMatrix matrix1, JMatrix matrix2)
         {
             JMatrix result;
@@ -312,14 +305,12 @@ namespace Jitter.LinearMath
             result.M32 = matrix1.M32 + matrix2.M32;
             result.M33 = matrix1.M33 + matrix2.M33;
         }
-        #endregion
 
         /// <summary>
         /// Calculates the inverse of a give matrix.
         /// </summary>
         /// <param name="matrix">The matrix to invert.</param>
         /// <returns>The inverted JMatrix.</returns>
-        #region public static JMatrix Inverse(JMatrix matrix)
         public static JMatrix Inverse(JMatrix matrix)
         {
             JMatrix result;
@@ -397,7 +388,6 @@ namespace Jitter.LinearMath
             result.M32 = num32 / det;
             result.M33 = num33 / det;
         }
-        #endregion
 
         /// <summary>
         /// Multiply a matrix by a scalefactor.
@@ -405,7 +395,6 @@ namespace Jitter.LinearMath
         /// <param name="matrix1">The matrix.</param>
         /// <param name="scaleFactor">The scale factor.</param>
         /// <returns>A JMatrix multiplied by the scale factor.</returns>
-        #region public static JMatrix Multiply(JMatrix matrix1, float scaleFactor)
         public static JMatrix Multiply(JMatrix matrix1, float scaleFactor)
         {
             JMatrix result;
@@ -432,15 +421,12 @@ namespace Jitter.LinearMath
             result.M32 = matrix1.M32 * num;
             result.M33 = matrix1.M33 * num;
         }
-        #endregion
 
         /// <summary>
         /// Creates a JMatrix representing an orientation from a quaternion.
         /// </summary>
         /// <param name="quaternion">The quaternion the matrix should be created from.</param>
         /// <returns>JMatrix representing an orientation.</returns>
-        #region public static JMatrix CreateFromQuaternion(JQuaternion quaternion)
-
         public static JMatrix CreateFromQuaternion(JQuaternion quaternion)
         {
             JMatrix result;
@@ -474,14 +460,12 @@ namespace Jitter.LinearMath
             result.M32 = 2f * (num2 - num);
             result.M33 = 1f - (2f * (num8 + num9));
         }
-        #endregion
 
         /// <summary>
         /// Creates the transposed matrix.
         /// </summary>
         /// <param name="matrix">The matrix which should be transposed.</param>
         /// <returns>The transposed JMatrix.</returns>
-        #region public static JMatrix Transpose(JMatrix matrix)
         public static JMatrix Transpose(JMatrix matrix)
         {
             JMatrix result;
@@ -506,7 +490,6 @@ namespace Jitter.LinearMath
             result.M32 = matrix.M23;
             result.M33 = matrix.M33;
         }
-        #endregion
 
         /// <summary>
         /// Multiplies two matrices.
@@ -514,13 +497,11 @@ namespace Jitter.LinearMath
         /// <param name="value1">The first matrix.</param>
         /// <param name="value2">The second matrix.</param>
         /// <returns>The product of both values.</returns>
-        #region public static JMatrix operator *(JMatrix value1,JMatrix value2)
         public static JMatrix operator *(JMatrix value1,JMatrix value2)
         {
             JMatrix result; JMatrix.Multiply(ref value1, ref value2, out result);
             return result;
         }
-        #endregion
 
         public float Trace()
         {
@@ -533,13 +514,11 @@ namespace Jitter.LinearMath
         /// <param name="value1">The first matrix.</param>
         /// <param name="value2">The second matrix.</param>
         /// <returns>The sum of both values.</returns>
-        #region public static JMatrix operator +(JMatrix value1, JMatrix value2)
         public static JMatrix operator +(JMatrix value1, JMatrix value2)
         {
             JMatrix result; JMatrix.Add(ref value1, ref value2, out result);
             return result;
         }
-        #endregion
 
         /// <summary>
         /// Subtracts two matrices.
@@ -547,14 +526,12 @@ namespace Jitter.LinearMath
         /// <param name="value1">The first matrix.</param>
         /// <param name="value2">The second matrix.</param>
         /// <returns>The difference of both values.</returns>
-        #region public static JMatrix operator -(JMatrix value1, JMatrix value2)
         public static JMatrix operator -(JMatrix value1, JMatrix value2)
         {
             JMatrix result; JMatrix.Multiply(ref value2, -1.0f, out value2);
             JMatrix.Add(ref value1, ref value2, out result);
             return result;
         }
-        #endregion
 
         /// <summary>
         /// Creates a matrix which rotates around the given axis by the given angle.
@@ -562,7 +539,6 @@ namespace Jitter.LinearMath
         /// <param name="axis">The axis.</param>
         /// <param name="angle">The angle.</param>
         /// <param name="result">The resulting rotation matrix</param>
-        #region public static void CreateFromAxisAngle(ref JVector axis, float angle, out JMatrix result)
         public static void CreateFromAxisAngle(ref JVector axis, float angle, out JMatrix result)
         {
             float x = axis.X;
@@ -595,10 +571,9 @@ namespace Jitter.LinearMath
         /// <returns>The resulting rotation matrix</returns>
         public static JMatrix CreateFromAxisAngle(JVector axis, float angle)
         {
-            JMatrix result; CreateFromAxisAngle(ref axis, angle, out result);
+            CreateFromAxisAngle(ref axis, angle, out var result);
+
             return result;
         }
-
-        #endregion
     }
 }
