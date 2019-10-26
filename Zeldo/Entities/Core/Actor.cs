@@ -119,6 +119,11 @@ namespace Zeldo.Entities.Core
 			activeController?.PreStep(step);
 		}
 
+		protected virtual void MidStep(float step)
+		{
+			activeController?.MidStep(step);
+		}
+
 		protected virtual void PostStep(float step)
 		{
 			if (groundController != null && Ground == null && CastGround(out var results))

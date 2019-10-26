@@ -626,6 +626,12 @@ namespace Jitter
             sw.Stop();
             debugTimes[(int)DebugType.CollisionDetect] = sw.Elapsed.TotalMilliseconds;
 
+            // Mid-step (allows entities to manually process contacts as needed).
+            foreach (RigidBody body in rigidBodies)
+            {
+                body.MidStep?.Invoke(timestep);
+            }
+
             // Add arbiters (that were detected).
             sw.Reset();
             sw.Start();

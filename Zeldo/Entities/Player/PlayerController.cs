@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Engine;
 using Engine.Input;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
-using Engine.Physics;
 using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
-using Jitter.Collision.Shapes;
 using Zeldo.Control;
-using Zeldo.Physics;
 using Zeldo.Settings;
 using Zeldo.View;
 

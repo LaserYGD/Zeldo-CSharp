@@ -305,11 +305,6 @@ namespace Zeldo.Entities.Player
 			{
 				state &= ~PlayerStates.Jumping;
 			}
-
-			if ((state & PlayerStates.Airborne) > 0 && ProcessAerialWallContacts())
-			{
-				OnWallControlGained();
-			}
 		}
 
 		private bool DecelerateJump(float step)
@@ -336,6 +331,14 @@ namespace Zeldo.Entities.Player
 
 		private void PressAgainstWall()
 		{
+		}
+
+		protected override void MidStep(float step)
+		{
+			if ((state & PlayerStates.Airborne) > 0 && ProcessAerialWallContacts())
+			{
+				OnWallControlGained();
+			}
 		}
 
 		// This function is only called if the player isn't currently on a wall.
@@ -447,6 +450,7 @@ namespace Zeldo.Entities.Player
 			state |= PlayerStates.Jumping | PlayerStates.Airborne;
 		}
 
+		// TODO: Consider adding a Mario-style higher jump after two in a row.
 		private void SingleJump()
 		{
 			var v = controllingBody.LinearVelocity;
@@ -467,6 +471,14 @@ namespace Zeldo.Entities.Player
 						// The player can maintain momentum when jumping off moving platforms.
 						aerialController.IgnoreDeceleration = true;
 						controllingBody.IsManuallyControlled = false;
+
+						// TODO: Should the boost be linearly based on upward speed instead.
+						// The player receives a more powerful jump off upward-moving platforms, but only if the
+						// platform is moving fast enough.
+						if (platform.LinearVelocity.Y >= playerData.PlatformJumpThreshold)
+						{
+							v.Y = playerData.PlatformJumpSpeed;
+						}
 					}
 
 					Ground = null;

@@ -15,6 +15,10 @@ namespace Zeldo.Control
 		{
 		}
 
+		public virtual void MidStep(float step)
+		{
+		}
+
 		public virtual void PostStep(float step)
 		{
 		}

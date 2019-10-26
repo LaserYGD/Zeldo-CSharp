@@ -14,6 +14,10 @@ namespace Zeldo.Entities.Player
 			DoubleJumpLimit = Properties.GetFloat("player.double.jump.limit");
 			CoyoteJumpTime = Properties.GetFloat("player.coyote.time");
 
+			// Platforms
+			PlatformJumpSpeed = Properties.GetFloat("player.platform.jump.speed");
+			PlatformJumpThreshold = Properties.GetFloat("player.platform.jump.threshold");
+
 			// Ascend
 			AscendAcceleration = Properties.GetFloat("player.ascend.acceleration");
 			AscendTargetSpeed = Properties.GetFloat("player.ascend.target.speed");
@@ -41,6 +45,10 @@ namespace Zeldo.Entities.Player
 		// double jumps.
 		public float DoubleJumpLimit { get; }
 		public float CoyoteJumpTime { get; }
+
+		// Platforms)
+		public float PlatformJumpSpeed { get; }
+		public float PlatformJumpThreshold { get; }
 
 		// Ascend
 		public float AscendAcceleration { get; }
