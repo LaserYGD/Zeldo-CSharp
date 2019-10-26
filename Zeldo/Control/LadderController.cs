@@ -59,12 +59,6 @@ namespace Zeldo.Control
 			Parent.ManualVelocity = v;
 			Parent.ManualPosition += (Parent.ManualVelocity * step).ToJVector();
 
-			var mV = Parent.ManualVelocity;
-			var mP = Parent.ManualPosition;
-			var list = Parent.Scene.Canvas.GetElement<DebugView>().GetGroup("Ladder");
-			list.Add($"Position: {mP.X:F3} {mP.Y:F3} {mP.Z:F3}");
-			list.Add($"Velocity: {mV.x:F3} {mV.y:F3} {mV.z:F3}");
-
 			var p = ladderBody.Position + JVector.Transform(Parent.ManualPosition, ladderBody.Orientation);
 			var body = Parent.ControllingBody;
 			body.SetTransform(p, body.Orientation, step);

@@ -154,9 +154,10 @@ namespace Zeldo.Entities.Player
 			ladderController.ClimbMaxSpeed = ladderMaxSpeed;
 			ladderController.ClimbDistance = ladderSeparation + capsuleRadius;
 
-			var controllers = new AbstractController[5];
+			var controllers = new AbstractController[6];
 			controllers[ControllerIndexes.Air] = aerialController;
 			controllers[ControllerIndexes.Ground] = groundController;
+			controllers[ControllerIndexes.Platform] = platformController;
 			controllers[ControllerIndexes.Wall] = wallController;
 			controllers[ControllerIndexes.Ladder] = ladderController;
 			controllers[ControllerIndexes.Swim] = null; //swimController;
@@ -456,6 +457,7 @@ namespace Zeldo.Entities.Player
 		private void Respawn()
 		{
 			controllingBody.Position = new JVector(3, 4, 0);
+			controllingBody.LinearVelocity = JVector.Zero;
 		}
 
 		// TODO: Re-enable sliding later (if sliding is actually kept in the game).
@@ -513,6 +515,9 @@ namespace Zeldo.Entities.Player
 						// The player can maintain momentum when jumping off moving platforms.
 						aerialController.IgnoreDeceleration = true;
 						controllingBody.IsManuallyControlled = false;
+
+						// TODO: Nullify yaw speed as well.
+						ManualVelocity = vec3.Zero;
 
 						// TODO: Should the boost be linearly based on upward speed instead.
 						// The player receives a more powerful jump off upward-moving platforms, but only if the
@@ -821,9 +826,10 @@ namespace Zeldo.Entities.Player
 		{
 			public const int Air = 0;
 			public const int Ground = 1;
-			public const int Wall = 2;
-			public const int Ladder = 3;
-			public const int Swim = 4;
+			public const int Platform = 2;
+			public const int Wall = 3;
+			public const int Ladder = 4;
+			public const int Swim = 5;
 		}
 	}
 }

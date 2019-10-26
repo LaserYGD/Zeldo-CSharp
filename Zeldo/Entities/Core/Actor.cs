@@ -231,12 +231,15 @@ namespace Zeldo.Entities.Core
 		// raycasting during the physics step.
 		protected virtual void OnLanding(vec3 p, RigidBody platform, SurfaceTriangle surface)
 		{
+			// TODO: Apply speed properly when landing on slopes (rather than setting Y to zero). Applies to both platforms and the ground.
+			var v = controllingBody.LinearVelocity;
+			v.Y = 0;
+			controllingBody.LinearVelocity = v;
+
 			// Platform and surface are mutually-exclusive here.
 			if (platform != null)
 			{
-				// TODO: Landing on platforms with upward velocity seems to cause clipping. Should fix (likely applies to tilting platforms too).
-				// TODO: Transfer velocity.
-				controllingBody.LinearVelocity = JVector.Zero;
+				// TODO: Transfer velocity better on platforms (so the player doesn't appear to instantly stop or speed up).
 				controllingBody.Position = p.ToJVector() + new JVector(0, FullHeight / 2, 0);
 				controllingBody.IsAffectedByGravity = false;
 				controllingBody.IsManuallyControlled = true;
@@ -253,10 +256,6 @@ namespace Zeldo.Entities.Core
 			Ground = surface;
 			Ground.Project(p, out vec3 result);
 
-			// TODO: Apply speed properly when landing on slopes (rather than setting Y to zero).
-			var v = controllingBody.LinearVelocity;
-			v.Y = 0;
-			controllingBody.LinearVelocity = v;
 			controllingBody.Position = result.ToJVector() + new JVector(0, FullHeight / 2, 0);
 			controllingBody.IsAffectedByGravity = false;
 
@@ -284,7 +283,11 @@ namespace Zeldo.Entities.Core
 		{
 			Ground = null;
 			controllingBody.IsAffectedByGravity = true;
+			controllingBody.IsManuallyControlled = false;
 			activeController = aerialController;
+
+			// TODO: Nullify yaw speed as well.
+			ManualVelocity = vec3.Zero;
 
 			if (platformController != null)
 			{

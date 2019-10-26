@@ -26,6 +26,7 @@ namespace Zeldo.Entities.Player
 
 		private GroundController groundController;
 		private AerialController aerialController;
+		private PlatformController platformController;
 		private LadderController ladderController;
 		private WallController wallController;
 
@@ -54,6 +55,7 @@ namespace Zeldo.Entities.Player
 
 			aerialController = (AerialController)controllers[PlayerCharacter.ControllerIndexes.Air];
 			groundController = (GroundController)controllers[PlayerCharacter.ControllerIndexes.Ground];
+			platformController = (PlatformController)controllers[PlayerCharacter.ControllerIndexes.Platform];
 			wallController = (WallController)controllers[PlayerCharacter.ControllerIndexes.Wall];
 			ladderController = (LadderController)controllers[PlayerCharacter.ControllerIndexes.Ladder];
 
@@ -105,6 +107,7 @@ namespace Zeldo.Entities.Player
 			// state mid-step, movement still continues correctly).
 			aerialController.FlatDirection = flatDirection;
 			groundController.FlatDirection = flatDirection;
+			platformController.FlatDirection = flatDirection;
 			wallController.FlatDirection = flatDirection;
 
 			ProcessLadder(data);
