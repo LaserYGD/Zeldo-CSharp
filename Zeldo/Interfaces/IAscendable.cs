@@ -4,10 +4,8 @@ namespace Zeldo.Interfaces
 {
 	public interface IAscendable
 	{
-		// All ascension targets are assumed to be primarily vertical (such as ladders or lightly-swinging ropes).
-		vec2 AscensionAxis { get; }
-
-		float AscensionTop { get; }
-		float AscensionBottom { get; }
+		// This allows ascension targets to better control player movement (rather than enforcing strictly vertical
+		// movement).
+		vec3 ComputeAscension(float t);
 	}
 }

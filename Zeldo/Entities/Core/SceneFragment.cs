@@ -70,6 +70,7 @@ namespace Zeldo.Entities.Core
 				var jType = block["Type"];
 				var jPosition = block["Position"];
 
+				// TODO: Consider adding orientation as well.
 				Debug.Assert(jType != null, "Missing entity type.");
 				Debug.Assert(jPosition != null, "Missing entity position.");
 
@@ -81,8 +82,11 @@ namespace Zeldo.Entities.Core
 				Debug.Assert(t != null, $"Missing entity type Zeldo.Entities.{type}.");
 
 				Entity entity = (Entity)Activator.CreateInstance(t);
-				entity.Initialize(scene, block);
+
+				// Position is intentionally set before initialization so that entities can reuse that position as a
+				// custom origin if needed.
 				entity.Position = origin + Utilities.ParseVec3(position);
+				entity.Initialize(scene, block);
 				entities[i] = entity;
 			}
 

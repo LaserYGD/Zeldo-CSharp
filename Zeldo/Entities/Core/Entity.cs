@@ -62,13 +62,15 @@ namespace Zeldo.Entities.Core
 
 				position = value;
 				attachments.ForEach(a => a.Target.Position = value + a.Position);
-				isSpawnPositionSet = true;
 
-				// Pseudo-static bodies (like moving platforms) shouldn't have position set directly.
-			    if (controllingBody != null && controllingBody.BodyType != RigidBodyTypes.PseudoStatic && !selfUpdate)
+				// Pseudo-static bodies can only have their position set on spawn.
+			    if (controllingBody != null && !selfUpdate &&
+					(controllingBody.BodyType != RigidBodyTypes.PseudoStatic || !isSpawnPositionSet))
 			    {
 					controllingBody.Position = value.ToJVector();
 			    }
+
+				isSpawnPositionSet = true;
 			}
 		}
 
@@ -83,19 +85,17 @@ namespace Zeldo.Entities.Core
 
 				orientation = value;
 				attachments.ForEach(a => a.Target.Orientation = value * a.Orientation);
-				isSpawnOrientationSet = true;
 
 				// Pseudo-static bodies (like moving platforms) shouldn't have position set directly.
-				if (controllingBody != null && controllingBody.BodyType != RigidBodyTypes.PseudoStatic && !selfUpdate)
+				if (controllingBody != null && !selfUpdate &&
+					(controllingBody.BodyType != RigidBodyTypes.PseudoStatic || !isSpawnOrientationSet))
 			    {
 				    controllingBody.Orientation = value.ToJMatrix();
 			    }
+
+				isSpawnOrientationSet = true;
 			}
 		}
-
-		// "Persistent" means that when the entity would normally be unloaded (via unloading its fragment), the entity
-		// instead remains loaded. This allows the entity to continue updating even when not visible and far away.
-		public bool IsPersistent { get; protected set; }
 
 		public virtual void Dispose()
 		{

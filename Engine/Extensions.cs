@@ -1,5 +1,6 @@
 ﻿using System;
 using GlmSharp;
+using Newtonsoft.Json.Linq;
 
 namespace Engine
 {
@@ -48,6 +49,22 @@ namespace Engine
 			int index = s.LastIndexOf('.');
 
 			return s.Substring(0, index);
+		}
+
+		public static bool TryGetValue<T>(this JToken token, string key, out T result)
+		{
+			var data = token[key];
+
+			if (data != null)
+			{
+				result = data.Value<T>();
+
+				return true;
+			}
+
+			result = default;
+
+			return false;
 		}
 	}
 }

@@ -154,10 +154,10 @@ namespace Engine.Utility
 			return vec3.Dot(v1, v2);
 		}
 
-		public static Proximities ComputeProximity(vec3 origin, vec3 p, float facing, float sideSlice)
+		public static Proximities ComputeProximity(vec3 origin, vec3 p, float flatRotation, float sideSlice)
 		{
 			float angle = Angle(origin.swizzle.xz, p.swizzle.xz);
-			float delta = Math.Abs(facing - angle);
+			float delta = Math.Abs(flatRotation - angle);
 
 			if (delta > Constants.Pi)
 			{

@@ -13,8 +13,11 @@
 		},
 		{
 			"Type": "Ladder",
-			"Height": 15,
-			"Position": "10|8.5|-2"
+			"Top": 16,
+			"Bottom": 1,
+			"Position": "8.5|1|-2",
+			"Rotation": 3.14159,
+			"Tilt": 0.1
 		}
 	],
 

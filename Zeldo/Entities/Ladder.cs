@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Engine;
 using Engine.Core;
 using Engine.Utility;
@@ -14,60 +15,72 @@ using Zeldo.UI;
 namespace Zeldo.Entities
 {
 	// TODO: Should the ladder be grabbable? (if so, should extend IGrabbable)
-	public class Ladder : Entity, IInteractive, IAscendable
+	public class Ladder : Entity, IAscendable
 	{
 		private static readonly float SideSlice = Properties.GetFloat("ladder.side.slice");
 
 		// Ladders can be climbed from any angle, but the player whips around to the front when grabbing from the side
 		// or back.
-		private float facing;
+		private float flatRotation;
 
 		public Ladder() : base(EntityGroups.Object)
 		{
 		}
 
-		public bool IsInteractionEnabled => true;
-		public bool RequiresFacing => true;
+		// This is used by the ladder controller.
+		public float Length { get; private set; }
 
-		// TODO: Fill in these ascension values.
-		public float AscensionTop { get; }
-		public float AscensionBottom { get; }
-		public float Height { get; private set; }
-
-		// While climbing a ladder, actor position is set based on direction and a progress value.
-		public vec2 FacingDirection { get; private set; }
-		public vec2 AscensionAxis => position.swizzle.xz;
-
+		// TODO: 
 		public override void Initialize(Scene scene, JToken data)
 		{
-			// TODO: Load ladders from a file.
-			//float rotation = data["Rotation"].Value<float>();
-			//int segments = data["Segments"].Value<int>();
+			flatRotation = data["Rotation"].Value<float>();
 
-			facing = Constants.Pi;
-			FacingDirection = Utilities.Direction(facing);
+			// Ladders can optionally be tilted slightly forward.
+			var orientation = quat.FromAxisAngle(flatRotation, vec3.UnitY);
 
-			// TODO: Compute dimensions based on mesh bounds and number of segments.
-			CreateBody(scene, new BoxShape(0.1f, 15, 1), RigidBodyTypes.Static);
+			if (data.TryGetValue("Tilt", out float tilt))
+			{
+				orientation *= quat.FromAxisAngle(tilt, vec3.UnitZ);
+			}
+
+			Orientation = orientation;
+
+			var top = data["Top"].Value<float>();
+			var bottom = data["Bottom"].Value<float>();
+			var delta = top - bottom;
+
+			Debug.Assert(top > bottom, "Ladder top must be greater than bottom.");
+
+			// If tilt is specified, length is automatically computed to match the given top and bottom.
+			Length = tilt != 0
+				? delta / (float)Math.Cos(tilt)
+				: delta;
+
+			// Ladder position corresponds to its bottom-center point.
+			position += orientation * vec3.UnitY * Length / 2;
+
+			// TODO: Set dimensions based on mesh bounds.
+			CreateBody(scene, new BoxShape(0.1f, Length, 1), RigidBodyTypes.PseudoStatic);
 
 			base.Initialize(scene, data);
 		}
 
+		// TODO: Generalize to touching the ladder from the ground as well.
 		// By the time this function is called, the player is guaranteed already 1) touching the ladder while airborne,
 		// and 2) facing the ladder. This function verifies that the player is also in front
 		public Proximities ComputeProximity(vec3 p)
 		{
-			return Utilities.ComputeProximity(position, p, facing, SideSlice);
+			return Utilities.ComputeProximity(position, p, flatRotation, SideSlice);
 		}
 
-		public void OnInteract(Entity entity)
+		public vec3 ComputeAscension(float t)
 		{
-			((PlayerCharacter)entity).Mount(this);
+			return vec3.Zero;
 		}
 
 		public override void Update(float dt)
 		{
-			var d = Utilities.Direction(facing);
+			var d = Utilities.Direction(flatRotation);
 
 			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(d.x, 0, d.y), Color.Cyan);
 

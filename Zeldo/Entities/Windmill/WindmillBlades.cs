@@ -13,7 +13,6 @@ namespace Zeldo.Entities.Windmill
 		public WindmillBlades() : base(EntityGroups.Object)
 		{
 			axis = -vec3.UnitZ;
-			IsPersistent = true;
 		}
 
 		public override void Initialize(Scene scene, JToken data)

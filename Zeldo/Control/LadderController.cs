@@ -60,10 +60,12 @@ namespace Zeldo.Control
 
 			body.LinearVelocity = v;
 
+			/*
 			var f = Ladder.FacingDirection;
 
 			progress += v.Y * step;
 			Parent.Position = Ladder.Position + new vec3(0, progress, 0) + new vec3(f.x, 0, f.y) * ClimbDistance;
+			*/
 		}
 	}
 }
