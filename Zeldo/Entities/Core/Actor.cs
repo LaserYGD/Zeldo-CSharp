@@ -167,6 +167,7 @@ namespace Zeldo.Entities.Core
 
 		public override bool OnContact(Entity entity, vec3 p, vec3 normal, float penetration)
 		{
+			// TODO: Consider adding a brief timer to avoid instant re-collisions on fast sloped platforms (could also be addressed through design and testing).
 			var body = entity.ControllingBody;
 
 			// TODO: Should actors be able to land on static bodies? (rather than only pseudo-static)
