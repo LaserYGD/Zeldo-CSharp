@@ -47,6 +47,7 @@ namespace Zeldo.Entities.Player
 
 		// Flags
 		private TimedFlag coyoteFlag;
+		private TimedFlag platformFlag;
 
 		//private IInteractive interactionTarget;
 		//private IAscendable ascensionTarget;
@@ -64,9 +65,15 @@ namespace Zeldo.Entities.Player
 			playerData = new PlayerData();
 			state = PlayerStates.Airborne;
 
+			var coyoteTime = Properties.GetFloat("player.coyote.time");
+			var platformTime = Properties.GetFloat("player.platform.ignore.time");
+
 			// Flags
-			coyoteFlag = Components.Add(new TimedFlag(playerData.CoyoteJumpTime, false));
+			coyoteFlag = Components.Add(new TimedFlag(coyoteTime));
 			coyoteFlag.OnExpiration = () => { jumpsRemaining--; };
+
+			platformFlag = Components.Add(new TimedFlag(platformTime));
+			platformFlag.OnExpiration = () => { platformFlag.Tag = null; };
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 			int upgradeCount = Utilities.EnumCount<PlayerUpgrades>();
@@ -179,6 +186,12 @@ namespace Zeldo.Entities.Player
 
 		protected override bool ShouldGenerateContact(RigidBody body, JVector[] triangle)
 		{
+			// While active, the platform flag tracks the most recent platform (after jumping).
+			if (platformFlag.Value && body == (RigidBody)platformFlag.Tag)
+			{
+				return false;
+			}
+
 			return base.ShouldGenerateContact(body, triangle);
 
 			/*
@@ -309,8 +322,11 @@ namespace Zeldo.Entities.Player
 
 		private bool DecelerateJump(float step)
 		{
+			// In pre-step (where this function is called), gravity hasn't been applied by the physics engine yet. As
+			// such, gravity needs to be manually added to the limit here such that, if the limit was reached during
+			// jump deceleration, the resulting final velocity will be accurate.
+			var limit = playerData.JumpLimit + PhysicsConstants.Gravity * step;
 			var v = controllingBody.LinearVelocity;
-			var limit = playerData.JumpLimit;
 
 			v.Y -= playerData.JumpDeceleration * step;
 
@@ -411,7 +427,24 @@ namespace Zeldo.Entities.Player
 
 			return false;
 		}
-		
+
+		protected override void PostStep(float step)
+		{
+			base.PostStep(step);
+
+			// This catches kill plane hits during a physics step.
+			if (controllingBody.Position.Y - FullHeight / 2 <= playerData.KillPlane)
+			{
+				Respawn();
+			}
+			// This catches Y velocity changes from gravity (which haven't been applied yet in pre-step).
+			else if ((state & PlayerStates.Jumping) > 0 && controllingBody.LinearVelocity.Y <= playerData.JumpLimit)
+			{
+				isJumpDecelerating = false;
+				state &= ~PlayerStates.Jumping;
+			}
+		}
+
 		private void Respawn()
 		{
 		}
@@ -479,6 +512,10 @@ namespace Zeldo.Entities.Player
 						{
 							v.Y = playerData.PlatformJumpSpeed;
 						}
+
+						// Without this flag, when on a fast-moving, sloped platform, it's possible for the player's
+						// jump to immediately hit the platform again (making it difficult to escape).
+						platformFlag.Refresh(platform);
 					}
 
 					Ground = null;

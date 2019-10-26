@@ -12,7 +12,6 @@ namespace Zeldo.Entities.Player
 			JumpDeceleration = Properties.GetFloat("player.jump.deceleration");
 			DoubleJumpSpeed = Properties.GetFloat("player.double.jump.speed");
 			DoubleJumpLimit = Properties.GetFloat("player.double.jump.limit");
-			CoyoteJumpTime = Properties.GetFloat("player.coyote.time");
 
 			// Platforms
 			PlatformJumpSpeed = Properties.GetFloat("player.platform.jump.speed");
@@ -44,7 +43,6 @@ namespace Zeldo.Entities.Player
 		// future-proof to keep them separate. Jump deceleration, in constrast, is assumed the same between single and
 		// double jumps.
 		public float DoubleJumpLimit { get; }
-		public float CoyoteJumpTime { get; }
 
 		// Platforms)
 		public float PlatformJumpSpeed { get; }

@@ -7,10 +7,12 @@ namespace Zeldo.Physics
 		static PhysicsConstants()
 		{
 			EdgeForgiveness = Properties.GetFloat("edge.forgiveness");
+			Gravity = Properties.GetFloat("gravity");
 			WallThreshold = Properties.GetFloat("wall.threshold");
 		}
 
 		public static float EdgeForgiveness { get; }
+		public static float Gravity { get; }
 		public static float WallThreshold { get; }
 	}
 }

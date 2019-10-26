@@ -19,9 +19,9 @@ using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Entities;
 using Zeldo.Entities.Core;
-using Zeldo.Entities.Grabbable;
 using Zeldo.Entities.Player;
 using Zeldo.Entities.Weapons;
+using Zeldo.Physics;
 using Zeldo.Settings;
 using Zeldo.UI;
 using Zeldo.View;
@@ -77,7 +77,7 @@ namespace Zeldo.Loops
 
 			// TODO: Should damping factors be left in their default states? (they were changed while adding kinematic bodies)
 			world = new World(system);
-			world.Gravity = new JVector(0, -Properties.GetInt("gravity"), 0);
+			world.Gravity = new JVector(0, -PhysicsConstants.Gravity, 0);
 			world.SetDampingFactors(1, 1);
 			world.Events.ContactCreated += OnContact;
 

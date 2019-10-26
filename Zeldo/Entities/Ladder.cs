@@ -30,7 +30,6 @@ namespace Zeldo.Entities
 		// This is used by the ladder controller.
 		public float Length { get; private set; }
 
-		// TODO: 
 		public override void Initialize(Scene scene, JToken data)
 		{
 			flatRotation = data["Rotation"].Value<float>();

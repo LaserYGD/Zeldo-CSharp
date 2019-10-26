@@ -62,7 +62,7 @@ namespace Engine
 				return true;
 			}
 
-			result = default;
+			result = default(T);
 
 			return false;
 		}

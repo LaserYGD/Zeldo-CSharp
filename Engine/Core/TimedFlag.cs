@@ -12,7 +12,7 @@ namespace Engine.Core
 		private bool defaultValue;
 		private bool isPaused;
 
-		public TimedFlag(float duration, bool defaultValue)
+		public TimedFlag(float duration, bool defaultValue = false)
 		{
 			Debug.Assert(duration > 0, "Timed flag duration must be positive.");
 
@@ -26,10 +26,15 @@ namespace Engine.Core
 		public bool IsComplete => false;
 		public bool Value => isPaused ? defaultValue : !defaultValue;
 
+		// For flags that require tracking data, it often makes sense to track that data within the flag itself.
+		public object Tag { get; set; }
+
 		public Action OnExpiration { private get; set; }
 
-		public void Refresh()
+		public void Refresh(object tag = null)
 		{
+			Tag = tag;
+
 			if (!isPaused)
 			{
 				elapsed = 0;
