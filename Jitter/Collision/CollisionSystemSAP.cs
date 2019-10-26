@@ -280,7 +280,6 @@ namespace Jitter.Collision
         }
 		#endregion
 
-
 		/// <summary>
 		/// Raycasts a single body. NOTE: For performance reasons terrain and trianglemeshshape aren't checked
 		/// against rays (rays are of infinite length). They are checked against segments
@@ -352,6 +351,5 @@ namespace Jitter.Collision
 
         }
         #endregion
-
     }
 }

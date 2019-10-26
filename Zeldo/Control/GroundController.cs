@@ -178,7 +178,7 @@ namespace Zeldo.Control
 		public override void PostStep(float step)
 		{
 			var body = Parent.ControllingBody;
-			var halfHeight = new vec3(0, Parent.Height / 2, 0);
+			var halfHeight = new vec3(0, Parent.FullHeight / 2, 0);
 			var p = body.Position.ToVec3() - halfHeight;
 			var ground = Parent.Ground;
 

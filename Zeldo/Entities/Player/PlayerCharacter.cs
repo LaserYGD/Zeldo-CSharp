@@ -57,7 +57,6 @@ namespace Zeldo.Entities.Player
 
 		// The game is designed for double jumping, but is coded to accommodate any number of extra jumps.
 		private int jumpsRemaining;
-		private float capsuleRadius;
 
 		public PlayerCharacter(ControlSettings settings) : base(EntityGroups.Player)
 		{
@@ -162,11 +161,11 @@ namespace Zeldo.Entities.Player
 		public override void Initialize(Scene scene, JToken data)
 		{
 			// This is the height of the cylinder (excluding the two rounded caps).
-			var capsuleHeight = Properties.GetFloat("player.capsule.height");
-
-			// Radius is also used for wall processing (which is why it's stored in the class).
+			capsuleHeight = Properties.GetFloat("player.capsule.height");
 			capsuleRadius = Properties.GetFloat("player.capsule.radius");
-			Height = capsuleHeight + capsuleRadius * 2;
+
+			// TODO: This shouldn't need to be manually computed per actor. Should probably use a function.
+			FullHeight = capsuleHeight + capsuleRadius * 2;
 
 			CreateModel(scene, "Capsule.obj");
 			CreateMasterBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius), true);
@@ -244,9 +243,8 @@ namespace Zeldo.Entities.Player
 		{
 			base.OnLanding(p, platform, surface);
 
-			// Ordinarily, it shouldn't be possible for the player to be in the Jumping state when landing (since, by
-			// definition, velocity must be downward). Could still happen for upward-moving platforms, though (if that
-			// platform is moving more quickly than the player's jumping speed).
+			// For upward-moving (or sloped) platforms, it's possible for the player to land while still in a jumping
+			// state.
 			state |= (platform != null ? PlayerStates.OnPlatform : PlayerStates.OnGround);
 			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping);
 

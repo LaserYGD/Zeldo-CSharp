@@ -121,10 +121,12 @@ namespace Zeldo.Loops
 			player.Unlock(PlayerSkills.Block);
 			player.Unlock(PlayerSkills.Parry);
 
-			var platform = new MovingPlatform(new vec3(3, 0.5f, 3), new vec3(0, 3, 0), new vec3(0, 3, 16), 4);
+			var platform1 = new MovingPlatform(new vec3(3, 0.5f, 3), new vec3(0, 3, 0), new vec3(0, 3, 16), 3);
+			var platform2 = new MovingPlatform(new vec3(3, 0.5f, 3), new vec3(5, 2, 12), new vec3(5, 12, 12), 2);
 
 			// TODO: Load fragments from a save slot.
-			scene.Add(platform);
+			scene.Add(platform1);
+			scene.Add(platform2);
 			scene.Add(player);
 
 			var fragment = scene.LoadFragment("Demo.json");

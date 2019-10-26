@@ -34,6 +34,11 @@ namespace Zeldo.Entities
 			this.p1 = p1;
 			this.p2 = p2;
 
+			if (p1.y == p2.y)
+			{
+				//this.p2 = p1;
+			}
+
 			timer = new RepeatingTimer(progress =>
 			{
 				direction = !direction;
@@ -57,7 +62,7 @@ namespace Zeldo.Entities
 
 		private void PreStep(float step)
 		{
-			const float MaxTilt = 1;
+			const float MaxTilt = 1.5f;
 
 			timer.Update(step);
 
@@ -74,11 +79,11 @@ namespace Zeldo.Entities
 			float tilt = Ease.Compute(t, EaseTypes.QuadraticInOut) * MaxTilt - MaxTilt / 2;
 
 			var p = vec3.Lerp(p1, p2, Ease.Compute(t, EaseTypes.Linear)).ToJVector();
-			var orientation = (
-				quat.FromAxisAngle(angle, vec3.UnitY) *
-				quat.FromAxisAngle(tilt, vec3.UnitX)).ToJMatrix();
+			var orientation = p1.y == p2.y
+				? quat.FromAxisAngle(angle, vec3.UnitY) * quat.FromAxisAngle(tilt, vec3.UnitX)
+				: quat.Identity;
 
-			controllingBody.SetTransform(p, orientation, step);
+			controllingBody.SetTransform(p, orientation.ToJMatrix(), step);
 
 			var v = controllingBody.LinearVelocity;
 			var angular = controllingBody.AngularVelocity;

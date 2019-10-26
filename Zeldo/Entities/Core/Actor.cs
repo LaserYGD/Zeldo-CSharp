@@ -14,6 +14,7 @@ using Zeldo.Physics;
 namespace Zeldo.Entities.Core
 {
 	// TODO: Do all actors need to process steps?
+	// TODO: Consider storing a half-height vector (since it's used frequently).
 	public abstract class Actor : LivingEntity
 	{
 		private float bodyYaw;
@@ -22,6 +23,10 @@ namespace Zeldo.Entities.Core
 		protected AerialController aerialController;
 		protected GroundController groundController;
 		protected PlatformController platformController;
+
+		// TODO: Are both of these needed?
+		protected float capsuleHeight;
+		protected float capsuleRadius;
 
 		// TODO: Set this appropriately for all entities.
 		protected vec2 facing;
@@ -45,7 +50,7 @@ namespace Zeldo.Entities.Core
 			facing = vec2.UnitX;
 		}
 
-		public float Height { get; set; }
+		public float FullHeight { get; set; }
 
 		// TODO: Is this the best approach?
 		// Actors can rotate around the Y axis, but that rotation is controlled manually. Storing yaw directly is more
@@ -147,7 +152,7 @@ namespace Zeldo.Entities.Core
 			var world = Scene.World;
 			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
 
-			vec3 halfVector = new vec3(0, Height / 2, 0);
+			vec3 halfVector = new vec3(0, FullHeight / 2, 0);
 			vec3 p1 = controllingBody.OldPosition.ToVec3() - halfVector;
 			vec3 p2 = controllingBody.Position.ToVec3() - halfVector;
 
@@ -162,37 +167,48 @@ namespace Zeldo.Entities.Core
 
 		public override bool OnContact(Entity entity, vec3 p, vec3 normal, float penetration)
 		{
-			// For the time being, it's assumed that all static entity collisions will effectively act as moving
-			// platforms.
 			var body = entity.ControllingBody;
 
-			// TODO: Should actors be able to land on
-			// TODO: Check relative velocity (in case the platform is moving up).
+			// TODO: Should actors be able to land on static bodies? (rather than only pseudo-static)
 			// Actors can land on portions of any pseudo-static body that are flat enough to be considered a floor.
-			if (body.BodyType != RigidBodyTypes.PseudoStatic)
+			if (body.BodyType != RigidBodyTypes.PseudoStatic || normal.y < 0)
 			{
 				return true;
 			}
 
-			// This accounts for the situation where the body is moving upward more quickly than the player (like an
-			// elevator).
-			float relativeY = controllingBody.LinearVelocity.Y - body.LinearVelocity.Y;
+			// This is a safeguard against actors clipping through fast-moving, sloped platforms from the bottom.
+			// Likely not perfect, but it should help (could also likely be alleviated through design).
+			var contactY = p.y + normal.y * penetration;
 
-			if (relativeY > 0)
+			if (controllingBody.Position.Y - contactY < capsuleRadius)
 			{
 				return true;
 			}
 
 			// Similar to the ground mesh, actors only land on platforms when the bottom-center point touches.
-			var halfVector = new vec3(0, Height / 2, 0);
-			var p1 = controllingBody.OldPosition.ToVec3() - halfVector;
-			var p2 = controllingBody.Position.ToVec3() - halfVector;
+			var halfHeight = new vec3(0, FullHeight / 2, 0);
+			var p1 = controllingBody.OldPosition.ToVec3() - halfHeight;
+			var p2 = controllingBody.Position.ToVec3() - halfHeight;
 
-			// Verifying the result normal prevents false landings (often near the sides of platforms).
+			// Previously, this function returned early if the relative velocity between the two bodies had the actor
+			// moving up. In practice, however, upward platform movement (along with slopes and orientation changes)
+			// can result in legitimate landings regardless of actor velocity. As such, some corrections need to be
+			// applied before the raycast occurs.
+			if (controllingBody.LinearVelocity.Y > 0)
+			{
+				var temp = p1;
+				p1 = p2;
+				p2 = temp;
+			}
+
+			// TODO: Does something need to be done if actor speed is zero?
+			p1 += (body.Position - body.OldPosition).ToVec3();
+
 			if (PhysicsUtilities.Raycast(Scene.World, body, p1, p2, out var results))
 			{
-				// TODO: Consider using dot products to determine surface type (rather than angle, which I think is more expensive).
-				float angle = Math.Abs(Constants.PiOverTwo - Utilities.Angle(normal, vec3.UnitY));
+				// TODO: Consider using dot products to determine surface type (angle is more expensive).
+				// Verifying the result normal prevents false landings (often near the sides of platforms).
+				float angle = Math.Abs(Constants.PiOverTwo - Utilities.Angle(results.Normal, vec3.UnitY));
 
 				if (angle > PhysicsConstants.WallThreshold)
 				{
@@ -212,9 +228,10 @@ namespace Zeldo.Entities.Core
 			{
 				var jPoint = p.ToJVector();
 				
+				// TODO: Landing on platforms with upward velocity seems to cause clipping. Should fix (likely applies to tilting platforms too).
 				// TODO: Transfer velocity.
 				controllingBody.LinearVelocity = JVector.Zero;
-				controllingBody.Position = jPoint + new JVector(0, Height / 2, 0);
+				controllingBody.Position = jPoint + new JVector(0, FullHeight / 2, 0);
 				controllingBody.IsAffectedByGravity = false;
 				controllingBody.IsManuallyControlled = true;
 
@@ -236,7 +253,7 @@ namespace Zeldo.Entities.Core
 			var v = controllingBody.LinearVelocity;
 			v.Y = 0;
 			controllingBody.LinearVelocity = v;
-			controllingBody.Position = result.ToJVector() + new JVector(0, Height / 2, 0);
+			controllingBody.Position = result.ToJVector() + new JVector(0, FullHeight / 2, 0);
 			controllingBody.IsAffectedByGravity = false;
 
 			activeController = groundController;

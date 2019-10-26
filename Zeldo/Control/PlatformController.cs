@@ -18,7 +18,7 @@ namespace Zeldo.Control
 			var body = Parent.ControllingBody;
 			var orientation = Platform.Orientation;
 			var p = Platform.Position + JVector.Transform(Parent.ManualPosition, orientation) +
-				new JVector(0, Parent.Height / 2, 0);
+				new JVector(0, Parent.FullHeight / 2, 0);
 			var yaw = orientation.ComputeYaw() + Parent.ManualYaw;
 
 			// TODO: Consider optimizing the orientation transform by marking the platform entity as fixed rotation.

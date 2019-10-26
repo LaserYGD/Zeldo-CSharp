@@ -6,6 +6,7 @@ using Jitter.LinearMath;
 
 namespace Engine.Physics
 {
+	// TODO: Consider adding raycast variations that take JVectors directly.
 	public static class PhysicsUtilities
 	{
 		public static bool Raycast(World world, vec3 start, vec3 end, out RaycastResults results)
