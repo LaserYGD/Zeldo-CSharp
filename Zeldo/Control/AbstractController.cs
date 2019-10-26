@@ -9,7 +9,7 @@ namespace Zeldo.Control
 			Parent = parent;
 		}
 
-		protected Actor Parent { get;}
+		protected Actor Parent { get; }
 
 		public virtual void PreStep(float step)
 		{

@@ -84,12 +84,6 @@ namespace Zeldo.Entities
 				: quat.Identity;
 
 			controllingBody.SetTransform(p, orientation.ToJMatrix(), step);
-
-			var v = controllingBody.LinearVelocity;
-			var angular = controllingBody.AngularVelocity;
-			var list = Scene.Canvas.GetElement<DebugView>().GetGroup("Platform");
-			list.Add($"Velocity: {v.X:F3} {v.Y:F3} {v.Z:F3}");
-			list.Add($"Angular: {angular.X:F3} {angular.Y:F3} {angular.Z:F3}");
 		}
 	}
 }

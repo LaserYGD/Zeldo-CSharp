@@ -40,7 +40,9 @@ namespace Zeldo.Entities.Player
 		private PlayerController controller;
 		private PlayerHealthDisplay healthDisplay;
 		private Weapon<PlayerCharacter> weapon;
+		private LadderController ladderController;
 		private WallController wallController;
+		private ControlSettings settings;
 		private DebugView debugView;
 
 		private PlayerStates state;
@@ -61,6 +63,9 @@ namespace Zeldo.Entities.Player
 
 		public PlayerCharacter(ControlSettings settings) : base(EntityGroups.Player)
 		{
+			// TODO: Find a better way to retrieve settings.
+			this.settings = settings;
+
 			controls = new PlayerControls();
 			playerData = new PlayerData();
 			state = PlayerStates.Airborne;
@@ -80,7 +85,6 @@ namespace Zeldo.Entities.Player
 
 			skillsUnlocked = new bool[skillCount];
 			upgradesUnlocked = new bool[upgradeCount];
-			controller = new PlayerController(this, playerData, controls, settings, CreateControllers());
 		}
 
 		public override vec3 Position
@@ -142,24 +146,19 @@ namespace Zeldo.Entities.Player
 			float ladderAcceleration = Properties.GetFloat("player.ladder.climb.acceleration");
 			float ladderDeceleration = Properties.GetFloat("player.ladder.climb.deceleration");
 			float ladderMaxSpeed = Properties.GetFloat("player.ladder.climb.max.speed");
-			float ladderDistance = Properties.GetFloat("player.ladder.distance");
+			float ladderSeparation = Properties.GetFloat("player.ladder.separation");
 
-			// Create controllers.
-			/*
 			ladderController = new LadderController(this);
 			ladderController.ClimbAcceleration = ladderAcceleration;
 			ladderController.ClimbDeceleration = ladderDeceleration;
 			ladderController.ClimbMaxSpeed = ladderMaxSpeed;
-
-			// TODO: Use half ladder depth (rather than hardcoded).
-			ladderController.ClimbDistance = ladderDistance + capsuleRadius + 0.05f;
-			*/
+			ladderController.ClimbDistance = ladderSeparation + capsuleRadius;
 
 			var controllers = new AbstractController[5];
 			controllers[ControllerIndexes.Air] = aerialController;
 			controllers[ControllerIndexes.Ground] = groundController;
 			controllers[ControllerIndexes.Wall] = wallController;
-			controllers[ControllerIndexes.Ladder] = null; //ladderController;
+			controllers[ControllerIndexes.Ladder] = ladderController;
 			controllers[ControllerIndexes.Swim] = null; //swimController;
 
 			return controllers;
@@ -176,7 +175,9 @@ namespace Zeldo.Entities.Player
 
 			CreateModel(scene, "Capsule.obj");
 			CreateMasterBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius), true);
-				
+			
+			controller = new PlayerController(this, playerData, controls, settings, CreateControllers());
+
 			var canvas = scene.Canvas;
 			healthDisplay = canvas.GetElement<PlayerHealthDisplay>();
 			debugView = canvas.GetElement<DebugView>();
@@ -188,6 +189,12 @@ namespace Zeldo.Entities.Player
 		{
 			// While active, the platform flag tracks the most recent platform (after jumping).
 			if (platformFlag.Value && body == (RigidBody)platformFlag.Tag)
+			{
+				return false;
+			}
+
+			// While on a ladder, contacts should be negated with that ladder.
+			if ((state & PlayerStates.OnLadder) > 0 && body == ladderController.Ladder.ControllingBody)
 			{
 				return false;
 			}
@@ -213,8 +220,9 @@ namespace Zeldo.Entities.Player
 
 		public override bool OnContact(Entity entity, vec3 p, vec3 normal, float penetration)
 		{
-			bool isAirborne = (state & (PlayerStates.Airborne | PlayerStates.Jumping)) > 0;
+			bool isAirborne = (state & PlayerStates.Airborne) > 0;
 
+			// TODO: Does the player need to be facing a ladder to mount it? (raysB)
 			// The player can attach to ladders by jumping towards them (from any side).
 			if (isAirborne && entity is Ladder ladder && IsFacing(ladder))
 			{
@@ -447,6 +455,7 @@ namespace Zeldo.Entities.Player
 
 		private void Respawn()
 		{
+			controllingBody.Position = new JVector(3, 4, 0);
 		}
 
 		// TODO: Re-enable sliding later (if sliding is actually kept in the game).
@@ -681,19 +690,30 @@ namespace Zeldo.Entities.Player
 		}
 		*/
 
+		// TODO: Generalize this function to mount a ladder from any situation.
 		public void Mount(Ladder ladder)
 		{
 			// TODO: Whip around as appropriate.
 			Proximities proximity = ladder.ComputeProximity(position);
 
-			/*
-			ladderController.OnMount(ladder, this);
-			Swap(ladderController);
-			*/
-
 			RefreshJumps();
 
+			// This small offset helps separate the capsule from the ladder.
+			var orientation = ladder.Orientation;
+			var v1 = orientation * vec3.UnitX * ladderController.ClimbDistance;
+			var v2 = orientation * vec3.UnitY * (controllingBody.Position.Y - ladder.Position.y) / ladder.CosineTilt;
+			var p = ladder.ControllingBody.Position + (v1 + v2).ToJVector();
+
+			// Ladders are positioned by their bottom-center point.
+			controllingBody.Position = p;
+			controllingBody.LinearVelocity = JVector.Zero;
 			controllingBody.IsAffectedByGravity = false;
+			controllingBody.IsManuallyControlled = true;
+
+			activeController = ladderController;
+			ladderController.Ladder = ladder;
+
+			RecomputeManualOffsets(p.ToVec3(), ladder.ControllingBody);
 
 			// This covers mounting the ladder from any situation.
 			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.Running | PlayerStates.Vaulting);

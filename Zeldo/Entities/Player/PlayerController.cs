@@ -107,6 +107,8 @@ namespace Zeldo.Entities.Player
 			groundController.FlatDirection = flatDirection;
 			wallController.FlatDirection = flatDirection;
 
+			ProcessLadder(data);
+
 			// Ascension reuses the jump bind (since it's conceptually also an "up" action), but requires an additional
 			// button to be held. By checking for ascension first, the jump input can be stored and reused for jump
 			// processing even if that additional bind isn't held.
@@ -149,9 +151,10 @@ namespace Zeldo.Entities.Player
 			return Utilities.Rotate(flatDirection, FollowController.Yaw);
 		}
 
-		private void ProcessLadder(FullInputData data, float dt)
+		private void ProcessLadder(FullInputData data)
 		{
-			// Ladder climbing uses the same controls as running forward and back.
+			// Ladder climbing uses the same controls as running forward and back. Also note that directions remain the
+			// same even if the camera is tilted down.
 			bool up = data.Query(controls.RunForward, InputStates.Held);
 			bool down = data.Query(controls.RunBack, InputStates.Held);
 

@@ -6,6 +6,7 @@ using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
+using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Player;
@@ -29,6 +30,7 @@ namespace Zeldo.Entities
 
 		// This is used by the ladder controller.
 		public float Length { get; private set; }
+		public float CosineTilt { get; private set; }
 
 		public override void Initialize(Scene scene, JToken data)
 		{
@@ -39,6 +41,7 @@ namespace Zeldo.Entities
 
 			if (data.TryGetValue("Tilt", out float tilt))
 			{
+				CosineTilt = (float)Math.Cos(tilt);
 				orientation *= quat.FromAxisAngle(tilt, vec3.UnitZ);
 			}
 
@@ -52,7 +55,7 @@ namespace Zeldo.Entities
 
 			// If tilt is specified, length is automatically computed to match the given top and bottom.
 			Length = tilt != 0
-				? delta / (float)Math.Cos(tilt)
+				? delta / CosineTilt
 				: delta;
 
 			// Ladder position corresponds to its bottom-center point.

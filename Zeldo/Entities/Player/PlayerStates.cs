@@ -19,6 +19,7 @@ namespace Zeldo.Entities.Player
 		OnWall = 1<<11,
 		Running = 1<<12,
 		Sliding = 1<<13,
-		Vaulting = 1<<14
+		Swimming = 1<<14,
+		Vaulting = 1<<15
 	}
 }

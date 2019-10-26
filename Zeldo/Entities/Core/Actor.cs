@@ -61,12 +61,14 @@ namespace Zeldo.Entities.Core
 			set => bodyYaw = value;
 		}
 
+		// TODO: Should manual position be a vec3 instead?
 		// This is used by the ground controller.
 		public SurfaceTriangle Ground { get; protected set; }
 		public JVector ManualPosition { get; set; }
+		public vec3 ManualVelocity { get; set; }
 
 		// Since actors are fixed vertically, only relative yaw (i.e. rotation around the Y axis) needs to be stored.
-		public float ManualYaw { get; set; }
+		public float ManualYaw { get; private set; }
 
 		protected virtual bool ShouldGenerateContact(RigidBody body, JVector[] triangle)
 		{
@@ -232,21 +234,17 @@ namespace Zeldo.Entities.Core
 			// Platform and surface are mutually-exclusive here.
 			if (platform != null)
 			{
-				var jPoint = p.ToJVector();
-				
 				// TODO: Landing on platforms with upward velocity seems to cause clipping. Should fix (likely applies to tilting platforms too).
 				// TODO: Transfer velocity.
 				controllingBody.LinearVelocity = JVector.Zero;
-				controllingBody.Position = jPoint + new JVector(0, FullHeight / 2, 0);
+				controllingBody.Position = p.ToJVector() + new JVector(0, FullHeight / 2, 0);
 				controllingBody.IsAffectedByGravity = false;
 				controllingBody.IsManuallyControlled = true;
 
-				var orientation = platform.Orientation;
-
-				ManualPosition = JVector.Transform(jPoint - platform.Position, JMatrix.Inverse(orientation));
-				ManualYaw = bodyYaw - orientation.ComputeYaw();
-				platformController.Platform = platform;
 				activeController = platformController;
+				platformController.Platform = platform;
+
+				RecomputeManualOffsets(p, platform);
 
 				return;
 			}
@@ -265,6 +263,14 @@ namespace Zeldo.Entities.Core
 			activeController = groundController;
 
 			OnGroundTransition(surface);
+		}
+
+		protected void RecomputeManualOffsets(vec3 p, RigidBody body)
+		{
+			var orientation = body.Orientation;
+
+			ManualPosition = JVector.Transform(p.ToJVector() - body.Position, JMatrix.Inverse(orientation));
+			ManualYaw = bodyYaw - orientation.ComputeYaw();
 		}
 
 		public virtual void OnGroundTransition(SurfaceTriangle ground)

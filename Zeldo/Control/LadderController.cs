@@ -1,15 +1,17 @@
 ﻿using System;
+using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
+using Jitter.LinearMath;
 using Zeldo.Entities;
 using Zeldo.Entities.Player;
+using Zeldo.UI;
 
 namespace Zeldo.Control
 {
 	public class LadderController : AbstractController
 	{
-		// Ladders use a custom progress value (representing the distance climbed from the bottom).
-		private float progress;
+		private vec3 velocity;
 
 		// Ladders are designed to only work with the player (rather than generic actors). This may change in the
 		// future.
@@ -28,44 +30,44 @@ namespace Zeldo.Control
 		// This should be 1, -1, or 0 (representing up, down, or stationary on the ladder).
 		public int Direction { get; set; }
 
-		public void OnMount(Ladder ladder, PlayerCharacter player)
-		{
-			Ladder = ladder;
-			progress = player.Position.y - ladder.Position.y;
-		}
-
 		public override void PreStep(float step)
 		{
-			var body = Parent.ControllingBody;
-			var v = body.LinearVelocity;
+			var v = Parent.ManualVelocity;
+			var ladderBody = Ladder.ControllingBody;
 
 			// Accelerate.
 			if (Direction != 0)
 			{
-				v.Y += ClimbAcceleration * Direction * step;
-				v.Y = Utilities.Clamp(v.Y, -ClimbMaxSpeed, ClimbMaxSpeed);
+				v.y += ClimbAcceleration * Direction * step;
+				v.y = Utilities.Clamp(v.y, -ClimbMaxSpeed, ClimbMaxSpeed);
 			}
 			// Decelerate.
-			else if (v.Y != 0)
+			else if (Utilities.LengthSquared(v) > 0)
 			{
-				int oldSign = Math.Sign(v.Y);
+				int oldSign = Math.Sign(v.y);
 
-				v.Y -= ClimbDeceleration * step * oldSign;
+				v.y -= ClimbDeceleration * step * oldSign;
 
-				if (oldSign != Math.Sign(v.Y))
+				if (oldSign != Math.Sign(v.y))
 				{
-					v.Y = 0;
+					v = vec3.Zero;
 				}
 			}
 
-			body.LinearVelocity = v;
+			// TODO: Apply orientation as well (for rotating ladders).
+			// TODO: Some of this feels very similar to the platform controller. Should be put in a common location somehow.
+			Parent.ManualVelocity = v;
+			Parent.ManualPosition += (Parent.ManualVelocity * step).ToJVector();
 
-			/*
-			var f = Ladder.FacingDirection;
+			var mV = Parent.ManualVelocity;
+			var mP = Parent.ManualPosition;
+			var list = Parent.Scene.Canvas.GetElement<DebugView>().GetGroup("Ladder");
+			list.Add($"Position: {mP.X:F3} {mP.Y:F3} {mP.Z:F3}");
+			list.Add($"Velocity: {mV.x:F3} {mV.y:F3} {mV.z:F3}");
 
-			progress += v.Y * step;
-			Parent.Position = Ladder.Position + new vec3(0, progress, 0) + new vec3(f.x, 0, f.y) * ClimbDistance;
-			*/
+			var p = ladderBody.Position + JVector.Transform(Parent.ManualPosition, ladderBody.Orientation);
+			var body = Parent.ControllingBody;
+			body.SetTransform(p, body.Orientation, step);
 		}
 	}
 }

@@ -165,7 +165,7 @@ namespace Zeldo.Loops
 		{
 			/*
 			var cube = new DummyCube(RigidBodyTypes.Dynamic, false);
-			cube.Position = new vec3(0, 4.2f, 10);
+			cube.Position = new vec3(0, 3.5f, 10);
 
 			scene.Add(cube);
 			*/
