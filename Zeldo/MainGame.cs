@@ -98,7 +98,8 @@ namespace Zeldo
 
 		protected override void Update(float dt)
 		{
-			activeLoop.Update(dt);
+			//activeLoop.Update(dt);
+			canvas.Update(dt);
 
 			// Gamestate changes don't apply until the end of the current frame.
 			if (nextState != currentState)
@@ -142,7 +143,7 @@ namespace Zeldo
 
 			activeLoop.DrawTargets();
 			mainTarget.Apply();
-			activeLoop.Draw();
+			//activeLoop.Draw();
 
 			// Render 2D targets.
 			glDisable(GL_DEPTH_TEST);

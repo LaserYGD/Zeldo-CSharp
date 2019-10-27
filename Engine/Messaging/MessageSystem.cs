@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Engine.Interfaces;
 
 namespace Engine.Messaging
@@ -21,11 +22,18 @@ namespace Engine.Messaging
 
 		public static void Subscribe(IReceiver receiver, int messageType, ReceiverFunction function)
 		{
+			Debug.Assert(receiver != null, "Receiver can't be null.");
+			Debug.Assert(function != null, "Receiver function can't be null.");
+			Debug.Assert(messageType >= 0, "Message type can't be negative.");
+
 			addList.Add(new Tuple<IReceiver, int, ReceiverFunction>(receiver, messageType, function));
 		}
 
 		public static void Unsubscribe(IReceiver receiver, int messageType = -1)
 		{
+			Debug.Assert(receiver != null, "Receiver can't be null.");
+			Debug.Assert(messageType >= -1, "Message type must be either -1 or non-negative.");
+
 			removeList.Add(new Tuple<IReceiver, int>(receiver, messageType));
 		}
 
@@ -127,8 +135,10 @@ namespace Engine.Messaging
 			}
 		}
 
-		public static void Send(int messageType, object data, float dt = 0)
+		public static void Send(int messageType, object data = null, float dt = 0)
 		{
+			Debug.Assert(messageType >= 0, "Message type can't be negative.");
+
 			if (!functionMap.TryGetValue(messageType, out List<ReceiverFunction> list))
 			{
 				return;

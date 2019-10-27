@@ -353,6 +353,7 @@
     <Compile Include="UI\Hud\WatchDisplay.cs" />
     <Compile Include="UI\Letterbox.cs" />
     <Compile Include="UI\DebugView.cs" />
+    <Compile Include="UI\RopeTester.cs" />
     <Compile Include="UI\Screens\Settings\AudioScreen.cs" />
     <Compile Include="UI\Menus\PauseMenu.cs" />
     <Compile Include="UI\Screens\Settings\ControlScreen.cs" />
