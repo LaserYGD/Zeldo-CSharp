@@ -1,0 +1,25 @@
+Windmill notes:
+
+=> Windmill structure melded with a gigantic tree, whose enormous roots can be traversed as part of the dungeon (both above and below ground)
+
+===== GENERAL CONSIDERATIONS =====
+
+- Consideration 1: the gameplay (probably mostly ignore realism and just focus on building a run level)
+- Consideration 2: pacing (make sure appropriate lessons are taught early and reinforced as needed, and both the difficulty *and* creativity of skill application increases) => The hardest challenges should be *optional*
+- Consideration 3: linearity (should be mostly linear, but with platforming options within individual rooms)
+- Consideration 4: theme (central structure should be primarily mechanical, using gears, pulleys, and ropes to move platforms, but with more natural elements woven in)
+- Consideration 5: difficulty (the windmill is relatively early in the game, maybe even the first dungeon, so it should generally be pretty easy, especially for experienced players) => Must still be *fun* for experienced players
+- Consideration 6: length (target 30-60 minutes on a first playthrough)
+- Consideration 7: puzzles (the windmill is light on puzzles, only requiring arranging a few gears to reach the top, plus optional sunlight-based puzzles) => The gear puzzles are really meant to serve the platforming, since they require traversing up and down a few times
+- Consideration 8: rewards (the player is given the Ascend skill in this dungeon, along with an item TBD)
+
+===== PROGRESSION =====
+
+1. Player is given a key to the windmill (from an NPC).
+2. Player reaches the dungeon and enters (brief cutscene plays). => The side structure can be reached as well, but it's locked.
+3. Player climbs until reaching a room with a few enemies (must be defeated to progress). => First combat encounter in the dungeon, so it's intentionally light (and not too climactic).
+4. The path further up is blocked, so the player crosses a bridge to the side structure.
+5. Upward progress is still blocked, so the player climbs *down* the second structure until reaching the basement (optionally opening the locked door) and acquires Ascend.
+6. Player climbs up the side structure again (faster with Ascend). At the top, defeating a miniboss causes the first set of gears to start spinning (which unblocks progression in the main structure).
+7. Player crosses the bridge again to continue up the main structure.
+8. TBD
