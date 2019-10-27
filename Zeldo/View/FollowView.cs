@@ -12,7 +12,7 @@ using Zeldo.Settings;
 
 namespace Zeldo.View
 {
-	public class FollowController : CameraController3D, IReceiver
+	public class FollowView : CameraController3D, IReceiver
 	{
 		private const float AimDivisor = 10000f;
 		
@@ -28,12 +28,22 @@ namespace Zeldo.View
 		private float yaw;
 		private float maxPitch;
 		
-		public FollowController(PlayerCharacter player, ControlSettings settings)
+		public FollowView(Camera3D camera, PlayerCharacter player, ControlSettings settings) : base(camera)
 		{
 			this.player = player;
 			this.settings = settings;
 
-			player.FollowController = this;
+			player.FollowView = this;
+
+			followDistance = Properties.GetFloat("view.follow.distance");
+			maxPitch = Properties.GetFloat("view.max.pitch");
+
+			// TODO: These values should probably be set in a different spot (since they're not exclusive to this view).
+			camera.OrthoWidth = Properties.GetFloat("camera.ortho.width");
+			camera.OrthoHeight = Properties.GetFloat("camera.ortho.height");
+			camera.NearPlane = Properties.GetFloat("camera.near.plane");
+			camera.FarPlane = Properties.GetFloat("camera.far.plane");
+			camera.PerspectiveFov = Properties.GetFloat("camera.fov");
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
@@ -49,20 +59,6 @@ namespace Zeldo.View
 		public void Dispose()
 		{
 			MessageSystem.Unsubscribe(this);
-		}
-
-		public override void Initialize(Camera3D camera)
-		{
-			followDistance = Properties.GetFloat("view.follow.distance");
-			maxPitch = Properties.GetFloat("view.max.pitch");
-
-			camera.OrthoWidth = Properties.GetFloat("camera.ortho.width");
-			camera.OrthoHeight = Properties.GetFloat("camera.ortho.height");
-			camera.NearPlane = Properties.GetFloat("camera.near.plane");
-			camera.FarPlane = Properties.GetFloat("camera.far.plane");
-			camera.PerspectiveFov = Properties.GetFloat("camera.fov");
-
-			base.Initialize(camera);
 		}
 
 		private void ProcessInput(FullInputData data)
@@ -100,7 +96,7 @@ namespace Zeldo.View
 			}
 		}
 
-		public override void Update()
+		public override void Update(float dt)
 		{
 			// TODO: Since the camera is shifted slighty upward, experiment with subtly modifying follow distance based on pitch.
 			quat aim = quat.FromAxisAngle(pitch, vec3.UnitX) * quat.FromAxisAngle(yaw, vec3.UnitY);

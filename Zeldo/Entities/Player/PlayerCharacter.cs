@@ -107,9 +107,9 @@ namespace Zeldo.Entities.Player
 
 		// TODO: Could this be cleaned up?
 		// This is required to move in the direction of camera aim (passed through to the controller class).
-		public FollowController FollowController
+		public FollowView FollowView
 		{
-			set => controller.FollowController = value;
+			set => controller.FollowView = value;
 		}
 
 		// The player owns their own inventory.

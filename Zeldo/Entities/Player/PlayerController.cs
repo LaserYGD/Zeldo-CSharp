@@ -80,7 +80,7 @@ namespace Zeldo.Entities.Player
 			});
 		}
 
-		public FollowController FollowController { get; set; }
+		public FollowView FollowView { get; set; }
 		public List<MessageHandle> MessageHandles { get; set; }
 
 		public void Dispose()
@@ -151,7 +151,7 @@ namespace Zeldo.Entities.Player
 				flatDirection *= SqrtTwo;
 			}
 			
-			return Utilities.Rotate(flatDirection, FollowController.Yaw);
+			return Utilities.Rotate(flatDirection, FollowView.Yaw);
 		}
 
 		private void ProcessLadder(FullInputData data)

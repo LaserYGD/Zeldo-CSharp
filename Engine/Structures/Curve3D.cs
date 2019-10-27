@@ -12,7 +12,7 @@ namespace Engine.Structures
 
 		public List<vec3> ControlPoints { get; }
 
-		public vec3[] Evaluate(int segments)
+		public vec3[] ComputePoints(int segments)
 		{
 			vec3[] results = new vec3[segments + 1];
 
@@ -25,7 +25,7 @@ namespace Engine.Structures
 			return results;
 		}
 
-		private vec3 Evaluate(float t)
+		public vec3 Evaluate(float t)
 		{
 			float u = 1 - t;
 

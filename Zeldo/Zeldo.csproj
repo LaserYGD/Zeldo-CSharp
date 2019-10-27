@@ -374,7 +374,7 @@
     <Compile Include="UI\SplashLogo.cs" />
     <Compile Include="UI\StatisticsDisplay.cs" />
     <Compile Include="UI\Subtitles.cs" />
-    <Compile Include="View\FollowController.cs" />
+    <Compile Include="View\FollowView.cs" />
     <Compile Include="Weather\TimeOfDay.cs" />
     <Compile Include="Weather\Rain.cs" />
     <Compile Include="Weather\Snow.cs" />

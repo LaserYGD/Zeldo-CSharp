@@ -134,7 +134,7 @@ namespace Zeldo.Loops
 
 			CreateDebugCubes();
 
-			camera.Attach(new FollowController(player, settings));
+			camera.Attach(new FollowView(camera, player, settings));
 
 			sprite = new Sprite3D("Link.png");
 			sprite.Position = new vec3(0, 2.5f, -1);
