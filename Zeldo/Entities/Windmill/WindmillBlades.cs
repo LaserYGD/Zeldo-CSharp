@@ -33,7 +33,7 @@ namespace Zeldo.Entities.Windmill
 				quat orientation = quat.FromAxisAngle(angle, axis);
 				vec3 p = vec3.UnitX * radius * orientation;
 
-				CreateModel(scene, mesh, p, orientation);
+				CreateModel(scene, mesh, true, p, orientation);
 			}
 
 			base.Initialize(scene, data);

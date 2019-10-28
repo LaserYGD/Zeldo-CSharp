@@ -98,13 +98,13 @@ namespace Zeldo.Loops
 			var debug = new DebugView();
 			debug.Anchor = Alignments.Left | Alignments.Top;
 			debug.Offset = new ivec2(10);
-			debug.IsVisible = false;
+			//debug.IsVisible = false;
 
 			canvas.Clear();
 			canvas.Load("Hud.json");
 			canvas.Add(stats);
 			canvas.Add(debug);
-			canvas.Add(new RopeTester());
+			//canvas.Add(new RopeTester());
 
 			// TODO: Load settings from a file.
 			ControlSettings settings = new ControlSettings();
@@ -214,8 +214,8 @@ namespace Zeldo.Loops
 				return entity.OnContact(point, n, tArray, penetration);
 			}
 
-			bool b1 = entity1?.OnContact(entity2, p1, -n, penetration) ?? true;
-			bool b2 = entity2?.OnContact(entity1, p2, n, penetration) ?? true;
+			bool b1 = entity1?.OnContact(entity2, body2, p1, -n, penetration) ?? true;
+			bool b2 = entity2?.OnContact(entity1, body1, p2, n, penetration) ?? true;
 
 			// Either entity can negate the contact.
 			return b1 && b2;

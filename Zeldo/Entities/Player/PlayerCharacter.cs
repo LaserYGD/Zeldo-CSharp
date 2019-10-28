@@ -219,7 +219,7 @@ namespace Zeldo.Entities.Player
 			*/
 		}
 
-		public override bool OnContact(Entity entity, vec3 p, vec3 normal, float penetration)
+		public override bool OnContact(Entity entity, RigidBody body, vec3 p, vec3 normal, float penetration)
 		{
 			bool isAirborne = (state & PlayerStates.Airborne) > 0;
 
@@ -232,7 +232,7 @@ namespace Zeldo.Entities.Player
 				return false;
 			}
 
-			return base.OnContact(entity, p, normal, penetration);
+			return base.OnContact(entity, body, p, normal, penetration);
 		}
 
 		/*

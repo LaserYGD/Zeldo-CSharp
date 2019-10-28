@@ -208,4 +208,5 @@
 
 - Try to weave character development and combat together (inspired by Razbuten's video on Mass Effect vs. Darkest Dungeon, and how in Mass Effect, narrative sections and combat encounters don't really react to one another in impactful ways) => Might be simpler and more effective for this genre to focus more on aligning character and player motivations (e.g. that dungeon looks cool and I'm curious to explore it, and it's *also* what the player character wants to do narratively)
 
+- Something light-based (like, progressively lighting an area or tying platforming to light)
 

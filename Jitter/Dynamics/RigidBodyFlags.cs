@@ -5,6 +5,8 @@ namespace Jitter.Dynamics
     [Flags]
     public enum RigidBodyFlags
     {
+        None = 0,
+
         AreSpeculativeContactsEnabled = 1<<0,
 
         IsActive = 1<<1,

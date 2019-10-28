@@ -140,19 +140,24 @@ namespace Zeldo.Entities.Core
 			target.SetTransform(position + aPosition * effectiveOrientation, effectiveOrientation);
 		}
 		
-		protected Model CreateModel(Scene scene, string filename, vec3? position = null, quat? orientation = null)
+		protected Model CreateModel(Scene scene, string filename, bool shouldAttach = true, vec3? position = null,
+			quat? orientation = null)
 		{
-			return CreateModel(scene, ContentCache.GetMesh(filename), position, orientation);
+			return CreateModel(scene, ContentCache.GetMesh(filename), shouldAttach, position, orientation);
 		}
 
-		protected Model CreateModel(Scene scene, Mesh mesh, vec3? position = null, quat? orientation = null)
+		protected Model CreateModel(Scene scene, Mesh mesh, bool shouldAttach = true, vec3? position = null,
+			quat? orientation = null)
 		{
 			Debug.Assert(mesh != null, "Can't create a model with a null mesh.");
 
 			Model model = new Model(mesh);
-
-			Attach(EntityAttachmentTypes.Model, model, position, orientation);
 			scene.Renderer.Add(model);
+
+			if (shouldAttach)
+			{
+				Attach(EntityAttachmentTypes.Model, model, position, orientation);
+			}
 
 			return model;
 		}
@@ -169,7 +174,7 @@ namespace Zeldo.Entities.Core
 		}
 
 		protected RigidBody CreateBody(Scene scene, Shape shape, RigidBodyTypes bodyType = RigidBodyTypes.Dynamic,
-			RigidBodyFlags flags = RigidBodyFlags.IsDeactivationAllowed, bool isControlling = true,
+			RigidBodyFlags flags = RigidBodyFlags.None, bool isControlling = true, bool shouldAttach = true,
 			vec3? position = null, quat? orientation = null)
 		{
 			Debug.Assert(shape != null, "Can't create a body with a null shape.");
@@ -198,7 +203,7 @@ namespace Zeldo.Entities.Core
 
 			    controllingBody = body;
 		    }
-		    else
+		    else if (shouldAttach)
 		    {
 			    Attach(EntityAttachmentTypes.Body, new TransformableBody(body), position, orientation);
 		    }
@@ -259,7 +264,7 @@ namespace Zeldo.Entities.Core
 			Orientation = orientation;
 		}
 
-		public virtual bool OnContact(Entity entity, vec3 p, vec3 normal, float penetration)
+		public virtual bool OnContact(Entity entity, RigidBody body, vec3 p, vec3 normal, float penetration)
 		{
 			return true;
 		}

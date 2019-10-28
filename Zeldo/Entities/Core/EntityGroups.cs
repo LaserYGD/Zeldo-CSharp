@@ -20,6 +20,7 @@ namespace Zeldo.Entities.Core
 		Player,
 		Platform,
 		Projectile,
+		Structure,
 		Weapon
 	}
 }

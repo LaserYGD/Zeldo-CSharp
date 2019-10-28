@@ -299,6 +299,7 @@
     <Compile Include="Entities\Weapons\Weapon.cs" />
     <Compile Include="Entities\Windmill\MotorTree.cs" />
     <Compile Include="Entities\Windmill\MotorNode.cs" />
+    <Compile Include="Entities\Windmill\RopeBridge.cs" />
     <Compile Include="Entities\Windmill\WindmillBlades.cs" />
     <Compile Include="Interfaces\IAscendable.cs" />
     <Compile Include="Interfaces\IGrabbable.cs" />

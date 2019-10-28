@@ -13,14 +13,22 @@
 		},
 		{
 			"Type": "Ladder",
-			"Top": 16,
+			"Top": 15.5,
 			"Bottom": 1,
 			"Position": "8.5|1|-2",
 			"Rotation": 3.14159,
 			"Tilt": 0.1
+		},
+		{
+			"Type": "Windmill.RopeBridge",
+			"P1": "12.65|16|2.72",
+			"P2": "12.65|16|-38.72",
+			"Model": "Cube.obj",
+			"SegmentCount": "16", 
+			"SegmentLength": "1.1"
 		}
 	],
 
 	"Origin": "0|0|0",
-	"Spawn": "10|2.1|0"
+	"Spawn": "12.65|18|0"
 }

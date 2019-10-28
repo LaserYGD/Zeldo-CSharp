@@ -20,7 +20,6 @@ namespace Zeldo.UI
 		public RopeTester()
 		{
 			const float Length = 36;
-			const float K = 0.95f;
 			const float Damping = 0.95f;
 			const float Gravity = 20;
 
@@ -31,7 +30,7 @@ namespace Zeldo.UI
 				points[i] = new vec2(60, 120) + new vec2(Length * i * 1.25f, 0);
 			}
 
-			rope = new VerletRope2D(points, Length, K, Damping, Gravity);
+			rope = new VerletRope2D(points, Length, Damping, Gravity);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Mouse, (messageType, data, dt) =>
 			{

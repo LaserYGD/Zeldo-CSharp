@@ -67,25 +67,20 @@ namespace Zeldo.Entities.Core
 			for (int i = 0; i < array.Count; i++)
 			{
 				var block = array[i];
-				var jType = block["Type"];
+				var type = Type.GetType("Zeldo.Entities." + block["Type"].Value<string>());
+
+				Debug.Assert(type != null, $"Missing entity type {type.FullName}.");
+
+				// Position will almost always be given, but can be omitted for certain entities (like rope bridges,
+				// which instead specify endpoints).
 				var jPosition = block["Position"];
+				var p = jPosition != null ? Utilities.ParseVec3(jPosition.Value<string>()) : vec3.Zero;
 
-				// TODO: Consider adding orientation as well.
-				Debug.Assert(jType != null, "Missing entity type.");
-				Debug.Assert(jPosition != null, "Missing entity position.");
-
-				string type = jType.Value<string>();
-				string position = jPosition.Value<string>();
-
-				var t = Type.GetType("Zeldo.Entities." + type);
-
-				Debug.Assert(t != null, $"Missing entity type Zeldo.Entities.{type}.");
-
-				Entity entity = (Entity)Activator.CreateInstance(t);
+				Entity entity = (Entity)Activator.CreateInstance(type);
 
 				// Position is intentionally set before initialization so that entities can reuse that position as a
 				// custom origin if needed.
-				entity.Position = origin + Utilities.ParseVec3(position);
+				entity.Position = origin + p;
 				entity.Initialize(scene, block);
 				entities[i] = entity;
 			}

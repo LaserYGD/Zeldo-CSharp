@@ -172,11 +172,8 @@ namespace Zeldo.Entities.Core
 			return SurfaceTriangle.ComputeSurfaceType(results.Normal) == SurfaceTypes.Floor;
 		}
 
-		public override bool OnContact(Entity entity, vec3 p, vec3 normal, float penetration)
+		public override bool OnContact(Entity entity, RigidBody body, vec3 p, vec3 normal, float penetration)
 		{
-			// TODO: Consider adding a brief timer to avoid instant re-collisions on fast sloped platforms (could also be addressed through design and testing).
-			var body = entity.ControllingBody;
-
 			// TODO: Should actors be able to land on static bodies? (rather than only pseudo-static)
 			// Actors can land on portions of any pseudo-static body that are flat enough to be considered a floor.
 			if (body.BodyType != RigidBodyTypes.PseudoStatic || normal.y < 0)
@@ -216,7 +213,7 @@ namespace Zeldo.Entities.Core
 			{
 				// TODO: Consider using dot products to determine surface type (angle is more expensive).
 				// Verifying the result normal prevents false landings (often near the sides of platforms).
-				float angle = Math.Abs(Constants.PiOverTwo - Utilities.Angle(results.Normal, vec3.UnitY));
+				float angle = Constants.PiOverTwo - Utilities.Angle(results.Normal, vec3.UnitY);
 
 				if (angle > PhysicsConstants.WallThreshold)
 				{
