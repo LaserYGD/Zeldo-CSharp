@@ -2,15 +2,14 @@
 using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.Physics;
+using Engine.Shapes._2D;
 using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
-using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;
 using Zeldo.Entities.Core;
-using Zeldo.UI;
 
 namespace Zeldo.Entities
 {
@@ -34,12 +33,7 @@ namespace Zeldo.Entities
 			this.p1 = p1;
 			this.p2 = p2;
 
-			if (p1.y == p2.y)
-			{
-				//this.p2 = p1;
-			}
-
-			timer = new RepeatingTimer(progress =>
+			timer = new RepeatingTimer(t =>
 			{
 				direction = !direction;
 
@@ -51,7 +45,13 @@ namespace Zeldo.Entities
 
 		public override void Initialize(Scene scene, JToken data)
 		{
-			var body = CreateBody(scene, new BoxShape(scale.ToJVector()), RigidBodyTypes.PseudoStatic);
+			// Attaching a 2D shape (representing the walkable surface) simplifies detecting when an actor runs off the
+			// platform (plus it's more efficient). This does require that all platforms use a flat shape as their
+			// upper surface, but that should be fine.
+			var shape = new BoxShape(scale.ToJVector());
+			shape.Tag = new Rectangle(scale.x, scale.z);
+
+			var body = CreateBody(scene, shape, RigidBodyTypes.PseudoStatic);
 			body.PreStep = PreStep;
 
 			var model = CreateModel(scene, "Cube.obj");

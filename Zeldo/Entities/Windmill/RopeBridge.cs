@@ -3,6 +3,7 @@ using Engine;
 using Engine.Core._3D;
 using Engine.Physics;
 using Engine.Physics.Verlet;
+using Engine.Shapes._2D;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
@@ -62,8 +63,9 @@ namespace Zeldo.Entities.Windmill
 			bodies = new RigidBody[count - 1];
 			models = new Model[bodies.Length];
 
-			var shape = new BoxShape(Width, Height, Depth);
 			var world = scene.World;
+			var shape = new BoxShape(Width, Height, Depth);
+			shape.Tag = new Rectangle(Width, Depth);
 
 			for (int i = 0; i < bodies.Length; i++)
 			{

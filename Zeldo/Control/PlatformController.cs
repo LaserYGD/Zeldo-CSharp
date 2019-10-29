@@ -1,5 +1,6 @@
 ﻿using System;
 using Engine.Physics;
+using Engine.Shapes._2D;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Dynamics;
@@ -30,6 +31,7 @@ namespace Zeldo.Control
 			// Acceleration.
 			if (Utilities.LengthSquared(FlatDirection) > 0)
 			{
+				// TODO: Could have platforms store yaw as well (to avoid the computation).
 				var rotated = Utilities.Rotate(FlatDirection, Platform.Orientation.ComputeYaw());
 				flatV += rotated * Acceleration * step;
 
@@ -72,14 +74,10 @@ namespace Zeldo.Control
 
 		public override void PostStep(float step)
 		{
-			// TODO: This can be optimized (probably by having knowledge of the parent shape).
-			// TODO: Probably use properties for these hardcoded values (or compute them in some way).
-			var n = Platform.Orientation.ToQuat() * vec3.UnitY;
-			var v = new vec3(0, Parent.FullHeight / 2 - 0.1f, 0);
-			var start = Parent.ControllingBody.Position.ToVec3() - Utilities.Project(v, n);
+			// All platforms are assumed flat (on top, at least). The shape is attached to the rigid body's shape.
+			var shape = (Shape2D)Platform.Shape.Tag;
 
-			// TODO: Consider applying edge forgiveness.
-			if (!PhysicsUtilities.Raycast(Parent.Scene.World, Platform, start, -n, 0.5f, out var results))
+			if (!shape.Contains(Parent.ManualPosition.ToVec3().swizzle.xz))
 			{
 				Parent.BecomeAirborneFromLedge();
 			}
