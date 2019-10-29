@@ -1,4 +1,5 @@
-﻿using Engine;
+﻿using System.Diagnostics;
+using Engine;
 using Engine.Core._3D;
 using Engine.Physics;
 using Engine.Physics.Verlet;
@@ -36,14 +37,19 @@ namespace Zeldo.Entities.Windmill
 			var p2 = Utilities.ParseVec3(data["P2"].Value<string>());
 			var count = data["SegmentCount"].Value<int>();
 			var length = data["SegmentLength"].Value<float>();
-			var points = new vec2[count];
+
+			Debug.Assert(count > 0, "Segment count must be positive.");
+			Debug.Assert(length > 0, "Segment length must be positive..");
+
+			var points = new vec2[count + 1];
 
 			// This value effectively stretches points beyond their target length, which results in a stiffer bridge.
-			float scale = Utilities.Distance(p2, p1) / (count - 1) / length;
+			float scale = Utilities.Distance(p2, p1) / count / length;
+			float yIncrement = (p2.y - p1.y) / count;
 
 			for (int i = 0; i < points.Length; i++)
 			{
-				points[i] = new vec2(length * i * scale, 0);
+				points[i] = new vec2(length * i * scale, -yIncrement * i);
 			}
 
 			position = p1;
@@ -53,7 +59,7 @@ namespace Zeldo.Entities.Windmill
 			flatOrientation = quat.FromAxisAngle(angle, vec3.UnitY);
 
 			// Since rope endpoints are fixed, planks are only created for non-endpoints.
-			bodies = new RigidBody[count - 2];
+			bodies = new RigidBody[count - 1];
 			models = new Model[bodies.Length];
 
 			var shape = new BoxShape(Width, Height, Depth);
