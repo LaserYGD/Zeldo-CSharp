@@ -6,13 +6,13 @@ namespace Engine.Timing
 {
 	public abstract class Timer : IComponent
 	{
-		private float elapsed;
-		private float duration;
+		protected float elapsed;
+		protected float duration;
 
 		protected Timer(float duration, float elapsed = 0)
 		{
-			Elapsed = elapsed;
 			Duration = duration;
+			Elapsed = elapsed;
 		}
 
 		public float Elapsed
@@ -32,7 +32,7 @@ namespace Engine.Timing
 			get => duration;
 			set
 			{
-				Debug.Assert(value > 0, "Duration must be positive.");
+				Debug.Assert(value >= 0, "Duration can't be negative.");
 				Debug.Assert(value >= elapsed, "Duration can't be less than the current elapsed time.");
 
 				duration = value;

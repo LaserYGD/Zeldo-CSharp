@@ -4,12 +4,16 @@ using System.Linq;
 using Engine;
 using Engine.Graphics._3D;
 using Engine.Graphics._3D.Rendering;
+using Engine.Input.Data;
 using Engine.Interfaces;
+using Engine.Messaging;
 using Engine.Sensors;
 using Engine.UI;
 using Engine.Utility;
 using Engine.View;
 using Jitter;
+using Zeldo.Entities.Player;
+using static Engine.GLFW;
 
 namespace Zeldo.Entities.Core
 {
@@ -18,8 +22,8 @@ namespace Zeldo.Entities.Core
 		private Camera3D camera;
 		private MasterRenderer3D renderer;
 		private List<Entity>[] entities;
-		private List<SceneFragment> fragments;
-		private PrimitiveRenderer3D debugPrimitives;
+		private SceneFragment lastFragment;
+		private PrimitiveRenderer3D primitives;
 
 		public Scene()
 		{
@@ -30,7 +34,6 @@ namespace Zeldo.Entities.Core
 				entities[i] = new List<Entity>();
 			}
 
-			fragments = new List<SceneFragment>();
 			Tags = new Dictionary<string, object>();
 		}
 
@@ -45,7 +48,7 @@ namespace Zeldo.Entities.Core
 				renderer.ShadowNearPlane = Properties.GetFloat("shadow.near.plane");
 				renderer.ShadowFarPlane = Properties.GetFloat("shadow.far.plane");
 
-				debugPrimitives = new PrimitiveRenderer3D(value, 10000, 1000);
+				primitives = new PrimitiveRenderer3D(value, 10000, 1000);
 			}
 		}
 
@@ -53,18 +56,20 @@ namespace Zeldo.Entities.Core
 		public Space Space { get; set; }
 		public World World { get; set; }
 		public MasterRenderer3D Renderer => renderer;
-		public PrimitiveRenderer3D DebugPrimitives => debugPrimitives;
+		public PrimitiveRenderer3D Primitives => primitives;
 
+		// TODO: Are tags needed?
 		// In this context, a "tag" means custom data optionally loaded with each fragment. Used as needed in order to
 		// implement custom features for different kinds of locations.
 		public Dictionary<string, object> Tags { get; }
 
+		// This is used for debug purposes.
+		public int Size => entities.Sum(l => l.Count);
+
 		public SceneFragment LoadFragment(string filename)
 		{
-			Debug.Assert(!fragments.Exists(f => f.Filename == filename), $"Attempting to load duplicate fragment {filename}.");
-
+			// TODO: Track fragments (and assert for duplicate fragments).
 			var fragment = SceneFragment.Load(filename, this);
-			fragments.Add(fragment);
 			renderer.Add(fragment.MapModel);
 			World.AddBody(fragment.MapBody);
 
@@ -78,11 +83,39 @@ namespace Zeldo.Entities.Core
 				}
 			}
 
+			lastFragment = fragment;
+
 			return fragment;
 		}
 
-		public void UnloadFragment()
+		// TODO: Should this be moved to the fragment class?
+		public void UnloadFragment(SceneFragment fragment)
 		{
+			var model = fragment.MapModel;
+			model.Dispose();
+
+			Renderer.Remove(model);
+			World.Remove(fragment.MapBody);
+
+			foreach (var e in fragment.Entities)
+			{
+				e.Dispose();
+				entities[(int)e.Group].Remove(e);
+			}
+		}
+
+		public void Reload()
+		{
+			var filename = lastFragment.Filename;
+
+			UnloadFragment(lastFragment);
+			LoadFragment(filename);
+
+			var player = (PlayerCharacter)entities[(int)EntityGroups.Player][0];
+			var p = lastFragment.Origin + lastFragment.Spawn;
+
+			player.Reset(p);
+			primitives.Clear();
 		}
 
 		public void Add(Entity entity)
@@ -107,6 +140,10 @@ namespace Zeldo.Entities.Core
 			return entities[(int)group].Cast<T>().ToList();
 		}
 
+		public void Dispose()
+		{
+		}
+
 		public void Update(float dt)
 		{
 			foreach (var list in entities)
@@ -120,7 +157,7 @@ namespace Zeldo.Entities.Core
 			renderer.VpMatrix = camera.ViewProjection;
 			renderer.Draw();
 
-			debugPrimitives.Flush();
+			primitives.Flush();
 		}
 	}
 }

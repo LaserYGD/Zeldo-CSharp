@@ -97,37 +97,6 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
-		public virtual void Dispose()
-		{
-			foreach (var attachment in attachments)
-			{
-				var target = attachment.Target;
-
-				switch (attachment.AttachmentType)
-				{
-					case EntityAttachmentTypes.Body:
-						Scene.World.RemoveBody(((TransformableBody)target).Body);
-
-						break;
-
-					case EntityAttachmentTypes.Model:
-						Scene.Renderer.Remove((Model)target);
-
-						break;
-
-					case EntityAttachmentTypes.Sensor:
-						Scene.Space.Remove((Sensor)target);
-
-						break;
-				}
-			}
-
-			if (controllingBody != null)
-			{
-				Scene.World.RemoveBody(controllingBody);
-			}
-		}
-
 		private void Attach(EntityAttachmentTypes attachmentType, ITransformable3D target, vec3? nullablePosition,
 		    quat? nullableOrientation)
 		{
@@ -273,6 +242,37 @@ namespace Zeldo.Entities.Core
 		public virtual bool OnContact(vec3 p, vec3 normal, vec3[] triangle, float penetration)
 		{
 			return true;
+		}
+
+		public virtual void Dispose()
+		{
+			foreach (var attachment in attachments)
+			{
+				var target = attachment.Target;
+
+				switch (attachment.AttachmentType)
+				{
+					case EntityAttachmentTypes.Body:
+						Scene.World.Remove(((TransformableBody)target).Body);
+
+						break;
+
+					case EntityAttachmentTypes.Model:
+						Scene.Renderer.Remove((Model)target);
+
+						break;
+
+					case EntityAttachmentTypes.Sensor:
+						Scene.Space.Remove((Sensor)target);
+
+						break;
+				}
+			}
+
+			if (controllingBody != null)
+			{
+				Scene.World.Remove(controllingBody);
+			}
 		}
 
 		public virtual void Update(float dt)

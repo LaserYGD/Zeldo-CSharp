@@ -263,7 +263,7 @@ namespace Jitter
                 RemoveConstraint(constraint);
 
             foreach (SoftBody.MassPoint massPoint in body.VertexBodies)
-                RemoveBody(massPoint, true);
+                Remove(massPoint, true);
 
             return true;
         }
@@ -425,17 +425,27 @@ namespace Jitter
             this.smallIterations = smallIterations;
         }
 
+        // TODO: Should this return a boolean?
         /// <summary>
         /// Removes a <see cref="RigidBody"/> from the world.
         /// </summary>
         /// <param name="body">The body which should be removed.</param>
         /// <returns>Returns false if the body could not be removed from the world.</returns>
-        public bool RemoveBody(RigidBody body)
+        public bool Remove(RigidBody body)
         {
-            return RemoveBody(body, false);
+            return Remove(body, false);
         }
 
-        private bool RemoveBody(RigidBody body, bool removeMassPoints)
+        // TODO: Should this return a boolean?
+        public void Remove(IEnumerable<RigidBody> bodies)
+        {
+            foreach (var b in bodies)
+            {
+                Remove(b);
+            }
+        }
+
+        private bool Remove(RigidBody body, bool removeMassPoints)
         {
             // Its very important to clean up, after removing a body
             if (!removeMassPoints && body.IsParticle) return false;

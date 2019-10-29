@@ -128,6 +128,7 @@ namespace Zeldo.Entities.Core
 
 		protected virtual void PostStep(float step)
 		{
+			// TODO: Should this be moved to the ground controller?
 			if (groundController != null && Ground == null && CastGround(out var results))
 			{
 				// TODO: Retrieve material as well.

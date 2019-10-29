@@ -1,4 +1,5 @@
-﻿using Engine.Core._3D;
+﻿using System.Collections.Generic;
+using Engine.Core._3D;
 using Engine.Lighting;
 using Engine.Shaders;
 using GlmSharp;
@@ -91,6 +92,14 @@ namespace Engine.Graphics._3D.Rendering
 		public override void Remove(Sprite3D sprite)
 		{
 			Remove(sprite.Source.Id, sprite);
+		}
+
+		public void Remove(IEnumerable<Sprite3D> sprites)
+		{
+			foreach (var s in sprites)
+			{
+				Remove(s);
+			}
 		}
 
 		public override void PrepareShadow()

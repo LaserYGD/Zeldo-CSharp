@@ -46,28 +46,14 @@ namespace Zeldo.Loops
 		private bool isFrameAdvanceReady;
 
 		private Sprite3D sprite;
-		private RepeatingTimer cubeTimer;
 
 		private int physicsMaxIterations;
-		private int cubeCount;
 
 		public GameplayLoop(TitleLoop titleLoop = null) : base(LoopTypes.Gameplay)
 		{
 			// TODO: Pull relevant objects from the title loop (likely camera and maybe scene).
 			camera = new Camera3D();
 			physicsMaxIterations = Properties.GetInt("physics.max.iterations");
-
-			cubeTimer = new RepeatingTimer(progress =>
-			{
-				var cube = new DummyCube(RigidBodyTypes.Dynamic, true);
-				cube.Position = scene.GetEntities<PlayerCharacter>(EntityGroups.Player)[0].Position +
-					new vec3(0.1f, 5, 0.6f);
-
-				scene.Add(cube);
-				cubeCount++;
-
-				return cubeCount < 25;
-			}, 0.5f, 0.5f);
 		}
 
 		public override void Initialize()
@@ -161,6 +147,50 @@ namespace Zeldo.Loops
 		}
 
 		public List<MessageHandle> MessageHandles { get; set; }
+		
+		private void ProcessKeyboard(KeyboardData data)
+		{
+			// Process frame advance.
+			if (isFrameAdvanceEnabled && data.Query(GLFW_KEY_F, InputStates.PressedThisFrame))
+			{
+				isFrameAdvanceReady = true;
+			}
+
+			// Process reload.
+			if (data.Query(GLFW_KEY_R, InputStates.PressedThisFrame))
+			{
+				// TODO: Clear the space visualizer.
+				scene.Reload();
+				jitterVisualizer.Clear();
+			}
+
+			bool controlHeld = data.Query(GLFW_KEY_LEFT_CONTROL, InputStates.Held) ||
+				data.Query(GLFW_KEY_RIGHT_CONTROL, InputStates.Held);
+
+			if (!controlHeld)
+			{
+				return;
+			}
+
+			// Toggle frame advance mode.
+			if (data.Query(GLFW_KEY_F, InputStates.PressedThisFrame))
+			{
+				isFrameAdvanceEnabled = !isFrameAdvanceEnabled;
+			}
+
+			// Toggle Jitter visualization.
+			if (data.Query(GLFW_KEY_J, InputStates.PressedThisFrame))
+			{
+				jitterVisualizer.IsEnabled = !jitterVisualizer.IsEnabled;
+			}
+
+			// Toggle the scene's master renderer (meshes, skeletons, and 3D sprites).
+			if (data.Query(GLFW_KEY_M, InputStates.PressedThisFrame))
+			{
+				var renderer = scene.Renderer;
+				renderer.IsEnabled = !renderer.IsEnabled;
+			}
+		}
 
 		private void CreateDebugCubes()
 		{
@@ -226,46 +256,8 @@ namespace Zeldo.Loops
 			MessageSystem.Unsubscribe(this);
 		}
 
-		private void ProcessKeyboard(KeyboardData data)
-		{
-			// Process frame advance.
-			if (isFrameAdvanceEnabled && data.Query(GLFW_KEY_F, InputStates.PressedThisFrame))
-			{
-				isFrameAdvanceReady = true;
-			}
-
-			bool controlHeld = data.Query(GLFW_KEY_LEFT_CONTROL, InputStates.Held) ||
-				data.Query(GLFW_KEY_RIGHT_CONTROL, InputStates.Held);
-
-			if (!controlHeld)
-			{
-				return;
-			}
-
-			// Toggle frame advance mode.
-			if (data.Query(GLFW_KEY_F, InputStates.PressedThisFrame))
-			{
-				isFrameAdvanceEnabled = !isFrameAdvanceEnabled;
-			}
-
-			// Toggle Jitter visualization.
-			if (data.Query(GLFW_KEY_J, InputStates.PressedThisFrame))
-			{
-				jitterVisualizer.IsEnabled = !jitterVisualizer.IsEnabled;
-			}
-
-			// Toggle the scene's master renderer (meshes, skeletons, and 3D sprites).
-			if (data.Query(GLFW_KEY_M, InputStates.PressedThisFrame))
-			{
-				var renderer = scene.Renderer;
-				renderer.IsEnabled = !renderer.IsEnabled;
-			}
-		}
-
 		public override void Update(float dt)
 		{
-			//cubeTimer.Update(dt);
-
 			if (!isFrameAdvanceEnabled || isFrameAdvanceReady)
 			{
 				sprite.Orientation *= quat.FromAxisAngle(dt, vec3.UnitY);
@@ -281,6 +273,14 @@ namespace Zeldo.Loops
 
 		public override void Draw()
 		{
+			var renderer = scene.Renderer;
+			var list = canvas.GetElement<DebugView>().GetGroup("Scene");
+			list.Add("Entities: " + scene.Size);
+			list.Add("Bodies: " + scene.World.RigidBodies.Count);
+			list.Add("Models: " + renderer.Models.Size);
+			list.Add("Skeletons: " + renderer.Skeletons.Size);
+			list.Add("Sprites: " + renderer.Sprites.Size);
+
 			scene.Draw(camera);
 			jitterVisualizer.Draw(camera);
 			spaceVisualizer.Draw();

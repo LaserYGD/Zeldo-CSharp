@@ -84,7 +84,7 @@ namespace Zeldo.Entities
 		{
 			var d = Utilities.Direction(flatRotation);
 
-			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(d.x, 0, d.y), Color.Cyan);
+			Scene.Primitives.DrawLine(Position, Position + new vec3(d.x, 0, d.y), Color.Cyan);
 
 			base.Update(dt);
 		}

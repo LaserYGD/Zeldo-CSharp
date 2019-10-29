@@ -101,5 +101,11 @@ namespace Zeldo.Entities.Windmill
 				models[i - 1].SetTransform(p, orientation);
 			}
 		}
+
+		public override void Dispose()
+		{
+			Scene.Renderer.Models.Remove(models);
+			Scene.World.Remove(bodies);
+		}
 	}
 }

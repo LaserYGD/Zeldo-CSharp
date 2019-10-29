@@ -1,4 +1,5 @@
-﻿using Engine.Interfaces._3D;
+﻿using System.Collections.Generic;
+using Engine.Interfaces._3D;
 using Engine.Lighting;
 using GlmSharp;
 using static Engine.GL;
@@ -64,6 +65,14 @@ namespace Engine.Graphics._3D.Rendering
 		public override void Remove(T item)
 		{
 			Remove(item.Mesh, item);
+		}
+
+		public void Remove(IEnumerable<T> items)
+		{
+			foreach (var item in items)
+			{
+				Remove(item);
+			}
 		}
 
 		protected override void Apply(Mesh key)

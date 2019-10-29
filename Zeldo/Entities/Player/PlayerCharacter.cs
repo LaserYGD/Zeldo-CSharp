@@ -454,10 +454,36 @@ namespace Zeldo.Entities.Player
 			}
 		}
 
+		// TODO: This function assumes respawning from the death plane. Should be generalized.
 		private void Respawn()
 		{
 			controllingBody.Position = new JVector(3, 4, 0);
 			controllingBody.LinearVelocity = JVector.Zero;
+		}
+
+		public void Reset(vec3 p)
+		{
+			// Reset body.
+			controllingBody.IsAffectedByGravity = true;
+			controllingBody.IsManuallyControlled = false;
+			controllingBody.Position = p.ToJVector();
+			controllingBody.LinearVelocity = JVector.Zero;
+
+			// Reset state.
+			state = PlayerStates.Airborne;
+
+			// Reset controllers.
+			activeController = aerialController;
+			ladderController.Ladder = null;
+			platformController.Platform = null;
+			Ground = null;
+
+			// Reset jumps.
+			RefreshJumps();
+
+			// Reset flags.
+			coyoteFlag.Reset();
+			platformFlag.Reset();
 		}
 
 		// TODO: Re-enable sliding later (if sliding is actually kept in the game).
@@ -802,7 +828,7 @@ namespace Zeldo.Entities.Player
 				facing = Utilities.Normalize((position - oldPosition).swizzle.xz);
 			}
 
-			Scene.DebugPrimitives.DrawLine(Position, Position + new vec3(facing.x, 0, facing.y), Color.Cyan);
+			Scene.Primitives.DrawLine(Position, Position + new vec3(facing.x, 0, facing.y), Color.Cyan);
 			*/
 		}
 

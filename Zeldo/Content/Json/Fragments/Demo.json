@@ -6,12 +6,6 @@
 
 	"Entities": [
 		{
-			"Type": "TreasureChest",
-			"Item": 100,
-			"Model": "WoodenChest.obj",
-			"Position": "15.5|16|-2"
-		},
-		{
 			"Type": "Ladder",
 			"Top": 15.5,
 			"Bottom": 1,
@@ -22,7 +16,7 @@
 		{
 			"Type": "Windmill.RopeBridge",
 			"P1": "12.65|16|2.72",
-			"P2": "12.65|16|-38.72",
+			"P2": "12.65|16|-36.72",
 			"Model": "Cube.obj",
 			"SegmentCount": "16", 
 			"SegmentLength": "1.1"

@@ -193,6 +193,11 @@ namespace Engine.Graphics._3D
 			buffer.Buffer(data, indices);
 		}
 
+		public void Clear()
+		{
+			buffer.Clear();
+		}
+
 		public unsafe void Flush()
 		{
 			if (buffer.Size == 0)

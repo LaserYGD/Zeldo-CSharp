@@ -49,6 +49,11 @@ namespace Engine.Graphics._3D.Rendering
 		// Exposing this publicly is useful for shadow map visualization.
 		public RenderTarget ShadowTarget => shadowMapTarget;
 
+		// These are used for debug purposes.
+		public ModelRenderer Models => modelRenderer;
+		public SpriteBatch3D Sprites => spriteBatch3D;
+		public SkeletonRenderer Skeletons => skeletonRenderer;
+
 		// Setting the VP matrix externally allows the same batch of models to be rendered from different perspectives
 		// (e.g. reflections in puddles).
 		public mat4 VpMatrix { get; set; }

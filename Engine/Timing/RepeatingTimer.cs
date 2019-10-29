@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Engine.Timing
 {
@@ -22,15 +23,17 @@ namespace Engine.Timing
 				return;
 			}
 
-			Elapsed += dt;
+			Debug.Assert(duration > 0, "Can't update a timer with a non-positive duration.");
 
-			while (Elapsed >= Duration && !IsPaused)
+			elapsed += dt;
+
+			while (elapsed >= duration && !IsPaused)
 			{
-				float previousDuration = Duration;
+				float previousDuration = duration;
 
 				// If the trigger function is null, the repeating timer ends (otherwise you'd be stuck in an infinite
 				// loop).
-				if (trigger == null || !trigger.Invoke(Elapsed % Duration))
+				if (trigger == null || !trigger.Invoke(elapsed % duration))
 				{
 					if (IsRepeatable)
 					{
@@ -45,7 +48,7 @@ namespace Engine.Timing
 					return;
 				}
 
-				Elapsed -= previousDuration;
+				elapsed -= previousDuration;
 			}
 
 			Tick?.Invoke(Progress);

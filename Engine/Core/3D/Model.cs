@@ -41,5 +41,12 @@ namespace Engine.Core._3D
 		{
 			WorldMatrix = mat4.Translate(Position) * Orientation.ToMat4 * mat4.Scale(Scale);
 		}
+
+		// TODO: Do meshes need to be unloaded?
+		public void Dispose()
+		{
+			Shader?.Dispose();
+			ShadowShader?.Dispose();
+		}
 	}
 }

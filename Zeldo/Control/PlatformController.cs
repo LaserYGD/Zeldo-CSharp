@@ -74,11 +74,12 @@ namespace Zeldo.Control
 		{
 			// TODO: This can be optimized (probably by having knowledge of the parent shape).
 			// TODO: Probably use properties for these hardcoded values (or compute them in some way).
-			var d = Platform.Orientation.ToQuat() * -vec3.UnitY;
-			var start = Parent.ControllingBody.Position.ToVec3() + d * (Parent.FullHeight / 2 - 0.1f);
+			var n = Platform.Orientation.ToQuat() * vec3.UnitY;
+			var v = new vec3(0, Parent.FullHeight / 2 - 0.1f, 0);
+			var start = Parent.ControllingBody.Position.ToVec3() - Utilities.Project(v, n);
 
 			// TODO: Consider applying edge forgiveness.
-			if (!PhysicsUtilities.Raycast(Parent.Scene.World, Platform, start, d, 0.75f, out var results))
+			if (!PhysicsUtilities.Raycast(Parent.Scene.World, Platform, start, -n, 0.5f, out var results))
 			{
 				Parent.BecomeAirborneFromLedge();
 			}

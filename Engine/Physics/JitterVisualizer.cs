@@ -28,6 +28,11 @@ namespace Engine.Physics
 
 		public bool IsEnabled { get; set; }
 
+		public void Clear()
+		{
+			primitives.Clear();
+		}
+
 		public void Draw(Camera3D camera)
 		{
 			if (!IsEnabled)

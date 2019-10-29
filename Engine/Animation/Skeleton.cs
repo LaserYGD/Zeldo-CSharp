@@ -80,5 +80,11 @@ namespace Engine.Animation
 		{
 			WorldMatrix = mat4.Translate(Position) * Orientation.ToMat4;
 		}
+
+		public void Dispose()
+		{
+			Shader?.Dispose();
+			ShadowShader.Dispose();
+		}
 	}
 }

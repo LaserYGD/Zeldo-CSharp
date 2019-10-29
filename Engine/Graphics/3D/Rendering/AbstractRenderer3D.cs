@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Engine.Interfaces._3D;
 using Engine.Lighting;
 using Engine.Shaders;
@@ -35,6 +36,9 @@ namespace Engine.Graphics._3D.Rendering
 		// Skeletons use a custom shader to create the shadow map (but it's easier and more future-proof to put the
 		// property here).
 		public virtual Shader ShadowShader => null;
+
+		// This is primarily used for debug purposes.
+		public int Size => map.Sum(pair => pair.Value.Count);
 
 		protected unsafe void Bind(uint bufferId, uint indexId)
 		{

@@ -68,6 +68,15 @@ namespace Engine.Graphics
 			}
 		}
 
+
+		// This clears the buffer *without* issuing draw calls.
+		public void Clear()
+		{
+			bufferSize = 0;
+			IndexCount = 0;
+			maxIndex = -1;
+		}
+
 		public unsafe uint Flush()
 		{
 			if (primitiveRestartEnabled)
@@ -93,9 +102,7 @@ namespace Engine.Graphics
 
 			uint count = (uint)IndexCount;
 
-			bufferSize = 0;
-			IndexCount = 0;
-			maxIndex = -1;
+			Clear();
 
 			return count;
 		}
