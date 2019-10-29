@@ -291,6 +291,7 @@
     <Compile Include="Utility\JsonUtilities.cs" />
     <Compile Include="Utility\Utilities.cs" />
     <Compile Include="View\CameraController3D.cs" />
+    <Compile Include="View\PanView.cs" />
     <Compile Include="Window.cs" />
   </ItemGroup>
   <ItemGroup>

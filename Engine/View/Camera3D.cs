@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using Engine.Messaging;
@@ -31,13 +32,23 @@ namespace Engine.View
 		public float OrthoWidth
 		{
 			get => orthoHalfWidth * 2;
-			set => orthoHalfWidth = value / 2;
+			set
+			{
+				Debug.Assert(value > 0, "Orthographic width must be positive.");
+
+				orthoHalfWidth = value / 2;
+			}
 		}
 
 		public float OrthoHeight
 		{
 			get => orthoHalfHeight * 2;
-			set => orthoHalfHeight = value / 2;
+			set
+			{
+				Debug.Assert(value > 0, "Orthographic height must be positive.");
+
+				orthoHalfHeight = value / 2;
+			}
 		}
 
 		public float NearPlane { get; set; }
@@ -58,8 +69,6 @@ namespace Engine.View
 		public quat Orientation { get; set; }
 		public mat4 ViewProjection { get; private set; }
 		public mat4 ViewProjectionInverse { get; private set; }
-
-		public CameraController3D Controller => controller;
 
 		public void Dispose()
 		{
@@ -84,13 +93,11 @@ namespace Engine.View
 		public void Attach(CameraController3D controller)
 		{
 			this.controller = controller;
-
-			controller.Initialize(this);
 		}
 
 		public void Update(float dt)
 		{
-			controller?.Update();
+			controller?.Update(dt);
 
 			mat4 view = new mat4(Orientation) * mat4.Translate(-Position.x, -Position.y, -Position.z);
 

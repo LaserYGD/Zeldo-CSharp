@@ -28,7 +28,9 @@ namespace Engine.Timing
 			{
 				float previousDuration = Duration;
 
-				if (!trigger(Elapsed % Duration))
+				// If the trigger function is null, the repeating timer ends (otherwise you'd be stuck in an infinite
+				// loop).
+				if (trigger == null || !trigger.Invoke(Elapsed % Duration))
 				{
 					if (IsRepeatable)
 					{

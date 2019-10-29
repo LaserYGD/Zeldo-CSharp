@@ -89,7 +89,7 @@ namespace Zeldo
 			list.Clear();
 			list.AddRange(springs.Select(s => s.Position));
 
-			var points = curve.Evaluate(Bones - 1);
+			var points = curve.ComputePoints(Bones - 1);
 			var bones = skeleton.Bones;
 
 			for (int i = 0; i < points.Length; i++)
