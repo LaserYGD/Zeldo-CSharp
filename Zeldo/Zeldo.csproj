@@ -99,7 +99,7 @@
     <None Include="Content\Json\Fragments\Demo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Json\Fragments\Windmill\Windmill.json">
+    <None Include="Content\Json\Fragments\Windmill.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Json\Hud.json">
@@ -256,6 +256,7 @@
     <Compile Include="Entities\Core\Entity.cs" />
     <Compile Include="Entities\Core\EntityAttachment.cs" />
     <Compile Include="Entities\Core\EntityAttachmentTypes.cs" />
+    <Compile Include="Entities\Core\EntityHandle.cs" />
     <Compile Include="Entities\Core\LivingEntity.cs" />
     <Compile Include="Entities\Core\Scene.cs" />
     <Compile Include="Entities\Core\SceneFragment.cs" />
@@ -297,6 +298,7 @@
     <Compile Include="Entities\TreasureChest.cs" />
     <Compile Include="Entities\Weapons\Bow.cs" />
     <Compile Include="Entities\Weapons\Weapon.cs" />
+    <Compile Include="Entities\Windmill\MotorizedEntity.cs" />
     <Compile Include="Entities\Windmill\MotorTree.cs" />
     <Compile Include="Entities\Windmill\MotorNode.cs" />
     <Compile Include="Entities\Windmill\RopeBridge.cs" />

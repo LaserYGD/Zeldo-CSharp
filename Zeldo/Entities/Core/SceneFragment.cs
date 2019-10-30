@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Engine.Core._3D;
 using Engine.Physics;
@@ -83,6 +84,26 @@ namespace Zeldo.Entities.Core
 				entity.Position = origin + p;
 				entity.Initialize(scene, block);
 				entities[i] = entity;
+			}
+
+			// This is used for the debug assertion below.
+			var ids = new HashSet<int>();
+
+			foreach (var entity in entities)
+			{
+				var id = entity.Id;
+
+				if (id == -1)
+				{
+					continue;
+				}
+
+				if (ids.Contains(id))
+				{
+					Debug.Fail($"Duplicate entity ID ({id}).");
+				}
+
+				ids.Add(id);
 			}
 
 			return entities;

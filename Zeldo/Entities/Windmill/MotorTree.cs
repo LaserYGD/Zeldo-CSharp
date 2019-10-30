@@ -1,19 +1,27 @@
-﻿using Engine;
+﻿using System.Diagnostics;
+using Engine;
 using Engine.Interfaces;
+using Engine.Interfaces._3D;
 
 namespace Zeldo.Entities.Windmill
 {
-	public class MotorTree : IDynamic
+	public class MotorTree
 	{
+		private MotorNode root;
 		private float rotation;
 
-		public MotorNode[] Nodes { get; set; }
+		public MotorTree(MotorNode root)
+		{
+			Debug.Assert(root != null, "Motor tree root can't be null.");
+
+			this.root = root;
+		}
 
 		public float AngularVelocity { get; set; }
 
-		public void Update(float dt)
+		public void PreStep(float step)
 		{
-			rotation += AngularVelocity * dt;
+			rotation += AngularVelocity * step;
 
 			// This always keeps the net rotation between zero and two pi.
 			if (rotation > Constants.TwoPi)
@@ -25,8 +33,7 @@ namespace Zeldo.Entities.Windmill
 				rotation += Constants.TwoPi;
 			}
 
-			// This assumes that the first entry is the root node.
-			Nodes[0].Apply(rotation);
+			root.Apply(rotation);
 		}
 	}
 }

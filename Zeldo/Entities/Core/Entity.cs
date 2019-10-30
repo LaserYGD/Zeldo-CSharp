@@ -22,6 +22,7 @@ namespace Zeldo.Entities.Core
 	{
 		private quat orientation;
 		private List<EntityAttachment> attachments;
+		private List<EntityHandle> handles;
 
 		// Using these variables helps ensure that static (and pseudo-static) physics bodies don't have their
 		// transforms set twice.
@@ -42,11 +43,17 @@ namespace Zeldo.Entities.Core
 			orientation = quat.Identity;
 			attachments = new List<EntityAttachment>();
 			Components = new ComponentCollection();
+
+			// -1 means that the entity had no explicit ID given when spawned from a fragment file.
+			Id = -1;
 		}
 		
 		protected ComponentCollection Components { get; }
 
 		public EntityGroups Group { get; }
+
+		// ID isn't set on all entities (only those meant to be retrieved via handles).
+		public int Id { get; private set; }
 
 		public Scene Scene { get; protected set; }
 		public RigidBody ControllingBody => controllingBody;
@@ -225,6 +232,58 @@ namespace Zeldo.Entities.Core
 		public virtual void Initialize(Scene scene, JToken data)
 		{
 			Scene = scene;
+
+			if (data == null)
+			{
+				return;
+			}
+
+			// Parse ID.
+			if (data.TryParse("Id", out int id))
+			{
+				Id = id;
+			}
+
+			// Parse handles.
+			var hToken = data["Handle"];
+			var hListToken = data["Handles"];
+
+			Debug.Assert(hToken == null || hListToken == null, "Duplicate entity handle blocks. Use either Handle " +
+				"(for singular handles) or Handles (for multiple handles).");
+
+			if (hToken != null || hListToken != null)
+			{
+				handles = new List<EntityHandle>();
+
+				if (hToken != null)
+				{
+					handles.Add(new EntityHandle(hToken));
+				}
+				else
+				{
+					foreach (var token in hListToken.Children())
+					{
+						handles.Add(new EntityHandle(token));
+					}
+				}
+			}
+		}
+
+		public void ResolveHandles(Scene scene)
+		{
+			// Managing handles in this way simplifies extending classes (since they don't need to manually track
+			// handles).
+			if (handles != null && handles.Count > 0)
+			{
+				ResolveHandles(scene, handles);
+
+				// Once handles have been resolved to actual entity references, handles aren't needed anymore.
+				handles = null;
+			}
+		}
+
+		protected virtual void ResolveHandles(Scene scene, List<EntityHandle> handles)
+		{
 		}
 
 		public void SetTransform(vec3 position, quat orientation)

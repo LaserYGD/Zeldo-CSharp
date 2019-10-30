@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Engine;
 using Engine.Interfaces._3D;
 using GlmSharp;
 
@@ -8,33 +7,31 @@ namespace Zeldo.Entities.Windmill
 	public class MotorNode
 	{
 		private IOrientable target;
-
 		private quat baseOrientation;
-		private vec3 axis;
+		private float radius;
 
-		public float Radius { get; private set; }
+		public MotorNode(IOrientable target, float radius)
+		{
+			this.target = target;
+			this.radius = radius;
+
+			// This assumes that the target's default (unrotated) orientation is set correctly when the node is
+			// constructed.
+			baseOrientation = target.Orientation;
+		}
 
 		public List<MotorNode> Children { get; } = new List<MotorNode>();
 
-		public void Attach(IOrientable target, float radius, vec3 axis)
-		{
-			this.target = target;
-			this.axis = axis;
-
-			// This assumes that 1) the target's rotation axis won't change once placed, and 2) the target will already
-			// be in its default (unrotated) orientation when this function is called.
-			baseOrientation = target.Orientation;
-			Radius = radius;
-		}
-
 		public void Apply(float rotation)
 		{
-			target.Orientation = baseOrientation * quat.FromAxisAngle(rotation, axis);
+			// This assumes that all models within the tree are oriented along the flat XZ plane by default.
+			target.Orientation = baseOrientation * quat.FromAxisAngle(rotation, vec3.UnitY);
 
 			foreach (MotorNode child in Children)
 			{
+				// TODO: Are radii being handled properly, or do distances need to be measured?
 				// This calculation maintains arc speed where the two objects touch (and flips the sign).
-				child.Apply(-rotation * Radius / child.Radius);
+				child.Apply(-rotation * radius / child.radius);
 			}
 		}
 	}

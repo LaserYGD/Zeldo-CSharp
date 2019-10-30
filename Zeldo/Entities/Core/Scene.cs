@@ -66,20 +66,30 @@ namespace Zeldo.Entities.Core
 		// This is used for debug purposes.
 		public int Size => entities.Sum(l => l.Count);
 
+		// TODO: Consider generating a fragment ID (in order to ensure that entity IDs are unique among fragments).
 		public SceneFragment LoadFragment(string filename)
 		{
 			// TODO: Track fragments (and assert for duplicate fragments).
 			var fragment = SceneFragment.Load(filename, this);
+			var eList = fragment.Entities;
+
 			renderer.Add(fragment.MapModel);
 			World.AddBody(fragment.MapBody);
 
 			// It's valid (though unlikely) for a fragment to contain no entities.
-			if (fragment.Entities != null)
+			if (eList != null)
 			{
-				foreach (var entity in fragment.Entities)
+				foreach (var e in eList)
 				{
 					// Entities are initialized by the fragment (which is why the regular Add function isn't used).
-					entities[(int)entity.Group].Add(entity);
+					entities[(int)e.Group].Add(e);
+				}
+
+				foreach (var e in eList)
+				{
+					// Handles must be resolved after all entities are initialized *and* added to their corresponding
+					// groups lists.
+					e.ResolveHandles(this);
 				}
 			}
 
@@ -137,6 +147,7 @@ namespace Zeldo.Entities.Core
 
 		public List<T> GetEntities<T>(EntityGroups group) where T : Entity
 		{
+			// TODO: Should this filter down to entities of the given type instead?
 			return entities[(int)group].Cast<T>().ToList();
 		}
 

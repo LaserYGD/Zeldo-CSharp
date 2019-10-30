@@ -39,7 +39,7 @@ namespace Zeldo.Entities
 			// Ladders can optionally be tilted slightly forward.
 			var orientation = quat.FromAxisAngle(flatRotation, vec3.UnitY);
 
-			if (data.TryGetValue("Tilt", out float tilt))
+			if (data.TryParse("Tilt", out float tilt))
 			{
 				CosineTilt = (float)Math.Cos(tilt);
 				orientation *= quat.FromAxisAngle(tilt, vec3.UnitZ);

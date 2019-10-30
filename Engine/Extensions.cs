@@ -51,7 +51,7 @@ namespace Engine
 			return s.Substring(0, index);
 		}
 
-		public static bool TryGetValue<T>(this JToken token, string key, out T result)
+		public static bool TryParse<T>(this JToken token, string key, out T result)
 		{
 			var data = token[key];
 

@@ -5,6 +5,15 @@
 	},
 
 	"Entities": [
+		{
+			"Type": "WindmillBlades",
+			"Position": "0|30|0",
+			"Orientation": "90|0|0",
+			"Handle": {
+				"Group": "Structure",
+				"Id": 1
+			}
+		}
 	],
 
 	"Origin": "0|0|0",
