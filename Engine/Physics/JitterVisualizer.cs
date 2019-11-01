@@ -42,6 +42,12 @@ namespace Engine.Physics
 
 			foreach (RigidBody body in world.RigidBodies)
 			{
+				// TODO: Incorporate soft bodies into this visualizer.
+				if (body is SoftBody.MassPoint)
+				{
+					continue;
+				}
+
 				var shape = body.Shape;
 				var color = GetColor(body);
 

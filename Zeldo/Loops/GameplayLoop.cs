@@ -108,15 +108,11 @@ namespace Zeldo.Loops
 			player.Unlock(PlayerSkills.Block);
 			player.Unlock(PlayerSkills.Parry);
 
-			var platform1 = new MovingPlatform(new vec3(3, 0.5f, 3), new vec3(0, 3, 0), new vec3(0, 3, 16), 3);
-			var platform2 = new MovingPlatform(new vec3(3, 0.5f, 3), new vec3(5, 2, 12), new vec3(5, 12, 12), 2);
-
 			// TODO: Load fragments from a save slot.
-			scene.Add(platform1);
-			scene.Add(platform2);
 			scene.Add(player);
 
-			var fragment = scene.LoadFragment("Demo.json");
+			//var fragment = scene.LoadFragment("Demo.json");
+			var fragment = scene.LoadFragment("Windmill.json");
 			player.Position = fragment.Origin + fragment.Spawn;
 
 			CreateDebugCubes();
@@ -195,8 +191,8 @@ namespace Zeldo.Loops
 		private void CreateDebugCubes()
 		{
 			/*
-			var cube = new DummyCube(RigidBodyTypes.Dynamic, false);
-			cube.Position = new vec3(0, 3.5f, 10);
+			var cube = new DummyCube(RigidBodyTypes.Dynamic, true, new vec3(3, 1, 3));
+			cube.Position = new vec3(5, 8, 5);
 
 			scene.Add(cube);
 			*/
@@ -204,13 +200,13 @@ namespace Zeldo.Loops
 			/*
 			var random = new Random();
 
-			for (int i = 0; i < 20; i++)
+			for (int i = 0; i < 10; i++)
 			{
-				float x = (float)random.NextDouble() * 10 - 5 + 10;
-				float y = (float)random.NextDouble() * 5 + 5;
+				float x = (float)random.NextDouble() * 10 - 5;
+				float y = (float)random.NextDouble() * 5 + 8;
 				float z = (float)random.NextDouble() * 10 - 5;
 
-				var cube = new DummyCube(RigidBodyTypes.Dynamic, true);
+				var cube = new DummyCube(RigidBodyTypes.Dynamic, true, new vec3(3, 0.5f, 3));
 				cube.Position = new vec3(x, y, z);
 
 				scene.Add(cube);

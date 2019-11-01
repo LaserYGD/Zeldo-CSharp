@@ -301,6 +301,7 @@
     <Compile Include="Entities\Windmill\MotorizedEntity.cs" />
     <Compile Include="Entities\Windmill\MotorTree.cs" />
     <Compile Include="Entities\Windmill\MotorNode.cs" />
+    <Compile Include="Entities\Windmill\Netting.cs" />
     <Compile Include="Entities\Windmill\RopeBridge.cs" />
     <Compile Include="Entities\Windmill\WindmillBlades.cs" />
     <Compile Include="Interfaces\IAscendable.cs" />

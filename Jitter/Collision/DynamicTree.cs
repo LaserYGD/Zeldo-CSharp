@@ -168,7 +168,6 @@ namespace Jitter.Collision
         public bool MoveProxy(int proxyId, ref JBBox aabb, JVector displacement)
         {
             Debug.Assert(0 <= proxyId && proxyId < _nodeCapacity);
-
             Debug.Assert(_nodes[proxyId].IsLeaf());
 
             if (_nodes[proxyId].AABB.Contains(ref aabb) != JBBox.ContainmentType.Disjoint)

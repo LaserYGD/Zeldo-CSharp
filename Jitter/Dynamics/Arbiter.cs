@@ -161,6 +161,13 @@ namespace Jitter.Dynamics
         public void AddContact(JVector point1, JVector point2, JVector normal, JVector[] triangle,
             float penetration, ContactSettings contactSettings)
         {
+            // Returning false means that the contact doesn't need to be kept (likely because data from the contact
+            // was used to manually update controllers).
+            if (!World.Events.RaiseContactCreated(body1, body2, point1, point2, normal, triangle, penetration))
+            {
+                return;
+            }
+
             JVector.Subtract(ref point1, ref body1.position, out var relPos1);
 
             lock (contactList)
@@ -171,6 +178,9 @@ namespace Jitter.Dynamics
                 {
                     index = SortCachedPoints(ref relPos1, penetration);
                     ReplaceContact(ref point1, ref point2, ref normal, triangle, penetration, index, contactSettings);
+
+                    // TODO: I added this return (to prevent contact count blowing up). Is this correct?
+                    return;
                 }
 
                 index = GetCacheEntry(ref relPos1, contactSettings.breakThreshold);
@@ -178,13 +188,6 @@ namespace Jitter.Dynamics
                 if (index >= 0)
                 {
                     ReplaceContact(ref point1, ref point2, ref normal, triangle, penetration, index, contactSettings);
-                }
-
-                // Returning false means that the contact doesn't need to be kept (likely because data from the contact
-                // was used to manually update controllers).
-                if (!World.Events.RaiseContactCreated(body1, body2, point1, point2, normal, triangle, penetration))
-                {
-                    return;
                 }
 
                 Contact contact = Contact.Pool.GetNew();

@@ -26,8 +26,8 @@ namespace Zeldo.Entities.Core
 
 		// Using these variables helps ensure that static (and pseudo-static) physics bodies don't have their
 		// transforms set twice.
-		private bool isSpawnPositionSet;
-		private bool isSpawnOrientationSet;
+		protected bool isSpawnPositionSet;
+		protected bool isSpawnOrientationSet;
 
 		protected vec3 position;
 		protected RigidBody controllingBody;
@@ -81,7 +81,7 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
-		public quat Orientation
+		public virtual quat Orientation
 		{
 			get => orientation;
 			set

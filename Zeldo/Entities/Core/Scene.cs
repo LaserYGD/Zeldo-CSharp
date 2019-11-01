@@ -48,7 +48,7 @@ namespace Zeldo.Entities.Core
 				renderer.ShadowNearPlane = Properties.GetFloat("shadow.near.plane");
 				renderer.ShadowFarPlane = Properties.GetFloat("shadow.far.plane");
 
-				primitives = new PrimitiveRenderer3D(value, 10000, 1000);
+				primitives = new PrimitiveRenderer3D(value, 200000, 20000);
 			}
 		}
 

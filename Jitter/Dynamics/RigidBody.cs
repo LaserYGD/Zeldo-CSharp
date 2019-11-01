@@ -313,8 +313,7 @@ namespace Jitter.Dynamics
             get => (flags & RigidBodyFlags.IsAffectedByGravity) > 0;
             set
             {
-                Debug.Assert(!IsStatic, "The gravity property shouldn't be called on static or pseudo-static bodies " +
-                    "since they're not affected by gravity anyway).");
+                Debug.Assert(!IsStatic || !value, "Can't enable gravity on static or pseudo-static bodies.");
 
                 ModifyFlag(RigidBodyFlags.IsAffectedByGravity, value);
             }

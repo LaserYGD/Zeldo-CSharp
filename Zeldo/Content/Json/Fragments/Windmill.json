@@ -6,16 +6,11 @@
 
 	"Entities": [
 		{
-			"Type": "WindmillBlades",
-			"Position": "0|30|0",
-			"Orientation": "90|0|0",
-			"Handle": {
-				"Group": "Structure",
-				"Id": 1
-			}
+			"Type": "Windmill.Netting",
+			"Position": "-10|10|-10"
 		}
 	],
 
 	"Origin": "0|0|0",
-	"Spawn": "6|3|0"
+	"Spawn": "0|2.5|0"
 }

@@ -121,6 +121,11 @@ namespace Engine.Graphics._3D
 			Buffer(points, color, GL_LINE_LOOP);
 		}
 
+		public void Draw(vec3 p, Color color)
+		{
+			Buffer(new [] { p }, color, GL_POINTS);
+		}
+
 		public void Draw(Line3D line, Color color)
 		{
 			DrawLine(line.P1, line.P2, color);
