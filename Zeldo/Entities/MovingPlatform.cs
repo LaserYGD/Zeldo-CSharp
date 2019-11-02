@@ -13,6 +13,7 @@ using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities
 {
+	// TODO: Actors seem to lag behind platforms by one step. Should be investigated.
 	public class MovingPlatform : Entity, IReceiver
 	{
 		private const float AngularSpeed = 2.5f;

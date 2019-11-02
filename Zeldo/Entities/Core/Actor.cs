@@ -82,6 +82,7 @@ namespace Zeldo.Entities.Core
 			// Flying actors should collide with all static triangles (since they don't use surface control).
 			if (groundController != null)
 			{
+				// TODO: This could result in the player computing surface type twice (could consider optimizing).
 				var surfaceType = SurfaceTriangle.ComputeSurfaceType(triangle, WindingTypes.CounterClockwise);
 
 				// While grounded, only wall and ceiling collisions should generate contacts.
@@ -113,7 +114,7 @@ namespace Zeldo.Entities.Core
 			var n = Utilities.ComputeNormal(triangle[0], triangle[1], triangle[2], WindingTypes.CounterClockwise,
 				false);
 
-			return JVector.Dot(controllingBody.LinearVelocity, n) < 0;
+			return JVector.Dot(controllingBody.LinearVelocity, n) >= 0;
 		}
 
 		protected virtual void PreStep(float step)
@@ -306,6 +307,7 @@ namespace Zeldo.Entities.Core
 			var body = CreateBody(scene, shape, RigidBodyTypes.Kinematic, flags);
 			body.ShouldGenerateContact = ShouldGenerateContact;
 			body.PreStep = PreStep;
+			body.MidStep = MidStep;
 			body.PostStep = PostStep;
 			body.IsFixedVertical = true;
 

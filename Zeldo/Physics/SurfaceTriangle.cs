@@ -27,14 +27,19 @@ namespace Zeldo.Physics
 		private static SurfaceTypes ComputeSurfaceType(vec3 normal, out float theta)
 		{
 			// This is the tilt angle from a perfectly flat floor.
-			theta = normal == vec3.UnitY
-				? 0
-				: Constants.PiOverTwo - Utilities.Angle(new vec3(normal.x, 0, normal.z), normal);
+			theta = ComputeTheta(normal);
 
 			// The wall threshold is defined as an angle range from a vertical wall (theta 90 degrees).
 			return Math.Abs(Constants.PiOverTwo - theta) <= PhysicsConstants.WallThreshold
 				? SurfaceTypes.Wall
 				: (normal.y < 0 ? SurfaceTypes.Ceiling : SurfaceTypes.Floor);
+		}
+
+		private static float ComputeTheta(vec3 normal)
+		{
+			return normal == vec3.UnitY
+				? 0
+				: Constants.PiOverTwo - Utilities.Angle(new vec3(normal.x, 0, normal.z), normal);
 		}
 		
 		public static float ComputeForgiveness(vec3 p, SurfaceTriangle surface)
@@ -59,7 +64,7 @@ namespace Zeldo.Physics
 
 		// These are used to project points onto the triangle (primarily used to "stick" actors onto a surface while
 		// moving).
-		private quat projectionQuat;
+		private quat flatProjection;
 
 		// "f" stands for "flat", but using a single character condenses complex calculation lines.
 		private vec2 fp0;
@@ -70,41 +75,37 @@ namespace Zeldo.Physics
 		private float doubleArea;
 
 		public SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, WindingTypes winding, int material,
-			bool shouldComputeFlatNormal = true) :
-			this(p0, p1, p2, Utilities.ComputeNormal(p0, p1, p2, winding), material, shouldComputeFlatNormal)
+			bool shouldComputeFlatNormal = false) :
+			this(p0, p1, p2, Utilities.ComputeNormal(p0, p1, p2, winding), material, null, shouldComputeFlatNormal)
 		{
 		}
 
-		public SurfaceTriangle(vec3[] points, vec3 normal, int material, bool shouldComputeFlatNormal = true) :
-			this(points[0], points[1], points[2], normal, material, shouldComputeFlatNormal)
+		public SurfaceTriangle(vec3[] points, vec3 normal, int material, SurfaceTypes? surfaceType = null,
+			bool shouldComputeFlatNormal = false) :
+			this(points[0], points[1], points[2], normal, material, surfaceType, shouldComputeFlatNormal)
 		{
 		}
 
-		public SurfaceTriangle(JVector[] points, vec3 normal, int material, bool shouldComputeFlatNormal = true) :
-			this(points[0].ToVec3(), points[1].ToVec3(), points[2].ToVec3(), normal, material, shouldComputeFlatNormal)
+		public SurfaceTriangle(JVector[] points, vec3 normal, int material, SurfaceTypes? surfaceType = null,
+			bool shouldComputeFlatNormal = false) :
+			this(points[0].ToVec3(), points[1].ToVec3(), points[2].ToVec3(), normal, material, surfaceType,
+				shouldComputeFlatNormal)
 		{
 		}
 
-		private SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, vec3 normal, int material, bool shouldComputeFlatNormal)
+		private SurfaceTriangle(vec3 p0, vec3 p1, vec3 p2, vec3 normal, int material, SurfaceTypes? surfaceType,
+			bool shouldComputeFlatNormal)
 		{
 			Points = new[] { p0, p1, p2 };
 			Normal = normal;
 			Material = material;
-
-			// If the normal is exactly unit Y (i.e. the triangle is exactly flat), some computations below would
-			// result in NaN without correction.
-			bool isNormalUnitY = Normal == vec3.UnitY;
-
-			var angle = Utilities.Angle(Normal, vec3.UnitY);
-			var axis = isNormalUnitY ? vec3.UnitY : Utilities.Cross(vec3.UnitY, Normal);
-
-			projectionQuat = quat.FromAxisAngle(angle, axis);
+			flatProjection = Utilities.ComputeFlatProjection(normal);
 
 			vec2[] flatPoints = new vec2[3];
 
 			for (int i = 0; i < Points.Length; i++)
 			{
-				flatPoints[i] = (Points[i] * projectionQuat).swizzle.xz;
+				flatPoints[i] = (Points[i] * flatProjection).swizzle.xz;
 			}
 
 			fp0 = flatPoints[0];
@@ -114,7 +115,20 @@ namespace Zeldo.Physics
 			// See https://stackoverflow.com/a/14382692/7281613.
 			doubleArea = -fp1.y * fp2.x + fp0.y * (-fp1.x + fp2.x) + fp0.x * (fp1.y - fp2.y) + fp1.x * fp2.y;
 
-			SurfaceType = ComputeSurfaceType(normal, out float theta);
+			// In some cases, surface type is pre-computed outside this constructor. Passing it in saves the
+			// calculations here.
+			float theta;
+
+			if (surfaceType.HasValue)
+			{
+				SurfaceType = surfaceType.Value;
+				theta = ComputeTheta(normal);
+			}
+			else
+			{
+				SurfaceType = ComputeSurfaceType(normal, out theta);
+			}
+			
 			Slope = (float)Math.Sin(theta);
 
 			// Downward-facing triangles are given a negative slope.
@@ -147,7 +161,7 @@ namespace Zeldo.Physics
 		public bool Project(vec3 p, out vec3 result)
 		{
 			// This is the flat projection.
-			vec2 a = (p * projectionQuat).swizzle.xz;
+			vec2 a = (p * flatProjection).swizzle.xz;
 
 			// See https://stackoverflow.com/a/14382692/7281613.
 			float s = 1 / doubleArea * (fp0.y * fp2.x - fp0.x * fp2.y + a.x * (fp2.y - fp0.y) + a.y * (fp0.x - fp2.x));
@@ -160,7 +174,22 @@ namespace Zeldo.Physics
 			// situation can only occur when you're extremely close to an edge).
 			result = Points[1] * s + Points[2] * t + Points[0] * u;
 
-			return !(s < 0) && !(t < 0) && !(u < 0);
+			return s >= 0 && t >= 0 && u >= 0;
+		}
+
+		public bool IsSame(JVector[] triangle)
+		{
+			const float Epsilon = 0.001f;
+
+			for (int i = 0; i < 3; i++)
+			{
+				if (Utilities.DistanceSquared(triangle[i].ToVec3(), Points[i]) > Epsilon)
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 	}
 }

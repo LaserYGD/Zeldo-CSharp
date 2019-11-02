@@ -144,9 +144,19 @@ namespace Engine.Utility
 			return v < min ? min : (v > max ? max : v);
 		}
 
+		public static float Dot(vec2 v)
+		{
+			return v.x * v.x + v.y * v.y;
+		}
+
 		public static float Dot(vec2 v1, vec2 v2)
 		{
 			return vec2.Dot(v1, v2);
+		}
+
+		public static float Dot(vec3 v)
+		{
+			return v.x * v.x + v.y * v.y + v.z * v.z;
 		}
 
 		public static float Dot(vec3 v1, vec3 v2)
@@ -332,6 +342,124 @@ namespace Engine.Utility
 			
 			return new quat(a.x, a.y, a.z, w);
 		}
+
+		// This is useful for transforming vectors back onto the flat XZ plane.
+		public static quat ComputeFlatProjection(vec3 normal)
+		{
+			var angle = Angle(normal, vec3.UnitY);
+			var axis = normal == vec3.UnitY ? vec3.UnitY : Cross(vec3.UnitY, normal);
+
+			return quat.FromAxisAngle(angle, axis);
+		}
+
+		public static bool Intersects(vec3 p1, vec3 p2, JVector[] triangle, vec3 normal, out vec3 result)
+		{
+			const float Epsilon = 0.0000001f;
+
+			result = vec3.Zero;
+
+			// See https://en.m.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm.
+			var v0 = triangle[0].ToVec3();
+			var v1 = triangle[1].ToVec3();
+			var v2 = triangle[2].ToVec3();
+			var e1 = v1 - v0;
+			var e2 = v2 - v0;
+			var ray = p2 - p1;
+			var h = Cross(ray, e2);
+			var a = Dot(e1, h);
+
+			// This means the ray is parallel to the triangle.
+			if (a > -Epsilon && a < Epsilon)
+			{
+				return false;
+			}
+
+			var f = 1 / a;
+			var s = p1 - v0;
+			var u = f * Dot(s, h);
+
+			if (u < 0 || u > 1)
+			{
+				return false;
+			}
+
+			var q = Cross(s, e1);
+			var v = f * Dot(ray, q);
+
+			if (v < 0 || u + v > 1)
+			{
+				return false;
+			}
+
+			// At this point, we can determine where on the line the intersection point lies.
+			var t = f * Dot(e2, q);
+
+			if (t > Epsilon && t < 1 / Epsilon)
+			//if (t >= 0 && t <= 1)
+			{
+				result = p1;// + ray * t;
+
+				return true;
+			}
+
+			// This means that there's a line intersection, but not a ray intersection.
+			return false;
+
+			/*
+			// See https://stackoverflow.com/q/45662439/7281613 (and the accepted response).
+			var ray = p2 - p1;
+			var d = Dot(normal, ray);
+
+			// This means the line is parallel to the plane.
+			if (d == 0)
+			{
+				return false;
+			}
+
+			var v = Dot(normal, triangle[0].ToVec3());
+			var t = (v - Dot(normal, p1)) / d;
+
+			// This means the triangle is behind the ray.
+			if (t < 0)
+			{
+				return false;
+			}
+
+			// This technically results in the result point being populated even if the point is outside the triangle,
+			// but that's fine since the boolean return value is unambigious.
+			result = p1 + ray * t;
+
+			return IsPointWithinTriangle(result, triangle, normal);
+			*/
+		}
+
+		/*
+		// Note that this only function transforms points to the flat plane (i.e. it's effectively a 2D test). The
+		// function does *not* verify if the given point lies on the triangle plane.
+		private static bool IsPointWithinTriangle(vec3 p, JVector[] triangle, vec3 normal)
+		{
+			// See https://stackoverflow.com/a/2049593/7281613.
+			float Sign(vec2 p1, vec2 p2, vec2 p3)
+			{
+				return (p1.x - p3.x) * (p2.y - p3.y) * (p1.y - p3.y);
+			}
+
+			// Points needs to be transformed flat before performing 2D calculations.
+			var transform = ComputeFlatProjection(normal);
+			var pFlat = (transform * p).swizzle.xz;
+			var v1 = (transform * triangle[0].ToVec3()).swizzle.xz;
+			var v2 = (transform * triangle[1].ToVec3()).swizzle.xz;
+			var v3 = (transform * triangle[2].ToVec3()).swizzle.xz;
+			var d1 = Sign(pFlat, v1, v2);
+			var d2 = Sign(pFlat, v2, v3);
+			var d3 = Sign(pFlat, v3, v1);
+
+			bool hasNegative = d1 < 0 || d2 < 0 || d3 < 0;
+			bool hasPositive = d1 > 0 || d2 > 0 || d3 > 0;
+
+			return !(hasNegative && hasPositive);
+		}
+		*/
 
 		public static void PositionItems<T>(T[] items, vec2 start, vec2 spacing) where T : class, IPositionable2D
 		{

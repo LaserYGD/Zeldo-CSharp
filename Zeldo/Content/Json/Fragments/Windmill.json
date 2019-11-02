@@ -5,10 +5,6 @@
 	},
 
 	"Entities": [
-		{
-			"Type": "Windmill.Netting",
-			"Position": "-10|10|-10"
-		}
 	],
 
 	"Origin": "0|0|0",

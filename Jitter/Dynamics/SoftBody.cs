@@ -57,7 +57,7 @@ namespace Jitter.Dynamics
             private float softness = 0.01f;
             private float distance;
 
-            private DistanceBehavior behavior = DistanceBehavior.LimitMaximumDistance;// DistanceBehavior.LimitDistance;
+            private DistanceBehavior behavior = DistanceBehavior.LimitMaximumDistance;
 
             /// <summary>
             /// Initializes a new instance of the DistanceConstraint class.
@@ -232,7 +232,6 @@ namespace Jitter.Dynamics
             internal JBBox boundingBox;
             internal int dynamicTreeID;
             internal TriangleVertexIndices indices;
-
 
             public JBBox BoundingBox => boundingBox;
             public int DynamicTreeID => dynamicTreeID;

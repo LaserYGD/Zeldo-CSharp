@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Engine;
 using Engine.Core;
@@ -49,7 +50,9 @@ namespace Zeldo.Entities.Player
 
 		// Flags
 		private TimedFlag coyoteFlag;
+		private TimedFlag coyoteWallFlag;
 		private TimedFlag platformFlag;
+		private TimedFlag wallStickFlag;
 
 		//private IInteractive interactionTarget;
 		//private IAscendable ascensionTarget;
@@ -71,14 +74,21 @@ namespace Zeldo.Entities.Player
 			state = PlayerStates.Airborne;
 
 			var coyoteTime = Properties.GetFloat("player.coyote.time");
+			var coyoteWallTime = Properties.GetFloat("player.coyote.wall.time");
 			var platformTime = Properties.GetFloat("player.platform.ignore.time");
+			var wallStickTime = Properties.GetFloat("player.wall.stick.time");
 
 			// Flags
 			coyoteFlag = Components.Add(new TimedFlag(coyoteTime));
 			coyoteFlag.OnExpiration = () => { jumpsRemaining--; };
 
+			coyoteWallFlag = Components.Add(new TimedFlag(coyoteWallTime));
+
 			platformFlag = Components.Add(new TimedFlag(platformTime));
 			platformFlag.OnExpiration = () => { platformFlag.Tag = null; };
+
+			wallStickFlag = Components.Add(new TimedFlag(wallStickTime));
+			wallStickFlag.OnExpiration = UnstickFromWall;
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 			int upgradeCount = Utilities.EnumCount<PlayerUpgrades>();
@@ -114,7 +124,6 @@ namespace Zeldo.Entities.Player
 
 		// The player owns their own inventory.
 		public Inventory Inventory { get; }
-		public SurfaceTriangle Wall { get; private set; }
 
 		// States are used by the controller class to more easily determine when to apply certain actions. Using a
 		// single bitfield is more efficient than many booleans.
@@ -140,7 +149,12 @@ namespace Zeldo.Entities.Player
 			groundController.Initialize(groundAcceleration, groundDeceleration, groundMaxSpeed);
 
 			// Wall movement
-			wallController = new WallController(this);
+			float wallAcceleration = Properties.GetFloat("player.wall.acceleration");
+			float wallDeceleration = Properties.GetFloat("player.wall.deceleration");
+			float wallMaxSpeed = Properties.GetFloat("player.wall.max.speed");
+
+			wallController = new WallController(this, wallStickFlag);
+			wallController.Initialize(wallAcceleration, wallDeceleration, wallMaxSpeed);
 
 			// Ladder movement
 			float ladderAcceleration = Properties.GetFloat("player.ladder.climb.acceleration");
@@ -198,6 +212,40 @@ namespace Zeldo.Entities.Player
 			if ((state & PlayerStates.OnLadder) > 0 && body == ladderController.Ladder.ControllingBody)
 			{
 				return false;
+			}
+
+			// While on a wall, contacts should be negated against that wall.
+			if ((state & PlayerStates.OnWall) > 0)
+			{
+				var wall = wallController.Wall;
+
+				// The player doesn't collide against the current wall triangle.
+				if (wall.IsSame(triangle))
+				{
+					return false;
+				}
+
+				// TODO: Consider finding a way to not recompute surface/normal data between this and Actor.
+				var surfaceType = SurfaceTriangle.ComputeSurfaceType(triangle, WindingTypes.CounterClockwise);
+
+				if (surfaceType == SurfaceTypes.Ceiling)
+				{
+					return true;
+				}
+
+				// While sliding on a wall, ground collisions are still handled using raycasting.
+				if (surfaceType == SurfaceTypes.Floor)
+				{
+					return false;
+				}
+
+				var n1 = wallController.Wall.Normal.swizzle.xz;
+				var n2 = Utilities.ComputeNormal(triangle[0], triangle[1], triangle[2], WindingTypes.CounterClockwise,
+					false).ToVec3().swizzle.xz;
+				var angle = Utilities.Angle(n1, n2);
+
+				// While sliding along a wall, the player only collides with walls at a sharp angle.
+				return angle < PhysicsConstants.WallThreshold;
 			}
 
 			return base.ShouldGenerateContact(body, triangle);
@@ -268,26 +316,10 @@ namespace Zeldo.Entities.Player
 			// For upward-moving (or sloped) platforms, it's possible for the player to land while still in a jumping
 			// state.
 			state |= (platform != null ? PlayerStates.OnPlatform : PlayerStates.OnGround);
-			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping);
+			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.OnWall);
 
 			RefreshJumps();
 			controller.OnLanding();
-		}
-
-		private void OnWallControlGained()
-		{
-			activeController = wallController;
-
-			var v = controllingBody.LinearVelocity;
-			controllingBody.IsAffectedByGravity = false;
-			controllingBody.LinearVelocity = v;
-
-			state |= PlayerStates.OnWall;
-			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.Vaulting);
-		}
-
-		private void OnWallLanding()
-		{
 		}
 
 		public override void BecomeAirborneFromLedge()
@@ -360,16 +392,21 @@ namespace Zeldo.Entities.Player
 
 		protected override void MidStep(float step)
 		{
-			if ((state & PlayerStates.Airborne) > 0 && ProcessAerialWallContacts())
+			if ((state & PlayerStates.Airborne) > 0)
 			{
-				OnWallControlGained();
+				ProcessAerialWallContacts();
 			}
 		}
 
 		// This function is only called if the player isn't currently on a wall.
-		private bool ProcessAerialWallContacts()
+		private void ProcessAerialWallContacts()
 		{
-			var velocity = controllingBody.LinearVelocity.ToVec3();
+			// Unlike the ground (which uses a single reference point), the player could hit multiple walls on the same
+			// step. If that happens, only the closest wall is counted as a collision.
+			var closestSquared = float.MaxValue;
+			var closestPoint = vec3.Zero;
+
+			SurfaceTriangle closestWall = null;
 
 			foreach (Arbiter arbiter in controllingBody.Arbiters)
 			{
@@ -378,13 +415,6 @@ namespace Zeldo.Entities.Player
 				for (int i = contacts.Count - 1; i >= 0; i--)
 				{
 					var contact = contacts[i];
-
-					// TODO: The player should be able to wall jump off the side of moving platforms as well.
-					if (contact.Triangle == null)
-					{
-						continue;
-					}
-
 					var b1 = contact.Body1;
 					var b2 = contact.Body2;
 
@@ -393,48 +423,98 @@ namespace Zeldo.Entities.Player
 						continue;
 					}
 
+					// TODO: Manage jumping into a corner (where on the step you gain wall control, you might already be embedded in an acute wall).
+					// While processing aerial wall hits, all static (or pseudo-static) contacts are negated.
+					contacts.RemoveAt(i);
+
 					var n = contact.Normal.ToVec3();
 
 					if (controllingBody == b1)
 					{
 						n *= -1;
 					}
+					else
+					{
+						// For the code below, b2 is meant to be the other body (not the player's controlling body).
+						b2 = b1;
+					}
 
 					// TODO: Could be optimized a bit by not constructing the full surface if it's a non-wall.
 					// TODO: Could also be optimized by computing the flat normal only as needed.
-					var surface = new SurfaceTriangle(contact.Triangle, n, 0);
+					var surfaceType = SurfaceTriangle.ComputeSurfaceType(n);
 
-					if (surface.SurfaceType != SurfaceTypes.Wall)
+					if (surfaceType != SurfaceTypes.Wall)
 					{
 						continue;
 					}
 
-					// This determines the side of the triangle on which the relevant capsule point lies. If it's
-					// opposite velocity, that means the point must have already passed through the plane.
-					var p = controllingBody.Position.ToVec3() - surface.FlatNormal * capsuleRadius;
-					var v = p - surface.Points[0];
-					var d = Utilities.Dot(v.swizzle.xz, velocity.swizzle.xz);
+					var tag = b2.Tag;
 
-					// Being equal to zero should be impossible here, but it's safer to check anyway.
-					if (d >= 0)
+					// TODO: Handle wall interaction on platforms as well.
+					// This means that the player hit a wall on the static map mesh (rather than a platform).
+					if (tag == null)
 					{
-						continue;
-					}
+						var triangle = contact.Triangle;
+						var surface = new SurfaceTriangle(triangle, n, 0, surfaceType, true);
 
-					if (surface.Project(p, out var result))
-					{
-						controllingBody.Position = result.ToJVector();
-						controllingBody.LinearVelocity = JVector.Zero;
+						// This determines the side of the triangle on which the relevant capsule point lies. If it's
+						// opposite velocity, that means the point must have already passed through the plane.
+						var offset = -surface.FlatNormal * capsuleRadius;
+						var p = controllingBody.Position.ToVec3();
+						var p1 = controllingBody.OldPosition.ToVec3() + offset;
+						var p2 = p + offset;
 
-						Wall = surface;
+						// TODO: Figure out why the intersection function seems to be wrong.
+						if (Utilities.Intersects(p1, p2, triangle, n, out var result))
+						//if (PhysicsUtilities.Raycast(Scene.World, p1, p2, out var results))
+						{
+							// Only the closest wall is used to gain wall control.
+							float squared = Utilities.DistanceSquared(result, p);
+							//float squared = Utilities.DistanceSquared(results.Position, p);
 
-						// Returning true means the player did successfully collide with a wall.
-						return true;
+							if (squared < closestSquared)
+							{
+								closestSquared = squared;
+								closestWall = surface;
+								closestPoint = result;
+								//closestPoint = results.Position;
+							}
+						}
 					}
 				}
 			}
 
-			return false;
+			// This means that at least one wall was successfully hit.
+			if (closestWall != null)
+			{
+				GainWallControl(closestWall, closestPoint);
+			}
+		}
+
+		private void GainWallControl(SurfaceTriangle surface, vec3 p)
+		{
+			activeController = wallController;
+			wallController.Wall = surface;
+
+			var v = controllingBody.LinearVelocity.ToVec3();
+			v -= Utilities.Project(v, surface.Normal);
+			controllingBody.LinearVelocity = v.ToJVector();
+			controllingBody.Position = (p + surface.FlatNormal * capsuleRadius).ToJVector();
+			controllingBody.IsAffectedByGravity = false;
+
+			state |= PlayerStates.OnWall;
+			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.Vaulting);
+		}
+
+		private void UnstickFromWall()
+		{
+			// TODO: Consider artifically boosting the player off the wall very slightly.
+			state |= PlayerStates.Airborne;
+			state &= ~PlayerStates.OnWall;
+
+			activeController = aerialController;
+			controllingBody.IsAffectedByGravity = true;
+			coyoteWallFlag.Refresh();
 		}
 
 		protected override void PostStep(float step)
@@ -476,6 +556,7 @@ namespace Zeldo.Entities.Player
 			activeController = aerialController;
 			ladderController.Ladder = null;
 			platformController.Platform = null;
+			wallController.Wall = null;
 			Ground = null;
 
 			// Reset jumps.

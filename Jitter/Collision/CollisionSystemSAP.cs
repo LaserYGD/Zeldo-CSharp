@@ -278,16 +278,17 @@ namespace Jitter.Collision
 
             return result;
         }
-		#endregion
+        #endregion
 
-		/// <summary>
-		/// Raycasts a single body. NOTE: For performance reasons terrain and trianglemeshshape aren't checked
-		/// against rays (rays are of infinite length). They are checked against segments
-		/// which start at rayOrigin and end in rayOrigin + rayDirection.
-		/// </summary>
-		// CUSTOM: Added triangle as an output parameter.
-		#region public override bool Raycast(RigidBody body, JVector rayOrigin, JVector rayDirection, out JVector normal, out float fraction)
-		public override bool Raycast(RigidBody body, JVector rayOrigin, JVector rayDirection, out JVector normal, out float fraction, out JVector[] triangle)
+        /// <summary>
+        /// Raycasts a single body. NOTE: For performance reasons terrain and trianglemeshshape aren't checked
+        /// against rays (rays are of infinite length). They are checked against segments
+        /// which start at rayOrigin and end in rayOrigin + rayDirection.
+        /// </summary>
+        // CUSTOM: Added triangle as an output parameter.
+        // TODO: Can this be optimized using this? https://en.m.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+        #region public override bool Raycast(RigidBody body, JVector rayOrigin, JVector rayDirection, out JVector normal, out float fraction)
+        public override bool Raycast(RigidBody body, JVector rayOrigin, JVector rayDirection, out JVector normal, out float fraction, out JVector[] triangle)
         {
             fraction = float.MaxValue;
 	        normal = JVector.Zero;
