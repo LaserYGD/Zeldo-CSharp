@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Linq;
+using Engine;
 using Engine.Core;
 using Engine.Physics;
+using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
 using Zeldo.Entities.Player;
@@ -14,13 +15,24 @@ namespace Zeldo.Control
 		private float acceleration;
 		private float deceleration;
 		private float maxSpeed;
+		private float wallGravity;
+		private float wallTerminalSpeed;
+		private float stickForgiveness;
 
-		private TimedFlag wallStickFlag;
+		private SingleTimer wallStickTimer;
 
 		// For the time being, only the player is capable of traversing walls.
-		public WallController(PlayerCharacter player, TimedFlag wallStickFlag) : base(player)
+		public WallController(PlayerCharacter player, SingleTimer wallStickTimer) : base(player)
 		{
-			this.wallStickFlag = wallStickFlag;
+			this.wallStickTimer = wallStickTimer;
+
+			// Simpler (for the time being, anyway) to just load properties here.
+			acceleration = Properties.GetFloat("player.wall.acceleration");
+			deceleration = Properties.GetFloat("player.wall.deceleration");
+			maxSpeed = Properties.GetFloat("player.wall.max.speed");
+			wallGravity = Properties.GetFloat("player.wall.gravity");
+			wallTerminalSpeed = Properties.GetFloat("player.wall.terminal.speed");
+			stickForgiveness = Properties.GetFloat("player.wall.stick.forgiveness");
 		}
 
 		public vec2 FlatDirection { get; set; }
@@ -30,33 +42,39 @@ namespace Zeldo.Control
 		public vec3 Normal { get; set; }
 		public SurfaceTriangle Wall { get; set; }
 
-		public void Initialize(float acceleration, float deceleration, float maxSpeed)
-		{
-			this.acceleration = acceleration;
-			this.deceleration = deceleration;
-			this.maxSpeed = maxSpeed;
-		}
-
+		// TODO: Apply edge forgiveness when sliding off the edge of a triangle (and becoming airborne).
 		public override void PreStep(float step)
 		{
 			var body = Parent.ControllingBody;
 			var v = body.LinearVelocity.ToVec3();
 
-			// TODO: Apply manual Y velocity (especially when moving down, a bit slower than gravity).
+			// "Wall gravity" only applies when moving downward (in order to give the player a little more control when
+			// setting up wall jumps).
+			v.y -= (v.y > 0 ? PhysicsConstants.Gravity : wallGravity) * step;
+
+			// TODO: Quickly decelerate if the wall is hit at a downward speed faster than terminal.
+			if (v.y < -wallTerminalSpeed)
+			{
+				v.y = -wallTerminalSpeed;
+			}
+
 			// TODO: Consider applying wall press logic (i.e. only move side to side if you're angled enough).
 			var flatV = v.swizzle.xz;
 
 			// Acceleration
 			if (Utilities.LengthSquared(FlatDirection) > 0)
 			{
-				// TODO: Cap max speed based on flat direction.
 				var perpendicular = Wall.FlatNormal.swizzle.xz;
 				perpendicular = new vec2(-perpendicular.y, perpendicular.x);
 				flatV += Utilities.Project(FlatDirection, perpendicular) * acceleration * step;
 
-				if (Utilities.LengthSquared(flatV) > maxSpeed * maxSpeed)
+				// This limits maximum speed based on flat direction. To me, this feels more natural than accelerating
+				// up to full speed even when barely moving sideways (relative to the wall).
+				var localMax = Math.Abs(Utilities.Dot(FlatDirection, perpendicular)) * maxSpeed;
+
+				if (Utilities.LengthSquared(flatV) > localMax * localMax)
 				{
-					flatV = Utilities.Normalize(flatV) * maxSpeed;
+					flatV = Utilities.Normalize(flatV) * localMax;
 				}
 			}
 			// Deceleration
@@ -81,9 +99,12 @@ namespace Zeldo.Control
 			// TODO: Apply a thin forgiveness range for staying on a wall.
 			var d = Utilities.Dot(FlatDirection, Wall.FlatNormal.swizzle.xz);
 
-			// This means that the flat direction is pressing away the wall.
-			if (d > 0)
+			// This means that the flat direction is pressing away the wall. A thin forgiveness angle (specified as a
+			// dot product value) is used to help stick the player while still moving in a direction *near* parallel
+			// to the wall.
+			if (d > stickForgiveness)
 			{
+				wallStickTimer.IsPaused = false;
 			}
 
 			body.LinearVelocity = v.ToJVector();

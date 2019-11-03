@@ -210,3 +210,5 @@
 
 - Something light-based (like, progressively lighting an area or tying platforming to light)
 
+- Multiple world origin stories from different races that are all based on elements of the actual origin (inspired by the Ocarina of Time cinematic that plays when you talk to Zelda, but that origin story doesn't really tie into the world)
+

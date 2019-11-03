@@ -12,8 +12,6 @@ namespace Engine.View
 		public PanView(Camera3D camera) : base(camera)
 		{
 			timer = new SingleTimer();
-			timer.IsPaused = true;
-			timer.IsRepeatable = true;
 		}
 
 		// If target is set, the camera orients itself to face the target each frame.
@@ -23,6 +21,7 @@ namespace Engine.View
 		// path (using the overloaded version below).
 		public void Refresh(vec3 p1, vec3 p2, float duration)
 		{
+			// TODO: Assign timer trigger function.
 			timer.Duration = duration;
 			timer.Tick = t =>
 			{
@@ -34,6 +33,7 @@ namespace Engine.View
 		{
 			Debug.Assert(path != null, "Given path was null.");
 
+			// TODO: Assign timer trigger function.
 			timer.Duration = duration;
 			timer.Tick = t =>
 			{

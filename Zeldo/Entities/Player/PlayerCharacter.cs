@@ -6,6 +6,7 @@ using Engine;
 using Engine.Core;
 using Engine.Interfaces._3D;
 using Engine.Physics;
+using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
@@ -26,6 +27,7 @@ using Zeldo.View;
 namespace Zeldo.Entities.Player
 {
 	// TODO: Jumping is processed via jumpsRemaining, not the actual skill flags. Could consider optimizing this.
+	// TODO: Add terminal velocity (maybe to all bodies).
 	public class PlayerCharacter : Actor
 	{
 		private const int AscendIndex = (int)PlayerSkills.Ascend;
@@ -48,11 +50,11 @@ namespace Zeldo.Entities.Player
 
 		private PlayerStates state;
 
-		// Flags
+		// Flags and timers
 		private TimedFlag coyoteFlag;
 		private TimedFlag coyoteWallFlag;
 		private TimedFlag platformFlag;
-		private TimedFlag wallStickFlag;
+		private SingleTimer wallStickTimer;
 
 		//private IInteractive interactionTarget;
 		//private IAscendable ascensionTarget;
@@ -84,11 +86,13 @@ namespace Zeldo.Entities.Player
 
 			coyoteWallFlag = Components.Add(new TimedFlag(coyoteWallTime));
 
-			platformFlag = Components.Add(new TimedFlag(platformTime));
+			platformFlag = new TimedFlag(platformTime);
 			platformFlag.OnExpiration = () => { platformFlag.Tag = null; };
 
-			wallStickFlag = Components.Add(new TimedFlag(wallStickTime));
-			wallStickFlag.OnExpiration = UnstickFromWall;
+			wallStickTimer = new SingleTimer(time =>
+			{
+				UnstickFromWall();
+			}, wallStickTime);
 
 			int skillCount = Utilities.EnumCount<PlayerSkills>();
 			int upgradeCount = Utilities.EnumCount<PlayerUpgrades>();
@@ -129,8 +133,9 @@ namespace Zeldo.Entities.Player
 		// single bitfield is more efficient than many booleans.
 		public PlayerStates State => state;
 
-		// This is used by the player controller.
+		// These are used by the player controller.
 		public int JumpsRemaining => jumpsRemaining;
+		public bool IsWallJumpAvailable => (state & PlayerStates.OnWall) > 0 || coyoteWallFlag.Value;
 
 		private AbstractController[] CreateControllers()
 		{
@@ -149,12 +154,7 @@ namespace Zeldo.Entities.Player
 			groundController.Initialize(groundAcceleration, groundDeceleration, groundMaxSpeed);
 
 			// Wall movement
-			float wallAcceleration = Properties.GetFloat("player.wall.acceleration");
-			float wallDeceleration = Properties.GetFloat("player.wall.deceleration");
-			float wallMaxSpeed = Properties.GetFloat("player.wall.max.speed");
-
-			wallController = new WallController(this, wallStickFlag);
-			wallController.Initialize(wallAcceleration, wallDeceleration, wallMaxSpeed);
+			wallController = new WallController(this, wallStickTimer);
 
 			// Ladder movement
 			float ladderAcceleration = Properties.GetFloat("player.ladder.climb.acceleration");
@@ -320,6 +320,7 @@ namespace Zeldo.Entities.Player
 
 			RefreshJumps();
 			controller.OnLanding();
+			wallStickTimer.Reset();
 		}
 
 		public override void BecomeAirborneFromLedge()
@@ -334,6 +335,10 @@ namespace Zeldo.Entities.Player
 
 		protected override void PreStep(float step)
 		{
+			// Flags are processed first (should result in more accurate timing).
+			wallStickTimer.Update(step);
+			platformFlag.Update(step);
+
 			base.PreStep(step);
 
 			var v = controllingBody.LinearVelocity;
@@ -564,7 +569,9 @@ namespace Zeldo.Entities.Player
 
 			// Reset flags.
 			coyoteFlag.Reset();
+			coyoteWallFlag.Reset();
 			platformFlag.Reset();
+			wallStickTimer.Reset();
 		}
 
 		// TODO: Re-enable sliding later (if sliding is actually kept in the game).
@@ -681,9 +688,9 @@ namespace Zeldo.Entities.Player
 			jumpsRemaining = skillsUnlocked[DoubleJumpIndex] ? TargetJumps : 1;
 			isJumpDecelerating = false;
 
-			// I'm pretty sure this logic is correct (whenever jumps are refreshed, the coyote flag should be reset as
-			// well).
+			// I'm pretty sure this logic is correct (resetting coyote flags whenever jumps are refreshed).
 			coyoteFlag.Reset();
+			coyoteWallFlag.Reset();
 		}
 
 		public bool TryAscend()
@@ -776,16 +783,6 @@ namespace Zeldo.Entities.Player
 			return Utilities.Dot(target.Position.swizzle.xz - position.swizzle.xz, facing) > 0;
 		}
 
-		public void Equip(Weapon<PlayerCharacter> weapon)
-		{
-			this.weapon = weapon;
-		}
-
-		public bool IsUnlocked(PlayerSkills skill)
-		{
-			return skillsUnlocked[(int)skill];
-		}
-
 		/*
 		public void Block()
 		{
@@ -802,7 +799,7 @@ namespace Zeldo.Entities.Player
 		}
 		*/
 
-		// TODO: Generalize this function to mount a ladder from any situation.
+		// TODO: Generalize this function to mount a ladder from any situation (rather than just the air).
 		public void Mount(Ladder ladder)
 		{
 			// TODO: Whip around as appropriate.
@@ -832,8 +829,15 @@ namespace Zeldo.Entities.Player
 			state |= PlayerStates.OnLadder;
 		}
 
+		public void Equip(Weapon<PlayerCharacter> weapon)
+		{
+			this.weapon = weapon;
+		}
+
 		public void Unlock(PlayerSkills skill)
 		{
+			Debug.Assert(!skillsUnlocked[(int)skill], $"Skill {skill} already unlocked.");
+
 			skillsUnlocked[(int)skill] = true;
 
 			switch (skill)
@@ -852,25 +856,21 @@ namespace Zeldo.Entities.Player
 
 		public void Unlock(PlayerUpgrades upgrade)
 		{
+			Debug.Assert(!upgradesUnlocked[(int)upgrade], $"Upgrade {upgrade} already unlocked.");
+		}
+
+		public bool IsUnlocked(PlayerSkills skill)
+		{
+			return skillsUnlocked[(int)skill];
+		}
+
+		public bool IsUnlocked(PlayerUpgrades upgrade)
+		{
+			return upgradesUnlocked[(int)upgrade];
 		}
 
 		public override void Update(float dt)
 		{
-			// TODO: Limit jumps and update ascends (should these happen during the physics step instead?)
-			/*
-			else switch (state)
-			{
-				case PlayerStates.Jumping when controllingBody.LinearVelocity.Y <= playerData.JumpLimit:
-					State = PlayerStates.Airborne;
-					break;
-
-
-				case PlayerStates.Ascending:
-					UpdateAscend(dt);
-					break;
-			}
-			*/
-
 			base.Update(dt);
 
 			var v = controllingBody.LinearVelocity;
@@ -883,26 +883,6 @@ namespace Zeldo.Entities.Player
 			list.Add($"Angular: {angular.X:F3} {angular.Y:F3} {angular.Z:F3}");
 
 			/*
-			var p = controllingBody.Position.ToVec3();
-			var v = controllingBody.LinearVelocity.ToVec3();
-			var entries = new []
-			{
-				$"P Position: {Position.x:N2}, {Position.y:N2}, {Position.z:N2}",
-				$"B position: {p.x:N2}, {p.y:N2}, {p.z:N2}",
-				$"Old position: {oldPosition.x:N2}, {oldPosition.y:N2}, {oldPosition.z:N2}",
-				$"Surface velocity: {SurfaceVelocity.x:N2}, {SurfaceVelocity.y:N2}, {SurfaceVelocity.z:N2}",
-				$"Body velocity: {v.x:N2}, {v.y:N2}, {v.z:N2}",
-				$"Flat direction: {controller.FlatDirection}",
-				$"Arbiters: {controllingBody.Arbiters.Count}",
-				$"Contacts: {controllingBody.Arbiters.Sum(a => a.ContactList.Count)}",
-				$"On surface: {OnSurface}",
-				$"Jumps remaining: {jumpsRemaining}"
-			};
-
-			debugView.GetGroup("Player").AddRange(entries);
-
-			base.Update(dt);
-
 			// TODO: This logic should be re-examined (or maybe applied to all actors).
 			if (position.x != oldPosition.x || position.z != oldPosition.z)
 			{

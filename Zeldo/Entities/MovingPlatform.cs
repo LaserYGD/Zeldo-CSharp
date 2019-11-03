@@ -13,7 +13,7 @@ using Zeldo.Entities.Core;
 
 namespace Zeldo.Entities
 {
-	// TODO: Actors seem to lag behind platforms by one step. Should be investigated.
+	// TODO: Actors seem to lag behind platforms by one step (noticeable when the platform is moving fast and rotating). Should be investigated.
 	public class MovingPlatform : Entity, IReceiver
 	{
 		private const float AngularSpeed = 2.5f;
@@ -39,7 +39,7 @@ namespace Zeldo.Entities
 				direction = !direction;
 
 				return true;
-			}, duration);
+			}, duration, TimerFlags.None);
 		}
 
 		public List<MessageHandle> MessageHandles { get; set; }

@@ -7,8 +7,10 @@ namespace Engine.Timing
 	{
 		private Func<float, bool> trigger;
 
-		public RepeatingTimer(Func<float, bool> trigger, float duration = 0, float elapsed = 0) :
-			base(duration, elapsed)
+		// Just like single timers, repeatable timers are repeatable by default (and start paused).
+		public RepeatingTimer(Func<float, bool> trigger, float duration = 0,
+			TimerFlags flags = TimerFlags.IsPaused | TimerFlags.IsRepeatable, float elapsed = 0) :
+			base(duration, elapsed, flags)
 		{
 			this.trigger = trigger;
 		}

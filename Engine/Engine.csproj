@@ -226,6 +226,7 @@
     <Compile Include="Timing\RepeatingTimer.cs" />
     <Compile Include="Timing\SingleTimer.cs" />
     <Compile Include="Timing\Timer.cs" />
+    <Compile Include="Timing\TimerFlags.cs" />
     <Compile Include="Utility\Ease.cs" />
     <Compile Include="Utility\XmlExtensions.cs" />
     <Compile Include="View\Camera3D.cs" />

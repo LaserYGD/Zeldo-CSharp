@@ -9,10 +9,12 @@ namespace Engine.Timing
 		protected float elapsed;
 		protected float duration;
 
-		protected Timer(float duration, float elapsed = 0)
+		protected Timer(float duration, float elapsed, TimerFlags flags)
 		{
 			Duration = duration;
 			Elapsed = elapsed;
+			IsPaused = (flags & TimerFlags.IsPaused) > 0;
+			IsRepeatable = (flags & TimerFlags.IsRepeatable) > 0;
 		}
 
 		public float Elapsed
@@ -44,6 +46,13 @@ namespace Engine.Timing
 		public bool IsComplete { get; protected set; }
 
 		public Action<float> Tick { get; set; }
+
+		public void Reset()
+		{
+			Elapsed = 0;
+			IsPaused = true;
+			IsComplete = false;
+		}
 
 		public abstract void Update(float dt);
 	}

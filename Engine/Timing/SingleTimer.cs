@@ -5,8 +5,10 @@ namespace Engine.Timing
 {
 	public class SingleTimer : Timer
 	{
-		public SingleTimer(Action<float> trigger = null, float duration = 0, float elapsed = 0) :
-			base(duration, elapsed)
+		// Single timers are repeatable by default (and start paused).
+		public SingleTimer(Action<float> trigger = null, float duration = 0,
+			TimerFlags flags = TimerFlags.IsPaused | TimerFlags.IsRepeatable, float elapsed = 0) :
+			base(duration, elapsed, flags)
 		{
 			Trigger = trigger;
 		}
