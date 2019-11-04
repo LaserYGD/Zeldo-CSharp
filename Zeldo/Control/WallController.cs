@@ -1,10 +1,10 @@
 ﻿using System;
 using Engine;
-using Engine.Core;
 using Engine.Physics;
 using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
+using Jitter.Dynamics;
 using Zeldo.Entities.Player;
 using Zeldo.Physics;
 
@@ -12,6 +12,10 @@ namespace Zeldo.Control
 {
 	public class WallController : AbstractController
 	{
+		private vec3 normal;
+		private SurfaceTriangle wall;
+		private RigidBody wallBody;
+
 		private float acceleration;
 		private float deceleration;
 		private float maxSpeed;
@@ -37,10 +41,30 @@ namespace Zeldo.Control
 
 		public vec2 FlatDirection { get; set; }
 
+		// This is used by the player to compute the nearest wall point.
+		public SurfaceTriangle Wall => wall;
+
 		// Normal and surface are mutually exclusive. Surfaces are used for the static world mesh, while the direct
 		// normal is used for wall jumping off pseudo-static bodies (like platforms).
-		public vec3 Normal { get; set; }
-		public SurfaceTriangle Wall { get; set; }
+		public void Refresh(RigidBody body, SurfaceTriangle wall)
+		{
+			this.wall = wall;
+
+			wallBody = body;
+		}
+
+		public void Refresh(RigidBody body, vec3 normal)
+		{
+			this.normal = normal;
+
+			wallBody = body;
+		}
+
+		public void Reset()
+		{
+			wall = null;
+			wallBody = null;
+		}
 
 		// TODO: Apply edge forgiveness when sliding off the edge of a triangle (and becoming airborne).
 		public override void PreStep(float step)
@@ -112,9 +136,42 @@ namespace Zeldo.Control
 
 		public override void PostStep(float step)
 		{
+			// This raycast distance is arbitrary. Should be short, but also long enough to catch transitions from
+			// one wall triangle to another.
+			const float RaycastLength = 0.5f;
+
 			// This means the player is on the static world mesh (rather than a moving platform).
-			if (Wall != null)
+			if (wall != null)
 			{
+				var player = (PlayerCharacter)Parent;
+				var radius = player.CapsuleRadius;
+				var body = Parent.ControllingBody;
+
+				// This point is used for raycasting. Pulling back the starting position by a small amount should
+				// increase stability against potential floating-point inconsistencies near the wall.
+				var n = wall.FlatNormal;
+				var p = body.Position.ToVec3() - n * (radius - 0.01f);
+
+				if (PhysicsUtilities.Raycast(Parent.Scene.World, wallBody, p, -n, RaycastLength,
+					out var results))
+				{
+					var triangle = results.Triangle;
+
+					// TODO: Verify that the new triangle isn't acute enough to cause a sideways collision instead.
+					if (!wall.IsSame(triangle))
+					{
+						wall = new SurfaceTriangle(triangle, results.Normal, 0, null, true);
+					}
+
+					// Note that the wall (and its flat normal) might have changed here (due to the condition above).
+					body.Position = (results.Position + wall.FlatNormal * radius).ToJVector();
+
+					return;
+				}
+
+				// TODO: Consider adding edge forgiveness.
+				// By this point, the player has moved off the current triangle (without transitioning to a new one).
+				player.BecomeAirborneFromWall();
 			}
 		}
 	}

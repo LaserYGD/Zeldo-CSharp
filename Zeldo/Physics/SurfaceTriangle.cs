@@ -179,11 +179,16 @@ namespace Zeldo.Physics
 
 		public bool IsSame(JVector[] triangle)
 		{
+			return IsSame(triangle.Select(t => t.ToVec3()).ToArray());
+		}
+
+		public bool IsSame(vec3[] triangle)
+		{
 			const float Epsilon = 0.001f;
 
 			for (int i = 0; i < 3; i++)
 			{
-				if (Utilities.DistanceSquared(triangle[i].ToVec3(), Points[i]) > Epsilon)
+				if (Utilities.DistanceSquared(triangle[i], Points[i]) > Epsilon)
 				{
 					return false;
 				}

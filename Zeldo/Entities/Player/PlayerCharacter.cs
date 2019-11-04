@@ -85,7 +85,7 @@ namespace Zeldo.Entities.Player
 			coyoteFlag.OnExpiration = () => { jumpsRemaining--; };
 
 			coyoteWallFlag = Components.Add(new TimedFlag(coyoteWallTime));
-			coyoteWallFlag.OnExpiration = () => { wallController.Wall = null; };
+			coyoteWallFlag.OnExpiration = () => { wallController.Reset(); };
 
 			platformFlag = new TimedFlag(platformTime);
 			platformFlag.OnExpiration = () => { platformFlag.Tag = null; };
@@ -139,6 +139,9 @@ namespace Zeldo.Entities.Player
 
 		public bool IsWallJumpAvailable => IsUnlocked(PlayerSkills.WallJump) && ((state & PlayerStates.OnWall) > 0 ||
 			coyoteWallFlag.Value);
+
+		// This is used by the wall controller.
+		public float CapsuleRadius => capsuleRadius;
 
 		private AbstractController[] CreateControllers()
 		{
@@ -507,8 +510,11 @@ namespace Zeldo.Entities.Player
 
 		private void GainWallControl(SurfaceTriangle surface, vec3 p)
 		{
+			// TODO: Retrieve the static world mesh in a simpler way.
+			var mapBody = Scene.World.RigidBodies.First(b => b.IsStatic && b.Tag == null);
+
 			activeController = wallController;
-			wallController.Wall = surface;
+			wallController.Refresh(mapBody, surface);
 
 			var v = controllingBody.LinearVelocity.ToVec3();
 			v -= Utilities.Project(v, surface.Normal);
@@ -581,7 +587,7 @@ namespace Zeldo.Entities.Player
 			activeController = aerialController;
 			ladderController.Ladder = null;
 			platformController.Platform = null;
-			wallController.Wall = null;
+			wallController.Reset();
 			Ground = null;
 
 			// Reset jumps.
@@ -753,7 +759,7 @@ namespace Zeldo.Entities.Player
 			state |= PlayerStates.Airborne | PlayerStates.Jumping;
 			state &= ~PlayerStates.OnWall;
 
-			wallController.Wall = null;
+			wallController.Reset();
 			activeController = aerialController;
 			aerialController.IgnoreDeceleration = true;
 			controllingBody.IsAffectedByGravity = true;
@@ -947,7 +953,6 @@ namespace Zeldo.Entities.Player
 			list.Add("Arbiters: " + controllingBody.Arbiters.Count);
 			list.Add("Contacts: " + controllingBody.Arbiters.Sum(a => a.ContactList.Count));
 			list.Add("Jump remaining: " + jumpsRemaining);
-			list.Add("Wall flag: " + coyoteWallFlag.Value);
 
 			/*
 			// TODO: This logic should be re-examined (or maybe applied to all actors).
