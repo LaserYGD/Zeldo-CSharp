@@ -102,6 +102,7 @@ namespace Zeldo.Loops
 			player.Unlock(PlayerSkills.Grab);
 			player.Unlock(PlayerSkills.Jump);
 			player.Unlock(PlayerSkills.DoubleJump);
+			player.Unlock(PlayerSkills.WallJump);
 			player.Unlock(PlayerSkills.Ascend);
 
 			// Combat skills.

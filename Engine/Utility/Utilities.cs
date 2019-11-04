@@ -127,13 +127,14 @@ namespace Engine.Utility
 			return (float)Math.Acos(Dot(v1, v2) / (v1.Length * v2.Length));
 		}
 
+		// This returns the shortest delta between the given angles (between -Pi and Pi).
 		public static float Delta(float angle1, float angle2)
 		{
 			float delta = Math.Abs(angle1 - angle2);
 
 			if (delta > Constants.Pi)
 			{
-				delta = Constants.TwoPi - delta;
+				delta = -(Constants.TwoPi - delta);
 			}
 
 			return delta;

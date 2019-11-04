@@ -85,6 +85,7 @@ namespace Zeldo.Entities.Player
 			coyoteFlag.OnExpiration = () => { jumpsRemaining--; };
 
 			coyoteWallFlag = Components.Add(new TimedFlag(coyoteWallTime));
+			coyoteWallFlag.OnExpiration = () => { wallController.Wall = null; };
 
 			platformFlag = new TimedFlag(platformTime);
 			platformFlag.OnExpiration = () => { platformFlag.Tag = null; };
@@ -135,7 +136,9 @@ namespace Zeldo.Entities.Player
 
 		// These are used by the player controller.
 		public int JumpsRemaining => jumpsRemaining;
-		public bool IsWallJumpAvailable => (state & PlayerStates.OnWall) > 0 || coyoteWallFlag.Value;
+
+		public bool IsWallJumpAvailable => IsUnlocked(PlayerSkills.WallJump) && ((state & PlayerStates.OnWall) > 0 ||
+			coyoteWallFlag.Value);
 
 		private AbstractController[] CreateControllers()
 		{
@@ -319,7 +322,7 @@ namespace Zeldo.Entities.Player
 			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.OnWall);
 
 			RefreshJumps();
-			controller.OnLanding();
+			controller.NullifyJumpBind();
 			wallStickTimer.Reset();
 		}
 
@@ -331,6 +334,18 @@ namespace Zeldo.Entities.Player
 			coyoteFlag.Refresh();
 
 			base.BecomeAirborneFromLedge();
+		}
+
+		public void BecomeAirborneFromWall()
+		{
+			state |= PlayerStates.Airborne;
+			state &= ~PlayerStates.OnWall;
+
+			activeController = aerialController;
+			controllingBody.IsAffectedByGravity = true;
+
+			// TODO: Don't refresh the coyote wall flag when vaulting over the top of a wall.
+			coyoteWallFlag.Refresh();
 		}
 
 		protected override void PreStep(float step)
@@ -509,6 +524,15 @@ namespace Zeldo.Entities.Player
 
 			state |= PlayerStates.OnWall;
 			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.Vaulting);
+
+			controller.NullifyJumpBind();
+			coyoteWallFlag.Reset();
+
+			// Touching a wall restores double jump.
+			if (IsUnlocked(PlayerSkills.DoubleJump))
+			{
+				jumpsRemaining = TargetJumps - 1;
+			}
 		}
 
 		private void UnstickFromWall()
@@ -516,9 +540,11 @@ namespace Zeldo.Entities.Player
 			// TODO: Consider artifically boosting the player off the wall very slightly.
 			state |= PlayerStates.Airborne;
 			state &= ~PlayerStates.OnWall;
-
+			
 			activeController = aerialController;
 			controllingBody.IsAffectedByGravity = true;
+
+			// The wall controller's wall reference is kept until the coyote wall flag expires.
 			coyoteWallFlag.Refresh();
 		}
 
@@ -690,6 +716,55 @@ namespace Zeldo.Entities.Player
 
 			// I'm pretty sure this logic is correct (resetting coyote flags whenever jumps are refreshed).
 			coyoteFlag.Reset();
+			coyoteWallFlag.Reset();
+		}
+
+		public void WallJump()
+		{
+			// The player can wall jump with some directional control (within an angle range of the wall's normal),
+			// rather than strictly perpendicular to the wall.
+			var flatWallNormal = wallController.Wall.Normal.swizzle.xz;
+			var flatWallAngle = Utilities.Angle(flatWallNormal);
+			var flatDirection = coyoteWallFlag.Value ? aerialController.FlatDirection : wallController.FlatDirection;
+
+			float resultAngle;
+
+			// If movement direction is neutral, the wall jump boosts directly away from the wall (at a 90-degree
+			// angle).
+			if (Utilities.LengthSquared(flatDirection) > 0)
+			{
+				var flatAngle = Utilities.Delta(Utilities.Angle(flatDirection), flatWallAngle);
+				var abs = Math.Abs(flatAngle);
+				var max = playerData.WallJumpMaxAngle;
+
+				// The player can still aim wall jumps sideways when pressing towards the wall.
+				if (abs > Constants.PiOverTwo)
+				{
+					flatAngle = (Constants.Pi - abs) * Math.Sign(flatAngle);
+				}
+
+				resultAngle = Utilities.Clamp(flatAngle, -max, max);
+				resultAngle += flatWallAngle;
+			}
+			else
+			{
+				resultAngle = flatWallAngle;
+			}
+
+			var s = Utilities.Direction(resultAngle) * playerData.WallJumpFlatSpeed;
+
+			controllingBody.LinearVelocity = new JVector(s.x, playerData.WallJumpYSpeed, s.y);
+
+			// This is almost the same logic as unsticking from a wall, but it's simpler to just repeat it.
+			state |= PlayerStates.Airborne | PlayerStates.Jumping;
+			state &= ~PlayerStates.OnWall;
+
+			wallController.Wall = null;
+			activeController = aerialController;
+			aerialController.IgnoreDeceleration = true;
+			controllingBody.IsAffectedByGravity = true;
+
+			wallStickTimer.Reset();
 			coyoteWallFlag.Reset();
 		}
 
@@ -872,15 +947,13 @@ namespace Zeldo.Entities.Player
 		public override void Update(float dt)
 		{
 			base.Update(dt);
-
-			var v = controllingBody.LinearVelocity;
-			var angular = controllingBody.AngularVelocity;
+			
 			var list = debugView.GetGroup("Player");
 			list.Add("State: " + State);
 			list.Add("Arbiters: " + controllingBody.Arbiters.Count);
 			list.Add("Contacts: " + controllingBody.Arbiters.Sum(a => a.ContactList.Count));
-			list.Add($"Linear: {v.X:F3} {v.Y:F3} {v.Z:F3}");
-			list.Add($"Angular: {angular.X:F3} {angular.Y:F3} {angular.Z:F3}");
+			list.Add("Jump remaining: " + jumpsRemaining);
+			list.Add("Wall flag: " + coyoteWallFlag.Value);
 
 			/*
 			// TODO: This logic should be re-examined (or maybe applied to all actors).

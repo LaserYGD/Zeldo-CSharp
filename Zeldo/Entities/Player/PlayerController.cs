@@ -94,7 +94,7 @@ namespace Zeldo.Entities.Player
 			grabBuffer.RequiresHold = !settings.UseToggleGrab;
 		}
 
-		public void OnLanding()
+		public void NullifyJumpBind()
 		{
 			jumpBindUsed = null;
 		}
@@ -112,12 +112,12 @@ namespace Zeldo.Entities.Player
 
 			ProcessLadder(data);
 
-			// Ascension reuses the jump bind (since it's conceptually also an "up" action), but requires an additional
-			// button to be held. By checking for ascension first, the jump input can be stored and reused for jump
-			// processing even if that additional bind isn't held.
-			if (!ProcessAscend(data, dt))
+			// The jump button is used for multiple skills (including regular jumps, wall jump, and ascend). The order
+			// in which these functions are called enforces the priority of those skills (ascend first, then wall jump,
+			// then regular jumps).
+			if (!(ProcessAscend(data, dt) || ProcessWallJump(data)))
 			{
-				ProcessJumping(data, dt);
+				ProcessJump(data);
 			}
 
 			ProcessAttack(data, dt);
@@ -211,10 +211,25 @@ namespace Zeldo.Entities.Player
 		}
 		*/
 
-		private void ProcessJumping(FullInputData data, float dt)
+		private bool ProcessWallJump(FullInputData data)
 		{
-			// If this is true, it's assumed that the jump bind must have been populated. Note that this case also
-			// handles breaking from ascend via a jump.
+			if (player.IsWallJumpAvailable && data.Query(controls.Jump, InputStates.PressedThisFrame,
+				out var bind))
+			{
+				player.WallJump();
+				jumpBindUsed = bind;
+
+				return true;
+			}
+
+			return false;
+		}
+
+		private void ProcessJump(FullInputData data)
+		{
+			// If this is true, it's assumed that the jump bind must have been populated. Note that this behavior (jump
+			// limiting) applies to multiple kinds of jumps (including regular jumps, breaking ascends, wall jumps, and
+			// maybe more).
 			if ((player.State & PlayerStates.Jumping) > 0)
 			{
 				if (data.Query(jumpBindUsed, InputStates.ReleasedThisFrame) &&
@@ -227,15 +242,16 @@ namespace Zeldo.Entities.Player
 				return;
 			}
 
+			// This also accounts for jump being unlocked.
 			if (player.JumpsRemaining == 0)
 			{
 				return;
 			}
 
-			// The jump bind might have already been set while processing ascension input.
-			if (data.Query(controls.Jump, InputStates.PressedThisFrame, out jumpBindUsed))
+			if (data.Query(controls.Jump, InputStates.PressedThisFrame, out var bind))
 			{
 				player.Jump();
+				jumpBindUsed = bind;
 			}
 		}
 

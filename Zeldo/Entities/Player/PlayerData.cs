@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Utility;
 
 namespace Zeldo.Entities.Player
 {
@@ -12,6 +13,16 @@ namespace Zeldo.Entities.Player
 			JumpDeceleration = Properties.GetFloat("player.jump.deceleration");
 			DoubleJumpSpeed = Properties.GetFloat("player.double.jump.speed");
 			DoubleJumpLimit = Properties.GetFloat("player.double.jump.limit");
+
+			// Wall jump
+			var wallJumpSpeed = Properties.GetFloat("player.wall.jump.speed");
+			var wallJumpAngle = Properties.GetFloat("player.wall.jump.angle");
+			var d = Utilities.Direction(wallJumpAngle);
+
+			// Wall jump values are specified as speed + angle, but stored more simply as flat speed and Y speed.
+			WallJumpFlatSpeed = d.x * wallJumpSpeed;
+			WallJumpYSpeed = d.y * wallJumpSpeed;
+			WallJumpMaxAngle = Properties.GetFloat("player.wall.jump.max.angle");
 
 			// Platforms
 			PlatformJumpSpeed = Properties.GetFloat("player.platform.jump.speed");
@@ -44,7 +55,12 @@ namespace Zeldo.Entities.Player
 		// double jumps.
 		public float DoubleJumpLimit { get; }
 
-		// Platforms)
+		// Wall jump
+		public float WallJumpFlatSpeed { get; }
+		public float WallJumpYSpeed { get; }
+		public float WallJumpMaxAngle { get; }
+
+		// Platforms
 		public float PlatformJumpSpeed { get; }
 		public float PlatformJumpThreshold { get; }
 

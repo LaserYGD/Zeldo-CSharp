@@ -14,6 +14,7 @@ namespace Zeldo.Entities.Player
 		Grab,
 		Jump,
 		DoubleJump,
-		Parry
+		Parry,
+		WallJump
 	}
 }
