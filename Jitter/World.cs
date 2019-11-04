@@ -636,12 +636,6 @@ namespace Jitter
             sw.Stop();
             debugTimes[(int)DebugType.CollisionDetect] = sw.Elapsed.TotalMilliseconds;
 
-            // Mid-step (allows entities to manually process contacts as needed).
-            foreach (RigidBody body in rigidBodies)
-            {
-                body.MidStep?.Invoke(timestep);
-            }
-
             // Add arbiters (that were detected).
             sw.Reset();
             sw.Start();
@@ -653,6 +647,12 @@ namespace Jitter
 
             sw.Stop();
             debugTimes[(int)DebugType.BuildIslands] = sw.Elapsed.TotalMilliseconds + ms;
+
+            // Mid-step (allows entities to manually process contacts as needed).
+            foreach (RigidBody body in rigidBodies)
+            {
+                body.MidStep?.Invoke(timestep);
+            }
 
             // Check deactivation (i.e. sleep bodies as applicable).
             sw.Reset();
@@ -1051,11 +1051,11 @@ namespace Jitter
                 if (arbiter == null)
                 {
                     arbiter = Arbiter.Pool.GetNew();
-                    arbiter.body1 = body1; arbiter.body2 = body2;
+                    arbiter.body1 = body1;
+                    arbiter.body2 = body2;
+
                     arbiterMap.Add(new ArbiterKey(body1, body2), arbiter);
-
                     addedArbiterQueue.Enqueue(arbiter);
-
                     events.RaiseBodiesBeginCollide(body1, body2);
                 }
             }

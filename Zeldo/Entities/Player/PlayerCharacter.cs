@@ -231,15 +231,11 @@ namespace Zeldo.Entities.Player
 				// TODO: Consider finding a way to not recompute surface/normal data between this and Actor.
 				var surfaceType = SurfaceTriangle.ComputeSurfaceType(triangle, WindingTypes.CounterClockwise);
 
-				if (surfaceType == SurfaceTypes.Ceiling)
+				switch (surfaceType)
 				{
-					return true;
-				}
-
-				// While sliding on a wall, ground collisions are still handled using raycasting.
-				if (surfaceType == SurfaceTypes.Floor)
-				{
-					return false;
+					// While sliding on a wall, ground collisions are still handled using raycasting.
+					case SurfaceTypes.Floor: return false;
+					case SurfaceTypes.Ceiling: return true;
 				}
 
 				var n1 = wallController.Wall.Normal.swizzle.xz;
@@ -459,8 +455,6 @@ namespace Zeldo.Entities.Player
 						b2 = b1;
 					}
 
-					// TODO: Could be optimized a bit by not constructing the full surface if it's a non-wall.
-					// TODO: Could also be optimized by computing the flat normal only as needed.
 					var surfaceType = SurfaceTriangle.ComputeSurfaceType(n);
 
 					if (surfaceType != SurfaceTypes.Wall)
