@@ -6,6 +6,7 @@ using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Dynamics;
+using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;
 using Zeldo.Physics;
 
@@ -75,13 +76,16 @@ namespace Zeldo.Entities.Core
 				// Position will almost always be given, but can be omitted for certain entities (like rope bridges,
 				// which instead specify endpoints).
 				var jPosition = block["Position"];
+				var jOrientation = block["Orientation"];
 				var p = jPosition != null ? Utilities.ParseVec3(jPosition.Value<string>()) : vec3.Zero;
+				var o = jOrientation != null ? ParseQuat(jOrientation) : quat.Identity;
 
 				Entity entity = (Entity)Activator.CreateInstance(type);
 
 				// Position is intentionally set before initialization so that entities can reuse that position as a
 				// custom origin if needed.
 				entity.Position = origin + p;
+				entity.Orientation = o;
 				entity.Initialize(scene, block);
 				entities[i] = entity;
 			}
@@ -107,6 +111,25 @@ namespace Zeldo.Entities.Core
 			}
 
 			return entities;
+		}
+
+		private static quat ParseQuat(JToken token)
+		{
+			// TODO: Should probably use radians directly at some point.
+			// Orientation is given as Euler angles (in degrees, not radians).
+			var tokens = token.Value<string>().Split('|');
+
+			Debug.Assert(tokens.Length == 3, "Entity orientation has the wrong format (should be pipe-separated " +
+				"Euler angles, given in degrees).");
+
+			float x = Utilities.ToRadians(float.Parse(tokens[0]));
+			float y = Utilities.ToRadians(float.Parse(tokens[1]));
+			float z = Utilities.ToRadians(float.Parse(tokens[2]));
+
+			// TODO: This might be wrong for non-zero angles on multiple axes. Should be investigated.
+			return quat.FromAxisAngle(x, vec3.UnitX) *
+				quat.FromAxisAngle(y, vec3.UnitY) *
+				quat.FromAxisAngle(z, vec3.UnitZ);
 		}
 
 		private SceneFragment(string filename)

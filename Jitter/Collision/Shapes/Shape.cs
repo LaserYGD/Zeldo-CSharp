@@ -221,7 +221,6 @@ namespace Jitter.Collision.Shapes
             }
         }
 
-
         /// <summary>
         /// Uses the supportMapping to calculate the bounding box. Should be overidden
         /// to make this faster.

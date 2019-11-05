@@ -74,6 +74,7 @@ namespace Zeldo.Control
 
 		public override void PostStep(float step)
 		{
+			// TODO: This assumes that the platform will be flat enough that only the top portion (with a known shape) is a floor. Might need ray tracing as an alternative.
 			// All platforms are assumed flat (on top, at least). The shape is attached to the rigid body's shape.
 			var shape = (Shape2D)Platform.Shape.Tag;
 

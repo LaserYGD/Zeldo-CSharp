@@ -230,17 +230,7 @@ namespace Jitter.Dynamics
                 Debug.Assert(!IsManuallyControlled || isSpawnPositionUnset, "Position on manually-controlled bodies " +
                     "can only be set directly on spawn. After that, use SetTransform with a timestep.");
 
-                if (isSpawnPositionUnset)
-                {
-                    oldPosition = value;
-                    IsSpawnPositionSet = true;
-                }
-                else
-                {
-                    oldPosition = position;
-                }
-
-                position = value;
+                SetPosition(value);
                 Update();
             }
         }
@@ -262,17 +252,7 @@ namespace Jitter.Dynamics
                 Debug.Assert(!IsManuallyControlled || isSpawnOrientationUnset, "Orientation on manually-controlled " +
                     "bodies can only be set directly on spawn. After that, use SetTransform with a timestep.");
 
-                if (isSpawnOrientationUnset)
-                {
-                    oldOrientation = value;
-                    IsSpawnOrientationSet = true;
-                }
-                else
-                {
-                    oldOrientation = orientation;
-                }
-
-                orientation = value;
+                SetOrientation(value);
 		        Update();
 	        }
         }
@@ -588,29 +568,8 @@ namespace Jitter.Dynamics
 
         public void SetTransform(JVector position, JMatrix orientation)
         {
-            if (!IsSpawnPositionSet)
-            {
-                oldPosition = position;
-                IsSpawnPositionSet = true;
-            }
-            else
-            {
-                oldPosition = this.position;
-            }
-
-            if (!IsSpawnOrientationSet)
-            {
-                oldOrientation = orientation;
-                IsSpawnOrientationSet = true;
-            }
-            else
-            {
-                oldOrientation = this.orientation;
-            }
-
-            this.position = position;
-            this.orientation = orientation;
-
+            SetPosition(position);
+            SetOrientation(orientation);
             Update();
         }
 
@@ -619,18 +578,67 @@ namespace Jitter.Dynamics
             Debug.Assert(IsManuallyControlled, "This function should only be called for manually-controlled " +
                 "bodies.");
 
-	        SetTransform(position, orientation);
-
-	        linearVelocity = JVector.Multiply(position - oldPosition, 1 / step);
-
-            // TODO: Consider optimizing this (maybe this? https://stackoverflow.com/a/22172503).
-            // See https://stackoverflow.com/a/22167097.
-            var q1 = JQuaternion.CreateFromMatrix(orientation);
-            var q2 = JQuaternion.CreateFromMatrix(oldOrientation);
-            var diff = q2 * JQuaternion.Conjugate(q1);
-
-            angularVelocity = diff.ComputeEulerAngles() * (1 / step);
+            // TODO: This results in Update being called twice. Should be optimized.
+	        SetPosition(position, step);
+            SetOrientation(orientation, step);
         }
+
+	    public void SetPosition(JVector position, float step)
+	    {
+	        Debug.Assert(IsManuallyControlled, "This function should only be called for manually-controlled " +
+	            "bodies.");
+
+            SetPosition(position);
+	        linearVelocity = JVector.Multiply(position - oldPosition, 1 / step);
+            Update();
+        }
+
+	    private void SetPosition(JVector position)
+	    {
+	        if (!IsSpawnPositionSet)
+	        {
+	            oldPosition = position;
+	            IsSpawnPositionSet = true;
+	        }
+	        else
+	        {
+	            oldPosition = this.position;
+	        }
+
+	        this.position = position;
+	    }
+
+	    public void SetOrientation(JMatrix orientation, float step)
+	    {
+	        Debug.Assert(IsManuallyControlled, "This function should only be called for manually-controlled " +
+	            "bodies.");
+
+            SetOrientation(orientation);
+
+	        // TODO: Consider optimizing this (maybe this? https://stackoverflow.com/a/22172503).
+	        // See https://stackoverflow.com/a/22167097.
+	        var q1 = JQuaternion.CreateFromMatrix(orientation);
+	        var q2 = JQuaternion.CreateFromMatrix(oldOrientation);
+	        var diff = q2 * JQuaternion.Conjugate(q1);
+
+	        angularVelocity = diff.ComputeEulerAngles() * (1 / step);
+            Update();
+        }
+
+	    private void SetOrientation(JMatrix orientation)
+	    {
+	        if (!IsSpawnOrientationSet)
+	        {
+	            oldOrientation = orientation;
+	            IsSpawnOrientationSet = true;
+	        }
+	        else
+	        {
+	            oldOrientation = this.orientation;
+	        }
+
+	        this.orientation = orientation;
+	    }
 
         public void SweptExpandBoundingBox(float timestep)
         {

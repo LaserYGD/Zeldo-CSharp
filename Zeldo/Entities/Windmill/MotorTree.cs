@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
 using Engine;
-using Engine.Interfaces;
-using Engine.Interfaces._3D;
 
 namespace Zeldo.Entities.Windmill
 {
@@ -19,7 +17,7 @@ namespace Zeldo.Entities.Windmill
 
 		public float AngularVelocity { get; set; }
 
-		public void PreStep(float step)
+		public void Step(float step)
 		{
 			rotation += AngularVelocity * step;
 
@@ -33,7 +31,7 @@ namespace Zeldo.Entities.Windmill
 				rotation += Constants.TwoPi;
 			}
 
-			root.Apply(rotation);
+			root.Apply(rotation, step);
 		}
 	}
 }

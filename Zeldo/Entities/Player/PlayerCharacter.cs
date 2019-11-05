@@ -954,6 +954,8 @@ namespace Zeldo.Entities.Player
 			list.Add("Contacts: " + controllingBody.Arbiters.Sum(a => a.ContactList.Count));
 			list.Add("Jump remaining: " + jumpsRemaining);
 
+			DrawAxes();
+
 			/*
 			// TODO: This logic should be re-examined (or maybe applied to all actors).
 			if (position.x != oldPosition.x || position.z != oldPosition.z)
@@ -963,6 +965,17 @@ namespace Zeldo.Entities.Player
 
 			Scene.Primitives.DrawLine(Position, Position + new vec3(facing.x, 0, facing.y), Color.Cyan);
 			*/
+		}
+
+		private void DrawAxes()
+		{
+			const int Length = 1;
+
+			var p = position + new vec3(0, 1.1f, 0);
+			var primitives = Scene.Primitives;
+			primitives.DrawLine(p, p + vec3.UnitX * Length, Color.Red);
+			primitives.DrawLine(p, p + vec3.UnitY * Length, Color.Green);
+			primitives.DrawLine(p, p + vec3.UnitZ * Length, Color.Cyan);
 		}
 
 		/*

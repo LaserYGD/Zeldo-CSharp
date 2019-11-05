@@ -45,8 +45,6 @@ namespace Zeldo.Loops
 		private bool isFrameAdvanceEnabled;
 		private bool isFrameAdvanceReady;
 
-		private Sprite3D sprite;
-
 		private int physicsMaxIterations;
 
 		public GameplayLoop(TitleLoop titleLoop = null) : base(LoopTypes.Gameplay)
@@ -112,23 +110,18 @@ namespace Zeldo.Loops
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
 
-			var fragment = scene.LoadFragment("Demo.json");
-			//var fragment = scene.LoadFragment("Windmill.json");
+			//var fragment = scene.LoadFragment("Demo.json");
+			var fragment = scene.LoadFragment("Windmill.json");
 			player.Position = fragment.Origin + fragment.Spawn;
 
 			CreateDebugCubes();
 
 			camera.Attach(new FollowView(camera, player, settings));
 
-			sprite = new Sprite3D("Link.png");
-			sprite.Position = new vec3(0, 2.5f, -1);
-			sprite.Scale = new vec2(1.5f);
-
 			// TODO: Initialize renderer settings from a configuration file (based on user settings).
 			// TODO: Set light color and direction based on time of day and weather.
 			var renderer = scene.Renderer;
 			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.6f, -2f));
-			renderer.Add(sprite);
 
 			renderTargetUsers3D.Add(renderer);
 
@@ -257,8 +250,6 @@ namespace Zeldo.Loops
 		{
 			if (!isFrameAdvanceEnabled || isFrameAdvanceReady)
 			{
-				sprite.Orientation *= quat.FromAxisAngle(dt, vec3.UnitY);
-
 				// TODO: Should physics be multithreaded? Doing so caused physics to become inconsistent across multiple runs.
 				world.Step(dt, false, PhysicsStep, physicsMaxIterations);
 				space.Update();

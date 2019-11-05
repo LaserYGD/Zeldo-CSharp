@@ -28,7 +28,6 @@ using Jitter.Collision.Shapes;
 
 namespace Jitter.Collision.Shapes
 {
-
     /// <summary>
     /// A <see cref="Shape"/> representing a box.
     /// </summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Engine;
 using Engine.Core;
 using Engine.Core._3D;
@@ -13,6 +14,7 @@ using Engine.Shapes._3D;
 using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
+using Jitter.LinearMath;
 using Newtonsoft.Json.Linq;
 
 namespace Zeldo.Entities.Core
@@ -20,7 +22,6 @@ namespace Zeldo.Entities.Core
 	// TODO: Consider adding a flag to disable updates (for things like non-moving ladders).
 	public abstract class Entity : ITransformable3D, IDynamic, IDisposable
 	{
-		private quat orientation;
 		private List<EntityAttachment> attachments;
 		private List<EntityHandle> handles;
 
@@ -30,6 +31,7 @@ namespace Zeldo.Entities.Core
 		protected bool isSpawnOrientationSet;
 
 		protected vec3 position;
+		protected quat orientation;
 		protected RigidBody controllingBody;
 
 		// The entity's transform properties (Position and Orientation) also update attachments. Since the controlling
@@ -63,12 +65,28 @@ namespace Zeldo.Entities.Core
 			get => position;
 			set
 			{
+				// TODO: Is this needed? Should static controlling bodies be allowed at all?
 				Debug.Assert(!(controllingBody != null && controllingBody.BodyType == RigidBodyTypes.Static &&
 					isSpawnPositionSet), "For static entities (i.e. entities with a static controlling body), " +
 					"position can only be set on spawn.");
 
 				position = value;
-				attachments.ForEach(a => a.Target.Position = value + a.Position);
+
+				foreach (var attachment in attachments)
+				{
+					// Pseudo-static bodies can only have their position set on spawn.
+					if (attachment.AttachmentType == EntityAttachmentTypes.Body)
+					{
+						var body = ((TransformableBody)attachment.Target).Body;
+
+						if (body.BodyType == RigidBodyTypes.PseudoStatic && isSpawnPositionSet)
+						{
+							continue;
+						}
+					}
+
+					attachment.Target.Position = value + orientation * attachment.Position;
+				}
 
 				// Pseudo-static bodies can only have their position set on spawn.
 			    if (controllingBody != null && !selfUpdate &&
@@ -91,7 +109,22 @@ namespace Zeldo.Entities.Core
 					"orientation can only be set on spawn.");
 
 				orientation = value;
-				attachments.ForEach(a => a.Target.Orientation = value * a.Orientation);
+
+				foreach (var attachment in attachments)
+				{
+					// Pseudo-static bodies can only have their orientation set on spawn.
+					if (attachment.AttachmentType == EntityAttachmentTypes.Body)
+					{
+						var body = ((TransformableBody)attachment.Target).Body;
+
+						if (body.BodyType == RigidBodyTypes.PseudoStatic && isSpawnPositionSet)
+						{
+							continue;
+						}
+					}
+
+					attachment.Target.Orientation = value * attachment.Orientation;
+				}
 
 				// Pseudo-static bodies (like moving platforms) shouldn't have position set directly.
 				if (controllingBody != null && !selfUpdate &&
@@ -110,12 +143,30 @@ namespace Zeldo.Entities.Core
 			// The "a" prefix stands for "attachment".
 			vec3 aPosition = nullablePosition ?? vec3.Zero;
 			quat aOrientation = nullableOrientation ?? quat.Identity;
-			quat effectiveOrientation = orientation * aOrientation;
 
 			attachments.Add(new EntityAttachment(attachmentType, target, aPosition, aOrientation));
-			target.SetTransform(position + aPosition * effectiveOrientation, effectiveOrientation);
+			target.SetTransform(position + orientation * aPosition, orientation * aOrientation);
 		}
-		
+
+		private void Fan(int count, vec3 position, quat? orientation, vec3 axis, out vec3[] positions,
+			out quat[] orientations)
+		{
+			Debug.Assert(count > 0, "Fan count must be positive.");
+
+			var increment = Constants.TwoPi / count;
+			var q = orientation ?? quat.Identity;
+
+			positions = new vec3[count];
+			orientations = new quat[count];
+
+			for (int i = 0; i < count; i++)
+			{
+				var o = q * quat.FromAxisAngle(increment * i, axis);
+				orientations[i] = o;
+				positions[i] = o * position;
+			}
+		}
+
 		protected Model CreateModel(Scene scene, string filename, bool shouldAttach = true, vec3? position = null,
 			quat? orientation = null)
 		{
@@ -138,6 +189,23 @@ namespace Zeldo.Entities.Core
 			return model;
 		}
 
+		protected Model[] FanModels(Scene scene, string filename, int count, vec3 position, vec3 axis,
+			quat? orientation = null)
+		{
+			Fan(count, position, orientation, axis, out var positions, out var orientations);
+
+			var mesh = ContentCache.GetMesh(filename);
+			var models = new Model[count];
+
+			for (int i = 0; i < count; i++)
+			{
+				models[i] = CreateModel(scene, mesh, true, positions[i], orientations[i]);
+			}
+
+			return models;
+		}
+
+		// TODO: Add a FanSensors function.
 		protected Sensor CreateSensor(Scene scene, Shape3D shape = null, SensorGroups group = SensorGroups.None,
 			SensorTypes type = SensorTypes.Entity, vec3? position = null, quat? orientation = null)
 		{
@@ -155,6 +223,10 @@ namespace Zeldo.Entities.Core
 		{
 			Debug.Assert(shape != null, "Can't create a body with a null shape.");
 			Debug.Assert(!isControlling || controllingBody == null, "Controlling body is already set.");
+			Debug.Assert(!isControlling || (position == null && orientation == null), "Can't apply attachment " +
+				"offsets to a controlling body.");
+
+			// TODO: Is this needed? Might be simpler to disallow static body creation on entities entirely.
 			Debug.Assert(isControlling || bodyType != RigidBodyTypes.Static, "Can't create a non-controlling " +
 				"static body.");
 
@@ -185,6 +257,26 @@ namespace Zeldo.Entities.Core
 		    }
 
 			return body;
+		}
+
+		// This function is built for only pseudo-static bodies. Seems unlikely a fan would be needed for other types.
+		protected RigidBody[] FanBodies(Scene scene, Shape shape, int count, vec3 position, vec3 axis,
+			quat? orientation = null)
+		{
+			Fan(count, position, orientation, axis, out var positions, out var orientations);
+
+			var bodies = new RigidBody[count];
+
+			for (int i = 0; i < count; i++)
+			{
+				// TODO: This shares the shape. Does it need to be cloned?
+				var body = CreateBody(scene, shape, RigidBodyTypes.PseudoStatic, RigidBodyFlags.None, false, true,
+					positions[i], orientations[i]);
+				body.Tag = this;
+				bodies[i] = body;
+			}
+
+			return bodies;
 		}
 
 		protected void RemoveSensor(Sensor sensor = null)
@@ -285,11 +377,74 @@ namespace Zeldo.Entities.Core
 		protected virtual void ResolveHandles(Scene scene, List<EntityHandle> handles)
 		{
 		}
-
+		
 		public void SetTransform(vec3 position, quat orientation)
 		{
 			Position = position;
 			Orientation = orientation;
+		}
+
+		// TODO: Based on Jitter visualization, there seems to be an off-by-one error between bodies and models. Should be fixed.
+		public void Step(vec3 position, quat orientation, float step)
+		{
+			Debug.Assert(controllingBody != null, "Can't step attachments without a controlling body.");
+
+			// TODO: This duplicates some work (including Update withing RigidBody). Could probably be optimized.
+			Step(position, step);
+			Step(orientation, step);
+		}
+
+		public void Step(vec3 position, float step)
+		{
+			Debug.Assert(controllingBody != null, "Can't step without a controlling body.");
+
+			var jPosition = position.ToJVector();
+			controllingBody.SetPosition(jPosition, step);
+
+			foreach (var attachment in attachments)
+			{
+				if (attachment.AttachmentType != EntityAttachmentTypes.Body)
+				{
+					continue;
+				}
+
+				var body = ((TransformableBody)attachment.Target).Body;
+
+				if (body.BodyType == RigidBodyTypes.PseudoStatic)
+				{
+					var result = jPosition + JVector.Transform(attachment.Position.ToJVector(),
+						controllingBody.Orientation);
+
+					body.SetPosition(result, step);
+				}
+			}
+		}
+
+		public void Step(quat orientation, float step)
+		{
+			Debug.Assert(controllingBody != null, "Can't step without a controlling body.");
+
+			var jP = controllingBody.Position;
+			var jOrientation = orientation.ToJMatrix();
+			controllingBody.SetOrientation(jOrientation, step);
+
+			foreach (var attachment in attachments)
+			{
+				if (attachment.AttachmentType != EntityAttachmentTypes.Body)
+				{
+					continue;
+				}
+
+				var body = ((TransformableBody)attachment.Target).Body;
+
+				if (body.BodyType == RigidBodyTypes.PseudoStatic)
+				{
+					var p = jP + JVector.Transform(attachment.Position.ToJVector(), jOrientation);
+					var o = JMatrix.Multiply(attachment.Orientation.ToJMatrix(), jOrientation);
+
+					body.SetTransform(p, o, step);
+				}
+			}
 		}
 
 		public virtual bool OnContact(Entity entity, RigidBody body, vec3 p, vec3 normal, float penetration)

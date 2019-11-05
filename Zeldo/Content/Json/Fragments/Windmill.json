@@ -5,8 +5,16 @@
 	},
 
 	"Entities": [
+		{
+			"Type": "Windmill.WindmillBlades",
+			"Position": "0|10.75|0",
+			"Orientation": "90|0|0",
+			"Blades": 5,
+			"Radius": 2.2,
+			"Mesh": "Cube.obj"
+		}
 	],
 
 	"Origin": "0|0|0",
-	"Spawn": "0|2.5|0"
+	"Spawn": "0|2.5|-4"
 }
