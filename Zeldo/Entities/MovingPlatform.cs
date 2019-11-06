@@ -34,6 +34,11 @@ namespace Zeldo.Entities
 			this.p1 = p1;
 			this.p2 = p2;
 
+			var mid = (p1 + p2) / 2;
+
+			this.p1 = mid;
+			this.p2 = mid;
+
 			timer = new RepeatingTimer(t =>
 			{
 				direction = !direction;
@@ -80,11 +85,11 @@ namespace Zeldo.Entities
 			float tilt = Ease.Compute(t, EaseTypes.QuadraticInOut) * MaxTilt - MaxTilt / 2;
 
 			var p = vec3.Lerp(p1, p2, Ease.Compute(t, EaseTypes.Linear)).ToJVector();
-			var orientation = p1.y == p2.y
-				? quat.FromAxisAngle(angle, vec3.UnitY) * quat.FromAxisAngle(tilt, vec3.UnitX)
+			var o = p1.y == p2.y
+				? quat.FromAxisAngle(angle, vec3.UnitY)// * quat.FromAxisAngle(tilt, vec3.UnitX)
 				: quat.Identity;
 
-			controllingBody.SetTransform(p, orientation.ToJMatrix(), step);
+			controllingBody.SetTransform(p, o.ToJMatrix(), step);
 		}
 	}
 }

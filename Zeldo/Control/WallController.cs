@@ -43,6 +43,7 @@ namespace Zeldo.Control
 
 		// This is used by the player to compute the nearest wall point.
 		public SurfaceTriangle Wall => wall;
+		public RigidBody Body => wallBody;
 
 		// Normal and surface are mutually exclusive. Surfaces are used for the static world mesh, while the direct
 		// normal is used for wall jumping off pseudo-static bodies (like platforms).
@@ -69,6 +70,8 @@ namespace Zeldo.Control
 		// TODO: Apply edge forgiveness when sliding off the edge of a triangle (and becoming airborne).
 		public override void PreStep(float step)
 		{
+			return;
+
 			var body = Parent.ControllingBody;
 			var v = body.LinearVelocity.ToVec3();
 

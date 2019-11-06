@@ -60,16 +60,6 @@ namespace Zeldo.Control
 
 			Parent.ManualVelocity = v;
 			Parent.ManualPosition += Parent.ManualVelocity.ToJVector() * step;
-
-			var body = Parent.ControllingBody;
-			var orientation = Platform.Orientation;
-			var p = Platform.Position + JVector.Transform(Parent.ManualPosition, orientation) +
-				new JVector(0, Parent.FullHeight / 2, 0);
-			var yaw = orientation.ComputeYaw() + Parent.ManualYaw;
-
-			// TODO: Consider optimizing the orientation transform by marking the platform entity as fixed rotation.
-			body.SetTransform(p, JMatrix.CreateFromAxisAngle(JVector.Up, yaw), step);
-			Parent.BodyYaw = yaw;
 		}
 
 		public override void PostStep(float step)

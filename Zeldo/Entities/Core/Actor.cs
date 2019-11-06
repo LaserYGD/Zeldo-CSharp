@@ -10,6 +10,7 @@ using Jitter.Dynamics;
 using Jitter.LinearMath;
 using Zeldo.Control;
 using Zeldo.Physics;
+using Zeldo.UI;
 
 namespace Zeldo.Entities.Core
 {
@@ -23,6 +24,10 @@ namespace Zeldo.Entities.Core
 		protected AerialController aerialController;
 		protected GroundController groundController;
 		protected PlatformController platformController;
+
+		// These is used for multiple kinds of manual control (including platforms and walls).
+		protected RigidBody manualBody;
+		protected JVector manualOffset;
 
 		// TODO: Are both of these needed?
 		protected float capsuleHeight;
@@ -120,6 +125,17 @@ namespace Zeldo.Entities.Core
 		protected virtual void PreStep(float step)
 		{
 			activeController?.PreStep(step);
+
+			if (manualBody != null)
+			{
+				var o = manualBody.Orientation;
+				var p = manualBody.Position + JVector.Transform(ManualPosition, o) + manualOffset;
+				var yaw = o.ComputeYaw() + ManualYaw;
+
+				// TODO: Consider optimizing the orientation transform by marking the manual body as fixed yaw rotation.
+				controllingBody.SetTransform(p, JMatrix.CreateFromAxisAngle(JVector.Up, yaw), step);
+				BodyYaw = yaw;
+			}
 		}
 
 		protected virtual void MidStep(float step)
@@ -246,7 +262,7 @@ namespace Zeldo.Entities.Core
 				activeController = platformController;
 				platformController.Platform = platform;
 
-				RecomputeManualOffsets(p, platform);
+				RefreshManual(p, platform, new vec3(0, FullHeight / 2, 0));
 
 				return;
 			}
@@ -263,12 +279,15 @@ namespace Zeldo.Entities.Core
 			OnGroundTransition(surface);
 		}
 
-		protected void RecomputeManualOffsets(vec3 p, RigidBody body)
+		protected void RefreshManual(vec3 p, RigidBody body, vec3 offset)
 		{
-			var orientation = body.Orientation;
+			manualBody = body;
+			manualOffset = offset.ToJVector();
 
-			ManualPosition = JVector.Transform(p.ToJVector() - body.Position, JMatrix.Inverse(orientation));
-			ManualYaw = bodyYaw - orientation.ComputeYaw();
+			var o = body.Orientation;
+
+			ManualPosition = JVector.Transform(p.ToJVector() - body.Position, JMatrix.Inverse(o));
+			ManualYaw = bodyYaw - o.ComputeYaw();
 		}
 
 		public virtual void OnGroundTransition(SurfaceTriangle ground)
@@ -287,6 +306,7 @@ namespace Zeldo.Entities.Core
 
 			// TODO: Nullify yaw speed as well.
 			ManualVelocity = vec3.Zero;
+			manualBody = null;
 
 			if (platformController != null)
 			{

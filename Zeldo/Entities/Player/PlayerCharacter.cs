@@ -223,9 +223,17 @@ namespace Zeldo.Entities.Player
 			// While on a wall, contacts should be negated against that wall.
 			if ((state & PlayerStates.OnWall) > 0)
 			{
+				var wallBody = wallController.Body;
+
+				// This handles wall control against pseudo-static bodies.
+				if (wallBody != null)
+				{
+					return body != wallBody;
+				}
+
 				var wall = wallController.Wall;
 
-				// The player doesn't collide against the current wall triangle.
+				// This handles wall control on static wall triangles.
 				if (wall.IsSame(triangle))
 				{
 					return false;
@@ -251,22 +259,6 @@ namespace Zeldo.Entities.Player
 			}
 
 			return base.ShouldGenerateContact(body, triangle);
-
-			/*
-			// While grounded or airborne, the same base logic applies.
-			if (Wall == null)
-			{
-				return base.ShouldGenerateContact(body, triangle);
-			}
-
-			var surfaceType = SurfaceTriangle.ComputeSurfaceType(triangle, WindingTypes.CounterClockwise);
-
-			switch (surfaceType)
-			{
-				case SurfaceTypes.Ceiling: return true;
-				case SurfaceTypes.Floor: return false;
-			}
-			*/
 		}
 
 		public override bool OnContact(Entity entity, RigidBody body, vec3 p, vec3 normal, float penetration)
@@ -424,8 +416,10 @@ namespace Zeldo.Entities.Player
 			// step. If that happens, only the closest wall is counted as a collision.
 			var closestSquared = float.MaxValue;
 			var closestPoint = vec3.Zero;
+			var closestNormal = vec3.Zero;
 
 			SurfaceTriangle closestWall = null;
+			RigidBody closestBody = null;
 
 			foreach (Arbiter arbiter in controllingBody.Arbiters)
 			{
@@ -466,6 +460,8 @@ namespace Zeldo.Entities.Player
 					}
 
 					var tag = b2.Tag;
+					var bodyP = controllingBody.Position.ToVec3();
+					var oldBodyP = controllingBody.OldPosition.ToVec3();
 
 					// TODO: Handle wall interaction on platforms as well.
 					// This means that the player hit a wall on the static map mesh (rather than a platform).
@@ -477,16 +473,15 @@ namespace Zeldo.Entities.Player
 						// This determines the side of the triangle on which the relevant capsule point lies. If it's
 						// opposite velocity, that means the point must have already passed through the plane.
 						var offset = -surface.FlatNormal * capsuleRadius;
-						var p = controllingBody.Position.ToVec3();
-						var p1 = controllingBody.OldPosition.ToVec3() + offset;
-						var p2 = p + offset;
+						var p1 = oldBodyP + offset;
+						var p2 = bodyP + offset;
 
 						// TODO: Figure out why the intersection function seems to be wrong.
 						if (Utilities.Intersects(p1, p2, triangle, n, out var result))
 						//if (PhysicsUtilities.Raycast(Scene.World, p1, p2, out var results))
 						{
 							// Only the closest wall is used to gain wall control.
-							float squared = Utilities.DistanceSquared(result, p);
+							float squared = Utilities.DistanceSquared(result, bodyP);
 							//float squared = Utilities.DistanceSquared(results.Position, p);
 
 							if (squared < closestSquared)
@@ -494,39 +489,100 @@ namespace Zeldo.Entities.Player
 								closestSquared = squared;
 								closestWall = surface;
 								closestPoint = result;
+								closestNormal = n;
 								//closestPoint = results.Position;
 							}
+						}
+
+						continue;
+					}
+
+					// TODO: Process static body wall movement as well (if needed).
+					// This means the player hit the side of a platform (or other pseudo-static body, like a windmill
+					// blade).
+					if (b2.BodyType != RigidBodyTypes.PseudoStatic)
+					{
+						continue;
+					}
+
+					// Much of the code below is similar to the code above (used for wall control on the static map
+					// mesh), but it's simpler just to partially duplicate it.
+					var flatNormal = Utilities.Normalize(new vec3(n.x, 0, n.z));
+
+					// TODO: Consider pulling back the starting point of the raycast by a small amount (above as well).
+					var v = -flatNormal * capsuleRadius;
+					var r1 = oldBodyP + v;
+					var r2 = bodyP + v;
+
+					if (PhysicsUtilities.Raycast(Scene.World, b2, r1, r2, out var results))
+					{
+						var point = results.Position;
+						var squared = Utilities.DistanceSquared(point, bodyP);
+
+						if (squared < closestSquared)
+						{
+							closestSquared = squared;
+							closestBody = b2;
+							closestPoint = point;
+							closestNormal = n;
 						}
 					}
 				}
 			}
 
-			// This means that at least one wall was successfully hit.
-			if (closestWall != null)
+			// This means that at least one valid wall target (triangle or body) was successfully hit.
+			if (closestWall != null || closestBody != null)
 			{
-				GainWallControl(closestWall, closestPoint);
+				GainWallControl(closestWall, closestBody, closestPoint, closestNormal);
 			}
 		}
 
-		private void GainWallControl(SurfaceTriangle surface, vec3 p)
+		private void GainWallControl(SurfaceTriangle surface, RigidBody body, vec3 p, vec3 n)
 		{
-			// TODO: Retrieve the static world mesh in a simpler way.
-			var mapBody = Scene.World.RigidBodies.First(b => b.IsStatic && b.Tag == null);
+			vec3 flatNormal;
 
 			activeController = wallController;
-			wallController.Refresh(mapBody, surface);
+
+			// The player can either can wall control on a static wall triangle or another body, but not both.
+			if (surface != null)
+			{
+				// TODO: Retrieve the static world mesh in a simpler way.
+				var mapBody = Scene.World.RigidBodies.First(b => b.IsStatic && b.Tag == null);
+
+				wallController.Refresh(mapBody, surface);
+				flatNormal = surface.FlatNormal;
+			}
+			else
+			{
+				wallController.Refresh(body, n);
+
+				// TODO: Consider optimizing to avoid the extra normalization.
+				// This is technically wasteful (since it's also computed when processing wall contacts), but that's
+				// probably fine.
+				flatNormal = Utilities.Normalize(n.x, 0, n.z);
+			}
 
 			var v = controllingBody.LinearVelocity.ToVec3();
-			v -= Utilities.Project(v, surface.Normal);
+			var offset = flatNormal * capsuleRadius;
+			var result = p + offset;
+			v -= Utilities.Project(v, n);
 			controllingBody.LinearVelocity = v.ToJVector();
-			controllingBody.Position = (p + surface.FlatNormal * capsuleRadius).ToJVector();
+			controllingBody.Position = result.ToJVector();
 			controllingBody.IsAffectedByGravity = false;
+
+			// Wall control acts as manual control on pseudo-static bodies.
+			if (body != null)
+			{
+				controllingBody.IsManuallyControlled = true;
+				RefreshManual(p, body, offset);
+			}
 
 			state |= PlayerStates.OnWall;
 			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.Vaulting);
 
 			controller.NullifyJumpBind();
 			coyoteWallFlag.Reset();
+			isJumpDecelerating = false;
 
 			// Touching a wall restores double jump.
 			if (IsUnlocked(PlayerSkills.DoubleJump))
@@ -658,6 +714,7 @@ namespace Zeldo.Entities.Player
 
 						// TODO: Nullify yaw speed as well.
 						ManualVelocity = vec3.Zero;
+						manualBody = null;
 
 						// TODO: Should the boost be linearly based on upward speed instead.
 						// The player receives a more powerful jump off upward-moving platforms, but only if the
@@ -763,6 +820,7 @@ namespace Zeldo.Entities.Player
 			activeController = aerialController;
 			aerialController.IgnoreDeceleration = true;
 			controllingBody.IsAffectedByGravity = true;
+			manualBody = null;
 
 			wallStickTimer.Reset();
 			coyoteWallFlag.Reset();
@@ -883,9 +941,9 @@ namespace Zeldo.Entities.Player
 			RefreshJumps();
 
 			// This small offset helps separate the capsule from the ladder.
-			var orientation = ladder.Orientation;
-			var v1 = orientation * vec3.UnitX * ladderController.ClimbDistance;
-			var v2 = orientation * vec3.UnitY * (controllingBody.Position.Y - ladder.Position.y) / ladder.CosineTilt;
+			var o = ladder.Orientation;
+			var v1 = o * vec3.UnitX * ladderController.ClimbDistance;
+			var v2 = o * vec3.UnitY * (controllingBody.Position.Y - ladder.Position.y) / ladder.CosineTilt;
 			var p = ladder.ControllingBody.Position + (v1 + v2).ToJVector();
 
 			// Ladders are positioned by their bottom-center point.
@@ -897,7 +955,8 @@ namespace Zeldo.Entities.Player
 			activeController = ladderController;
 			ladderController.Ladder = ladder;
 
-			RecomputeManualOffsets(p.ToVec3(), ladder.ControllingBody);
+			// TODO: Compute the proper ladder offset.
+			RefreshManual(p.ToVec3(), ladder.ControllingBody, vec3.Zero);
 
 			// This covers mounting the ladder from any situation.
 			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.Running | PlayerStates.Vaulting);

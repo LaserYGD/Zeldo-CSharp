@@ -59,9 +59,12 @@ namespace Zeldo.Control
 			Parent.ManualVelocity = v;
 			Parent.ManualPosition += (Parent.ManualVelocity * step).ToJVector();
 
+			// TODO: Should be removed/revisited (since manual stuff is now handled in Actor pre-step).
+			/*
 			var p = ladderBody.Position + JVector.Transform(Parent.ManualPosition, ladderBody.Orientation);
 			var body = Parent.ControllingBody;
 			body.SetTransform(p, body.Orientation, step);
+			*/
 		}
 	}
 }
