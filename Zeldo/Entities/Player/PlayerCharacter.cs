@@ -303,13 +303,13 @@ namespace Zeldo.Entities.Player
 		}
 		*/
 
-		protected override void OnLanding(vec3 p, RigidBody platform, SurfaceTriangle surface)
+		protected override void OnLanding(vec3 p, vec3 n, RigidBody platform, SurfaceTriangle surface)
 		{
-			base.OnLanding(p, platform, surface);
+			base.OnLanding(p, n, platform, surface);
 
 			// For upward-moving (or sloped) platforms, it's possible for the player to land while still in a jumping
 			// state.
-			state |= (platform != null ? PlayerStates.OnPlatform : PlayerStates.OnGround);
+			state |= platform != null ? PlayerStates.OnPlatform : PlayerStates.OnGround;
 			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.OnWall);
 
 			RefreshJumps();
@@ -334,6 +334,13 @@ namespace Zeldo.Entities.Player
 
 			activeController = aerialController;
 			controllingBody.IsAffectedByGravity = true;
+			controllingBody.IsManuallyControlled = false;
+
+			if (manualBody != null)
+			{
+				manualBody = null;
+				//controllingBody.LinearVelocity = ManualVelocity.ToJVector();
+			}
 
 			// TODO: Don't refresh the coyote wall flag when vaulting over the top of a wall.
 			coyoteWallFlag.Refresh();
@@ -436,10 +443,6 @@ namespace Zeldo.Entities.Player
 						continue;
 					}
 
-					// TODO: Manage jumping into a corner (where on the step you gain wall control, you might already be embedded in an acute wall).
-					// While processing aerial wall hits, all static (or pseudo-static) contacts are negated.
-					contacts.RemoveAt(i);
-
 					var n = contact.Normal.ToVec3();
 
 					if (controllingBody == b1)
@@ -458,6 +461,10 @@ namespace Zeldo.Entities.Player
 					{
 						continue;
 					}
+
+					// TODO: Manage jumping into a corner (where on the step you gain wall control, you might already be embedded in an acute wall).
+					// While processing aerial wall hits, all static (or pseudo-static) contacts are negated.
+					contacts.RemoveAt(i);
 
 					var tag = b2.Tag;
 					var bodyP = controllingBody.Position.ToVec3();
@@ -551,22 +558,25 @@ namespace Zeldo.Entities.Player
 
 				wallController.Refresh(mapBody, surface);
 				flatNormal = surface.FlatNormal;
+
+				/*
+				var v = controllingBody.LinearVelocity.ToVec3();
+				v -= Utilities.Project(v, n);
+				controllingBody.LinearVelocity = v.ToJVector();
+				*/
 			}
 			else
 			{
-				wallController.Refresh(body, n);
-
 				// TODO: Consider optimizing to avoid the extra normalization.
 				// This is technically wasteful (since it's also computed when processing wall contacts), but that's
 				// probably fine.
 				flatNormal = Utilities.Normalize(n.x, 0, n.z);
+				wallController.Refresh(body, n, flatNormal);
 			}
 
-			var v = controllingBody.LinearVelocity.ToVec3();
 			var offset = flatNormal * capsuleRadius;
 			var result = p + offset;
-			v -= Utilities.Project(v, n);
-			controllingBody.LinearVelocity = v.ToJVector();
+
 			controllingBody.Position = result.ToJVector();
 			controllingBody.IsAffectedByGravity = false;
 
@@ -574,7 +584,7 @@ namespace Zeldo.Entities.Player
 			if (body != null)
 			{
 				controllingBody.IsManuallyControlled = true;
-				RefreshManual(p, body, offset);
+				RefreshManual(p, n, body, offset);
 			}
 
 			state |= PlayerStates.OnWall;
@@ -645,6 +655,7 @@ namespace Zeldo.Entities.Player
 			platformController.Platform = null;
 			wallController.Reset();
 			Ground = null;
+			manualBody = null;
 
 			// Reset jumps.
 			RefreshJumps();
@@ -780,8 +791,21 @@ namespace Zeldo.Entities.Player
 		{
 			// The player can wall jump with some directional control (within an angle range of the wall's normal),
 			// rather than strictly perpendicular to the wall.
-			var flatWallNormal = wallController.Wall.Normal.swizzle.xz;
-			var flatWallAngle = Utilities.Angle(flatWallNormal);
+			var wall = wallController.Wall;
+
+			vec3 flatNormal;
+
+			if (wall != null)
+			{
+				flatNormal = wall.FlatNormal;
+			}
+			else
+			{
+				var flat = wallController.Normal.swizzle.xz;
+				flatNormal = Utilities.Normalize(flat.x, 0, flat.y);
+			}
+
+			var flatAngle = Utilities.Angle(flatNormal.swizzle.xz);
 			var flatDirection = coyoteWallFlag.Value ? aerialController.FlatDirection : wallController.FlatDirection;
 
 			float resultAngle;
@@ -790,26 +814,28 @@ namespace Zeldo.Entities.Player
 			// angle).
 			if (Utilities.LengthSquared(flatDirection) > 0)
 			{
-				var flatAngle = Utilities.Delta(Utilities.Angle(flatDirection), flatWallAngle);
-				var abs = Math.Abs(flatAngle);
+				var delta = Utilities.Delta(Utilities.Angle(flatDirection), flatAngle);
+				var abs = Math.Abs(delta);
 				var max = playerData.WallJumpMaxAngle;
 
 				// The player can still aim wall jumps sideways when pressing towards the wall.
 				if (abs > Constants.PiOverTwo)
 				{
-					flatAngle = (Constants.Pi - abs) * Math.Sign(flatAngle);
+					delta = (Constants.Pi - abs) * Math.Sign(delta);
 				}
 
-				resultAngle = Utilities.Clamp(flatAngle, -max, max);
-				resultAngle += flatWallAngle;
+				resultAngle = Utilities.Clamp(delta, -max, max);
+				resultAngle += flatAngle;
 			}
 			else
 			{
-				resultAngle = flatWallAngle;
+				resultAngle = flatAngle;
 			}
 
 			var s = Utilities.Direction(resultAngle) * playerData.WallJumpFlatSpeed;
 
+			controllingBody.IsAffectedByGravity = true;
+			controllingBody.IsManuallyControlled = false;
 			controllingBody.LinearVelocity = new JVector(s.x, playerData.WallJumpYSpeed, s.y);
 
 			// This is almost the same logic as unsticking from a wall, but it's simpler to just repeat it.
@@ -819,7 +845,6 @@ namespace Zeldo.Entities.Player
 			wallController.Reset();
 			activeController = aerialController;
 			aerialController.IgnoreDeceleration = true;
-			controllingBody.IsAffectedByGravity = true;
 			manualBody = null;
 
 			wallStickTimer.Reset();
@@ -956,7 +981,9 @@ namespace Zeldo.Entities.Player
 			ladderController.Ladder = ladder;
 
 			// TODO: Compute the proper ladder offset.
-			RefreshManual(p.ToVec3(), ladder.ControllingBody, vec3.Zero);
+			// TODO: Compute the proper ladder normal (probably stored based on the direction the ladder is facing).
+			// TODO: Once computed, cancel out velocity that's not along the ladder (up or down).
+			RefreshManual(p.ToVec3(), vec3.Zero, ladder.ControllingBody, vec3.Zero);
 
 			// This covers mounting the ladder from any situation.
 			state &= ~(PlayerStates.Airborne | PlayerStates.Jumping | PlayerStates.Running | PlayerStates.Vaulting);

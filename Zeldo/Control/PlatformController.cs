@@ -32,8 +32,8 @@ namespace Zeldo.Control
 			if (Utilities.LengthSquared(FlatDirection) > 0)
 			{
 				// TODO: Could have platforms store yaw as well (to avoid the computation).
-				var rotated = Utilities.Rotate(FlatDirection, Platform.Orientation.ComputeYaw());
-				flatV += rotated * Acceleration * step;
+				//var rotated = Utilities.Rotate(FlatDirection, Platform.Orientation.ComputeYaw());
+				flatV += FlatDirection * Acceleration * step;
 
 				if (Utilities.LengthSquared(flatV) > MaxSpeed * MaxSpeed)
 				{
@@ -59,7 +59,6 @@ namespace Zeldo.Control
 			v.z = flatV.y;
 
 			Parent.ManualVelocity = v;
-			Parent.ManualPosition += Parent.ManualVelocity.ToJVector() * step;
 		}
 
 		public override void PostStep(float step)
@@ -68,6 +67,7 @@ namespace Zeldo.Control
 			// All platforms are assumed flat (on top, at least). The shape is attached to the rigid body's shape.
 			var shape = (Shape2D)Platform.Shape.Tag;
 
+			// TODO; Could make shape optional (for flat platforms), then use ray tracing as an alternative.
 			if (!shape.Contains(Parent.ManualPosition.ToVec3().swizzle.xz))
 			{
 				Parent.BecomeAirborneFromLedge();

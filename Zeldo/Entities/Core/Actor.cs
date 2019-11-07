@@ -128,6 +128,9 @@ namespace Zeldo.Entities.Core
 
 			if (manualBody != null)
 			{
+				ManualPosition += JVector.Transform(ManualVelocity.ToJVector(),
+					JMatrix.Inverse(manualBody.Orientation)) * step;
+
 				var o = manualBody.Orientation;
 				var p = manualBody.Position + JVector.Transform(ManualPosition, o) + manualOffset;
 				var yaw = o.ComputeYaw() + ManualYaw;
@@ -149,7 +152,8 @@ namespace Zeldo.Entities.Core
 			if (groundController != null && Ground == null && CastGround(out var results))
 			{
 				// TODO: Retrieve material as well.
-				OnLanding(results.Position, null, new SurfaceTriangle(results.Triangle, results.Normal, 0));
+				OnLanding(results.Position, results.Normal, null, new SurfaceTriangle(results.Triangle, results.Normal,
+					0));
 			}
 			// If the above condition is true, the ground controller will be active, and for the ground controller,
 			// there's nothing to be done (in post-step) on the step the actor lands.
@@ -235,7 +239,7 @@ namespace Zeldo.Entities.Core
 
 				if (angle > PhysicsConstants.WallThreshold)
 				{
-					OnLanding(results.Position, body, null);
+					OnLanding(results.Position, results.Normal, body, null);
 				}
 			}
 
@@ -244,7 +248,7 @@ namespace Zeldo.Entities.Core
 
 		// This function is called both from landing on static entities (i.e. moving platforms) and via manual
 		// raycasting during the physics step.
-		protected virtual void OnLanding(vec3 p, RigidBody platform, SurfaceTriangle surface)
+		protected virtual void OnLanding(vec3 p, vec3 n, RigidBody platform, SurfaceTriangle surface)
 		{
 			// TODO: Apply speed properly when landing on slopes (rather than setting Y to zero). Applies to both platforms and the ground.
 			var v = controllingBody.LinearVelocity;
@@ -262,7 +266,7 @@ namespace Zeldo.Entities.Core
 				activeController = platformController;
 				platformController.Platform = platform;
 
-				RefreshManual(p, platform, new vec3(0, FullHeight / 2, 0));
+				RefreshManual(p, n, platform, new vec3(0, FullHeight / 2, 0));
 
 				return;
 			}
@@ -279,14 +283,16 @@ namespace Zeldo.Entities.Core
 			OnGroundTransition(surface);
 		}
 
-		protected void RefreshManual(vec3 p, RigidBody body, vec3 offset)
+		protected void RefreshManual(vec3 p, vec3 n, RigidBody body, vec3 offset)
 		{
 			manualBody = body;
 			manualOffset = offset.ToJVector();
 
 			var o = body.Orientation;
+			var v = controllingBody.LinearVelocity.ToVec3();
 
 			ManualPosition = JVector.Transform(p.ToJVector() - body.Position, JMatrix.Inverse(o));
+			ManualVelocity = v - Utilities.Project(v, n);
 			ManualYaw = bodyYaw - o.ComputeYaw();
 		}
 

@@ -12,7 +12,11 @@ namespace Zeldo.Control
 {
 	public class WallController : AbstractController
 	{
+		// TODO: This will need to be updated too for rotating pseudo-static bodies.
 		private vec3 normal;
+
+		// TODO: Should probably recompute this each pre-step (since pseudo-static walls can rotate).
+		private vec3 flatNormal;
 		private SurfaceTriangle wall;
 		private RigidBody wallBody;
 
@@ -44,6 +48,7 @@ namespace Zeldo.Control
 		// This is used by the player to compute the nearest wall point.
 		public SurfaceTriangle Wall => wall;
 		public RigidBody Body => wallBody;
+		public vec3 Normal => normal;
 
 		// Normal and surface are mutually exclusive. Surfaces are used for the static world mesh, while the direct
 		// normal is used for wall jumping off pseudo-static bodies (like platforms).
@@ -51,12 +56,15 @@ namespace Zeldo.Control
 		{
 			this.wall = wall;
 
+			normal = wall.Normal;
+			flatNormal = wall.FlatNormal;
 			wallBody = body;
 		}
 
-		public void Refresh(RigidBody body, vec3 normal)
+		public void Refresh(RigidBody body, vec3 normal, vec3 flatNormal)
 		{
 			this.normal = normal;
+			this.flatNormal = flatNormal;
 
 			wallBody = body;
 		}
@@ -68,12 +76,14 @@ namespace Zeldo.Control
 		}
 
 		// TODO: Apply edge forgiveness when sliding off the edge of a triangle (and becoming airborne).
+		// TODO: For pseudo-static wall control, probably need to rotate the normal based on body orientation each step.
 		public override void PreStep(float step)
 		{
-			return;
+			// The alternative here is body-controlled (i.e. wall control on a pseudo-static body).
+			bool isMeshControlled = wall != null;
 
 			var body = Parent.ControllingBody;
-			var v = body.LinearVelocity.ToVec3();
+			var v = isMeshControlled ? body.LinearVelocity.ToVec3() : Parent.ManualVelocity;
 
 			// "Wall gravity" only applies when moving downward (in order to give the player a little more control when
 			// setting up wall jumps).
@@ -91,7 +101,7 @@ namespace Zeldo.Control
 			// Acceleration
 			if (Utilities.LengthSquared(FlatDirection) > 0)
 			{
-				var perpendicular = Wall.FlatNormal.swizzle.xz;
+				var perpendicular = flatNormal.swizzle.xz;
 				perpendicular = new vec2(-perpendicular.y, perpendicular.x);
 				flatV += Utilities.Project(FlatDirection, perpendicular) * acceleration * step;
 
@@ -121,10 +131,18 @@ namespace Zeldo.Control
 
 			v.x = flatV.x;
 			v.z = flatV.y;
-			body.LinearVelocity = v.ToJVector();
+
+			if (isMeshControlled)
+			{
+				body.LinearVelocity = v.ToJVector();
+			}
+			else
+			{
+				Parent.ManualVelocity = v;
+			}
 
 			// TODO: Apply a thin forgiveness range for staying on a wall.
-			var d = Utilities.Dot(FlatDirection, Wall.FlatNormal.swizzle.xz);
+			var d = Utilities.Dot(FlatDirection, flatNormal.swizzle.xz);
 
 			// This means that the flat direction is pressing away the wall. A thin forgiveness angle (specified as a
 			// dot product value) is used to help stick the player while still moving in a direction *near* parallel
@@ -133,8 +151,6 @@ namespace Zeldo.Control
 			{
 				wallStickTimer.IsPaused = false;
 			}
-
-			body.LinearVelocity = v.ToJVector();
 		}
 
 		public override void PostStep(float step)
@@ -143,20 +159,19 @@ namespace Zeldo.Control
 			// one wall triangle to another.
 			const float RaycastLength = 0.5f;
 
-			// This means the player is on the static world mesh (rather than a moving platform).
-			if (wall != null)
+			var player = (PlayerCharacter)Parent;
+			var radius = player.CapsuleRadius;
+			var body = Parent.ControllingBody;
+
+			// TODO: Consider pulling back the starting point of the raycast by a small amount (could increaes stability if needed).
+			var p = body.Position.ToVec3() - flatNormal * radius;
+
+			if (PhysicsUtilities.Raycast(Parent.Scene.World, wallBody, p, -flatNormal, RaycastLength,
+				out var results))
 			{
-				var player = (PlayerCharacter)Parent;
-				var radius = player.CapsuleRadius;
-				var body = Parent.ControllingBody;
-
-				// This point is used for raycasting. Pulling back the starting position by a small amount should
-				// increase stability against potential floating-point inconsistencies near the wall.
-				var n = wall.FlatNormal;
-				var p = body.Position.ToVec3() - n * (radius - 0.01f);
-
-				if (PhysicsUtilities.Raycast(Parent.Scene.World, wallBody, p, -n, RaycastLength,
-					out var results))
+				// TODO: Might have to re-examine some of this if sliding along a pseudo-static body is allowed (such as the side of a sphere).
+				// While sliding along the map mesh, the current triangle can change.
+				if (wall != null)
 				{
 					var triangle = results.Triangle;
 
@@ -165,17 +180,28 @@ namespace Zeldo.Control
 					{
 						wall = new SurfaceTriangle(triangle, results.Normal, 0, null, true);
 					}
-
-					// Note that the wall (and its flat normal) might have changed here (due to the condition above).
-					body.Position = (results.Position + wall.FlatNormal * radius).ToJVector();
-
-					return;
 				}
 
-				// TODO: Consider adding edge forgiveness.
-				// By this point, the player has moved off the current triangle (without transitioning to a new one).
-				player.BecomeAirborneFromWall();
+				// Note that for meshes, the triangle (and its flat normal) might have changed here (due to the
+				// condition above).
+				var result = (results.Position + flatNormal * radius).ToJVector();
+
+				if (wall != null)
+				{
+					body.Position = (results.Position + flatNormal * radius).ToJVector();
+				}
+				else
+				{
+					// TODO: Set orientation as well (for rotation platforms).
+					body.SetPosition(result, step);
+				}
+
+				return;
 			}
+
+			// TODO: Consider adding edge forgiveness.
+			// By this point, the player has moved off the current wall (without transitioning to a new triangle).
+			player.BecomeAirborneFromWall();
 		}
 	}
 }

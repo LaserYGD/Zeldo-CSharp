@@ -116,13 +116,12 @@ namespace Engine.Utility
 			return Angle(p2 - p1);
 		}
 
-		public static float Angle(vec3 v)
-		{
-			return Angle(vec3.Zero, v);
-		}
-
+		// Note that this computes the angle between two 3D vectors, *not* between two 3D points (which doesn't
+		// actually make sense without a reference vector).
 		public static float Angle(vec3 v1, vec3 v2)
 		{
+			Debug.Assert(v1.Length > 0 && v2.Length > 0, "3D angle computation can't use vec3.Zero.");
+
 			// See https://www.analyzemath.com/stepbystep_mathworksheets/vectors/vector3D_angle.html.
 			return (float)Math.Acos(Dot(v1, v2) / (v1.Length * v2.Length));
 		}
