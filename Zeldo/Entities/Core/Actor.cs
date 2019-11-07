@@ -128,9 +128,6 @@ namespace Zeldo.Entities.Core
 
 			if (manualBody != null)
 			{
-				ManualPosition += JVector.Transform(ManualVelocity.ToJVector(),
-					JMatrix.Inverse(manualBody.Orientation)) * step;
-
 				var o = manualBody.Orientation;
 				var p = manualBody.Position + JVector.Transform(ManualPosition, o) + manualOffset;
 				var yaw = o.ComputeYaw() + ManualYaw;

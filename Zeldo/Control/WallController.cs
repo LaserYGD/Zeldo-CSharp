@@ -5,6 +5,7 @@ using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Dynamics;
+using Jitter.LinearMath;
 using Zeldo.Entities.Player;
 using Zeldo.Physics;
 
@@ -139,6 +140,9 @@ namespace Zeldo.Control
 			else
 			{
 				Parent.ManualVelocity = v;
+				Parent.ManualPosition += JVector.Transform(v.ToJVector(), JMatrix.Inverse(wallBody.Orientation)) *
+					step;
+
 			}
 
 			// TODO: Apply a thin forgiveness range for staying on a wall.
