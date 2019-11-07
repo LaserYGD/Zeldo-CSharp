@@ -304,6 +304,8 @@ namespace Jitter.Collision
         public static bool Raycast(ISupportMappable support, ref JMatrix orientation, ref JMatrix invOrientation,
             ref JVector position,ref JVector origin,ref JVector direction, out float fraction, out JVector normal)
         {
+            const float Epsilon = 0.000001f;
+
             VoronoiSimplexSolver simplexSolver = simplexSolverPool.GetNew();
             simplexSolver.Reset();
 
@@ -314,47 +316,45 @@ namespace Jitter.Collision
 
             JVector r = direction;
             JVector x = origin;
-            JVector w, p, v;
 
-            JVector arbitraryPoint; 
-            SupportMapTransformed(support, ref orientation, ref position, ref r, out arbitraryPoint);
-            JVector.Subtract(ref x, ref arbitraryPoint, out v);
+            SupportMapTransformed(support, ref orientation, ref position, ref r, out var arbitraryPoint);
+            JVector.Subtract(ref x, ref arbitraryPoint, out var v);
 
             int maxIter = MaxIterations;
 
             float distSq = v.LengthSquared();
-            float epsilon = 0.000001f;
 
-            float VdotR;
-
-            while ((distSq > epsilon) && (maxIter-- != 0))
+            while (distSq > Epsilon && maxIter-- != 0)
             {
-                SupportMapTransformed(support, ref orientation, ref position, ref v, out p);
-                JVector.Subtract(ref x, ref p, out w);
+                SupportMapTransformed(support, ref orientation, ref position, ref v, out var p);
+                JVector.Subtract(ref x, ref p, out var w);
 
-                float VdotW = JVector.Dot(ref v, ref w);
+                float vdotW = JVector.Dot(ref v, ref w);
 
-                if (VdotW > 0.0f)
+                if (vdotW > 0.0f)
                 {
-                    VdotR = JVector.Dot(ref v, ref r);
+                    var vdotR = JVector.Dot(ref v, ref r);
 
-                    if (VdotR >= -JMath.Epsilon)
+                    if (vdotR >= -JMath.Epsilon)
                     {
                         simplexSolverPool.GiveBack(simplexSolver);
+
                         return false;
                     }
-                    else
-                    {
-                        lambda = lambda - VdotW / VdotR;
-                        JVector.Multiply(ref r, lambda, out x);
-                        JVector.Add(ref origin, ref x, out x);
-                        JVector.Subtract(ref x, ref p, out w);
-                        normal = v;
-                    }
+
+                    lambda -= vdotW / vdotR;
+                    JVector.Multiply(ref r, lambda, out x);
+                    JVector.Add(ref origin, ref x, out x);
+                    JVector.Subtract(ref x, ref p, out w);
+                    normal = v;
                 }
-                if (!simplexSolver.InSimplex(w)) simplexSolver.AddVertex(w, x, p);
-                if (simplexSolver.Closest(out v)) { distSq = v.LengthSquared();  }
-                else distSq = 0.0f;
+
+                if (!simplexSolver.InSimplex(w))
+                {
+                    simplexSolver.AddVertex(w, x, p);
+                }
+
+                distSq = simplexSolver.Closest(out v) ? v.LengthSquared() : 0.0f;
             }
 
             #region Retrieving hitPoint
@@ -363,16 +363,17 @@ namespace Jitter.Collision
             // but is inaccurate against large objects:
             // fraction = lambda;
 
-            JVector p1, p2;
-            simplexSolver.ComputePoints(out p1, out p2);
+            simplexSolver.ComputePoints(out _, out var p2);
 
-            p2 = p2 - origin;
+            p2 -= origin;
             fraction = p2.Length() / direction.Length();
 
             #endregion
 
             if (normal.LengthSquared() > JMath.Epsilon * JMath.Epsilon)
+            {
                 normal.Normalize();
+            }
 
             simplexSolverPool.GiveBack(simplexSolver);
 

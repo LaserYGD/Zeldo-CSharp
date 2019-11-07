@@ -232,20 +232,20 @@ namespace Jitter.Collision
 	        triangle = null;
 			fraction = float.MaxValue;
 
-            JVector tempNormal;
-	        JVector[] tempTriangle;
-	        float tempFraction;
             bool result = false;
 
             // TODO: This can be done better in CollisionSystemPersistenSAP
             foreach (IBroadphaseEntity e in bodyList)
             {
-                if (e is SoftBody)
+                JVector tempNormal;
+                JVector[] tempTriangle;
+                float tempFraction;
+
+                if (e is SoftBody softBody)
                 {
-                    SoftBody softBody = e as SoftBody;
                     foreach (RigidBody b in softBody.VertexBodies)
                     {
-                        if (this.Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction, out tempTriangle))
+                        if (Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction, out tempTriangle))
                         {
                             if (tempFraction < fraction && (raycast == null || raycast(b, tempNormal, tempFraction)))
                             {
@@ -262,7 +262,7 @@ namespace Jitter.Collision
                 {
                     RigidBody b = e as RigidBody;
 
-                    if (this.Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction, out tempTriangle))
+                    if (Raycast(b, rayOrigin, rayDirection, out tempNormal, out tempFraction, out tempTriangle))
                     {
                         if (tempFraction < fraction && (raycast == null || raycast(b, tempNormal, tempFraction)))
                         {
@@ -294,19 +294,20 @@ namespace Jitter.Collision
 	        normal = JVector.Zero;
 	        triangle = null;
 
-            if (!body.BoundingBox.RayIntersect(ref rayOrigin, ref rayDirection)) return false;
-
-            if (body.Shape is Multishape)
+            if (!body.BoundingBox.RayIntersect(ref rayOrigin, ref rayDirection))
             {
-                Multishape ms = (body.Shape as Multishape).RequestWorkingClone();
+                return false;
+            }
 
-                JVector tempNormal;
-	            float tempFraction;
+            if (body.Shape is Multishape multishape)
+            {
+                Multishape ms = multishape.RequestWorkingClone();
+
                 bool multiShapeCollides = false;
 
-                JVector transformedOrigin; JVector.Subtract(ref rayOrigin, ref body.position, out transformedOrigin);
+                JVector.Subtract(ref rayOrigin, ref body.position, out var transformedOrigin);
                 JVector.Transform(ref transformedOrigin, ref body.invOrientation, out transformedOrigin);
-                JVector transformedDirection; JVector.Transform(ref rayDirection, ref body.invOrientation, out transformedDirection);
+                JVector.Transform(ref rayDirection, ref body.invOrientation, out var transformedDirection);
 
                 int msLength = ms.Prepare(ref transformedOrigin, ref transformedDirection);
 
@@ -315,13 +316,13 @@ namespace Jitter.Collision
                     ms.SetCurrentShape(i);
 
                     if (GJKCollide.Raycast(ms, ref body.orientation, ref body.invOrientation, ref body.position,
-                        ref rayOrigin, ref rayDirection, out tempFraction, out tempNormal))
+                        ref rayOrigin, ref rayDirection, out var tempFraction, out var tempNormal))
                     {
                         if (tempFraction < fraction)
                         {
-                            if (useTerrainNormal && ms is TerrainShape)
+                            if (useTerrainNormal && ms is TerrainShape terrainShape)
                             {
-                                (ms as TerrainShape).CollisionNormal(out tempNormal);
+                                terrainShape.CollisionNormal(out tempNormal);
                                 JVector.Transform(ref tempNormal, ref body.orientation, out tempNormal);
                                 tempNormal.Negate();
                             }
@@ -341,15 +342,12 @@ namespace Jitter.Collision
                 }
 
                 ms.ReturnWorkingClone();
+
                 return multiShapeCollides;
             }
-            else
-            {
-                return (GJKCollide.Raycast(body.Shape, ref body.orientation, ref body.invOrientation, ref body.position,
-                    ref rayOrigin, ref rayDirection, out fraction, out normal));
-            }
 
-
+            return GJKCollide.Raycast(body.Shape, ref body.orientation, ref body.invOrientation, ref body.position,
+                ref rayOrigin, ref rayDirection, out fraction, out normal);
         }
         #endregion
     }
