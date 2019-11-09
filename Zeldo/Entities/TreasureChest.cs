@@ -87,9 +87,9 @@ namespace Zeldo.Entities
 			base.Initialize(scene, data);
 		}
 
-		public void OnInteract(Entity entity)
+		public void OnInteract(Actor actor)
 		{
-			PlayerCharacter player = (PlayerCharacter)entity;
+			PlayerCharacter player = (PlayerCharacter)actor;
 			player.Inventory.Add(itemId);
 
 			/*

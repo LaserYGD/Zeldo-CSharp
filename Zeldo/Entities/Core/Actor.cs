@@ -55,6 +55,13 @@ namespace Zeldo.Entities.Core
 			facing = vec2.UnitX;
 		}
 
+		// TODO: This should be removed? (or modified to use step)
+		public vec3 GroundPosition
+		{
+			// This assumes that the controlling body isn't manually
+			set => controllingBody.Position = value.ToJVector() + new JVector(0, FullHeight / 2, 0);
+		}
+
 		public float FullHeight { get; set; }
 
 		// TODO: Is this the best approach?

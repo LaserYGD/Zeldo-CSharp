@@ -32,7 +32,7 @@ namespace Zeldo.Entities.Characters
 			base.Initialize(scene, data);
 		}
 
-		public void OnInteract(Entity entity)
+		public void OnInteract(Actor actor)
 		{
 		}
 	}

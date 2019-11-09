@@ -110,6 +110,13 @@ namespace Zeldo.Entities.Player
 			platformController.FlatDirection = flatDirection;
 			wallController.FlatDirection = flatDirection;
 
+			// The player can only interact while grounded. Interaction also takes priority over other actions on the
+			// current frame.
+			if ((player.State & PlayerStates.OnGround) > 0 && ProcessInteraction(data))
+			{
+				return;
+			}
+
 			ProcessLadder(data);
 
 			// The jump button is used for multiple skills (including regular jumps, wall jump, and ascend). The order
@@ -121,7 +128,6 @@ namespace Zeldo.Entities.Player
 			}
 
 			ProcessAttack(data, dt);
-			//ProcessInteraction(data);
 		}
 
 		private vec2 ComputeFlatDirection(FullInputData data)
@@ -152,6 +158,11 @@ namespace Zeldo.Entities.Player
 			}
 			
 			return Utilities.Rotate(flatDirection, FollowView.Yaw);
+		}
+
+		private bool ProcessInteraction(FullInputData data)
+		{
+			return data.Query(controls.Interact, InputStates.PressedThisFrame) && player.TryInteract();
 		}
 
 		private void ProcessLadder(FullInputData data)
@@ -354,14 +365,6 @@ namespace Zeldo.Entities.Player
 			if (data.Query(controls.Block, InputStates.PressedThisFrame))
 			{
 				player.Parry();
-			}
-		}
-
-		private void ProcessInteraction(FullInputData data)
-		{
-			if (data.Query(controls.Interact, InputStates.PressedThisFrame))
-			{
-				player.TryInteract();
 			}
 		}
 		*/

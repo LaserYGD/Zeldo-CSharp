@@ -14,7 +14,7 @@ namespace Zeldo.Entities.Mechanisms
 		public bool IsInteractionEnabled => true;
 		public bool RequiresFacing => true;
 
-		public void OnInteract(Entity entity)
+		public void OnInteract(Actor actor)
 		{
 		}
 	}

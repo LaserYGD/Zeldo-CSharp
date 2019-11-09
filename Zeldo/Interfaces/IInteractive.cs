@@ -8,6 +8,6 @@ namespace Zeldo.Interfaces
 		bool IsInteractionEnabled { get; }
 		bool RequiresFacing { get; }
 
-		void OnInteract(Entity entity);
+		void OnInteract(Actor actor);
 	}
 }

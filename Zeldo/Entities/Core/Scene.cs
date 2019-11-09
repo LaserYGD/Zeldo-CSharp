@@ -1,19 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Engine;
 using Engine.Graphics._3D;
 using Engine.Graphics._3D.Rendering;
-using Engine.Input.Data;
 using Engine.Interfaces;
-using Engine.Messaging;
 using Engine.Sensors;
 using Engine.UI;
 using Engine.Utility;
 using Engine.View;
 using Jitter;
 using Zeldo.Entities.Player;
-using static Engine.GLFW;
 
 namespace Zeldo.Entities.Core
 {

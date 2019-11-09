@@ -45,6 +45,7 @@ namespace Zeldo.Entities.Player
 		private PlayerController controller;
 		private PlayerHealthDisplay healthDisplay;
 		private Weapon<PlayerCharacter> weapon;
+		private Sensor sensor;
 		private LadderController ladderController;
 		private WallController wallController;
 		private ControlSettings settings;
@@ -198,7 +199,8 @@ namespace Zeldo.Entities.Player
 
 			CreateModel(scene, "Capsule.obj");
 			CreateMasterBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius), true);
-			CreateSensor(scene, new Cylinder(FullHeight, capsuleRadius, false), SensorGroups.Player,
+
+			sensor = CreateSensor(scene, new Cylinder(FullHeight, capsuleRadius, false), SensorGroups.Player,
 				SensorGroups.Interaction);
 			
 			controller = new PlayerController(this, playerData, controls, settings, CreateControllers());
@@ -680,6 +682,15 @@ namespace Zeldo.Entities.Player
 			wallStickTimer.Reset();
 		}
 
+		public void Lock()
+		{
+			activeController = null;
+		}
+
+		public void Unlock()
+		{
+		}
+
 		// TODO: Re-enable sliding later (if sliding is actually kept in the game).
 		/*
 		protected override void OnGroundTransition(SurfaceTriangle surface)
@@ -929,25 +940,27 @@ namespace Zeldo.Entities.Player
 		{
 		}
 
-		public void TryInteract()
+		public bool TryInteract()
 		{
 			// TODO: Handle multiple interactive targets (likely with a swap, similar to Dark Souls).
-			/*
-			if (!sensor.GetContact(out IInteractive target) || !target.IsInteractionEnabled)
+			// TODO: Check facing.
+			if (!sensor.GetContact(out IInteractive target) || !target.IsInteractionEnabled ||
+				(target.RequiresFacing && !IsFacing(target)))
 			{
-				return;
+				return false;
 			}
 
-			if (!target.RequiresFacing || IsFacing(target))
-			{
-				target.OnInteract(this);
-			}
-			*/
+			target.OnInteract(this);
 
+			// TODO: Only cancel relevant state (e.g. picking up an item mid-run doesn't change state).
+			// TODO: Cancel out other state as well (e.g. interacting mid-attack).
 			state |= PlayerStates.Interacting;
 			state &= ~PlayerStates.Running;
+
+			return true;
 		}
 
+		// TODO: Probably move this down to Actor.
 		private bool IsFacing(IPositionable3D target)
 		{
 			// TODO: Should probably narrow the spread that counts as facing a target.
