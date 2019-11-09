@@ -12,6 +12,11 @@
 			"Blades": 5,
 			"Radius": 2.2,
 			"Mesh": "Cube.obj"
+		},
+		{
+			"Type": "Objects.Door",
+			"Position": "5|2|-3",
+			"Orientation": "0|180|0"
 		}
 	],
 

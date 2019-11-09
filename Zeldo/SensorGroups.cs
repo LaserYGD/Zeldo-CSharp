@@ -2,6 +2,7 @@
 
 namespace Zeldo
 {
+	// TODO: Are these needed?
 	[Flags]
 	public enum SensorGroups
 	{

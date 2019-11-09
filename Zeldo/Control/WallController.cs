@@ -106,6 +106,7 @@ namespace Zeldo.Control
 				perpendicular = new vec2(-perpendicular.y, perpendicular.x);
 				flatV += Utilities.Project(FlatDirection, perpendicular) * acceleration * step;
 
+				// TODO: Quickly decelerate local max if the wall is hit with fast sideways speed.
 				// This limits maximum speed based on flat direction. To me, this feels more natural than accelerating
 				// up to full speed even when barely moving sideways (relative to the wall).
 				var localMax = Math.Abs(Utilities.Dot(FlatDirection, perpendicular)) * maxSpeed;
@@ -167,8 +168,9 @@ namespace Zeldo.Control
 			var radius = player.CapsuleRadius;
 			var body = Parent.ControllingBody;
 
-			// TODO: Consider pulling back the starting point of the raycast by a small amount (could increaes stability if needed).
-			var p = body.Position.ToVec3() - flatNormal * radius;
+			// The starting point of the raycast is pulled back by a small amount in order to increase stability
+			// (without this offset, the player frequently clipped through walls).
+			var p = body.Position.ToVec3() - flatNormal * (radius - 0.1f);
 
 			if (PhysicsUtilities.Raycast(Parent.Scene.World, wallBody, p, -flatNormal, RaycastLength,
 				out var results))

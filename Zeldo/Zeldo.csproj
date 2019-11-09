@@ -237,6 +237,7 @@
     <Compile Include="Control\PlatformController.cs" />
     <Compile Include="Control\SwimController.cs" />
     <Compile Include="Control\WallController.cs" />
+    <Compile Include="Critters\Firefly.cs" />
     <Compile Include="CustomMessageTypes.cs" />
     <Compile Include="Data\SaveSlot.cs" />
     <Compile Include="Entities\Bosses\Boss.cs" />
@@ -308,6 +309,7 @@
     <Compile Include="Interfaces\IGrabbable.cs" />
     <Compile Include="Interfaces\IInteractive.cs" />
     <Compile Include="Interfaces\IMechanical.cs" />
+    <Compile Include="Items\Bottle.cs" />
     <Compile Include="Items\Inventory.cs" />
     <Compile Include="Items\Item.cs" />
     <Compile Include="Items\ItemIds.cs" />
@@ -402,9 +404,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Critters\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Content\Fonts\Debug_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

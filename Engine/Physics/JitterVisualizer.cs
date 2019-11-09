@@ -65,7 +65,7 @@ namespace Engine.Physics
 					case "SphereShape": Draw((SphereShape)shape, body, color);
 						break;
 
-					case "TriangleMeshShape": Draw((TriangleMeshShape)shape, body, color);
+					case "TriangleMeshShape": Draw((TriangleMeshShape)shape, color);
 						break;
 				}
 			}
@@ -180,7 +180,7 @@ namespace Engine.Physics
 			primitives.DrawCircle(radius, center, q2, color, Segments);
 		}
 
-		private void Draw(TriangleMeshShape shape, RigidBody body, Color color)
+		private void Draw(TriangleMeshShape shape, Color color)
 		{
 			var tuple = (Tuple<List<JVector>, List<TriangleVertexIndices>>)shape.Tag;
 			var points = tuple.Item1;

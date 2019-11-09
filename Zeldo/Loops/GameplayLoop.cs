@@ -124,7 +124,7 @@ namespace Zeldo.Loops
 			// TODO: Initialize renderer settings from a configuration file (based on user settings).
 			// TODO: Set light color and direction based on time of day and weather.
 			var renderer = scene.Renderer;
-			renderer.Light.Direction = Utilities.Normalize(new vec3(2f, -0.6f, -2f));
+			renderer.Light.Direction = Utilities.Normalize(new vec3(2, -0.6f, -2));
 
 			renderTargetUsers3D.Add(renderer);
 

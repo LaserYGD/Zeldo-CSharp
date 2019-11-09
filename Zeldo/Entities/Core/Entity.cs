@@ -20,6 +20,7 @@ using Newtonsoft.Json.Linq;
 namespace Zeldo.Entities.Core
 {
 	// TODO: Consider adding a flag to disable updates (for things like non-moving ladders).
+	// TODO: Consider adding an origin for controller bodies (e.g. doors, which are positioned by their bottom-center).
 	public abstract class Entity : ITransformable3D, IDynamic, IDisposable
 	{
 		private List<EntityAttachment> attachments;

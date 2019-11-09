@@ -11,10 +11,12 @@ namespace Zeldo.Entities.Core
 	{
 		Boss,
 		Character,
+		Critter,
 		Enemy,
 
 		// TODO: Consider removing this group if a separate entity class is created for UI-based elements.
 		Interface,
+		Item,
 		Mechanism,
 		Object,
 		Player,
