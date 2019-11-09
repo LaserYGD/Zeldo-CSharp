@@ -105,6 +105,37 @@ namespace Engine.Graphics._3D
 			Buffer(points, color, GL_LINES, indices);
 		}
 
+		public void Draw(Cylinder cylinder, Color color)
+		{
+			const int Segments = 16;
+			const float Increment = Constants.TwoPi / Segments;
+
+			var orientation = cylinder.Orientation;
+			var center = cylinder.Position;
+			var v = orientation * new vec3(0, cylinder.Height, 0);
+			var c = center - v / 2;
+			var radius = cylinder.Radius;
+
+			DrawCircle(radius, c, orientation, color, Segments);
+			DrawCircle(radius, center + v / 2, orientation, color, Segments);
+
+			vec3[] points = new vec3[Segments];
+
+			for (int i = 0; i < points.Length; i++)
+			{
+				vec2 p = Utilities.Direction(Increment * i) * radius;
+
+				points[i] = orientation * new vec3(p.x, 0, p.y) + c;
+			}
+
+			for (int i = 0; i < Segments; i++)
+			{
+				vec3 p = points[i];
+
+				DrawLine(p, p + v, color);
+			}
+		}
+
 		public void DrawCircle(float radius, vec3 center, quat orientation, Color color, int segments)
 		{
 			vec3[] points = new vec3[segments];

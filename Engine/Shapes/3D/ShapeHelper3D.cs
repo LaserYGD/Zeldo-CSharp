@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
+using Engine.Shapes._2D;
 using Engine.Utility;
+using GlmSharp;
 
 namespace Engine.Shapes._3D
 {
@@ -28,9 +31,11 @@ namespace Engine.Shapes._3D
 
 			if ((int)type1 > (int)type2)
 			{
-				Shape3D temp = shape1;
+				var temp1 = shape1;
 				shape1 = shape2;
-				shape2 = temp;
+				shape2 = temp1;
+
+				type1 = type2;
 			}
 
 			switch (type1)
@@ -64,6 +69,72 @@ namespace Engine.Shapes._3D
 
 		private static bool Overlaps(Box box, Cylinder cylinder)
 		{
+			bool isOrientable1 = box.IsOrientable;
+			bool isFixedVertical1 = box.IsFixedVertical;
+			bool isOrientable2 = cylinder.IsOrientable;
+
+			var p1 = box.Position;
+			var p2 = cylinder.Position;
+
+			// The cylinder is non-orientable (while the box is either non-orientable or fixed-vertical).
+			if (!isOrientable2 && (isFixedVertical1 || !isOrientable1))
+			{
+				// Check Y delta.
+				var dY = Math.Abs(p1.y - p2.y);
+
+				if (dY > (box.Height + cylinder.Height) / 2)
+				{
+					return false;
+				}
+
+				// The calculations below are the same for fixed-vertical boxes, except that the boxes flat vertices
+				// need to be rotated relative to the cylinder.
+				if (isFixedVertical1)
+				{
+					p1 = p2 + box.Orientation.Inverse * (p1 - p2);
+				}
+
+				// Check cylinder zone (compared to the box).
+				var dX = Math.Abs(p1.x - p2.x);
+				var dZ = Math.Abs(p1.z - p2.z);
+				var halfBounds = box.Bounds / 2;
+				var withinX = dX <= halfBounds.x;
+				var withinZ = dZ <= halfBounds.z;
+
+				// This means that the cylinder's central axis is within the box (along the flat XZ plane).
+				if (withinX && withinZ)
+				{
+					return true;
+				}
+
+				var radius = cylinder.Radius;
+
+				// Check X delta.
+				if (withinX)
+				{
+					return dZ <= halfBounds.z + radius;
+				}
+
+				// Check Z delta.
+				if (withinZ)
+				{
+					return dX <= halfBounds.x + radius;
+				}
+
+				var flatP1 = p1.swizzle.xz;
+				var flatP2 = p2.swizzle.xz;
+				var flatCorners = new []
+				{
+					new vec2(halfBounds.x, halfBounds.z),
+					new vec2(halfBounds.x, -halfBounds.z),
+					new vec2(-halfBounds.x, halfBounds.z),
+					new vec2(-halfBounds.x, -halfBounds.z)
+				};
+
+				return flatCorners.Any(p => Utilities.DistanceSquared(flatP1 + p, flatP2) <= radius * radius);
+			}
+
+			// TODO: Finish this (for orientable boxes/cylinders).
 			return false;
 		}
 
@@ -91,10 +162,11 @@ namespace Engine.Shapes._3D
 
 		private static bool Overlaps(Cylinder cylinder1, Cylinder cylinder2)
 		{
-			bool isAxisAligned1 = cylinder1.IsAxisAligned;
-			bool isAxisAligned2 = cylinder2.IsAxisAligned;
+			bool isOrientable1 = cylinder1.IsOrientable;
+			bool isOrientable2 = cylinder2.IsOrientable;
 
-			if (isAxisAligned1 && isAxisAligned2)
+			// Both shapes are non-orientable.
+			if (!isOrientable1 && !isOrientable2)
 			{
 				var p1 = cylinder1.Position;
 				var p2 = cylinder2.Position;
@@ -112,6 +184,7 @@ namespace Engine.Shapes._3D
 				return Utilities.DistanceSquared(p1.swizzle.xz, p2.swizzle.xz) <= sumRadii * sumRadii;
 			}
 
+			// TODO: Finish this (for orientable cylinders).
 			return false;
 		}
 

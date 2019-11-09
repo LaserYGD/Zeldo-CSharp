@@ -16,7 +16,8 @@ namespace Engine.Sensors
 
 		private Shape3D shape;
 
-		protected Sensor(SensorTypes type, object owner, int groups, bool isCompound, Shape3D shape = null)
+		protected Sensor(SensorTypes type, object owner, int groups, int affects, bool isCompound,
+			Shape3D shape = null)
 		{
 			Debug.Assert(owner != null, "Owner can't be null.");
 
@@ -24,17 +25,15 @@ namespace Engine.Sensors
 
 			Type = type;
 			Groups = groups;
-
-			// By default, sensors affect nothing.
-			Affects = 0;
+			Affects = affects;
 			Owner = owner;
 			IsEnabled = true;
 			IsCompound = isCompound;
 			Contacts = new List<Sensor>();
 		}
 
-		public Sensor(SensorTypes type, object owner, int groups, Shape3D shape = null) :
-			this(type, owner, groups, false, shape)
+		public Sensor(SensorTypes type, object owner, int groups, int affects, Shape3D shape = null) :
+			this(type, owner, groups, affects, false, shape)
 		{
 		}
 
@@ -44,9 +43,9 @@ namespace Engine.Sensors
 		internal bool IsMarkedForDestruction { get; set; }
 		internal bool IsCompound { get; }
 
-		internal int Groups { get; }
-
 		internal SensorTypes Type { get; }
+
+		internal int Groups { get; }
 
 		// By design, sensor callbacks have an active nature (rather than passive). If one sensor affects another, the
 		// first one's callbacks are triggered with data from the second (such that functions on the second sensor's

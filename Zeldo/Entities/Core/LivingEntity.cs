@@ -41,7 +41,12 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
-		public virtual void OnHit(int damage, int knockback, float angle, vec2 direction, object source)
+		public virtual void OnDamage(int damage, object source = null)
+		{
+			OnHit(damage, 0, 0, vec2.Zero, source);
+		}
+
+		public virtual void OnHit(int damage, int knockback, float angle, vec2 direction, object source = null)
 		{
 			// TODO: Should the function return early if health is already zero?
 			Health = Math.Max(health - damage, 0);

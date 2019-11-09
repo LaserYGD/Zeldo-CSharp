@@ -37,7 +37,7 @@ namespace Zeldo.Entities.Enemies
 			base.Initialize(scene, data);
 		}
 
-		public override void OnHit(int damage, int knockback, float angle, vec2 direction, object source)
+		public override void OnHit(int damage, int knockback, float angle, vec2 direction, object source = null)
 		{
 			if (isCharging)
 			{

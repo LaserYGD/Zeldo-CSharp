@@ -1,8 +1,6 @@
 ﻿using Engine;
 using Engine.Physics;
-using Engine.Sensors;
 using Engine.Shapes._3D;
-using GlmSharp;
 using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 using Newtonsoft.Json.Linq;
@@ -29,7 +27,7 @@ namespace Zeldo.Entities.Objects
 
 			// TODO: Limit the body size to exclude the handle.
 			CreateBody(scene, new BoxShape(bounds.ToJVector()), RigidBodyTypes.PseudoStatic);
-			CreateSensor(scene, new Box(size, bounds.y, bounds.z), SensorGroups.Interaction);
+			CreateSensor(scene, new Box(size, bounds.y, bounds.z, BoxFlags.IsFixedVertical), SensorGroups.Interaction);
 
 			base.Initialize(scene, data);
 		}

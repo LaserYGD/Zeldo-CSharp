@@ -42,6 +42,9 @@ namespace Engine.Sensors
 			{
 				case ShapeTypes3D.Box: primitives.Draw((Box)shape, Color.Cyan);
 					break;
+
+				case ShapeTypes3D.Cylinder: primitives.Draw((Cylinder)shape, Color.Cyan);
+					break;
 			}
 		}
 	}

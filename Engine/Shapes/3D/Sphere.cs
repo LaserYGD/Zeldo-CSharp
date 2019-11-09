@@ -12,6 +12,7 @@ namespace Engine.Shapes._3D
 		public Sphere(float radius) : base(ShapeTypes3D.Sphere)
 		{
 			Radius = radius;
+			IsOrientable = false;
 		}
 
 		public float Radius { get; set; }

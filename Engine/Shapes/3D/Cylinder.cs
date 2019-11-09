@@ -10,10 +10,11 @@ namespace Engine.Shapes._3D
 		{
 		}
 
-		public Cylinder(float height, float radius) : base(ShapeTypes3D.Cylinder)
+		public Cylinder(float height, float radius, bool isOrientable = true) : base(ShapeTypes3D.Cylinder)
 		{
 			Height = height;
 			Radius = radius;
+			IsOrientable = isOrientable;
 		}
 
 		public float Height { get; set; }
@@ -21,7 +22,7 @@ namespace Engine.Shapes._3D
 
 		public override bool Contains(vec3 p)
 		{
-			if (!IsAxisAligned)
+			if (!IsOrientable)
 			{
 				p = Orientation.Inverse * p;
 			}

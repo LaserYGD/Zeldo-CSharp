@@ -14,6 +14,10 @@ namespace Zeldo.Entities.Player
 			DoubleJumpSpeed = Properties.GetFloat("player.double.jump.speed");
 			DoubleJumpLimit = Properties.GetFloat("player.double.jump.limit");
 
+			// Fall damage
+			FallDamage = Properties.GetInt("player.fall.damage");
+			FallDamageThreshold = Properties.GetFloat("player.fall.damage.threshold");
+
 			// Wall jump
 			var wallJumpSpeed = Properties.GetFloat("player.wall.jump.speed");
 			var wallJumpAngle = Properties.GetFloat("player.wall.jump.angle");
@@ -54,6 +58,11 @@ namespace Zeldo.Entities.Player
 		// future-proof to keep them separate. Jump deceleration, in constrast, is assumed the same between single and
 		// double jumps.
 		public float DoubleJumpLimit { get; }
+
+		// TODO: Consider adding both small and big fall damage (with separate thresholds).
+		// Fall damage
+		public int FallDamage { get; }
+		public float FallDamageThreshold { get; }
 
 		// Wall jump
 		public float WallJumpFlatSpeed { get; }

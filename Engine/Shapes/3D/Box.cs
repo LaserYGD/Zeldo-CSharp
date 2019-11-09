@@ -9,21 +9,38 @@ namespace Engine.Shapes._3D
 		{
 		}
 
-		// This constructor creates a cube.
-		public Box(float size) : this(size, size, size)
+		// This constructor creates a cube (i.e. all dimensions the same size).
+		public Box(float size, BoxFlags flags = BoxFlags.IsOrientable) : this(size, size, size, flags)
 		{
 		}
 
-		public Box(float width, float height, float depth) : base(ShapeTypes3D.Box)
+		public Box(float width, float height, float depth, BoxFlags flags = BoxFlags.IsOrientable) :
+			base(ShapeTypes3D.Box)
 		{
 			Width = width;
 			Height = height;
 			Depth = depth;
+			IsOrientable = (flags & BoxFlags.IsOrientable) > 0;
+			IsFixedVertical = (flags & BoxFlags.IsFixedVertical) > 0;
 		}
-		
+
 		public float Width { get; set; }
 		public float Height { get; set; }
 		public float Depth { get; set; }
+
+		public vec3 Bounds
+		{
+			get => new vec3(Width, Height, Depth);
+			set
+			{
+				Width = value.x;
+				Height = value.y;
+				Depth = value.z;
+			}
+		}
+
+		// Just like the orientable flag, this allows optimizations in overlap code.
+		public bool IsFixedVertical { get; set; }
 
 		public override bool Contains(vec3 p)
 		{

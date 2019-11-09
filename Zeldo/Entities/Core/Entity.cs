@@ -138,6 +138,46 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
+		public virtual void Initialize(Scene scene, JToken data)
+		{
+			Scene = scene;
+
+			if (data == null)
+			{
+				return;
+			}
+
+			// Parse ID.
+			if (data.TryParse("Id", out int id))
+			{
+				Id = id;
+			}
+
+			// Parse handles.
+			var hToken = data["Handle"];
+			var hListToken = data["Handles"];
+
+			Debug.Assert(hToken == null || hListToken == null, "Duplicate entity handle blocks. Use either Handle " +
+				"(for singular handles) or Handles (for multiple handles).");
+
+			if (hToken != null || hListToken != null)
+			{
+				handles = new List<EntityHandle>();
+
+				if (hToken != null)
+				{
+					handles.Add(new EntityHandle(hToken));
+				}
+				else
+				{
+					foreach (var token in hListToken.Children())
+					{
+						handles.Add(new EntityHandle(token));
+					}
+				}
+			}
+		}
+
 		private void Attach(EntityAttachmentTypes attachmentType, ITransformable3D target, vec3? nullablePosition,
 		    quat? nullableOrientation)
 		{
@@ -208,12 +248,16 @@ namespace Zeldo.Entities.Core
 
 		// TODO: Add a FanSensors function.
 		protected Sensor CreateSensor(Scene scene, Shape3D shape = null, SensorGroups group = SensorGroups.None,
-			SensorTypes type = SensorTypes.Entity, vec3? position = null, quat? orientation = null)
+			SensorGroups affects = SensorGroups.None, SensorTypes type = SensorTypes.Entity, bool shouldAttach = true,
+			vec3? position = null, quat? orientation = null)
 		{
-			var sensor = new Sensor(type, this, (int)group, shape);
-			
-			Attach(EntityAttachmentTypes.Sensor, sensor, position, orientation);
+			var sensor = new Sensor(type, this, (int)group, (int)affects, shape);
 			scene.Space.Add(sensor);
+
+			if (shouldAttach)
+			{
+				Attach(EntityAttachmentTypes.Sensor, sensor, position, orientation);
+			}
 
 			return sensor;
 		}
@@ -322,44 +366,17 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
-		public virtual void Initialize(Scene scene, JToken data)
+		protected T GetAttachment<T>() where T : ITransformable3D
 		{
-			Scene = scene;
-
-			if (data == null)
+			foreach (var a in attachments)
 			{
-				return;
-			}
-
-			// Parse ID.
-			if (data.TryParse("Id", out int id))
-			{
-				Id = id;
-			}
-
-			// Parse handles.
-			var hToken = data["Handle"];
-			var hListToken = data["Handles"];
-
-			Debug.Assert(hToken == null || hListToken == null, "Duplicate entity handle blocks. Use either Handle " +
-				"(for singular handles) or Handles (for multiple handles).");
-
-			if (hToken != null || hListToken != null)
-			{
-				handles = new List<EntityHandle>();
-
-				if (hToken != null)
+				if (a.Target is T target)
 				{
-					handles.Add(new EntityHandle(hToken));
-				}
-				else
-				{
-					foreach (var token in hListToken.Children())
-					{
-						handles.Add(new EntityHandle(token));
-					}
+					return target;
 				}
 			}
+
+			return default(T);
 		}
 
 		public void ResolveHandles(Scene scene)

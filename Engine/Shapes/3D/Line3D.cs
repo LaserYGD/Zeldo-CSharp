@@ -13,6 +13,7 @@ namespace Engine.Shapes._3D
 		{
 			P1 = p1;
 			P2 = p2;
+			IsOrientable = false;
 		}
 
 		public vec3 P1

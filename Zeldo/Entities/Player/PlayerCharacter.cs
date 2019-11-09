@@ -6,6 +6,8 @@ using Engine;
 using Engine.Core;
 using Engine.Interfaces._3D;
 using Engine.Physics;
+using Engine.Sensors;
+using Engine.Shapes._3D;
 using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
@@ -196,11 +198,15 @@ namespace Zeldo.Entities.Player
 
 			CreateModel(scene, "Capsule.obj");
 			CreateMasterBody(scene, new CapsuleShape(capsuleHeight, capsuleRadius), true);
+			CreateSensor(scene, new Cylinder(FullHeight, capsuleRadius, false), SensorGroups.Player,
+				SensorGroups.Interaction);
 			
 			controller = new PlayerController(this, playerData, controls, settings, CreateControllers());
 
 			var canvas = scene.Canvas;
 			healthDisplay = canvas.GetElement<PlayerHealthDisplay>();
+			healthDisplay.Player = this;
+
 			debugView = canvas.GetElement<DebugView>();
 
 			base.Initialize(scene, data);
@@ -305,6 +311,13 @@ namespace Zeldo.Entities.Player
 
 		protected override void OnLanding(vec3 p, vec3 n, RigidBody platform, SurfaceTriangle surface)
 		{
+			// TODO: Consider basing fall damage on both airtime and downward speed.
+			if (controllingBody.LinearVelocity.Y < -playerData.FallDamageThreshold)
+			{
+				// TODO: If the player dies from fall damage, return early (and perform other actions).
+				OnDamage(playerData.FallDamage);
+			}
+
 			base.OnLanding(p, n, platform, surface);
 
 			// For upward-moving (or sloped) platforms, it's possible for the player to land while still in a jumping
@@ -1033,12 +1046,13 @@ namespace Zeldo.Entities.Player
 		public override void Update(float dt)
 		{
 			base.Update(dt);
-			
+
+			var sensor = GetAttachment<Sensor>();
 			var list = debugView.GetGroup("Player");
 			list.Add("State: " + State);
 			list.Add("Arbiters: " + controllingBody.Arbiters.Count);
 			list.Add("Contacts: " + controllingBody.Arbiters.Sum(a => a.ContactList.Count));
-			list.Add("Jump remaining: " + jumpsRemaining);
+			list.Add("Sensor: " + sensor.Contacts.Count);
 
 			DrawAxes();
 

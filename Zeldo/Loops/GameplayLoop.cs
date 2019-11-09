@@ -79,15 +79,9 @@ namespace Zeldo.Loops
 			stats.Offset = new ivec2(10);
 			stats.IsVisible = false;
 
-			var debug = new DebugView();
-			debug.Anchor = Alignments.Left | Alignments.Top;
-			debug.Offset = new ivec2(10);
-			//debug.IsVisible = false;
-
 			canvas.Clear();
 			canvas.Load("Hud.json");
 			canvas.Add(stats);
-			canvas.Add(debug);
 			//canvas.Add(new RopeTester());
 
 			// TODO: Load settings from a file.
@@ -255,6 +249,8 @@ namespace Zeldo.Loops
 			{
 				// TODO: Should physics be multithreaded? Doing so caused physics to become inconsistent across multiple runs.
 				world.Step(dt, false, PhysicsStep, physicsMaxIterations);
+
+				// TODO: Does the space need to be updated with the physics timestep?
 				space.Update();
 				scene.Update(dt);
 			}

@@ -95,6 +95,7 @@ namespace Engine.Sensors
 					{
 						if (overlaps)
 						{
+							// By design, OnStay isn't called on the frame
 							if (oneAffectsTwo) { sensor1.OnStay?.Invoke(type2, owner2); }
 							if (twoAffectsOne) { sensor2.OnStay?.Invoke(type1, owner1); }
 						}
