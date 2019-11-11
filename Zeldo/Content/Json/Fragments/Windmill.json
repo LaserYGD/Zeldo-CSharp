@@ -7,7 +7,7 @@
 	"Entities": [
 		{
 			"Type": "Windmill.WindmillBlades",
-			"Position": "0|25|0",
+			"Position": "2|21|0",
 			"Orientation": "90|0|0",
 			"Blades": 5,
 			"Radius": 2.2,
