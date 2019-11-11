@@ -101,14 +101,11 @@ namespace Zeldo.Loops
 			player.Unlock(PlayerSkills.Block);
 			player.Unlock(PlayerSkills.Parry);
 
-			var platform = new MovingPlatform(new vec3(3, 0.5f, 3), new vec3(6, 3, 4), new vec3(-6, 3, 4), 2.5f);
-
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
-			scene.Add(platform);
 
-			//var fragment = scene.LoadFragment("Demo.json");
-			var fragment = scene.LoadFragment("Windmill.json");
+			var fragment = scene.LoadFragment("Demo.json");
+			//var fragment = scene.LoadFragment("Windmill.json");
 			player.Position = fragment.Origin + fragment.Spawn;
 
 			CreateDebugCubes();

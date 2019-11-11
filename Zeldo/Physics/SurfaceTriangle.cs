@@ -37,7 +37,9 @@ namespace Zeldo.Physics
 
 		private static float ComputeTheta(vec3 normal)
 		{
-			return normal == vec3.UnitY
+			const float Epsilon = 0.001f;
+
+			return Utilities.Length(normal.swizzle.xz) < Epsilon
 				? 0
 				: Constants.PiOverTwo - Utilities.Angle(new vec3(normal.x, 0, normal.z), normal);
 		}

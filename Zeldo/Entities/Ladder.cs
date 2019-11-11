@@ -62,7 +62,7 @@ namespace Zeldo.Entities
 			position += orientation * vec3.UnitY * Length / 2;
 
 			// TODO: Set dimensions based on mesh bounds.
-			CreateBody(scene, new BoxShape(0.1f, Length, 1), RigidBodyTypes.PseudoStatic);
+			//CreateBody(scene, new BoxShape(0.1f, Length, 1), RigidBodyTypes.PseudoStatic);
 
 			base.Initialize(scene, data);
 		}
@@ -78,15 +78,6 @@ namespace Zeldo.Entities
 		public vec3 ComputeAscension(float t)
 		{
 			return vec3.Zero;
-		}
-
-		public override void Update(float dt)
-		{
-			var d = Utilities.Direction(flatRotation);
-
-			Scene.Primitives.DrawLine(Position, Position + new vec3(d.x, 0, d.y), Color.Cyan);
-
-			base.Update(dt);
 		}
 	}
 }

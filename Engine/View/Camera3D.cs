@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Interfaces._3D;
 using Engine.Messaging;
+using Engine.Utility;
 using GlmSharp;
 
 namespace Engine.View
@@ -14,6 +16,7 @@ namespace Engine.View
 
 		private float orthoHalfWidth;
 		private float orthoHalfHeight;
+		private float fov;
 
 		private bool isOrthographic;
 
@@ -53,7 +56,12 @@ namespace Engine.View
 
 		public float NearPlane { get; set; }
 		public float FarPlane { get; set; }
-		public float PerspectiveFov { get; set; }
+
+		// This assumes that FOV will be given in degrees (not radians).
+		public float Fov
+		{
+			set => fov = Utilities.ToRadians(value);
+		}
 
 		public bool IsOrthographic
 		{
@@ -87,7 +95,7 @@ namespace Engine.View
 
 			projection = isOrthographic
 				? mat4.Ortho(-orthoHalfWidth, orthoHalfWidth, -orthoHalfHeight, orthoHalfHeight, NearPlane, FarPlane)
-				: mat4.PerspectiveFov(PerspectiveFov, dimensions.x, dimensions.y, NearPlane, FarPlane);
+				: mat4.PerspectiveFov(fov, dimensions.x, dimensions.y, NearPlane, FarPlane);
 		}
 
 		public void Attach(CameraController3D controller)

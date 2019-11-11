@@ -43,7 +43,7 @@ namespace Zeldo.View
 			camera.OrthoHeight = Properties.GetFloat("camera.ortho.height");
 			camera.NearPlane = Properties.GetFloat("camera.near.plane");
 			camera.FarPlane = Properties.GetFloat("camera.far.plane");
-			camera.PerspectiveFov = Properties.GetFloat("camera.fov");
+			camera.Fov = Properties.GetFloat("camera.fov");
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{

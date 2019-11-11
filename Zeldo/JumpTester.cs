@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Engine;
 using Engine.Core._2D;
-using Engine.Graphics;
 using Engine.Graphics._2D;
 using Engine.Input.Data;
 using Engine.Interfaces;
@@ -42,7 +37,7 @@ namespace Zeldo
 				};
 			}
 
-			timer = new SingleTimer(time =>
+			timer = new SingleTimer(t =>
 			{
 				if (falling)
 				{
@@ -60,7 +55,7 @@ namespace Zeldo
 					return;
 				}
 
-				timer.Elapsed = time;
+				timer.Elapsed = t;
 				timer.Duration = FallDuration;
 				falling = true;
 			},
