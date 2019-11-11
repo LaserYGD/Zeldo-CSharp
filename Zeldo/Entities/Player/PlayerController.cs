@@ -124,7 +124,7 @@ namespace Zeldo.Entities.Player
 			// then regular jumps).
 			if (!(ProcessAscend(data, dt) || ProcessWallJump(data)))
 			{
-				ProcessJump(data);
+				ProcessJump(data, flatDirection);
 			}
 
 			ProcessAttack(data, dt);
@@ -236,7 +236,7 @@ namespace Zeldo.Entities.Player
 			return false;
 		}
 
-		private void ProcessJump(FullInputData data)
+		private void ProcessJump(FullInputData data, vec2 flatDirection)
 		{
 			// If this is true, it's assumed that the jump bind must have been populated. Note that this behavior (jump
 			// limiting) applies to multiple kinds of jumps (including regular jumps, breaking ascends, wall jumps, and
@@ -261,7 +261,7 @@ namespace Zeldo.Entities.Player
 
 			if (data.Query(controls.Jump, InputStates.PressedThisFrame, out var bind))
 			{
-				player.Jump();
+				player.Jump(flatDirection);
 				jumpBindUsed = bind;
 			}
 		}

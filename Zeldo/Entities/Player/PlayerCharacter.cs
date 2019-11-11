@@ -148,19 +148,21 @@ namespace Zeldo.Entities.Player
 
 		private AbstractController[] CreateControllers()
 		{
+			// Both air and ground movement use the same max speed (otherwise, players would likely observe strange
+			// speed changes when transitioning from one to the other).
+			var maxSpeed = Properties.GetFloat("player.max.speed");
+
 			// Air movement
 			float airAcceleration = Properties.GetFloat("player.air.acceleration");
 			float airDeceleration = Properties.GetFloat("player.air.deceleration");
-			float airMaxSpeed = Properties.GetFloat("player.air.max.speed");
 
-			aerialController.Initialize(airAcceleration, airDeceleration, airMaxSpeed);
+			aerialController.Initialize(airAcceleration, airDeceleration, maxSpeed);
 
 			// Ground movement
 			float groundAcceleration = Properties.GetFloat("player.ground.acceleration");
 			float groundDeceleration = Properties.GetFloat("player.ground.deceleration");
-			float groundMaxSpeed = Properties.GetFloat("player.ground.max.speed");
 
-			groundController.Initialize(groundAcceleration, groundDeceleration, groundMaxSpeed);
+			groundController.Initialize(groundAcceleration, groundDeceleration, maxSpeed);
 
 			// Wall movement
 			wallController = new WallController(this, wallStickTimer);
@@ -708,27 +710,37 @@ namespace Zeldo.Entities.Player
 		}
 		*/
 
-		public void Jump()
+		public void Jump(vec2 flatDirection)
 		{
 			// Jumps are decremented regardless of single vs. double jump.
 			jumpsRemaining--;
 
+			var v = controllingBody.LinearVelocity;
+
 			if (!skillsUnlocked[DoubleJumpIndex] || jumpsRemaining == TargetJumps - 1)
 			{
-				SingleJump();
+				SingleJump(ref v);
 			}
 			else
 			{
-				DoubleJump();
+				DoubleJump(ref v);
 			}
+
+			// TODO: Consider using an angle threshold to apply instant redirection (i.e. only redirect if the flat direction is different enough).
+			// TODO: Consider modifying this behavior on the ground (e.g. skid turnarounds should probably perform a sideflip-like jump).
+			// When the player jumps, velocity is instantly redirected to the target direction (with the same speed).
+			var speed = Utilities.Length(new vec2(v.X, v.Z));
+
+			v.X = flatDirection.x * speed;
+			v.Z = flatDirection.y * speed;
+			controllingBody.LinearVelocity = v;
 
 			state |= PlayerStates.Jumping | PlayerStates.Airborne;
 		}
 
 		// TODO: Consider adding a Mario-style higher jump after two in a row.
-		private void SingleJump()
+		private void SingleJump(ref JVector v)
 		{
-			var v = controllingBody.LinearVelocity;
 			var isGrounded = (state & (PlayerStates.OnGround | PlayerStates.OnPlatform)) > 0;
 
 			if (isGrounded || coyoteFlag.Value)
@@ -779,18 +791,14 @@ namespace Zeldo.Entities.Player
 			{
 			}
 
-			controllingBody.LinearVelocity = v;
 			controllingBody.IsAffectedByGravity = true;
 			activeController = aerialController;
-
 			coyoteFlag.Reset();
 		}
 
-		private void DoubleJump()
+		private void DoubleJump(ref JVector v)
 		{
-			var v = controllingBody.LinearVelocity;
 			v.Y = playerData.DoubleJumpSpeed;
-			controllingBody.LinearVelocity = v;
 		}
 
 		// This function is only called when limiting actually has to occur (i.e. the player's velocity is checked in

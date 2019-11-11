@@ -41,8 +41,7 @@ namespace Zeldo.Control
 		public override void PreStep(float step)
 		{
 			var body = Parent.ControllingBody;
-			body.LinearVelocity = AdjustVelocity(step)
-				.ToJVector();
+			body.LinearVelocity = AdjustVelocity(step).ToJVector();
 
 			var vectors = new List<vec3>();
 

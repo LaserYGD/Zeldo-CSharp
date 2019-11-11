@@ -48,6 +48,9 @@ namespace Zeldo.Entities.Player
 			KillPlane = Properties.GetInt("kill.plane");
 		}
 
+		// Basic movement
+		public float MaxSpeed { get; }
+
 		// Jumps
 		public float JumpSpeed { get; }
 		public float JumpLimit { get; }
