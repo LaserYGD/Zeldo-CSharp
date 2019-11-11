@@ -17,9 +17,10 @@ namespace Zeldo.Entities.Player
 		OnLadder = 1<<9,
 		OnPlatform = 1<<10,
 		OnWall = 1<<11,
-		Running = 1<<12,
-		Sliding = 1<<13,
-		Swimming = 1<<14,
-		Vaulting = 1<<15
+		Pressed = 1<<12,
+		Running = 1<<13,
+		Sliding = 1<<14,
+		Swimming = 1<<15,
+		Vaulting = 1<<16
 	}
 }

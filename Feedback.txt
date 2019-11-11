@@ -9,7 +9,7 @@
 - Field of view is fish-eyed
 - Sometimes the player is pinballed away near seams while grounded
 - Player can fall through the world when jumping near steps in a particular way
-- Player can clip through the ground when pressing into a sloped, overhanging ceiling (and jumping)
+- Player can clip through the ground when pressing into sloped, overhanging ceilings(and jumping)
 - Bounciness when pressing into walls (sometimes pretty severe)
 - Some strange shadowing artifacts when moving the camera in certain ways
 - Some strange triangle artifacts (in the same vein)

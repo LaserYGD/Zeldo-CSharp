@@ -728,13 +728,17 @@ namespace Zeldo.Entities.Player
 
 			// TODO: Consider using an angle threshold to apply instant redirection (i.e. only redirect if the flat direction is different enough).
 			// TODO: Consider modifying this behavior on the ground (e.g. skid turnarounds should probably perform a sideflip-like jump).
+			// TODO: Consider adding coyote redirects.
 			// When the player jumps, velocity is instantly redirected to the target direction (with the same speed).
-			var speed = Utilities.Length(new vec2(v.X, v.Z));
+			if (Utilities.LengthSquared(flatDirection) > 0)
+			{
+				var speed = Utilities.Length(new vec2(v.X, v.Z));
 
-			v.X = flatDirection.x * speed;
-			v.Z = flatDirection.y * speed;
+				v.X = flatDirection.x * speed;
+				v.Z = flatDirection.y * speed;
+			}
+
 			controllingBody.LinearVelocity = v;
-
 			state |= PlayerStates.Jumping | PlayerStates.Airborne;
 		}
 
