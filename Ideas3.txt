@@ -1,0 +1,1 @@
+- Note system for the map (could be contextualized as the player character literally writing notes on a physical map), with optional player text (or maybe sketches?)

@@ -86,6 +86,7 @@ namespace Zeldo.Control
 			var body = Parent.ControllingBody;
 			var v = isMeshControlled ? body.LinearVelocity.ToVec3() : Parent.ManualVelocity;
 
+			// TODO: Apply jump deceleration as appropriate (feels weird to keep gaining height when jump is released).
 			// "Wall gravity" only applies when moving downward (in order to give the player a little more control when
 			// setting up wall jumps).
 			v.y -= (v.y > 0 ? PhysicsConstants.Gravity : wallGravity) * step;

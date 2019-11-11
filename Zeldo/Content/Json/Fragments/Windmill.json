@@ -15,11 +15,16 @@
 		},
 		{
 			"Type": "Objects.Door",
-			"Position": "5|2|-3",
-			"Orientation": "0|180|0"
+			"Position": "10.5|0.75|29.5",
+			"Orientation": "0|135|0"
+		},
+		{
+			"Type": "Objects.Door",
+			"Position": "-21|6|22",
+			"Orientation": "0|0|0"
 		}
 	],
 
 	"Origin": "0|0|0",
-	"Spawn": "0|6|0"
+	"Spawn": "7|1.5|26"
 }

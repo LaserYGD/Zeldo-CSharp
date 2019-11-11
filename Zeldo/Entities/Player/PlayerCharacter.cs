@@ -651,7 +651,9 @@ namespace Zeldo.Entities.Player
 		// TODO: This function assumes respawning from the death plane. Should be generalized.
 		private void Respawn()
 		{
-			controllingBody.Position = new JVector(3, 4, 0);
+			var fragment = Scene.LastFragment;
+
+			controllingBody.Position = (fragment.Origin + fragment.Spawn).ToJVector();
 			controllingBody.LinearVelocity = JVector.Zero;
 		}
 

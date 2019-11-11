@@ -59,6 +59,9 @@ namespace Zeldo.Entities.Core
 		// implement custom features for different kinds of locations.
 		public Dictionary<string, object> Tags { get; }
 
+		// TODO: This is temporary to respawn the player.
+		public SceneFragment LastFragment => lastFragment;
+
 		// This is used for debug purposes.
 		public int Size => entities.Sum(l => l.Count);
 
