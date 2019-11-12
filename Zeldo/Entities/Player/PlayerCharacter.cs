@@ -271,7 +271,7 @@ namespace Zeldo.Entities.Player
 			return base.ShouldGenerateContact(body, triangle);
 		}
 
-		public override bool OnContact(Entity entity, RigidBody body, vec3 p, vec3 normal, float penetration)
+		public override bool OnContact(Entity entity, RigidBody body, vec3 p, vec3 normal)
 		{
 			bool isAirborne = (state & PlayerStates.Airborne) > 0;
 
@@ -284,7 +284,7 @@ namespace Zeldo.Entities.Player
 				return false;
 			}
 
-			return base.OnContact(entity, body, p, normal, penetration);
+			return base.OnContact(entity, body, p, normal);
 		}
 
 		/*
@@ -427,6 +427,8 @@ namespace Zeldo.Entities.Player
 
 		protected override void MidStep(float step)
 		{
+			base.MidStep(step);
+
 			if ((state & PlayerStates.Airborne) > 0)
 			{
 				ProcessAerialWallContacts();
@@ -1074,14 +1076,16 @@ namespace Zeldo.Entities.Player
 		{
 			base.Update(dt);
 
-			var sensor = GetAttachment<Sensor>();
+			var p = controllingBody.Position;
+			var v = controllingBody.LinearVelocity;
 			var list = debugView.GetGroup("Player");
 			list.Add("State: " + State);
 			list.Add("Arbiters: " + controllingBody.Arbiters.Count);
 			list.Add("Contacts: " + controllingBody.Arbiters.Sum(a => a.ContactList.Count));
-			list.Add("Sensor: " + sensor.Contacts.Count);
+			list.Add($"Position: {p.X:F5}, {p.Y:F5}, {p.Z:F5}");
+			list.Add($"Velocity: {v.X:F5}, {v.Y:F5}, {v.Z:F5}");
 
-			DrawAxes();
+			//DrawAxes();
 
 			/*
 			// TODO: This logic should be re-examined (or maybe applied to all actors).

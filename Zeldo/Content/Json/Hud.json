@@ -10,7 +10,8 @@
 	{
 		"$type": "Zeldo.UI.Hud.PlayerHealthDisplay, Zeldo",
 		"Anchor": 5,
-		"Offset": [15, 20]
+		"Offset": [15, 20],
+		"IsVisible": false
 	},
 	{
 		"$type": "Zeldo.UI.DebugView, Zeldo",

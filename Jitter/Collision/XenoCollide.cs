@@ -82,6 +82,7 @@ namespace Jitter.Collision
             result.Z = position.Z + z;
         }
 
+        // TODO: Consider removing penetration as an out parameter (since apparently it's unreliable).
         /// <summary>
         /// Checks two shapes for collisions.
         /// </summary>

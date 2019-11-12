@@ -1,12 +1,12 @@
-===============
+=====================
 = Playtest Feedback =
-===============
+=====================
 
 === Jared (11/10/19) ===
 
-- Neutral deceleration in the air is too fast
-- Deceleration on the ground is okay, but takes getting used to because it's so fast
-- Field of view is fish-eyed
++ Neutral deceleration in the air is too fast
++ Deceleration on the ground is okay, but takes getting used to because it's so fast
++ Field of view is fish-eyed
 - Sometimes the player is pinballed away near seams while grounded
 - Player can fall through the world when jumping near steps in a particular way
 - Player can clip through the ground when pressing into sloped, overhanging ceilings(and jumping)
@@ -16,5 +16,5 @@
 - Running along sloped ground triangles feels odd (might be because of FOV)
 - Difficult to wall jump off of thin platforms
 - Slow downward clipping into the rope bridge
-- Velocity doesn't seem to fully stop on ground triangles (possible to fall off even with neutral input while supposedly stopped)
++ Velocity doesn't seem to fully stop on ground triangles (possible to fall off even with neutral input while supposedly stopped)
 - When on a wall with velocity along that wall, feels odd that a neutral wall jump launches you perpendicular to the wall (should use a reflected angle instead)

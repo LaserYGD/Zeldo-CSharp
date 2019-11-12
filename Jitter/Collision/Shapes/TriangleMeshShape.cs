@@ -206,9 +206,6 @@ namespace Jitter.Collision.Shapes
             box.Transform(ref orientation);
         }
 
-        private bool flipNormal = false;
-        public bool FlipNormals { get { return flipNormal; } set { flipNormal = value; } }
-
         /// <summary>
         /// Sets the current shape. First <see cref="Prepare"/> has to be called.
         /// After SetCurrentShape the shape immitates another shape.
@@ -224,15 +221,12 @@ namespace Jitter.Collision.Shapes
             JVector.Add(ref sum, ref vecs[1], out sum);
             JVector.Add(ref sum, ref vecs[2], out sum);
             JVector.Multiply(ref sum, 1.0f / 3.0f, out sum);
-
       
             geomCen = sum;
 
             JVector.Subtract(ref vecs[1], ref vecs[0], out sum);
             JVector.Subtract(ref vecs[2], ref vecs[0], out normal);
             JVector.Cross(ref sum, ref normal, out normal);
-
-            if (flipNormal) normal.Negate();
         }
 
         private JVector normal = JVector.Up;

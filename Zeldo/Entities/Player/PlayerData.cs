@@ -18,7 +18,7 @@ namespace Zeldo.Entities.Player
 			FallDamage = Properties.GetInt("player.fall.damage");
 			FallDamageThreshold = Properties.GetFloat("player.fall.damage.threshold");
 
-			// Wall jump
+			// Walls
 			var wallJumpSpeed = Properties.GetFloat("player.wall.jump.speed");
 			var wallJumpAngle = Properties.GetFloat("player.wall.jump.angle");
 			var d = Utilities.Direction(wallJumpAngle);
@@ -27,6 +27,7 @@ namespace Zeldo.Entities.Player
 			WallJumpFlatSpeed = d.x * wallJumpSpeed;
 			WallJumpYSpeed = d.y * wallJumpSpeed;
 			WallJumpMaxAngle = Properties.GetFloat("player.wall.jump.max.angle");
+			WallPressThreshold = Properties.GetFloat("player.wall.press.threshold");
 
 			// Platforms
 			PlatformJumpSpeed = Properties.GetFloat("player.platform.jump.speed");
@@ -36,9 +37,7 @@ namespace Zeldo.Entities.Player
 			AscendAcceleration = Properties.GetFloat("player.ascend.acceleration");
 			AscendTargetSpeed = Properties.GetFloat("player.ascend.target.speed");
 
-			// Walls (plus steps and vaults)
-			WallPressThreshold = Properties.GetFloat("player.wall.press.threshold");
-			StepThreshold = Properties.GetFloat("player.step.threshold");
+			// Vaults
 			GroundedVaultThreshold = Properties.GetFloat("player.grounded.vault.threshold");
 			AerialVaultThreshold = Properties.GetFloat("player.aerial.vault.threshold");
 
@@ -47,9 +46,6 @@ namespace Zeldo.Entities.Player
 			IdleTime = Properties.GetFloat("player.idle.time");
 			KillPlane = Properties.GetInt("kill.plane");
 		}
-
-		// Basic movement
-		public float MaxSpeed { get; }
 
 		// Jumps
 		public float JumpSpeed { get; }
@@ -67,10 +63,11 @@ namespace Zeldo.Entities.Player
 		public int FallDamage { get; }
 		public float FallDamageThreshold { get; }
 
-		// Wall jump
+		// Walls
 		public float WallJumpFlatSpeed { get; }
 		public float WallJumpYSpeed { get; }
 		public float WallJumpMaxAngle { get; }
+		public float WallPressThreshold { get; }
 
 		// Platforms
 		public float PlatformJumpSpeed { get; }
@@ -80,9 +77,7 @@ namespace Zeldo.Entities.Player
 		public float AscendAcceleration { get; }
 		public float AscendTargetSpeed { get; }
 
-		// Walls (plus steps and vaults)
-		public float WallPressThreshold { get; }
-		public float StepThreshold { get; }
+		// Vaults
 		public float GroundedVaultThreshold { get; }
 		public float AerialVaultThreshold { get; }
 

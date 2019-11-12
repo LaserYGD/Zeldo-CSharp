@@ -40,51 +40,10 @@ namespace Zeldo.Control
 
 		public override void PreStep(float step)
 		{
-			var body = Parent.ControllingBody;
-			body.LinearVelocity = AdjustVelocity(step).ToJVector();
-
-			var vectors = new List<vec3>();
-
-			foreach (Arbiter arbiter in body.Arbiters)
-			{
-				var contacts = arbiter.ContactList;
-
-				// Before the physics step occurs, all static contacts are aggregated together and manually applied
-				// (based on surface normal).
-				for (int i = contacts.Count - 1; i >= 0; i--)
-				{
-					var contact = contacts[i];
-					var b1 = contact.Body1;
-					var b2 = contact.Body2;
-
-					if (!(b1.IsStatic || b2.IsStatic))
-					{
-						continue;
-					}
-
-					var n = contact.Normal.ToVec3();
-
-					if (body == b1)
-					{
-						n *= -1;
-					}
-
-					var v = Utilities.Normalize(Utilities.ProjectOntoPlane(n, Parent.Ground.Normal));
-					var angle = Utilities.Angle(n, v);
-					var l = contact.Penetration / (float)Math.Cos(angle);
-
-					vectors.Add(v * l);
-					contacts.RemoveAt(i);
-				}
-			}
-
-			if (vectors.Count > 0)
-			{
-				ResolveGroundedCollisions(vectors, step);
-			}
+			Parent.ControllingBody.LinearVelocity = AdjustVelocity(step).ToJVector();
 		}
 
-		public vec3 AdjustVelocity(float step)
+		private vec3 AdjustVelocity(float step)
 		{
 			var v = Parent.ControllingBody.LinearVelocity.ToVec3();
 
@@ -146,7 +105,58 @@ namespace Zeldo.Control
 			return v;
 		}
 
-		private void ResolveGroundedCollisions(List<vec3> vectors, float step)
+		public override void MidStep(float step)
+		{
+			var body = Parent.ControllingBody;
+			var vectors = new List<vec3>();
+			
+			foreach (Arbiter arbiter in body.Arbiters)
+			{
+				var contacts = arbiter.ContactList;
+				
+				for (int i = contacts.Count - 1; i >= 0; i--)
+				{
+					var contact = contacts[i];
+					var b1 = contact.Body1;
+					var b2 = contact.Body2;
+
+					if (!(b1.IsStatic || b2.IsStatic))
+					{
+						continue;
+					}
+
+					var n = contact.Normal.ToVec3();
+
+					// A surface is a wall regardless of normal direction (it's negated below if necessary).
+					if (SurfaceTriangle.ComputeSurfaceType(n) != SurfaceTypes.Wall)
+					{
+						continue;
+					}
+
+					if (body == b1)
+					{
+						n *= -1;
+					}
+					
+					// TODO: Compute proper contact penetration.
+					// This projects the resolution vector back out onto the flat plane (of the triangle on which the
+					// actor is currently standing).
+					var v = Utilities.Normalize(Utilities.ProjectOntoPlane(n, Parent.Ground.Normal));
+					var angle = Utilities.Angle(n, v);
+					var l = contact.Penetration / (float)Math.Cos(angle);
+
+					vectors.Add(v * l);
+					contacts.RemoveAt(i);
+				}
+			}
+
+			if (vectors.Count > 0)
+			{
+				ResolveGroundedCollisions(vectors);
+			}
+		}
+
+		private void ResolveGroundedCollisions(List<vec3> vectors)
 		{
 			var final = vec3.Zero;
 
@@ -167,15 +177,19 @@ namespace Zeldo.Control
 			if (Utilities.LengthSquared(final) > 0.001f)
 			{
 				var body = Parent.ControllingBody;
-				var v = body.LinearVelocity;
 
-				body.Position += v * step + jFinal;
-				body.LinearVelocity -= Utilities.Project(v.ToVec3(), final).ToJVector();
+				body.Position += jFinal;
+				body.LinearVelocity -= Utilities.Project(body.LinearVelocity.ToVec3(), final).ToJVector();
 			}
 		}
 
 		public override void PostStep(float step)
 		{
+			// Floor raycasts are based on step height. The intention is to snap smoothly going both up and down stairs
+			// (which should also work fine for normal triangles, which are much less vertically-separated than steps).
+			const float RaycastMultiplier = 1.2f;
+			const float Epsilon = 0.001f;
+
 			var body = Parent.ControllingBody;
 			var halfHeight = new vec3(0, Parent.FullHeight / 2, 0);
 			var p = body.Position.ToVec3() - halfHeight;
@@ -184,7 +198,12 @@ namespace Zeldo.Control
 			// If the projection returns true, that means the actor is still within the current triangle.
 			if (ground.Project(p, out vec3 result))
 			{
-				body.Position = (result + halfHeight).ToJVector();
+				// This helps prevent very, very slow drift while supposedly stationary (on the order of 0.0001 per
+				// second).
+				if (Utilities.DistanceSquared(p, result) > Epsilon)
+				{
+					body.Position = (result + halfHeight).ToJVector();
+				}
 
 				return;
 			}
@@ -193,10 +212,12 @@ namespace Zeldo.Control
 			var world = Parent.Scene.World;
 			var map = world.RigidBodies.First(b => b.Shape is TriangleMeshShape);
 			var normal = ground.Normal;
+			var offset = PhysicsConstants.StepThreshold * RaycastMultiplier;
 			
 			// TODO: Use properties or a constant for the raycast length (and offset).
+			// TODO: Sometimes downward step snapping doesn't work. Should be fixed.
 			// The raycast needs to be offset enough to catch steps.
-			if (PhysicsUtilities.Raycast(world, map, p + normal, -normal, 1.2f, out var results) &&
+			if (PhysicsUtilities.Raycast(world, map, p + normal * offset, -normal, offset * 2, out var results) &&
 				results.Triangle != null)
 			{
 				// This means the actor moved to another triangle.

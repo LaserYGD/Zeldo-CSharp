@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Engine;
+using Engine.Core;
 using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Input.Data;
@@ -93,8 +94,8 @@ namespace Zeldo.Loops
 			player.Equip(new Sword(player));
 			player.Unlock(PlayerSkills.Grab);
 			player.Unlock(PlayerSkills.Jump);
-			//player.Unlock(PlayerSkills.DoubleJump);
-			//player.Unlock(PlayerSkills.WallJump);
+			player.Unlock(PlayerSkills.DoubleJump);
+			player.Unlock(PlayerSkills.WallJump);
 			//player.Unlock(PlayerSkills.Ascend);
 
 			// Combat skills.
@@ -225,11 +226,11 @@ namespace Zeldo.Loops
 				var point = entity1 != null ? p2 : p1;
 				var tArray = triangle.Select(t => t.ToVec3()).ToArray();
 
-				return entity.OnContact(point, n, tArray, penetration);
+				return entity.OnContact(point, n, tArray);
 			}
 
-			bool b1 = entity1?.OnContact(entity2, body2, p1, -n, penetration) ?? true;
-			bool b2 = entity2?.OnContact(entity1, body1, p2, n, penetration) ?? true;
+			bool b1 = entity1?.OnContact(entity2, body2, p1, -n) ?? true;
+			bool b2 = entity2?.OnContact(entity1, body1, p2, n) ?? true;
 
 			// Either entity can negate the contact.
 			return b1 && b2;
@@ -267,7 +268,7 @@ namespace Zeldo.Loops
 
 			scene.Draw(camera);
 			jitterVisualizer.Draw(camera);
-			spaceVisualizer.Draw();
+			//spaceVisualizer.Draw();
 		}
 	}
 }

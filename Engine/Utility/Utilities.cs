@@ -123,6 +123,12 @@ namespace Engine.Utility
 			// TODO: Re-enable this assertion (once the raycast normal problem is resolved).
 			//Debug.Assert(v1.Length > 0 && v2.Length > 0, "3D angle computation can't use vec3.Zero.");
 
+			// Without this check, NaN can be returned.
+			if (v1 == v2)
+			{
+				return 0;
+			}
+
 			// See https://www.analyzemath.com/stepbystep_mathworksheets/vectors/vector3D_angle.html.
 			return (float)Math.Acos(Dot(v1, v2) / (v1.Length * v2.Length));
 		}

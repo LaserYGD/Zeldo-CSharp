@@ -39,7 +39,7 @@ namespace Zeldo.Physics
 		{
 			const float Epsilon = 0.001f;
 
-			return Utilities.Length(normal.swizzle.xz) < Epsilon
+			return Utilities.LengthSquared(normal.swizzle.xz) < Epsilon
 				? 0
 				: Constants.PiOverTwo - Utilities.Angle(new vec3(normal.x, 0, normal.z), normal);
 		}

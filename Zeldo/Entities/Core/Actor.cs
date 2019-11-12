@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using Engine;
+using Engine.Core;
 using Engine.Physics;
 using Engine.Utility;
 using GlmSharp;
@@ -14,7 +15,6 @@ using Zeldo.UI;
 
 namespace Zeldo.Entities.Core
 {
-	// TODO: Do all actors need to process steps?
 	// TODO: Consider storing a half-height vector (since it's used frequently).
 	public abstract class Actor : LivingEntity
 	{
@@ -90,7 +90,7 @@ namespace Zeldo.Entities.Core
 				// While on a moving platform, contacts should not be generated with that platform.
 				return platformController != null && body != platformController.Platform;
 			}
-
+			
 			// Flying actors should collide with all static triangles (since they don't use surface control).
 			if (groundController != null)
 			{
@@ -100,6 +100,16 @@ namespace Zeldo.Entities.Core
 				// While grounded, only wall and ceiling collisions should generate contacts.
 				if (Ground != null)
 				{
+					// All actors ignore steps while grounded (up to a maximum height). A triangle is considered a step
+					// if the highest point (i.e. maximum Y) of the three vertices is near the bottom of the capsule.
+					if (surfaceType == SurfaceTypes.Wall)
+					{
+						var max = triangle.Max(p => p.Y);
+						var delta = max - (controllingBody.Position.Y - FullHeight / 2);
+
+						return delta > PhysicsConstants.StepThreshold;
+					}
+
 					return surfaceType != SurfaceTypes.Floor;
 				}
 
@@ -198,7 +208,7 @@ namespace Zeldo.Entities.Core
 			return SurfaceTriangle.ComputeSurfaceType(results.Normal) == SurfaceTypes.Floor;
 		}
 
-		public override bool OnContact(Entity entity, RigidBody body, vec3 p, vec3 normal, float penetration)
+		public override bool OnContact(Entity entity, RigidBody body, vec3 p, vec3 normal)
 		{
 			// TODO: Should actors be able to land on static bodies? (rather than only pseudo-static)
 			// Actors can land on portions of any pseudo-static body that are flat enough to be considered a floor.
@@ -207,14 +217,17 @@ namespace Zeldo.Entities.Core
 				return true;
 			}
 
+			// TODO: Re-add this safeguard (it was removed since penetration isn't reliable).
 			// This is a safeguard against actors clipping through fast-moving, sloped platforms from the bottom.
 			// Likely not perfect, but it should help (could also likely be alleviated through design).
+			/*
 			var contactY = p.y + normal.y * penetration;
 
 			if (controllingBody.Position.Y - contactY < capsuleRadius)
 			{
 				return true;
 			}
+			*/
 
 			// Similar to the ground mesh, actors only land on platforms when the bottom-center point touches.
 			var halfHeight = new vec3(0, FullHeight / 2, 0);
@@ -250,6 +263,7 @@ namespace Zeldo.Entities.Core
 			return false;
 		}
 
+		// TODO: Make sure flying enemies don't mark themselves as grounded on downward collisions.
 		// This function is called both from landing on static entities (i.e. moving platforms) and via manual
 		// raycasting during the physics step.
 		protected virtual void OnLanding(vec3 p, vec3 n, RigidBody platform, SurfaceTriangle surface)

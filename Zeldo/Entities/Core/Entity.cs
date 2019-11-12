@@ -465,13 +465,13 @@ namespace Zeldo.Entities.Core
 			}
 		}
 
-		public virtual bool OnContact(Entity entity, RigidBody body, vec3 p, vec3 normal, float penetration)
+		public virtual bool OnContact(Entity entity, RigidBody body, vec3 p, vec3 normal)
 		{
 			return true;
 		}
 
 		// Note that for this callback, the point is the position on the triangle, not the entity.
-		public virtual bool OnContact(vec3 p, vec3 normal, vec3[] triangle, float penetration)
+		public virtual bool OnContact(vec3 p, vec3 normal, vec3[] triangle)
 		{
 			return true;
 		}
