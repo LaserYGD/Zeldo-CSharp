@@ -146,6 +146,11 @@ namespace Engine.Utility
 			return delta;
 		}
 
+		public static int Clamp(int v, int min, int max)
+		{
+			return v < min ? min : (v > max ? max : v);
+		}
+
 		public static float Clamp(float v, float min, float max)
 		{
 			return v < min ? min : (v > max ? max : v);

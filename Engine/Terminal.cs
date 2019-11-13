@@ -9,6 +9,7 @@ using Engine.Input.Processors;
 using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.UI;
+using Engine.Utility;
 using GlmSharp;
 using static Engine.GLFW;
 
@@ -29,10 +30,12 @@ namespace Engine
 		private SpriteFont font;
 		private SpriteText currentLine;
 		private List<SpriteText> lines;
+		private List<string> oldCommands;
 
 		// The terminal uses a monospace font.
 		private int charWidth;
 		private int padding;
+		private int storedIndex;
 
 		public Terminal()
 		{
@@ -40,8 +43,10 @@ namespace Engine
 			font = ContentCache.GetFont("Debug");
 			currentLine = new SpriteText(font);
 			lines = new List<SpriteText>();
+			oldCommands = new List<string>();
 			charWidth = font.Measure("A").x;
 			padding = Properties.GetInt("terminal.padding");
+			storedIndex = -1;
 
 			textProcessor = new TextProcessor();
 			textProcessor.Submit = Submit;
@@ -88,15 +93,40 @@ namespace Engine
 
 				// TODO: Swap input control when the terminal is toggled.
 				// When the terminal is active, it takes over input control.
-				if (IsVisible)
-				{
-					return;
-				}
+				return;
 			}
 
 			if (!IsVisible)
 			{
 				return;
+			}
+
+			bool up = data.Query(GLFW_KEY_UP, InputStates.PressedThisFrame);
+			bool down = data.Query(GLFW_KEY_DOWN, InputStates.PressedThisFrame);
+
+			if (up ^ down)
+			{
+				string text = null;
+
+				if (up && storedIndex < oldCommands.Count - 1)
+				{
+					storedIndex++;
+					text = oldCommands[oldCommands.Count - storedIndex - 1];
+				}
+				else if (down && storedIndex > -1)
+				{
+					storedIndex--;
+					text = storedIndex >= 0 ? oldCommands[oldCommands.Count - storedIndex - 1] : "";
+				}
+
+				// If an old command is selected, other keys are ignored on the current frame.
+				if (text != null)
+				{
+					currentLine.Value = text;
+					textProcessor.Value = text;
+
+					return;
+				}
 			}
 
 			textProcessor.ProcessKeyboard(data);
@@ -111,7 +141,7 @@ namespace Engine
 			line.Color = color;
 			lines.Add(line);
 
-			var start = new vec2(padding, Height - font.Size * 2 - padding * 3);
+			var start = new vec2(padding, Height - font.Size * 2 - padding * 3 - 1);
 			var spacing = new vec2(0, font.Size + padding);
 
 			for (int i = lines.Count - 1; i >= 0; i--)
@@ -127,9 +157,12 @@ namespace Engine
 			var tokens = input.Split(' ');
 			var command = tokens[0];
 
+			oldCommands.Add(input);
+			storedIndex = -1;
+
 			if (!commands.TryGetValue(command, out var processor))
 			{
-				result = $"Unrecognized command '{command}'";
+				result = $"Unrecognized command '{command}'.";
 
 				return false;
 			}
