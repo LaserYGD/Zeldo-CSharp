@@ -40,5 +40,10 @@ namespace Engine.Input.Data
 
 			return (keys[data] & state) == state;
 		}
+
+		public bool Query(InputStates state, params int[] keys)
+		{
+			return keys.Any(k => Query(k, state));
+		}
 	}
 }

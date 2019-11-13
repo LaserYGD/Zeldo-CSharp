@@ -115,7 +115,8 @@ namespace Engine.Core._2D
 
 		public Rectangle ToRectangle()
 		{
-			return new Rectangle(X, Y, Width, Height);
+			// Rectangles are positioned by their center.
+			return new Rectangle(X + Width / 2, Y + Height / 2, Width, Height);
 		}
 	}
 }

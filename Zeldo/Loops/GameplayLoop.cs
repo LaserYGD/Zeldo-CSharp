@@ -81,7 +81,7 @@ namespace Zeldo.Loops
 			stats.IsVisible = false;
 
 			canvas.Clear();
-			canvas.Load("Hud.json");
+			canvas.Load("Canvas.json");
 			canvas.Add(stats);
 			//canvas.Add(new RopeTester());
 
@@ -105,8 +105,8 @@ namespace Zeldo.Loops
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
 
-			//var fragment = scene.LoadFragment("Demo.json");
-			var fragment = scene.LoadFragment("Windmill.json");
+			var fragment = scene.LoadFragment("Demo.json");
+			//var fragment = scene.LoadFragment("Windmill.json");
 			player.Position = fragment.Origin + fragment.Spawn;
 
 			CreateDebugCubes();

@@ -148,6 +148,8 @@
     <Compile Include="Core\TimedFlag.cs" />
     <Compile Include="Graphics\RenderKeys.cs" />
     <Compile Include="Input\InputBuffer.cs" />
+    <Compile Include="Input\InputUtilities.cs" />
+    <Compile Include="Input\Processors\TextProcessor.cs" />
     <Compile Include="Interfaces\IComponent.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GLUtilities.cs" />
@@ -224,6 +226,7 @@
     <Compile Include="Structures\Curve3D.cs" />
     <Compile Include="Structures\SafeList.cs" />
     <Compile Include="Structures\SpringPoint3D.cs" />
+    <Compile Include="Terminal.cs" />
     <Compile Include="Timing\RepeatingTimer.cs" />
     <Compile Include="Timing\SingleTimer.cs" />
     <Compile Include="Timing\Timer.cs" />

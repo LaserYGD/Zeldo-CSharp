@@ -102,7 +102,7 @@
     <None Include="Content\Json\Fragments\Windmill.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Content\Json\Hud.json">
+    <None Include="Content\Json\Canvas.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Json\Items.json">

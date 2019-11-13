@@ -59,6 +59,7 @@ namespace Engine.UI
 
 			element.Location = placement;
 			element.Canvas = this;
+			element.Initialize();
 			elements.Add(element);
 
 			if (element.UsesRenderTarget)

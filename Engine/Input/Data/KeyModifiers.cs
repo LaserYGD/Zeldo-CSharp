@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Engine.GLFW;
+﻿using static Engine.GLFW;
 
 namespace Engine.Input.Data
 {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using Engine.Core;
 
 namespace Engine
 {
@@ -67,6 +68,23 @@ namespace Engine
 			Debug.Assert(map.ContainsKey(key), $"Missing property '{key}'.");
 
 			return map[key];
+		}
+
+		public static Color GetColor(string key)
+		{
+			Debug.Assert(map.ContainsKey(key), $"Missing property '{key}'.");
+
+			var tokens = map[key].Split('|');
+
+			Debug.Assert(tokens.Length >= 3 && tokens.Length <= 4, $"Color property {key} is in the wrong format " +
+				"(expected R|G|B, plus optional |A).");
+
+			var r = byte.Parse(tokens[0]);
+			var g = byte.Parse(tokens[1]);
+			var b = byte.Parse(tokens[2]);
+			var a = tokens.Length == 4 ? byte.Parse(tokens[3]) : (byte)255;
+
+			return new Color(r, g, b, a);
 		}
 	}
 }

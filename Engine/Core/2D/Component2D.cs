@@ -145,6 +145,12 @@ namespace Engine.Core._2D
 
 		protected void Draw(SpriteBatch sb, uint textureId, float[] data)
 		{
+			// Data can be null for empty text.
+			if (data == null)
+			{
+				return;
+			}
+
 			// Source is intentionally computed before position to make sure the proper origin is applied.
 			if (sourceChanged)
 			{

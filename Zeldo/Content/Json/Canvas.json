@@ -1,5 +1,11 @@
 ﻿[
 	{
+		"$type": "Engine.Terminal, Engine",
+		"Anchor": 5,
+		"Height": 200,
+		"IsVisible": false
+	},
+	{
 		"$type": "Zeldo.UI.Hud.BossHealthBar, Zeldo",
 		"Anchor": 8,
 		"Offset": [0, 80],
@@ -16,6 +22,7 @@
 	{
 		"$type": "Zeldo.UI.DebugView, Zeldo",
 		"Anchor": 5,
-		"Offset": [15, 55]
+		"Offset": [15, 55],
+		"IsVisible": false
 	}
 ]

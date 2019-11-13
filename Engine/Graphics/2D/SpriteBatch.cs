@@ -187,6 +187,11 @@ namespace Engine.Graphics._2D
 			Buffer(data, indices);
 		}
 
+		public void Fill(Bounds2D bounds, Color color)
+		{
+			Fill(bounds.ToRectangle(), color);
+		}
+
 		public void Fill(Rectangle rect, Color color)
 		{
 			ushort[] indices = { 0, 1, 3, 2 };

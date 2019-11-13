@@ -39,6 +39,11 @@ namespace Engine
 		public const int GLFW_REPEAT = 2;
 		public const int GLFW_KEY_UNKNOWN = -1;
 		public const int GLFW_KEY_SPACE = 32;
+		public const int GLFW_KEY_APOSTROPHE = 39;
+		public const int GLFW_KEY_COMMA = 44;
+		public const int GLFW_KEY_MINUS = 45;
+		public const int GLFW_KEY_PERIOD = 46;
+		public const int GLFW_KEY_SLASH = 47;
 		public const int GLFW_KEY_0 = 48;
 		public const int GLFW_KEY_1 = 49;
 		public const int GLFW_KEY_2 = 50;
@@ -49,6 +54,8 @@ namespace Engine
 		public const int GLFW_KEY_7 = 55;
 		public const int GLFW_KEY_8 = 56;
 		public const int GLFW_KEY_9 = 57;
+		public const int GLFW_KEY_SEMICOLON = 59;
+		public const int GLFW_KEY_EQUAL = 61;
 		public const int GLFW_KEY_A = 65;
 		public const int GLFW_KEY_B = 66;
 		public const int GLFW_KEY_C = 67;
@@ -75,6 +82,10 @@ namespace Engine
 		public const int GLFW_KEY_X = 88;
 		public const int GLFW_KEY_Y = 89;
 		public const int GLFW_KEY_Z = 90;
+		public const int GLFW_KEY_LEFT_BRACKET = 91;
+		public const int GLFW_KEY_BACKSLASH = 92;
+		public const int GLFW_KEY_RIGHT_BRACKET = 93;
+		public const int GLFW_KEY_GRAVE_ACCENT = 96;
 		public const int GLFW_KEY_ESCAPE = 256;
 		public const int GLFW_KEY_ENTER = 257;
 		public const int GLFW_KEY_TAB = 258;

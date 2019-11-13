@@ -59,12 +59,19 @@ namespace Engine.UI
 			set => bounds.Height = value;
 		}
 
-		protected void Attach(Component2D component, ivec2? location = null)
+		protected T Attach<T>(T component, ivec2? location = null) where T : Component2D
 		{
 			attachments.Add((component, location ?? ivec2.Zero));
+
+			return component;
 		}
 
 		public virtual void Dispose()
+		{
+		}
+
+		// This can be used to initialize components once other values are set.
+		public virtual void Initialize()
 		{
 		}
 
