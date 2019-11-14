@@ -12,9 +12,14 @@ namespace Engine.Core
 		private bool defaultValue;
 		private bool isPaused;
 
+		// This constructor is useful when duration isn't known on construction.
+		public TimedFlag(bool defaultValue = false) : this(0, defaultValue)
+		{
+		}
+
 		public TimedFlag(float duration, bool defaultValue = false)
 		{
-			Debug.Assert(duration > 0, "Timed flag duration must be positive.");
+			Debug.Assert(duration >= 0, "Timed flag duration can't be negative.");
 
 			this.duration = duration;
 			this.defaultValue = defaultValue;
@@ -25,6 +30,12 @@ namespace Engine.Core
 		// Flags are designed to be persistent (as long as the parent entity is loaded).
 		public bool IsComplete => false;
 		public bool Value => isPaused ? defaultValue : !defaultValue;
+
+		public float Duration
+		{
+			get => duration;
+			set => duration = value;
+		}
 
 		// For flags that require tracking data, it often makes sense to track that data within the flag itself.
 		public object Tag { get; set; }

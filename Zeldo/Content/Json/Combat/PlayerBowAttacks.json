@@ -1,0 +1,10 @@
+﻿{
+	"": { 
+		"Class": "Zeldo.Entities.Player.Combat.AerialSwordSwipe",
+		"Animation": "AerialSwordSwipe",
+		"Prepare": 0,
+		"Execute": 0.4,
+		"Cooldown": 0,
+		"Reset": 0
+	}
+}

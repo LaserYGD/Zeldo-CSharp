@@ -132,6 +132,7 @@ namespace Zeldo.Entities.Player
 
 		// The player owns their own inventory.
 		public Inventory Inventory { get; }
+		public Weapon<PlayerCharacter> Weapon => weapon;
 
 		// States are used by the controller class to more easily determine when to apply certain actions. Using a
 		// single bitfield is more efficient than many booleans.

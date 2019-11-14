@@ -14,15 +14,25 @@ namespace Zeldo.Combat
 		private Func<bool> triggerCallback;
 		private AttackPhases phase;
 
+		// If phase advancement is stalled, ShouldAdvance is called every frame until the phase is allowed to advance.
+		private bool isWaitingOnPhase;
+
 		protected Attack(AttackData data, T parent)
 		{
 			this.data = data;
 
 			Parent = parent;
-
-			timer = new SingleTimer(time => { AdvancePhase(); });
-			timer.IsPaused = true;
-			timer.IsRepeatable = true;
+			timer = new SingleTimer(t =>
+			{
+				if (ShouldAdvance(phase))
+				{
+					AdvancePhase();
+				}
+				else
+				{
+					isWaitingOnPhase = true;
+				}
+			});
 
 			phase = AttackPhases.Idle;
 			phaseTicks = new Action<float>[]
@@ -38,7 +48,8 @@ namespace Zeldo.Combat
 
 		// Like many components, attacks are designed to be instantiated once when the parent is spawned, then
 		// activated when needed.
-		public bool IsComplete => false;
+		public bool IsComplete => phase == AttackPhases.Complete;
+		public bool IsCoolingDown => phase == AttackPhases.Cooldown;
 
 		// All attacks have a specific list of requirements before they'll execute. Sometimes this logic is simple and
 		// can be encapsulated in the attack class itself. For cases when trigger logic is more complicated, a custom
@@ -69,11 +80,9 @@ namespace Zeldo.Combat
 			AdvancePhase();
 		}
 
-		public void Cancel()
+		public virtual void Cancel()
 		{
-			timer.Elapsed = 0;
-			timer.IsPaused = true;
-			phase = AttackPhases.Idle;
+			phase = AttackPhases.Complete;
 		}
 
 		private void AdvancePhase()
@@ -88,11 +97,8 @@ namespace Zeldo.Combat
 			// A phase is considered disabled if its duration is zero.
 			while (phase != AttackPhases.Idle && data.Durations[phaseIndex] == 0);
 
-			if (phase == AttackPhases.Idle)
+			if (phase == AttackPhases.Complete)
 			{
-				// In this case, the timer will automatically pause itself (since the timer is marked repeatable).
-				timer.Elapsed = 0;
-
 				return;
 			}
 
@@ -120,11 +126,18 @@ namespace Zeldo.Combat
 			}
 		}
 
+		// This is useful when certain phases need to be stalled while waiting for another event to occur (e.g. once
+		// the bow is drawn, an attack isn't executed until the button is released).
+		protected virtual bool ShouldAdvance(AttackPhases phase)
+		{
+			return true;
+		}
+
 		protected virtual void OnPrepare()
 		{
 		}
 
-		protected virtual void WhilePreparing(float progress)
+		protected virtual void WhilePreparing(float t)
 		{
 		}
 
@@ -132,7 +145,7 @@ namespace Zeldo.Combat
 		{
 		}
 
-		protected virtual void WhileExecuting(float progress)
+		protected virtual void WhileExecuting(float t)
 		{
 		}
 
@@ -140,7 +153,7 @@ namespace Zeldo.Combat
 		{
 		}
 
-		protected virtual void WhileCooling(float progress)
+		protected virtual void WhileCooling(float t)
 		{
 		}
 
@@ -148,12 +161,21 @@ namespace Zeldo.Combat
 		{
 		}
 
-		protected virtual void WhileResetting(float progress)
+		protected virtual void WhileResetting(float t)
 		{
 		}
 
 		public void Update(float dt)
 		{
+			if (isWaitingOnPhase && ShouldAdvance(phase))
+			{
+				AdvancePhase();
+				isWaitingOnPhase = false;
+
+				// The timer shouldn't be updated again if the phase was just advanced.
+				return;
+			}
+
 			if (phase != AttackPhases.Idle)
 			{
 				timer.Update(dt);

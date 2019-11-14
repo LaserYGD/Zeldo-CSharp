@@ -12,17 +12,29 @@ namespace Engine.Input
 		private Dictionary<InputBind, BindTuple> map;
 
 		private float duration;
-		
+
+		public InputBuffer(bool requiresHold, List<InputBind> binds) : this(0, requiresHold, binds)
+		{
+		}
+
 		// Some buffered actions require the bind to still be held when the action occurs, while others don't.
 		public InputBuffer(float duration, bool requiresHold, List<InputBind> binds)
 		{
-			Debug.Assert(duration > 0, "Input buffer duration must be positive.");
-
-			this.duration = duration;
-
+			Duration = duration;
 			RequiresHold = requiresHold;
 			map = new Dictionary<InputBind, BindTuple>();
 			Binds = binds;
+		}
+
+		public float Duration
+		{
+			get => duration;
+			set
+			{
+				Debug.Assert(value >= 0, "Input buffer duration can't be negative.");
+
+				duration = value;
+			}
 		}
 
 		public List<InputBind> Binds

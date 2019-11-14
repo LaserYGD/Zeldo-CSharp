@@ -1,22 +1,18 @@
-﻿using GlmSharp;
-using Zeldo.Entities.Core;
-using Zeldo.Entities.Projectiles;
+﻿using Zeldo.Entities.Player;
+using Zeldo.Entities.Player.Combat;
 
 namespace Zeldo.Entities.Weapons
 {
-	public class Bow : Entity
+	public class Bow : Weapon<PlayerCharacter>
 	{
-		public Bow() : base(EntityGroups.Weapon)
+		public Bow(PlayerCharacter owner) : base("PlayerBowAttacks.json", owner)
 		{
 		}
 
-		public void PrimaryAttack(vec2 direction, float angle)
+		public override void ReleasePrimary()
 		{
-			Arrow arrow = new Arrow();
-			arrow.Position = Position + new vec3(0, 0.5f, 0);
-			arrow.Orientation = quat.FromAxisAngle(angle, -vec3.UnitY);
-
-			Scene.Add(arrow);
+			// TODO: This will have to change when additional bow attacks are added (since not all of them can be held and released).
+			((BowShot)ActiveAttack).ShouldRelease = true;
 		}
 	}
 }

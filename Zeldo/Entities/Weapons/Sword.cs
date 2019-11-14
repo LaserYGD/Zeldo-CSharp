@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
-using Zeldo.Combat;
 using Zeldo.Entities.Core;
 using Zeldo.Entities.Player;
 using Zeldo.Interfaces;
@@ -48,12 +47,6 @@ namespace Zeldo.Entities.Weapons
 		protected override void OnCooldownExpired()
 		{
 			targetsHit.Clear();
-		}
-
-		protected override void TriggerPrimary(out float cooldownTime, out float bufferTime)
-		{
-			cooldownTime = 1000;
-			bufferTime = 0;
 		}
 	}
 }

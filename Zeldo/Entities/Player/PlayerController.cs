@@ -7,6 +7,7 @@ using Engine.Messaging;
 using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
+using Zeldo.Combat;
 using Zeldo.Control;
 using Zeldo.Settings;
 using Zeldo.View;
@@ -30,18 +31,20 @@ namespace Zeldo.Entities.Player
 		private LadderController ladderController;
 		private WallController wallController;
 
-		// TODO: Modify to use input buffers (rather than manual timing).
-		// Attacks use a short input buffering window in order to make chained attacks easier to execute.
-		private SingleTimer attackBuffer;
+		// Unlike other combat entities, player attacks are advanced during input processing (rather than the regular
+		// update step).
+		private Attack<PlayerCharacter> activeAttack;
 
 		// It's possible for actions to have multiple binds. In cases where releasing a bind does something (e.g.
 		// limiting a player's jump or releasing a hold), that action should only take place if the *same* bind was
 		// released (rather than releasing a *different* button bound to the same action). In practice, then, that
 		// means that while one bind is held in this scenario, other binds for that same action are ignored.
+		private InputBind attackBindUsed;
 		private InputBind jumpBindUsed;
 		private InputBind grabBindUsed;
 		private InputBind blockBindUsed;
 
+		private InputBuffer attackBuffer;
 		private InputBuffer grabBuffer;
 		private InputBuffer ascendBuffer;
 
@@ -59,15 +62,12 @@ namespace Zeldo.Entities.Player
 			wallController = (WallController)controllers[PlayerCharacter.ControllerIndexes.Wall];
 			ladderController = (LadderController)controllers[PlayerCharacter.ControllerIndexes.Ladder];
 
-			attackBuffer = new SingleTimer(time => { });
-			attackBuffer.IsRepeatable = true;
-			attackBuffer.IsPaused = true;
-
 			// Create buffers.
 			float grab = Properties.GetFloat("player.grab.buffer");
 			float ascend = Properties.GetFloat("player.ascend.buffer");
 
 			// Actual values for requiresHold on each buffer are set when control settings are applied.
+			attackBuffer = new InputBuffer(false, controls.Attack);
 			grabBuffer = new InputBuffer(grab, false, controls.Grab);
 			ascendBuffer = new InputBuffer(ascend, false, controls.Jump);
 			ascendBuffer.RequiredChords = controls.Ascend;
@@ -90,6 +90,7 @@ namespace Zeldo.Entities.Player
 
 		private void OnApply(ControlSettings settings)
 		{
+			// TODO: Update binds on buffers.
 			ascendBuffer.RequiresHold = !settings.UseToggleAscend;
 			grabBuffer.RequiresHold = !settings.UseToggleGrab;
 		}
@@ -109,6 +110,9 @@ namespace Zeldo.Entities.Player
 			groundController.FlatDirection = flatDirection;
 			platformController.FlatDirection = flatDirection;
 			wallController.FlatDirection = flatDirection;
+			
+			// TODO: Make sure the call order is correct among all of these actions.
+			activeAttack?.Update(dt);
 
 			// The player can only interact while grounded. Interaction also takes priority over other actions on the
 			// current frame.
@@ -268,55 +272,25 @@ namespace Zeldo.Entities.Player
 
 		private void ProcessAttack(FullInputData data, float dt)
 		{
-			/*
 			var weapon = player.Weapon;
 
-			// Helper function to trigger a weapon's primary attack with buffer time.
-			void TriggerPrimary()
+			if (attackBindUsed != null)
 			{
-				float bufferTime = weapon.TriggerPrimary();
-
-				// A buffer time of zero means that no buffering should occur for that particular attack.
-				if (bufferTime != 0)
+				if (data.Query(attackBindUsed, InputStates.ReleasedThisFrame))
 				{
-					// Triggering an attack doesn't also start the buffer timer. That only happens when *another*
-					// attack input arrives while the weapon is on cooldown.
-					attackBuffer.Duration = bufferTime;
+					weapon.ReleasePrimary();
+					attackBindUsed = null;
 				}
-			}
-
-			// This means that the player has no weapon equipped.
-			if (weapon == null || !data.Query(controls.Attack, InputStates.PressedThisFrame))
-			{
-				return;
-			}
-
-			// If an attack was buffered as the weapon's cooldown expires, trigger another attack immediately.
-			if (weapon.HasCooldownExpired(dt) && !attackBuffer.IsPaused)
-			{
-				TriggerPrimary();
-
-				attackBuffer.Elapsed = 0;
-				attackBuffer.IsPaused = true;
 
 				return;
 			}
 
-			if (weapon.IsCoolingDown)
+			// TODO: Process weapon cooldown as needed.
+			if (attackBuffer.Refresh(data, dt, out var bind))
 			{
-				// The attack buffer is reset with each new input (assuming buffering was enabled by the weapon's
-				// previous attack).
-				if (attackBuffer.Duration > 0)
-				{
-					attackBuffer.Elapsed = 0;
-					attackBuffer.IsPaused = false;
-				}
+				attackBindUsed = bind;
+				activeAttack = weapon.TriggerPrimary();
 			}
-			else
-			{
-				TriggerPrimary();
-			}
-			*/
 		}
 
 		/*

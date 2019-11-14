@@ -12,6 +12,7 @@ namespace Zeldo.Combat
 		Prepare,
 		Execute,
 		Cooldown,
-		Reset
+		Reset,
+		Complete
 	}
 }

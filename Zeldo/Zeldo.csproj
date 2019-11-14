@@ -87,6 +87,9 @@
     <None Include="Content\Json\Combat\OctopusAttacks.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Json\Combat\PlayerBowAttacks.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Json\Combat\PlayerSwordAttacks.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -280,6 +283,7 @@
     <Compile Include="Entities\Objects\Door.cs" />
     <Compile Include="Entities\Player\Combat\AerialSwordLift.cs" />
     <Compile Include="Entities\Player\Combat\AerialSwordSwipe.cs" />
+    <Compile Include="Entities\Player\Combat\BowShot.cs" />
     <Compile Include="Entities\Player\PlayerController.cs" />
     <Compile Include="Entities\Player\PlayerData.cs" />
     <Compile Include="Entities\Player\PlayerStates.cs" />

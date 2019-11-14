@@ -19,7 +19,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Zeldo.Entities.Core
 {
-	// TODO: Consider adding a flag to disable updates (for things like non-moving ladders).
 	// TODO: Consider adding an origin for controller bodies (e.g. doors, which are positioned by their bottom-center).
 	public abstract class Entity : ITransformable3D, IDynamic, IDisposable
 	{
@@ -49,6 +48,8 @@ namespace Zeldo.Entities.Core
 
 			// -1 means that the entity had no explicit ID given when spawned from a fragment file.
 			Id = -1;
+			IsUpdateEnabled = true;
+			IsDrawEnabled = true;
 		}
 		
 		protected ComponentCollection Components { get; }
@@ -57,6 +58,9 @@ namespace Zeldo.Entities.Core
 
 		// ID isn't set on all entities (only those meant to be retrieved via handles).
 		public int Id { get; private set; }
+
+		public bool IsUpdateEnabled { get; protected set; }
+		public bool IsDrawEnabled { get; protected set; }
 
 		public Scene Scene { get; protected set; }
 		public RigidBody ControllingBody => controllingBody;
