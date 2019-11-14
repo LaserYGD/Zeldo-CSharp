@@ -15,7 +15,7 @@ using static Engine.GLFW;
 
 namespace Zeldo
 {
-	public class MainGame : Game, IReceiver
+	public class MainGame : Game
 	{
 		private Gamestates currentState;
 		private Gamestates nextState;
@@ -80,19 +80,12 @@ namespace Zeldo
 			MessageSystem.Send(CoreMessageTypes.ResizeWindow, Resolution.WindowDimensions);
 		}
 
-		public List<MessageHandle> MessageHandles { get; set; }
-
-		public void Dispose()
-		{
-			MessageSystem.Unsubscribe(this);
-		}
-
 		private void ProcessKeyboard(KeyboardData data)
 		{
 			// Process the game exiting.
 			if (data.Query(GLFW_KEY_ESCAPE, InputStates.PressedThisFrame))
 			{
-				glfwSetWindowShouldClose(window.Address, 1);
+				OnExit();
 			}
 		}
 

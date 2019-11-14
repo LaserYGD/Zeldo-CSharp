@@ -57,6 +57,16 @@ namespace Engine
 			colors[2] = Properties.GetColor("terminal.success.color");
 			colors[3] = Properties.GetColor("terminal.failure.color");
 
+			// TODO: Add other default commands (like "help" and "commands")
+			Add("exit", (string[] args, out string result) =>
+			{
+				result = null;
+
+				MessageSystem.Send(CoreMessageTypes.Exit);
+
+				return true;
+			});
+
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) =>
 			{
 				// The terminal is always resized to fit the window width.
@@ -135,7 +145,15 @@ namespace Engine
 
 		private bool Submit(string value)
 		{
-			var color = Run(value, out var result) ? colors[SuccessIndex] : colors[FailureIndex];
+			var success = Run(value, out var result);
+
+			// A null result string can be returned in rare cases (such as when exiting the program).
+			if (success && result == null)
+			{
+				return true;
+			}
+
+			var color = success ? colors[SuccessIndex] : colors[FailureIndex];
 			var line = new SpriteText(font, result);
 
 			line.Color = color;
@@ -169,7 +187,7 @@ namespace Engine
 
 			var args = new string[tokens.Length - 1];
 
-			Array.Copy(tokens, 1, args, 1, args.Length);
+			Array.Copy(tokens, 1, args, 0, args.Length);
 
 			return processor(args, out result);
 		}

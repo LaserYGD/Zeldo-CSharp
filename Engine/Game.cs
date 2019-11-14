@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Engine.Input;
+using Engine.Interfaces;
+using Engine.Messaging;
 using static Engine.GLFW;
 
 namespace Engine
 {
-	public abstract class Game
+	public abstract class Game : IReceiver
 	{
 		// The input processor (and associated callbacks) are static to avoid the garbage collector moving things
 		// around at runtime (which would cause an error in GLFW).
@@ -81,7 +85,14 @@ namespace Engine
 			glfwSetKeyCallback(address, keyCallback);
 			glfwSetCursorPosCallback(address, cursorPositionCallback);
 			glfwSetMouseButtonCallback(address, mouseButtonCallback);
+
+			MessageSystem.Subscribe(this, CoreMessageTypes.Exit, (messageType, data, dt) =>
+			{
+				OnExit();
+			});
 		}
+
+		public List<MessageHandle> MessageHandles { get; set; }
 
 		public void Run()
 		{
@@ -115,11 +126,21 @@ namespace Engine
 				}
 
 				Draw();
-
 				glfwSwapBuffers(window.Address);
 			}
 
 			glfwTerminate();
+		}
+
+		public virtual void Dispose()
+		{
+			// In practice, disposing properly doesn't matter since the game is about to exit anyway.
+			Debug.Fail("The game's disposal function shouldn't be called.");
+		}
+
+		protected virtual void OnExit()
+		{
+			glfwSetWindowShouldClose(window.Address, 1);
 		}
 
 		protected abstract void Update(float dt);
