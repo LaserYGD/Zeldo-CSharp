@@ -58,14 +58,14 @@ namespace Engine
 			colors[3] = Properties.GetColor("terminal.failure.color");
 
 			// TODO: Add other default commands (like "help" and "commands")
-			Add("exit", (string[] args, out string result) =>
+			Add((string[] args, out string result) =>
 			{
 				result = null;
 
 				MessageSystem.Send(CoreMessageTypes.Exit);
 
 				return true;
-			});
+			}, "exit", "quit");
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) =>
 			{
@@ -93,6 +93,15 @@ namespace Engine
 			Debug.Assert(!commands.ContainsKey(command), $"Duplicate command '{command}'.");
 
 			commands.Add(command, processor);
+		}
+
+		// This version is useful when multiple commands should alias to the same processor.
+		public void Add(CommandProcessor processor, params string[] commands)
+		{
+			foreach (var command in commands)
+			{
+				Add(command, processor);
+			}
 		}
 
 		private void ProcessKeyboard(KeyboardData data)
