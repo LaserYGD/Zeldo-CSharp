@@ -11,6 +11,7 @@ namespace Zeldo.Entities.Player
 		BufferedReflect,
 		OmnidirectionalReflect,
 		UnderwaterBreathing,
-		WaterfallAscend
+		WaterfallAscend,
+		WeaponInfusion
 	}
 }

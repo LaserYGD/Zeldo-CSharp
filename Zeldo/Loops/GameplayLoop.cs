@@ -97,10 +97,10 @@ namespace Zeldo.Loops
 			player.Unlock(PlayerSkills.DoubleJump);
 			player.Unlock(PlayerSkills.WallJump);
 			//player.Unlock(PlayerSkills.Ascend);
-
-			// Combat skills.
 			player.Unlock(PlayerSkills.Block);
 			player.Unlock(PlayerSkills.Parry);
+
+			player.Equip(new Sword(player));
 
 			// TODO: Load fragments from a save slot.
 			scene.Add(player);
@@ -268,7 +268,7 @@ namespace Zeldo.Loops
 
 			scene.Draw(camera);
 			jitterVisualizer.Draw(camera);
-			//spaceVisualizer.Draw();
+			spaceVisualizer.Draw();
 		}
 	}
 }

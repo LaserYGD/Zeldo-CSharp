@@ -284,6 +284,7 @@
     <Compile Include="Entities\Player\Combat\AerialSwordLift.cs" />
     <Compile Include="Entities\Player\Combat\AerialSwordSwipe.cs" />
     <Compile Include="Entities\Player\Combat\BowShot.cs" />
+    <Compile Include="Entities\Player\Combat\SwordSlash.cs" />
     <Compile Include="Entities\Player\PlayerController.cs" />
     <Compile Include="Entities\Player\PlayerData.cs" />
     <Compile Include="Entities\Player\PlayerStates.cs" />

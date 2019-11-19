@@ -1,4 +1,13 @@
 ﻿{
+	"Basic Slash": { 
+		"Class": "Zeldo.Entities.Player.Combat.SwordSlash",
+		"Animation": "SwordSlash",
+		"Prepare": 0,
+		"Execute": 0.4,
+		"Cooldown": 0,
+		"Reset": 0
+	},
+
 	"Aerial Swipe": { 
 		"Class": "Zeldo.Entities.Player.Combat.AerialSwordSwipe",
 		"Animation": "AerialSwordSwipe",
