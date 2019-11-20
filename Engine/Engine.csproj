@@ -226,7 +226,7 @@
     <Compile Include="Structures\Curve3D.cs" />
     <Compile Include="Structures\SafeList.cs" />
     <Compile Include="Structures\SpringPoint3D.cs" />
-    <Compile Include="Terminal.cs" />
+    <Compile Include="Editing\Terminal.cs" />
     <Compile Include="Timing\RepeatingTimer.cs" />
     <Compile Include="Timing\SingleTimer.cs" />
     <Compile Include="Timing\Timer.cs" />
@@ -324,6 +324,7 @@
       <Name>Jitter</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>xcopy /Y "$(SolutionDir)Engine\x86\glfw3.dll" "$(SolutionDir)Zeldo\bin\Debug\x86\"

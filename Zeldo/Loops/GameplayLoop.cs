@@ -38,6 +38,7 @@ namespace Zeldo.Loops
 		private World world;
 		private Scene scene;
 		private Space space;
+		private SpawnHelper spawnHelper;
 
 		// Visualizers.
 		private SpaceVisualizer spaceVisualizer;
@@ -84,6 +85,8 @@ namespace Zeldo.Loops
 			canvas.Load("Canvas.json");
 			canvas.Add(stats);
 			//canvas.Add(new RopeTester());
+
+			spawnHelper = new SpawnHelper(scene);
 
 			// TODO: Load settings from a file.
 			ControlSettings settings = new ControlSettings();

@@ -114,6 +114,9 @@
     <None Include="Content\Json\Speech\Watchmaker_en.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Content\Meshes\Arena.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Meshes\Arrow.obj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -260,6 +263,7 @@
     <Compile Include="Entities\Core\SceneFragment.cs" />
     <Compile Include="Entities\DummyCapsule.cs" />
     <Compile Include="Entities\DummyCube.cs" />
+    <Compile Include="Entities\Enemies\Archer.cs" />
     <Compile Include="Entities\Enemies\Enemy.cs" />
     <Compile Include="Entities\Enemies\Groot.cs" />
     <Compile Include="Entities\Enemies\HealthBar.cs" />
@@ -289,6 +293,7 @@
     <Compile Include="Entities\Player\PlayerData.cs" />
     <Compile Include="Entities\Player\PlayerStates.cs" />
     <Compile Include="Entities\Player\PlayerUpgrades.cs" />
+    <Compile Include="Entities\SpawnHelper.cs" />
     <Compile Include="Entities\Weapons\MeleeWeapon.cs" />
     <Compile Include="Entities\Weapons\Twinblade.cs" />
     <Compile Include="Entities\Player\PlayerCharacter.cs" />

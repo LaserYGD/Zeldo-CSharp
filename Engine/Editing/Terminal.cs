@@ -9,11 +9,10 @@ using Engine.Input.Processors;
 using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.UI;
-using Engine.Utility;
 using GlmSharp;
 using static Engine.GLFW;
 
-namespace Engine
+namespace Engine.Editing
 {
 	public class Terminal : CanvasElement, IReceiver
 	{
@@ -92,6 +91,7 @@ namespace Engine
 			Debug.Assert(processor != null, "Command processor function can't be null.");
 			Debug.Assert(!commands.ContainsKey(command), $"Duplicate command '{command}'.");
 
+			Add($"Command '{command}' added.", colors[TextIndex]);
 			commands.Add(command, processor);
 		}
 
@@ -101,6 +101,15 @@ namespace Engine
 			foreach (var command in commands)
 			{
 				Add(command, processor);
+			}
+		}
+
+		public void Remove(string command)
+		{
+			if (commands.ContainsKey(command))
+			{
+				Add($"Command '{command}' removed.", colors[TextIndex]);
+				commands.Remove(command);
 			}
 		}
 
@@ -163,7 +172,15 @@ namespace Engine
 			}
 
 			var color = success ? colors[SuccessIndex] : colors[FailureIndex];
-			var line = new SpriteText(font, result);
+
+			Add(result, color);
+
+			return true;
+		}
+
+		private void Add(string s, Color color)
+		{
+			var line = new SpriteText(font, s);
 
 			line.Color = color;
 			lines.Add(line);
@@ -175,8 +192,6 @@ namespace Engine
 			{
 				lines[i].Position = start - spacing * (lines.Count - i - 1);
 			}
-
-			return true;
 		}
 
 		private bool Run(string input, out string result)

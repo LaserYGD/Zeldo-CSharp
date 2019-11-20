@@ -1,6 +1,6 @@
 ﻿[
 	{
-		"$type": "Engine.Terminal, Engine",
+		"$type": "Engine.Editing.Terminal, Engine",
 		"Anchor": 5,
 		"Height": 200,
 		"IsVisible": false
