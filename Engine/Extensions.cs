@@ -51,6 +51,11 @@ namespace Engine
 			return s.Substring(0, index);
 		}
 
+		public static string Uncapitalize(this string s)
+		{
+			return s.Length == 0 ? s : char.ToLower(s[0]) + s.Substring(1);
+		}
+
 		public static bool TryParse<T>(this JToken token, string key, out T result)
 		{
 			var data = token[key];

@@ -32,6 +32,7 @@ namespace Engine.View
 
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		// TODO: Are ortho settings required? (since the game is full 3D now)
 		public float OrthoWidth
 		{
 			get => orthoHalfWidth * 2;

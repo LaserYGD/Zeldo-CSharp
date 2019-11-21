@@ -1,5 +1,7 @@
 ﻿using Engine.Core;
 using Engine.Core._2D;
+using Engine.Interfaces;
+using Engine.Props;
 using Engine.Shaders;
 using Engine.Shapes._2D;
 using Engine.Utility;
@@ -23,8 +25,9 @@ namespace Engine.Graphics._2D
 
 		public SpriteBatch()
 		{
-			int bufferCapacity = Properties.GetInt("sprite.batch.buffer.capacity");
-			int indexCapacity = Properties.GetInt("sprite.batch.index.capacity"); ;
+			var accessor = Properties.Access();
+			var bufferCapacity = accessor.GetInt("sprite.batch.buffer.capacity");
+			var indexCapacity = accessor.GetInt("sprite.batch.index.capacity");
 
 			buffer = new PrimitiveBuffer(bufferCapacity, indexCapacity);
 

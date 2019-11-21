@@ -17,6 +17,56 @@ namespace Engine.Core
 		public static readonly Color Purple = new Color(128, 0, 128);
 		public static readonly Color Transparent = new Color(0, 0, 0, 0);
 
+		public static bool TryParse(string s, out Color result)
+		{
+			result = Transparent;
+
+			if (string.IsNullOrEmpty(s))
+			{
+				return false;
+			}
+
+			var tokens = s.Split('|');
+
+			if (tokens.Length < 3 || tokens.Length > 4)
+			{
+				return false;
+			}
+
+			if (!byte.TryParse(tokens[0], out var r))
+			{
+				return false;
+			}
+
+			if (!byte.TryParse(tokens[1], out var g))
+			{
+				return false;
+			}
+
+			if (!byte.TryParse(tokens[2], out var b))
+			{
+				return false;
+			}
+
+			byte a;
+
+			if (tokens.Length == 4)
+			{
+				if (!byte.TryParse(tokens[3], out a))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				a = 255;
+			}
+
+			result = new Color(r, g, b, a);
+
+			return true;
+		}
+
 		public static Color Lerp(Color start, Color end, float t)
 		{
 			byte r = Utilities.Lerp(start.R, end.R, t);

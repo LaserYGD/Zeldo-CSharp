@@ -18,7 +18,8 @@ namespace Zeldo.Entities
 	// TODO: Should the ladder be grabbable? (if so, should extend IGrabbable)
 	public class Ladder : Entity, IAscendable
 	{
-		private static readonly float SideSlice = Properties.GetFloat("ladder.side.slice");
+		// TODO: Pull property.
+		private static readonly float SideSlice = 0.4f;//Properties.GetFloat("ladder.side.slice");
 
 		// Ladders can be climbed from any angle, but the player whips around to the front when grabbing from the side
 		// or back.

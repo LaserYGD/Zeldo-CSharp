@@ -4,6 +4,7 @@ using Engine;
 using Engine.Graphics._3D;
 using Engine.Graphics._3D.Rendering;
 using Engine.Interfaces;
+using Engine.Props;
 using Engine.Sensors;
 using Engine.UI;
 using Engine.Utility;
@@ -40,9 +41,12 @@ namespace Zeldo.Entities.Core
 			{
 				camera = value;
 
+				// TODO: Consider making this reloadable.
+				var accessor = Properties.Access();
+
 				renderer = new MasterRenderer3D();
-				renderer.ShadowNearPlane = Properties.GetFloat("shadow.near.plane");
-				renderer.ShadowFarPlane = Properties.GetFloat("shadow.far.plane");
+				renderer.ShadowNearPlane = accessor.GetFloat("shadow.near.plane");
+				renderer.ShadowFarPlane = accessor.GetFloat("shadow.far.plane");
 
 				primitives = new PrimitiveRenderer3D(value, 200000, 20000);
 			}

@@ -1,6 +1,7 @@
 ﻿using System;
 using Engine;
 using Engine.Physics;
+using Engine.Props;
 using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
@@ -35,13 +36,16 @@ namespace Zeldo.Control
 		{
 			this.wallStickTimer = wallStickTimer;
 
+			// TODO: Make this reloadable.
+			var accessor = Properties.Access();
+
 			// Simpler (for the time being, anyway) to just load properties here.
-			acceleration = Properties.GetFloat("player.wall.acceleration");
-			deceleration = Properties.GetFloat("player.wall.deceleration");
-			maxSpeed = Properties.GetFloat("player.wall.max.speed");
-			wallGravity = Properties.GetFloat("player.wall.gravity");
-			wallTerminalSpeed = Properties.GetFloat("player.wall.terminal.speed");
-			stickForgiveness = Properties.GetFloat("player.wall.stick.forgiveness");
+			acceleration = accessor.GetFloat("player.wall.acceleration");
+			deceleration = accessor.GetFloat("player.wall.deceleration");
+			maxSpeed = accessor.GetFloat("player.wall.max.speed");
+			wallGravity = accessor.GetFloat("player.wall.gravity");
+			wallTerminalSpeed = accessor.GetFloat("player.wall.terminal.speed");
+			stickForgiveness = accessor.GetFloat("player.wall.stick.forgiveness");
 		}
 
 		public vec2 FlatDirection { get; set; }

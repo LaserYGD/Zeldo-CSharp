@@ -14,8 +14,8 @@ namespace Zeldo.Entities.Enemies
 
 		static Sunflower()
 		{
-			chargeLimit = Properties.GetFloat("sunflower.charge.limit");
-			chargeRate = Properties.GetFloat("sunflower.charge.rate");
+			//chargeLimit = Properties.GetFloat("sunflower.charge.limit");
+			//chargeRate = Properties.GetFloat("sunflower.charge.rate");
 		}
 
 		private float sunlightCharge;

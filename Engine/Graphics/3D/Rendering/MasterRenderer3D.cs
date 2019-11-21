@@ -5,6 +5,7 @@ using Engine.Core._2D;
 using Engine.Core._3D;
 using Engine.Interfaces._3D;
 using Engine.Lighting;
+using Engine.Props;
 using Engine.Shaders;
 using GlmSharp;
 
@@ -34,7 +35,9 @@ namespace Engine.Graphics._3D.Rendering
 			Light.Color = Color.White;
 			Light.AmbientIntensity = 0.1f;
 
-			int size = Properties.GetInt("shadow.map.size");
+			// TODO: Consider making shadow map size reloadable.
+			var accessor = Properties.Access();
+			var size = accessor.GetInt("shadow.map.size");
 
 			shadowMapTarget = new RenderTarget(size, size, RenderTargetFlags.Depth);
 			modelRenderer = new ModelRenderer(Light);

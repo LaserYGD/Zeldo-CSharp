@@ -14,7 +14,8 @@ namespace Zeldo.Entities.Characters
 
 		static Character()
 		{
-			InteractionRadius = Properties.GetFloat("character.interaction.radius");
+			// TODO: Pull radius (probably overridable by character).
+			//InteractionRadius = Properties.GetFloat("character.interaction.radius");
 		}
 
 		protected Character() : base(EntityGroups.Character)

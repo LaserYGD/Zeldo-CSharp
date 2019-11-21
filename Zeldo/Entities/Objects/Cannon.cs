@@ -15,8 +15,8 @@ namespace Zeldo.Entities.Objects
 
 	    static Cannon()
 	    {
-		    muzzleVelocity = Properties.GetFloat("cannon.muzzle.velocity");
-		    muzzleAngularVelocity = Properties.GetFloat("cannon.muzzle.angular.velocity");
+		    //muzzleVelocity = Properties.GetFloat("cannon.muzzle.velocity");
+		    //muzzleAngularVelocity = Properties.GetFloat("cannon.muzzle.angular.velocity");
 	    }
 
 	    private bool isLoaded;

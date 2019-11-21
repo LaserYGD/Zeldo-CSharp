@@ -16,7 +16,7 @@ namespace Zeldo.Entities.Enemies
 
 		static Kitterket()
 		{
-			startleDistance = Properties.GetFloat("kitterket.startle.distance");
+			//startleDistance = Properties.GetFloat("kitterket.startle.distance");
 		}
 
 		public override void Initialize(Scene scene, JToken data)

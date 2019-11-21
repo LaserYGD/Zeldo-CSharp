@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Props;
 using Zeldo.Combat;
 
 namespace Zeldo.Entities.Player.Combat
@@ -10,8 +11,11 @@ namespace Zeldo.Entities.Player.Combat
 
 		public AerialSwordSwipe(AttackData data, PlayerCharacter parent) : base(data, parent)
 		{
-			boost = Properties.GetFloat("player.aerial.swipe.boost");
-			limit = Properties.GetFloat("player.aerial.swipe.limit");
+			// TODO: Make this reloadable.
+			var accessor = Properties.Access();
+
+			boost = accessor.GetFloat("player.aerial.swipe.boost");
+			limit = accessor.GetFloat("player.aerial.swipe.limit");
 		}
 
 		public override bool ShouldTrigger()

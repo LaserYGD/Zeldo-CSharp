@@ -18,12 +18,12 @@ namespace Zeldo.Entities.Objects
 
 		public override void Initialize(Scene scene, JToken data)
 		{
-			float collisionRadius = Properties.GetFloat("cannonball.collision.radius");
-			float pickupRadius = Properties.GetFloat("cannonball.pickup.radius");
+			//float collisionRadius = Properties.GetFloat("cannonball.collision.radius");
+			//float pickupRadius = Properties.GetFloat("cannonball.pickup.radius");
 
 			CreateModel(scene, "Cannonball.obj");
-			CreateSensor(scene, new Sphere(pickupRadius), SensorGroups.Interaction);
-			CreateBody(scene, new SphereShape(collisionRadius));
+			//CreateSensor(scene, new Sphere(pickupRadius), SensorGroups.Interaction);
+			//CreateBody(scene, new SphereShape(collisionRadius));
 
 			base.Initialize(scene, data);
 		}

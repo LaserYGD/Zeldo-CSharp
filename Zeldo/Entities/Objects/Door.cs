@@ -22,8 +22,9 @@ namespace Zeldo.Entities.Objects
 
 		static Door()
 		{
-			AnimationSnap = Properties.GetFloat("door.animation.snap");
-			RaycastLength = Properties.GetFloat("door.raycast.length");
+			// TODO: Pull properties.
+			//AnimationSnap = Properties.GetFloat("door.animation.snap");
+			//RaycastLength = Properties.GetFloat("door.raycast.length");
 		}
 
 		private bool isLocked;
@@ -39,7 +40,9 @@ namespace Zeldo.Entities.Objects
 		public override void Initialize(Scene scene, JToken data)
 		{
 			var bounds = CreateModel(scene, "Door.obj").Mesh.Bounds;
-			var size = Properties.GetFloat("door.sensor.size");
+
+			// TODO: Pull property.
+			var size = 6;//Properties.GetFloat("door.sensor.size");
 
 			// TODO: Limit the body size to exclude the handle.
 			CreateBody(scene, new BoxShape(bounds.ToJVector()), RigidBodyTypes.PseudoStatic);

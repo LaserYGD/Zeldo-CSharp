@@ -5,12 +5,13 @@ using Engine.Core._2D;
 using Engine.Graphics._2D;
 using Engine.Interfaces;
 using Engine.Interfaces._2D;
+using Engine.Props;
 using GlmSharp;
 
 namespace Engine.UI
 {
 	// TODO: Consider attaching 2D components (similar to entities) to make positioning easier (don't need to do rotation probably).
-	public abstract class CanvasElement : IBoundable2D, IDynamic, IRenderable2D, IDisposable
+	public abstract class CanvasElement : IBoundable2D, IReloadable, IDynamic, IRenderable2D
 	{
 		private List<(Component2D Target, ivec2 Location)> attachments;
 
@@ -64,6 +65,10 @@ namespace Engine.UI
 			attachments.Add((component, location ?? ivec2.Zero));
 
 			return component;
+		}
+
+		public virtual void Reload(PropertyAccessor accessor)
+		{
 		}
 
 		public virtual void Dispose()

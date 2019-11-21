@@ -7,6 +7,7 @@ using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Localization;
 using Engine.Messaging;
+using Engine.Props;
 using Engine.UI;
 using Engine.Utility;
 using Zeldo.Loops;
@@ -34,7 +35,6 @@ namespace Zeldo
 			glPrimitiveRestartIndex(Constants.RestartIndex);
 			glfwSetInputMode(window.Address, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-			Properties.LoadAll();
 			Language.Reload(Languages.English);
 
 			canvas = new Canvas();

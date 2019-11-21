@@ -1,4 +1,5 @@
 ﻿using Engine;
+using Engine.Props;
 using Zeldo.Combat;
 
 namespace Zeldo.Entities.Player.Combat
@@ -9,7 +10,8 @@ namespace Zeldo.Entities.Player.Combat
 
 		public AerialSwordLift(AttackData data, PlayerCharacter parent) : base(data, parent)
 		{
-			boost = Properties.GetFloat("player.aerial.sword.boost");
+			// TODO: Make this reloadable.
+			boost = Properties.Access().GetFloat("player.aerial.sword.boost");
 		}
 
 		public override bool ShouldTrigger()

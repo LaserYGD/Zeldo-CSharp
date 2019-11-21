@@ -3,6 +3,7 @@ using Engine;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
+using Engine.Props;
 using Engine.Utility;
 using Engine.View;
 using GlmSharp;
@@ -12,10 +13,11 @@ using Zeldo.Settings;
 
 namespace Zeldo.View
 {
-	public class FollowView : CameraController3D, IReceiver
+	public class FollowView : CameraController3D, IReceiver, IReloadable
 	{
 		private const float AimDivisor = 10000f;
 		
+		// TODO: Convert this to a property.
 		// Shifting the camera upward by a small amount gives a better view of objects above the player without
 		// negatively affecting visibility of the player. Feels a bit better than a pure centered camera.
 		private const float Shift = 1;
@@ -35,15 +37,7 @@ namespace Zeldo.View
 
 			player.FollowView = this;
 
-			followDistance = Properties.GetFloat("view.follow.distance");
-			maxPitch = Properties.GetFloat("view.max.pitch");
-
-			// TODO: These values should probably be set in a different spot (since they're not exclusive to this view).
-			camera.OrthoWidth = Properties.GetFloat("camera.ortho.width");
-			camera.OrthoHeight = Properties.GetFloat("camera.ortho.height");
-			camera.NearPlane = Properties.GetFloat("camera.near.plane");
-			camera.FarPlane = Properties.GetFloat("camera.far.plane");
-			camera.Fov = Properties.GetFloat("camera.fov");
+			Properties.Access(this);
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.Input, (messageType, data, dt) =>
 			{
@@ -55,6 +49,19 @@ namespace Zeldo.View
 		public float Yaw => yaw;
 
 		public List<MessageHandle> MessageHandles { get; set; }
+
+		public void Reload(PropertyAccessor accessor)
+		{
+			followDistance = accessor.GetFloat("view.follow.distance", this);
+			maxPitch = accessor.GetFloat("view.max.pitch", this);
+
+			// TODO: These properties should be set (and tracked) by the camera itself (since they're not exclusive to this view).
+			Camera.OrthoWidth = accessor.GetFloat("camera.ortho.width", this);
+			Camera.OrthoHeight = accessor.GetFloat("camera.ortho.height", this);
+			Camera.NearPlane = accessor.GetFloat("camera.near.plane", this);
+			Camera.FarPlane = accessor.GetFloat("camera.far.plane", this);
+			Camera.Fov = accessor.GetFloat("camera.fov", this);
+		}
 
 		public void Dispose()
 		{

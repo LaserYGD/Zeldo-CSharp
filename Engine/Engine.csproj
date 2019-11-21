@@ -79,6 +79,9 @@
   <ItemGroup>
     <None Include=".editorconfig" />
     <None Include="App.config" />
+    <None Include="Content\Fonts\Terminal.fnt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\Shaders\Model.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -178,7 +181,11 @@
     <Compile Include="Interfaces\3D\IMeshUser.cs" />
     <Compile Include="Interfaces\3D\IRenderable3D.cs" />
     <Compile Include="Interfaces\3D\IScalable3D.cs" />
+    <Compile Include="Interfaces\IReloadable.cs" />
     <Compile Include="Physics\WindingTypes.cs" />
+    <Compile Include="Props\Property.cs" />
+    <Compile Include="Props\PropertyAccessor.cs" />
+    <Compile Include="Props\PropertyTypes.cs" />
     <Compile Include="Proximities.cs" />
     <Compile Include="Lighting\GlobalLight.cs" />
     <Compile Include="Lighting\LightSource.cs" />
@@ -198,7 +205,7 @@
     <Compile Include="Physics\Verlet\VerletCloth.cs" />
     <Compile Include="Physics\Verlet\VerletPoint2D.cs" />
     <Compile Include="Physics\Verlet\VerletRope2D.cs" />
-    <Compile Include="Properties.cs" />
+    <Compile Include="Props\Properties.cs" />
     <Compile Include="Sensors\ShapeAttachment.cs" />
     <Compile Include="Sensors\MultiSensor.cs" />
     <Compile Include="Sensors\Sensor.cs" />
@@ -325,6 +332,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <None Include="Content\Fonts\Terminal_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>xcopy /Y "$(SolutionDir)Engine\x86\glfw3.dll" "$(SolutionDir)Zeldo\bin\Debug\x86\"

@@ -11,8 +11,9 @@ namespace Zeldo.UI
 {
 	public class DebugView : CanvasElement
 	{
-		private readonly int lineSpacing = Properties.GetInt("debug.line.spacing");
-		private readonly int blockSpacing = Properties.GetInt("debug.block.spacing");
+		// TODO: Pull properties (probably untracked in this case).
+		private readonly int lineSpacing = 2;//Properties.GetInt("debug.line.spacing");
+		private readonly int blockSpacing = 15;//Properties.GetInt("debug.block.spacing");
 
 		private SpriteFont font;
 		private Dictionary<string, List<string>> rawGroups;

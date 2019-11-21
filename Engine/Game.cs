@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Engine.Input;
 using Engine.Interfaces;
 using Engine.Messaging;
+using Engine.Props;
 using static Engine.GLFW;
 
 namespace Engine
@@ -63,6 +64,8 @@ namespace Engine
 
 		protected Game(string title)
 		{
+			Properties.Reload();
+
 			glfwInit();
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);

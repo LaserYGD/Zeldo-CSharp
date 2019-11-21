@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Engine;
 using Engine.Physics;
+using Engine.Props;
 using Engine.Utility;
 using GlmSharp;
 using Jitter.Collision.Shapes;
@@ -18,7 +19,8 @@ namespace Zeldo.Control
 
 		static GroundController()
 		{
-			EdgeForgiveness = Properties.GetFloat("edge.forgiveness");
+			// TODO: Should be removed (and use the constant version instead).
+			EdgeForgiveness = Properties.Access().GetFloat("edge.forgiveness");
 		}
 
 		private float acceleration;

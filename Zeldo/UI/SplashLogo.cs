@@ -24,8 +24,9 @@ namespace Zeldo.UI
 			spriteText = new SpriteText("Debug", "[Grimgaming]", Alignments.Center);
 			spriteText.UseLiteralMeasuring = true;
 
-			fadeTime = Properties.GetFloat("splash.fade.time");
-			lifetime = Properties.GetFloat("splash.lifetime");
+			// TODO: Pull properties.
+			//fadeTime = Properties.GetFloat("splash.fade.time");
+			//lifetime = Properties.GetFloat("splash.lifetime");
 
 			timer = new SingleTimer(t =>
 			{

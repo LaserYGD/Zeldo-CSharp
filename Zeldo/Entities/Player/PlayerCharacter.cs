@@ -6,6 +6,7 @@ using Engine;
 using Engine.Core;
 using Engine.Interfaces._3D;
 using Engine.Physics;
+using Engine.Props;
 using Engine.Sensors;
 using Engine.Shapes._3D;
 using Engine.Timing;
@@ -78,10 +79,12 @@ namespace Zeldo.Entities.Player
 			playerData = new PlayerData();
 			state = PlayerStates.Airborne;
 
-			var coyoteTime = Properties.GetFloat("player.coyote.time");
-			var coyoteWallTime = Properties.GetFloat("player.coyote.wall.time");
-			var platformTime = Properties.GetFloat("player.platform.ignore.time");
-			var wallStickTime = Properties.GetFloat("player.wall.stick.time");
+			// TODO: Make this class reloadable.
+			var accessor = Properties.Access();
+			var coyoteTime = accessor.GetFloat("player.coyote.time");
+			var coyoteWallTime = accessor.GetFloat("player.coyote.wall.time");
+			var platformTime = accessor.GetFloat("player.platform.ignore.time");
+			var wallStickTime = accessor.GetFloat("player.wall.stick.time");
 
 			// Flags
 			coyoteFlag = Components.Add(new TimedFlag(coyoteTime));
@@ -149,19 +152,22 @@ namespace Zeldo.Entities.Player
 
 		private AbstractController[] CreateControllers()
 		{
+			// TODO: Reload properties.
+			var accessor = Properties.Access();
+
 			// Both air and ground movement use the same max speed (otherwise, players would likely observe strange
 			// speed changes when transitioning from one to the other).
-			var maxSpeed = Properties.GetFloat("player.max.speed");
+			var maxSpeed = accessor.GetFloat("player.max.speed");
 
 			// Air movement
-			float airAcceleration = Properties.GetFloat("player.air.acceleration");
-			float airDeceleration = Properties.GetFloat("player.air.deceleration");
+			float airAcceleration = accessor.GetFloat("player.air.acceleration");
+			float airDeceleration = accessor.GetFloat("player.air.deceleration");
 
 			aerialController.Initialize(airAcceleration, airDeceleration, maxSpeed);
 
 			// Ground movement
-			float groundAcceleration = Properties.GetFloat("player.ground.acceleration");
-			float groundDeceleration = Properties.GetFloat("player.ground.deceleration");
+			float groundAcceleration = accessor.GetFloat("player.ground.acceleration");
+			float groundDeceleration = accessor.GetFloat("player.ground.deceleration");
 
 			groundController.Initialize(groundAcceleration, groundDeceleration, maxSpeed);
 
@@ -169,10 +175,10 @@ namespace Zeldo.Entities.Player
 			wallController = new WallController(this, wallStickTimer);
 
 			// Ladder movement
-			float ladderAcceleration = Properties.GetFloat("player.ladder.climb.acceleration");
-			float ladderDeceleration = Properties.GetFloat("player.ladder.climb.deceleration");
-			float ladderMaxSpeed = Properties.GetFloat("player.ladder.climb.max.speed");
-			float ladderSeparation = Properties.GetFloat("player.ladder.separation");
+			float ladderAcceleration = accessor.GetFloat("player.ladder.climb.acceleration");
+			float ladderDeceleration = accessor.GetFloat("player.ladder.climb.deceleration");
+			float ladderMaxSpeed = accessor.GetFloat("player.ladder.climb.max.speed");
+			float ladderSeparation = accessor.GetFloat("player.ladder.separation");
 
 			ladderController = new LadderController(this);
 			ladderController.ClimbAcceleration = ladderAcceleration;
@@ -193,9 +199,12 @@ namespace Zeldo.Entities.Player
 
 		public override void Initialize(Scene scene, JToken data)
 		{
+			// TODO: Maybe reload? (probably not for capsule values, though)
+			var accessor = Properties.Access();
+
 			// This is the height of the cylinder (excluding the two rounded caps).
-			capsuleHeight = Properties.GetFloat("player.capsule.height");
-			capsuleRadius = Properties.GetFloat("player.capsule.radius");
+			capsuleHeight = accessor.GetFloat("player.capsule.height");
+			capsuleRadius = accessor.GetFloat("player.capsule.radius");
 
 			// TODO: This shouldn't need to be manually computed per actor. Should probably use a function.
 			FullHeight = capsuleHeight + capsuleRadius * 2;

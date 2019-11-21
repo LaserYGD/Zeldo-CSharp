@@ -14,8 +14,8 @@ namespace Zeldo.Entities
 
 		public JesterWall() : base(EntityGroups.Object)
 		{
-			distance = Properties.GetFloat("jester.wall.distance");
-			duration = Properties.GetFloat("jester.wall.duration");
+			//distance = Properties.GetFloat("jester.wall.distance");
+			//duration = Properties.GetFloat("jester.wall.duration");
 		}
 
 		public int Id => EntityIds.JesterWall;

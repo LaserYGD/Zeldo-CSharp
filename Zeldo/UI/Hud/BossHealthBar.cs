@@ -30,10 +30,12 @@ namespace Zeldo.UI.Hud
 			get => base.Location;
 			set
 			{
+				/*
 				int spacing = Properties.GetInt("boss.name.spacing");
 				int x = Properties.GetInt("boss.name.x");
 
 				nameText.Position = Location - new ivec2(-x, nameText.Size + spacing);
+				*/
 
 				base.Location = value;
 			}

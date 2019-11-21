@@ -9,6 +9,7 @@ using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
 using Engine.Physics;
+using Engine.Props;
 using Engine.Sensors;
 using Engine.Timing;
 using Engine.Utility;
@@ -53,7 +54,9 @@ namespace Zeldo.Loops
 		{
 			// TODO: Pull relevant objects from the title loop (likely camera and maybe scene).
 			camera = new Camera3D();
-			physicsMaxIterations = Properties.GetInt("physics.max.iterations");
+
+			var accessor = Properties.Access();
+			physicsMaxIterations = accessor.GetInt("physics.max.iterations");
 		}
 
 		public override void Initialize()

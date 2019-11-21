@@ -8,6 +8,7 @@ using Engine.Input.Data;
 using Engine.Input.Processors;
 using Engine.Interfaces;
 using Engine.Messaging;
+using Engine.Props;
 using Engine.UI;
 using GlmSharp;
 using static Engine.GLFW;
@@ -38,33 +39,22 @@ namespace Engine.Editing
 
 		public Terminal()
 		{
+			colors = new Color[4];
 			commands = new Dictionary<string, CommandProcessor>();
-			font = ContentCache.GetFont("Debug");
+			font = ContentCache.GetFont("Terminal");
 			currentLine = new SpriteText(font);
 			lines = new List<SpriteText>();
 			oldCommands = new List<string>();
 			charWidth = font.Measure("A").x;
-			padding = Properties.GetInt("terminal.padding");
 			storedIndex = -1;
 
+			var accessor = Properties.Access(this);
+
+			padding = accessor.GetInt("terminal.padding", this, false);
 			textProcessor = new TextProcessor();
 			textProcessor.Submit = Submit;
 
-			colors = new Color[4];
-			colors[0] = Properties.GetColor("terminal.back.color");
-			colors[1] = Properties.GetColor("terminal.text.color");
-			colors[2] = Properties.GetColor("terminal.success.color");
-			colors[3] = Properties.GetColor("terminal.failure.color");
-
-			// TODO: Add other default commands (like "help" and "commands")
-			Add((string[] args, out string result) =>
-			{
-				result = null;
-
-				MessageSystem.Send(CoreMessageTypes.Exit);
-
-				return true;
-			}, "exit", "quit");
+			AddDefaultCommands();
 
 			MessageSystem.Subscribe(this, CoreMessageTypes.ResizeWindow, (messageType, data, dt) =>
 			{
@@ -80,9 +70,36 @@ namespace Engine.Editing
 
 		public List<MessageHandle> MessageHandles { get; set; }
 
+		// TODO: Add other default commands (like "help" and "commands").
+		private void AddDefaultCommands()
+		{
+			// Exit command (alias 'quit').
+			Add((string[] args, out string result) =>
+			{
+				result = null;
+
+				MessageSystem.Send(CoreMessageTypes.Exit);
+
+				return true;
+			}, "exit", "quit");
+
+			// Property commands.
+			Add("echo", Properties.TryEcho);
+			Add("set", Properties.TryModify);
+		}
+
 		public override void Initialize()
 		{
 			currentLine.Position = new vec2(padding, Height - padding - font.Size);
+		}
+
+		public override void Reload(PropertyAccessor accessor)
+		{
+			// The array is initialized in the constructor (before accessing properties).
+			colors[0] = accessor.GetColor("terminal.back.color", this);
+			colors[1] = accessor.GetColor("terminal.text.color", this);
+			colors[2] = accessor.GetColor("terminal.success.color", this);
+			colors[3] = accessor.GetColor("terminal.failure.color", this);
 		}
 
 		public void Add(string command, CommandProcessor processor)
@@ -185,7 +202,7 @@ namespace Engine.Editing
 			line.Color = color;
 			lines.Add(line);
 
-			var start = new vec2(padding, Height - font.Size * 2 - padding * 3 - 1);
+			var start = new vec2(padding, Height - font.Size * 2 - padding * 3 - 4);
 			var spacing = new vec2(0, font.Size + padding);
 
 			for (int i = lines.Count - 1; i >= 0; i--)

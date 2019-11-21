@@ -4,6 +4,7 @@ using Engine.Input;
 using Engine.Input.Data;
 using Engine.Interfaces;
 using Engine.Messaging;
+using Engine.Props;
 using Engine.Timing;
 using Engine.Utility;
 using GlmSharp;
@@ -62,9 +63,11 @@ namespace Zeldo.Entities.Player
 			wallController = (WallController)controllers[PlayerCharacter.ControllerIndexes.Wall];
 			ladderController = (LadderController)controllers[PlayerCharacter.ControllerIndexes.Ladder];
 
+			// TODO: Make this class reloadable.
 			// Create buffers.
-			float grab = Properties.GetFloat("player.grab.buffer");
-			float ascend = Properties.GetFloat("player.ascend.buffer");
+			var accessor = Properties.Access();
+			var grab = accessor.GetFloat("player.grab.buffer");
+			var ascend = accessor.GetFloat("player.ascend.buffer");
 
 			// Actual values for requiresHold on each buffer are set when control settings are applied.
 			attackBuffer = new InputBuffer(false, controls.Attack);
@@ -131,7 +134,7 @@ namespace Zeldo.Entities.Player
 				ProcessJump(data, flatDirection);
 			}
 
-			ProcessAttack(data, dt);
+			//ProcessAttack(data, dt);
 		}
 
 		private vec2 ComputeFlatDirection(FullInputData data)

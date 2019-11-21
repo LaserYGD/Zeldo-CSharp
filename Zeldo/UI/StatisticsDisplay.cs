@@ -10,7 +10,9 @@ namespace Zeldo.UI
 {
 	public class StatisticsDisplay : CanvasElement
 	{
-		private readonly int lineSpacing = Properties.GetInt("debug.line.spacing");
+		// TODO: Use a property (or maybe a constant for debug text?)
+		//private readonly int lineSpacing = Properties.GetInt("debug.line.spacing");
+		private readonly int lineSpacing = 4;
 
 		private List<SpriteText> lines;
 		private SpriteFont font;

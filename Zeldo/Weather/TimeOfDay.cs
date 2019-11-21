@@ -18,8 +18,9 @@ namespace Zeldo.Weather
 		// TODO: Load texture data (then clear the texture).
 		public TimeOfDay()
 		{
+			// TODO: Pull property.
 			// Day duration is listed in minutes in the property file.
-			dayDuration = Properties.GetInt("day.duration") * 60;
+			//dayDuration = Properties.GetInt("day.duration") * 60;
 
 			var texture = ContentCache.GetTexture("Horizon.png", true, false);
 			horizon = texture.Data;

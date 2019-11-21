@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Engine.Interfaces._3D;
 using Engine.Lighting;
+using Engine.Props;
 using GlmSharp;
 using static Engine.GL;
 
@@ -14,8 +15,9 @@ namespace Engine.Graphics._3D.Rendering
 
 		protected MeshRenderer(GlobalLight light, string property) : base(light)
 		{
-			int bufferCapacity = Properties.GetInt(property + ".buffer.capacity");
-			int indexCapacity = Properties.GetInt(property + ".index.capacity");
+			var accessor = Properties.Access();
+			var bufferCapacity = accessor.GetInt(property + ".buffer.capacity");
+			var indexCapacity = accessor.GetInt(property + ".index.capacity");
 
 			GLUtilities.AllocateBuffers(bufferCapacity, indexCapacity, out bufferId, out indexId, GL_STATIC_DRAW);
 		}

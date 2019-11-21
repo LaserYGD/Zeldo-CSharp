@@ -21,8 +21,8 @@ namespace Zeldo.Entities
 
 		static TreasureChest()
 		{
-			LidRange = Properties.GetFloat("treasure.chest.lid.range");
-			LidDuration = Properties.GetFloat("treasure.chest.lid.duration");
+			//LidRange = Properties.GetFloat("treasure.chest.lid.range");
+			//LidDuration = Properties.GetFloat("treasure.chest.lid.duration");
 		}
 
 		private int itemId;

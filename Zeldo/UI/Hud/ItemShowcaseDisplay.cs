@@ -21,10 +21,12 @@ namespace Zeldo.UI.Hud
 		{
 			const string Prefix = "item.showcase.";
 
+			/*
 			itemText = new SpriteText("Debug");
 			fadeTime = Properties.GetFloat(Prefix + "fade.time");
 			lifetime = Properties.GetFloat(Prefix + "lifetime");
 			textOffset = Properties.GetInt(Prefix + "text.offset");
+			*/
 		}
 
 		public override ivec2 Location
